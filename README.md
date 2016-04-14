@@ -51,3 +51,8 @@ Documentation
 Currently none.  
 DIY. I wait you pull-request ;)
 
+
+Credits
+-------
+
+The logo came from Google Material Icons
