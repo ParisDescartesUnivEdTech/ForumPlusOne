@@ -45,7 +45,7 @@ class moodle1_mod_forumimproved_handler extends moodle1_mod_handler {
      * For each path returned, the corresponding conversion method must be
      * defined.
      *
-     * Note that the paths /MOODLE_BACKUP/COURSE/MODULES/MOD/HSUFORUM do not
+     * Note that the paths /MOODLE_BACKUP/COURSE/MODULES/MOD/FORUMIMPROVED do not
      * actually exist in the file. The last element with the module name was
      * appended by the moodle1_converter class.
      *
@@ -53,7 +53,7 @@ class moodle1_mod_forumimproved_handler extends moodle1_mod_handler {
      */
     public function get_paths() {
         return array(
-            new convert_path('forumimproved', '/MOODLE_BACKUP/COURSE/MODULES/MOD/HSUFORUM',
+            new convert_path('forumimproved', '/MOODLE_BACKUP/COURSE/MODULES/MOD/FORUMIMPROVED',
                 array(
                     'renamefields' => array(
                         'format' => 'messageformat',
@@ -71,7 +71,7 @@ class moodle1_mod_forumimproved_handler extends moodle1_mod_handler {
     }
 
     /**
-     * Converts /MOODLE_BACKUP/COURSE/MODULES/MOD/HSUFORUM data
+     * Converts /MOODLE_BACKUP/COURSE/MODULES/MOD/FORUMIMPROVED data
      */
     public function process_forumimproved($data) {
         // get the course module id and context id

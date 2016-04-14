@@ -103,26 +103,26 @@ $returnto = optional_param('backtoindex',0,PARAM_INT)
 if (!is_null($mode) and has_capability('mod/forumimproved:managesubscriptions', $context)) {
     require_sesskey();
     switch ($mode) {
-        case HSUFORUM_CHOOSESUBSCRIBE : // 0
-            forumimproved_forcesubscribe($forum->id, HSUFORUM_CHOOSESUBSCRIBE);
+        case FORUMIMPROVED_CHOOSESUBSCRIBE : // 0
+            forumimproved_forcesubscribe($forum->id, FORUMIMPROVED_CHOOSESUBSCRIBE);
             redirect($returnto, get_string("everyonecannowchoose", "forumimproved"), 1);
             break;
-        case HSUFORUM_FORCESUBSCRIBE : // 1
-            forumimproved_forcesubscribe($forum->id, HSUFORUM_FORCESUBSCRIBE);
+        case FORUMIMPROVED_FORCESUBSCRIBE : // 1
+            forumimproved_forcesubscribe($forum->id, FORUMIMPROVED_FORCESUBSCRIBE);
             redirect($returnto, get_string("everyoneisnowsubscribed", "forumimproved"), 1);
             break;
-        case HSUFORUM_INITIALSUBSCRIBE : // 2
-            if ($forum->forcesubscribe <> HSUFORUM_INITIALSUBSCRIBE) {
+        case FORUMIMPROVED_INITIALSUBSCRIBE : // 2
+            if ($forum->forcesubscribe <> FORUMIMPROVED_INITIALSUBSCRIBE) {
                 $users = forumimproved_get_potential_subscribers($context, 0, 'u.id, u.email', '');
                 foreach ($users as $user) {
                     forumimproved_subscribe($user->id, $forum->id);
                 }
             }
-            forumimproved_forcesubscribe($forum->id, HSUFORUM_INITIALSUBSCRIBE);
+            forumimproved_forcesubscribe($forum->id, FORUMIMPROVED_INITIALSUBSCRIBE);
             redirect($returnto, get_string("everyoneisnowsubscribed", "forumimproved"), 1);
             break;
-        case HSUFORUM_DISALLOWSUBSCRIBE : // 3
-            forumimproved_forcesubscribe($forum->id, HSUFORUM_DISALLOWSUBSCRIBE);
+        case FORUMIMPROVED_DISALLOWSUBSCRIBE : // 3
+            forumimproved_forcesubscribe($forum->id, FORUMIMPROVED_DISALLOWSUBSCRIBE);
             redirect($returnto, get_string("noonecansubscribenow", "forumimproved"), 1);
             break;
         default:
@@ -156,7 +156,7 @@ if (forumimproved_is_subscribed($user->id, $forum->id)) {
     }
 
 } else {  // subscribe
-    if ($forum->forcesubscribe == HSUFORUM_DISALLOWSUBSCRIBE &&
+    if ($forum->forcesubscribe == FORUMIMPROVED_DISALLOWSUBSCRIBE &&
                 !has_capability('mod/forumimproved:managesubscriptions', $context)) {
         print_error('disallowsubscribe', 'forumimproved', $_SERVER["HTTP_REFERER"]);
     }

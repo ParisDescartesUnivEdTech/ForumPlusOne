@@ -128,10 +128,10 @@ class mod_forumimproved_mod_form extends moodleform_mod {
         $mform->addElement('header', 'subscriptionhdr', get_string('subscription', 'forumimproved'));
 
         $options = array();
-        $options[HSUFORUM_CHOOSESUBSCRIBE] = get_string('subscriptionoptional', 'forumimproved');
-        $options[HSUFORUM_FORCESUBSCRIBE] = get_string('subscriptionforced', 'forumimproved');
-        $options[HSUFORUM_INITIALSUBSCRIBE] = get_string('subscriptionauto', 'forumimproved');
-        $options[HSUFORUM_DISALLOWSUBSCRIBE] = get_string('subscriptiondisabled','forumimproved');
+        $options[FORUMIMPROVED_CHOOSESUBSCRIBE] = get_string('subscriptionoptional', 'forumimproved');
+        $options[FORUMIMPROVED_FORCESUBSCRIBE] = get_string('subscriptionforced', 'forumimproved');
+        $options[FORUMIMPROVED_INITIALSUBSCRIBE] = get_string('subscriptionauto', 'forumimproved');
+        $options[FORUMIMPROVED_DISALLOWSUBSCRIBE] = get_string('subscriptiondisabled','forumimproved');
         $mform->addElement('select', 'forcesubscribe', get_string('subscriptionmode', 'forumimproved'), $options);
         $mform->addHelpButton('forcesubscribe', 'subscriptionmode', 'forumimproved');
 
@@ -202,7 +202,7 @@ class mod_forumimproved_mod_form extends moodleform_mod {
         $this->standard_coursemodule_elements();
 
         $mform->addElement('select', 'gradetype', get_string('gradetype', 'forumimproved'), forumimproved_get_grading_types());
-        $mform->setDefault('gradetype', HSUFORUM_GRADETYPE_NONE);
+        $mform->setDefault('gradetype', FORUMIMPROVED_GRADETYPE_NONE);
         $mform->setType('gradetype', PARAM_INT);
         $mform->addHelpButton('gradetype', 'gradetype', 'forumimproved');
 
@@ -215,14 +215,14 @@ class mod_forumimproved_mod_form extends moodleform_mod {
 
         if ($this->_features->advancedgrading) {
             foreach ($this->current->_advancedgradingdata['areas'] as $areaname => $areadata) {
-                $mform->disabledIf('advancedgradingmethod_'.$areaname, 'gradetype', 'neq', HSUFORUM_GRADETYPE_MANUAL);
+                $mform->disabledIf('advancedgradingmethod_'.$areaname, 'gradetype', 'neq', FORUMIMPROVED_GRADETYPE_MANUAL);
             }
         }
         $key = array_search('scale', $mform->_dependencies['assessed']['eq'][0]);
         if ($key !== false) {
             unset($mform->_dependencies['assessed']['eq'][0][$key]);
         }
-        $mform->disabledIf('gradecat', 'gradetype', 'eq', HSUFORUM_GRADETYPE_NONE);
+        $mform->disabledIf('gradecat', 'gradetype', 'eq', FORUMIMPROVED_GRADETYPE_NONE);
 //-------------------------------------------------------------------------------
 // buttons
         $this->add_action_buttons();
@@ -230,7 +230,7 @@ class mod_forumimproved_mod_form extends moodleform_mod {
         if (!$this->_features->advancedgrading) {
             /** @var $renderer mod_forumimproved_renderer */
             $renderer = $PAGE->get_renderer('mod_forumimproved');
-            $PAGE->requires->js_init_call('M.mod_forumimproved.init_modform', array(HSUFORUM_GRADETYPE_MANUAL), false, $renderer->get_js_module());
+            $PAGE->requires->js_init_call('M.mod_forumimproved.init_modform', array(FORUMIMPROVED_GRADETYPE_MANUAL), false, $renderer->get_js_module());
         }
     }
 
@@ -348,11 +348,11 @@ class mod_forumimproved_mod_form extends moodleform_mod {
         if (!empty($data['completionusegrade'])) {
             // This is the same logic as in forumimproved_grade_item_update() for determining that the gradetype is GRADE_TYPE_NONE
             // If GRADE_TYPE_NONE, then we cannot have this completion criteria because there may be no grade item!
-            if ($data['gradetype'] == HSUFORUM_GRADETYPE_NONE or ($data['gradetype'] == HSUFORUM_GRADETYPE_RATING and !$data['assessed']) or $data['scale'] == 0) {
+            if ($data['gradetype'] == FORUMIMPROVED_GRADETYPE_NONE or ($data['gradetype'] == FORUMIMPROVED_GRADETYPE_RATING and !$data['assessed']) or $data['scale'] == 0) {
                 $errors['completionusegrade'] = get_string('completionusegradeerror', 'forumimproved');
             }
         }
-        if ($data['gradetype'] == HSUFORUM_GRADETYPE_MANUAL
+        if ($data['gradetype'] == FORUMIMPROVED_GRADETYPE_MANUAL
                 && $data['scale'] == 0) {
             $errors['scale'] = get_string('modgradeerrorbadpoint', 'grades', get_config('core', 'gradepointmax'));
         }

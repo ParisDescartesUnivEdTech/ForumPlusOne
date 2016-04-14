@@ -56,7 +56,7 @@ class forumimproved_repository_discussion extends forumimproved_repository_abstr
     public function get_unsubscribed_users($forum, $discussion, context_module $context, $groupid=0, $fields = null, array $search = array(), $sort = 'u.lastname ASC, u.firstname ASC') {
         global $DB, $CFG;
 
-        if ($forum->forcesubscribe == HSUFORUM_DISALLOWSUBSCRIBE or $forum->type == 'single' or forumimproved_is_forcesubscribed($forum)) {
+        if ($forum->forcesubscribe == FORUMIMPROVED_DISALLOWSUBSCRIBE or $forum->type == 'single' or forumimproved_is_forcesubscribed($forum)) {
             return array();
         }
         if (is_null($fields)) {
@@ -123,7 +123,7 @@ class forumimproved_repository_discussion extends forumimproved_repository_abstr
     public function get_subscribed_users($forum, $discussion, context_module $context, $groupid=0, $fields = null, array $search = array(), $sort = 'u.lastname ASC, u.firstname ASC') {
         global $CFG;
 
-        if ($forum->forcesubscribe == HSUFORUM_DISALLOWSUBSCRIBE or $forum->type == 'single' or forumimproved_is_forcesubscribed($forum)) {
+        if ($forum->forcesubscribe == FORUMIMPROVED_DISALLOWSUBSCRIBE or $forum->type == 'single' or forumimproved_is_forcesubscribed($forum)) {
             return array();
         }
         if (is_null($fields)) {

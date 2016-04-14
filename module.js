@@ -140,7 +140,7 @@ M.mod_forumimproved.io_failure_handler = function(Y, callback) {
 /**
  * @author Mark Nielsen
  */
-M.mod_forumimproved.init_modform = function(Y, HSUFORUM_GRADETYPE_MANUAL) {
+M.mod_forumimproved.init_modform = function(Y, FORUMIMPROVED_GRADETYPE_MANUAL) {
     var gradetype = Y.one('.path-mod-forumimproved select[name="gradetype"]');
 
     if (gradetype) {
@@ -148,7 +148,7 @@ M.mod_forumimproved.init_modform = function(Y, HSUFORUM_GRADETYPE_MANUAL) {
         gradetype.get('parentNode').appendChild(warning);
 
         var updateMessage = function() {
-            if (gradetype.get('value') == HSUFORUM_GRADETYPE_MANUAL) {
+            if (gradetype.get('value') == FORUMIMPROVED_GRADETYPE_MANUAL) {
                 warning.removeClass('hidden');
             } else {
                 warning.addClass('hidden');

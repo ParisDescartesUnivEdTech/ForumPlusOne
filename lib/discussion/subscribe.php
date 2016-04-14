@@ -161,7 +161,7 @@ class forumimproved_lib_discussion_subscribe {
      * @return bool
      */
     protected function _can_subscribe() {
-        if ($this->get_forum()->forcesubscribe == HSUFORUM_DISALLOWSUBSCRIBE) {
+        if ($this->get_forum()->forcesubscribe == FORUMIMPROVED_DISALLOWSUBSCRIBE) {
             return false;
         }
         if ($this->get_forum()->type == 'single') {

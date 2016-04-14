@@ -12,8 +12,8 @@ information provided here is intended especially for developers.
 * The function forumimproved_shorten_post() has been deprecated. It was doing a poor
   job of shortening forum post text and the shorten_text() function does a
   much better job.
-* The constant HSUFORUM_TRACKING_ON has been depreciated and replaced by
-  HSUFORUM_TRACKING_FORCED. The value between them is maintained, so they are
+* The constant FORUMIMPROVED_TRACKING_ON has been depreciated and replaced by
+  FORUMIMPROVED_TRACKING_FORCED. The value between them is maintained, so they are
   interchangeable, but code should migrate to the new name.
 
 === 2.5 ===

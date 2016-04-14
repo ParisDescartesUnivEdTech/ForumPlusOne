@@ -32,22 +32,22 @@ require_once($CFG->dirroot.'/user/selector/lib.php');
 /// CONSTANTS ///////////////////////////////////////////////////////////
 
 
-define('HSUFORUM_CHOOSESUBSCRIBE', 0);
-define('HSUFORUM_FORCESUBSCRIBE', 1);
-define('HSUFORUM_INITIALSUBSCRIBE', 2);
-define('HSUFORUM_DISALLOWSUBSCRIBE',3);
+define('FORUMIMPROVED_CHOOSESUBSCRIBE', 0);
+define('FORUMIMPROVED_FORCESUBSCRIBE', 1);
+define('FORUMIMPROVED_INITIALSUBSCRIBE', 2);
+define('FORUMIMPROVED_DISALLOWSUBSCRIBE',3);
 
-define ('HSUFORUM_GRADETYPE_NONE', 0);
-define ('HSUFORUM_GRADETYPE_MANUAL', 1);
-define ('HSUFORUM_GRADETYPE_RATING', 2);
+define ('FORUMIMPROVED_GRADETYPE_NONE', 0);
+define ('FORUMIMPROVED_GRADETYPE_MANUAL', 1);
+define ('FORUMIMPROVED_GRADETYPE_RATING', 2);
 
-define('HSUFORUM_MAILED_PENDING', 0);
-define('HSUFORUM_MAILED_SUCCESS', 1);
-define('HSUFORUM_MAILED_ERROR', 2);
+define('FORUMIMPROVED_MAILED_PENDING', 0);
+define('FORUMIMPROVED_MAILED_SUCCESS', 1);
+define('FORUMIMPROVED_MAILED_ERROR', 2);
 
-if (!defined('HSUFORUM_CRON_USER_CACHE')) {
+if (!defined('FORUMIMPROVED_CRON_USER_CACHE')) {
     /** Defines how many full user records are cached in forum cron. */
-    define('HSUFORUM_CRON_USER_CACHE', 5000);
+    define('FORUMIMPROVED_CRON_USER_CACHE', 5000);
 }
 
 /// STANDARD FUNCTIONS ///////////////////////////////////////////////////////////
@@ -67,7 +67,7 @@ function forumimproved_add_instance($forum, $mform = null) {
 
     $forum->timemodified = time();
 
-    if ($forum->gradetype != HSUFORUM_GRADETYPE_MANUAL) {
+    if ($forum->gradetype != FORUMIMPROVED_GRADETYPE_MANUAL) {
         foreach ($forum as $name => $value) {
             if (strpos($name, 'advancedgradingmethod_') !== false) {
                 $forum->$name = '';
@@ -129,7 +129,7 @@ function forumimproved_add_instance($forum, $mform = null) {
  * @return void
  */
 function forumimproved_instance_created($context, $forum) {
-    if ($forum->forcesubscribe == HSUFORUM_INITIALSUBSCRIBE) {
+    if ($forum->forcesubscribe == FORUMIMPROVED_INITIALSUBSCRIBE) {
         $users = forumimproved_get_potential_subscribers($context, 0, 'u.id, u.email');
         foreach ($users as $user) {
             forumimproved_subscribe($user->id, $forum->id, $context);
@@ -152,7 +152,7 @@ function forumimproved_update_instance($forum, $mform) {
     $forum->timemodified = time();
     $forum->id           = $forum->instance;
 
-    if ($forum->gradetype != HSUFORUM_GRADETYPE_MANUAL) {
+    if ($forum->gradetype != FORUMIMPROVED_GRADETYPE_MANUAL) {
         foreach ($forum as $name => $value) {
             if (strpos($name, 'advancedgradingmethod_') !== false) {
                 $forum->$name = '';
@@ -235,7 +235,7 @@ function forumimproved_update_instance($forum, $mform) {
     $DB->update_record('forumimproved', $forum);
 
     $modcontext = context_module::instance($forum->coursemodule);
-    if (($forum->forcesubscribe == HSUFORUM_INITIALSUBSCRIBE) && ($oldforum->forcesubscribe <> $forum->forcesubscribe)) {
+    if (($forum->forcesubscribe == FORUMIMPROVED_INITIALSUBSCRIBE) && ($oldforum->forcesubscribe <> $forum->forcesubscribe)) {
         $users = forumimproved_get_potential_subscribers($modcontext, 0, 'u.id, u.email', '');
         foreach ($users as $user) {
             forumimproved_subscribe($user->id, $forum->id, $modcontext);
@@ -570,7 +570,7 @@ function forumimproved_cron() {
                         // this user is subscribed to this forum
                         $subscribedusers[$forumid][$postuser->id] = $postuser->id;
                         $userscount++;
-                        if ($userscount > HSUFORUM_CRON_USER_CACHE) {
+                        if ($userscount > FORUMIMPROVED_CRON_USER_CACHE) {
                             // Store minimal user info.
                             $minuser = new stdClass();
                             $minuser->id = $postuser->id;
@@ -675,7 +675,7 @@ function forumimproved_cron() {
                 } else if ($userfrom = $DB->get_record('user', array('id' => $post->userid))) {
                     forumimproved_cron_minimise_user_record($userfrom);
                     // Fetch only once if possible, we can add it to user list, it will be skipped anyway.
-                    if ($userscount <= HSUFORUM_CRON_USER_CACHE) {
+                    if ($userscount <= FORUMIMPROVED_CRON_USER_CACHE) {
                         $userscount++;
                         $users[$userfrom->id] = $userfrom;
                     }
@@ -836,7 +836,7 @@ function forumimproved_cron() {
         foreach ($posts as $post) {
             mtrace($mailcount[$post->id]." users were sent post $post->id, '$post->subject'");
             if ($errorcount[$post->id]) {
-                $DB->set_field('forumimproved_posts', 'mailed', HSUFORUM_MAILED_ERROR, array('id' => $post->id));
+                $DB->set_field('forumimproved_posts', 'mailed', FORUMIMPROVED_MAILED_ERROR, array('id' => $post->id));
             }
         }
     }
@@ -1039,7 +1039,7 @@ function forumimproved_cron() {
 
                         } else if ($userfrom = $DB->get_record('user', array('id' => $post->userid))) {
                             forumimproved_cron_minimise_user_record($userfrom);
-                            if ($userscount <= HSUFORUM_CRON_USER_CACHE) {
+                            if ($userscount <= FORUMIMPROVED_CRON_USER_CACHE) {
                                 $userscount++;
                                 $users[$userfrom->id] = $userfrom;
                             }
@@ -1807,7 +1807,7 @@ function forumimproved_get_user_rating_grades($forum, $userid = 0) {
  * @return array array of grades, false if none
  */
 function forumimproved_get_user_grades($forum, $userid = 0) {
-    if ($forum->gradetype != HSUFORUM_GRADETYPE_RATING) {
+    if ($forum->gradetype != FORUMIMPROVED_GRADETYPE_RATING) {
         return false;
     }
     return forumimproved_get_user_rating_grades($forum, $userid);
@@ -1826,8 +1826,8 @@ function forumimproved_update_grades($forum, $userid=0, $nullifnone=true) {
     global $CFG;
     require_once($CFG->libdir.'/gradelib.php');
 
-    if ($forum->gradetype == HSUFORUM_GRADETYPE_NONE or $forum->gradetype == HSUFORUM_GRADETYPE_MANUAL or
-        ($forum->gradetype == HSUFORUM_GRADETYPE_RATING and !$forum->assessed)) {
+    if ($forum->gradetype == FORUMIMPROVED_GRADETYPE_NONE or $forum->gradetype == FORUMIMPROVED_GRADETYPE_MANUAL or
+        ($forum->gradetype == FORUMIMPROVED_GRADETYPE_RATING and !$forum->assessed)) {
         forumimproved_grade_item_update($forum);
 
     } else if ($grades = forumimproved_get_user_grades($forum, $userid)) {
@@ -1892,7 +1892,7 @@ function forumimproved_grade_item_update($forum, $grades=NULL) {
 
     $params = array('itemname'=>$forum->name, 'idnumber'=>$forum->cmidnumber);
 
-    if ($forum->gradetype == HSUFORUM_GRADETYPE_NONE or ($forum->gradetype == HSUFORUM_GRADETYPE_RATING and !$forum->assessed) or $forum->scale == 0) {
+    if ($forum->gradetype == FORUMIMPROVED_GRADETYPE_NONE or ($forum->gradetype == FORUMIMPROVED_GRADETYPE_RATING and !$forum->assessed) or $forum->scale == 0) {
         $params['gradetype'] = GRADE_TYPE_NONE;
 
     } else if ($forum->scale > 0) {
@@ -2383,7 +2383,7 @@ function forumimproved_get_unmailed_posts($starttime, $endtime, $now=null) {
     global $CFG, $DB;
 
     $params = array();
-    $params['mailed'] = HSUFORUM_MAILED_PENDING;
+    $params['mailed'] = FORUMIMPROVED_MAILED_PENDING;
     $params['ptimestart'] = $starttime;
     $params['ptimeend'] = $endtime;
     $params['mailnow'] = 1;
@@ -2430,11 +2430,11 @@ function forumimproved_mark_old_posts_as_mailed($endtime, $now=null) {
     $config = get_config('forumimproved');
 
     $params = array();
-    $params['mailedsuccess'] = HSUFORUM_MAILED_SUCCESS;
+    $params['mailedsuccess'] = FORUMIMPROVED_MAILED_SUCCESS;
     $params['now'] = $now;
     $params['endtime'] = $endtime;
     $params['mailnow'] = 1;
-    $params['mailedpending'] = HSUFORUM_MAILED_PENDING;
+    $params['mailedpending'] = FORUMIMPROVED_MAILED_PENDING;
 
     if (empty($config->enabletimedposts)) {
         return $DB->execute("UPDATE {forumimproved_posts}
@@ -3141,7 +3141,7 @@ function forumimproved_get_course_forum($courseid, $type) {
         case "news":
             $forum->name  = get_string("namenews", "forumimproved");
             $forum->intro = get_string("intronews", "forumimproved");
-            $forum->forcesubscribe = HSUFORUM_FORCESUBSCRIBE;
+            $forum->forcesubscribe = FORUMIMPROVED_FORCESUBSCRIBE;
             $forum->assessed = 0;
             if ($courseid == SITEID) {
                 $forum->name  = get_string("sitenews");
@@ -3921,7 +3921,7 @@ function forumimproved_add_new_post($post, $mform, &$message, \mod_forumimproved
     $context    = context_module::instance($cm->id);
 
     $post->created    = $post->modified = time();
-    $post->mailed     = HSUFORUM_MAILED_PENDING;
+    $post->mailed     = FORUMIMPROVED_MAILED_PENDING;
     $post->userid     = $USER->id;
     $post->attachment = "";
     if (!isset($post->totalscore)) {
@@ -4033,7 +4033,7 @@ function forumimproved_add_discussion($discussion, $mform=null, $unused=null, $u
     $post->userid        = $userid;
     $post->created       = $timenow;
     $post->modified      = $timenow;
-    $post->mailed        = HSUFORUM_MAILED_PENDING;
+    $post->mailed        = FORUMIMPROVED_MAILED_PENDING;
     $post->subject       = $discussion->name;
     $post->message       = $discussion->message;
     $post->messageformat = $discussion->messageformat;
@@ -4364,9 +4364,9 @@ function forumimproved_forcesubscribe($forumid, $value=1) {
 function forumimproved_is_forcesubscribed($forum) {
     global $DB;
     if (isset($forum->forcesubscribe)) {    // then we use that
-        return ($forum->forcesubscribe == HSUFORUM_FORCESUBSCRIBE);
+        return ($forum->forcesubscribe == FORUMIMPROVED_FORCESUBSCRIBE);
     } else {   // Check the database
-       return ($DB->get_field('forumimproved', 'forcesubscribe', array('id' => $forum)) == HSUFORUM_FORCESUBSCRIBE);
+       return ($DB->get_field('forumimproved', 'forcesubscribe', array('id' => $forum)) == FORUMIMPROVED_FORCESUBSCRIBE);
     }
 }
 
@@ -4405,7 +4405,7 @@ function forumimproved_get_subscribed_forums($course) {
               FROM {forumimproved} f
                    LEFT JOIN {forumimproved_subscriptions} fs ON (fs.forum = f.id AND fs.userid = ?)
              WHERE f.course = ?
-                   AND (f.forcesubscribe = ".HSUFORUM_FORCESUBSCRIBE." OR fs.id IS NOT NULL)";
+                   AND (f.forcesubscribe = ".FORUMIMPROVED_FORCESUBSCRIBE." OR fs.id IS NOT NULL)";
     if ($subscribed = $DB->get_records_sql($sql, array($USER->id, $course->id))) {
         foreach ($subscribed as $s) {
             $subscribed[$s->id] = $s->id;
@@ -4444,7 +4444,7 @@ function forumimproved_get_optional_subscribed_forums() {
                    LEFT JOIN {forumimproved_subscriptions} fs ON (fs.forum = f.id AND fs.userid = :userid)
              WHERE f.forcesubscribe <> :forcesubscribe AND fs.id IS NOT NULL
                    AND cm.course $coursesql";
-    $params = array_merge($courseparams, array('modulename'=>'forumimproved', 'userid'=>$USER->id, 'forcesubscribe'=>HSUFORUM_FORCESUBSCRIBE));
+    $params = array_merge($courseparams, array('modulename'=>'forumimproved', 'userid'=>$USER->id, 'forcesubscribe'=>FORUMIMPROVED_FORCESUBSCRIBE));
     if (!$forums = $DB->get_records_sql($sql, $params)) {
         return array();
     }
@@ -4577,10 +4577,10 @@ function forumimproved_post_subscription($post, $forum) {
     $action = '';
     $subscribed = forumimproved_is_subscribed($USER->id, $forum);
 
-    if ($forum->forcesubscribe == HSUFORUM_FORCESUBSCRIBE) { // database ignored
+    if ($forum->forcesubscribe == FORUMIMPROVED_FORCESUBSCRIBE) { // database ignored
         return "";
 
-    } elseif (($forum->forcesubscribe == HSUFORUM_DISALLOWSUBSCRIBE)
+    } elseif (($forum->forcesubscribe == FORUMIMPROVED_DISALLOWSUBSCRIBE)
         && !has_capability('moodle/course:manageactivities', context_course::instance($forum->course), $USER->id)) {
         if ($subscribed) {
             $action = 'unsubscribe'; // sanity check, following MDL-14558
@@ -4646,7 +4646,7 @@ function forumimproved_get_subscribe_link($forum, $context, $messages = array(),
 
     if (forumimproved_is_forcesubscribed($forum)) {
         return $messages['forcesubscribed'];
-    } else if ($forum->forcesubscribe == HSUFORUM_DISALLOWSUBSCRIBE && !has_capability('mod/forumimproved:managesubscriptions', $context)) {
+    } else if ($forum->forcesubscribe == FORUMIMPROVED_DISALLOWSUBSCRIBE && !has_capability('mod/forumimproved:managesubscriptions', $context)) {
         return $messages['cantsubscribe'];
     } else if ($cantaccessagroup) {
         return $messages['cantaccessgroup'];
@@ -5708,7 +5708,7 @@ function forumimproved_user_enrolled($cp) {
               FROM {forumimproved} f
          LEFT JOIN {forumimproved_subscriptions} fs ON (fs.forum = f.id AND fs.userid = :userid)
              WHERE f.course = :courseid AND f.forcesubscribe = :initial AND fs.id IS NULL";
-    $params = array('courseid'=>$cp->courseid, 'userid'=>$cp->userid, 'initial'=>HSUFORUM_INITIALSUBSCRIBE);
+    $params = array('courseid'=>$cp->courseid, 'userid'=>$cp->userid, 'initial'=>FORUMIMPROVED_INITIALSUBSCRIBE);
 
     $forums = $DB->get_records_sql($sql, $params);
     foreach ($forums as $forum) {
@@ -5759,10 +5759,10 @@ function forumimproved_mark_posts_read($user, $postids) {
      $params = array_merge($postidparams, $insertparams);
 
      if ($CFG->forumimproved_allowforcedreadtracking) {
-             $trackingsql = "AND (f.trackingtype = ".HSUFORUM_TRACKING_FORCED."
-                     OR (f.trackingtype = ".HSUFORUM_TRACKING_OPTIONAL." AND tf.id IS NULL))";
+             $trackingsql = "AND (f.trackingtype = ".FORUMIMPROVED_TRACKING_FORCED."
+                     OR (f.trackingtype = ".FORUMIMPROVED_TRACKING_OPTIONAL." AND tf.id IS NULL))";
          } else {
-             $trackingsql = "AND ((f.trackingtype = ".HSUFORUM_TRACKING_OPTIONAL."  OR f.trackingtype = ".HSUFORUM_TRACKING_FORCED.")
+             $trackingsql = "AND ((f.trackingtype = ".FORUMIMPROVED_TRACKING_OPTIONAL."  OR f.trackingtype = ".FORUMIMPROVED_TRACKING_FORCED.")
                          AND tf.id IS NULL)";
          }
 
@@ -6558,9 +6558,9 @@ function forumimproved_get_forumimproved_types_all() {
  */
 function forumimproved_get_grading_types(){
     return array(
-        HSUFORUM_GRADETYPE_NONE   => get_string('gradetypenone', 'forumimproved'),
-        HSUFORUM_GRADETYPE_MANUAL => get_string('gradetypemanual', 'forumimproved'),
-        HSUFORUM_GRADETYPE_RATING => get_string('gradetyperating', 'forumimproved')
+        FORUMIMPROVED_GRADETYPE_NONE   => get_string('gradetypenone', 'forumimproved'),
+        FORUMIMPROVED_GRADETYPE_MANUAL => get_string('gradetypemanual', 'forumimproved'),
+        FORUMIMPROVED_GRADETYPE_RATING => get_string('gradetyperating', 'forumimproved')
     );
 }
 
@@ -6595,7 +6595,7 @@ function forumimproved_extend_settings_navigation(settings_navigation $settingsn
 
     $canmanage  = has_capability('mod/forumimproved:managesubscriptions', $PAGE->cm->context);
     $subscriptionmode = forumimproved_get_forcesubscribed($forumobject);
-    $cansubscribe = ($activeenrolled && $subscriptionmode != HSUFORUM_FORCESUBSCRIBE && ($subscriptionmode != HSUFORUM_DISALLOWSUBSCRIBE || $canmanage));
+    $cansubscribe = ($activeenrolled && $subscriptionmode != FORUMIMPROVED_FORCESUBSCRIBE && ($subscriptionmode != FORUMIMPROVED_DISALLOWSUBSCRIBE || $canmanage));
 
     $discussionid = optional_param('d', 0, PARAM_INT);
     $viewingdiscussion = ($PAGE->url->compare(new moodle_url('/mod/forumimproved/discuss.php'), URL_MATCH_BASE) and $discussionid);
@@ -6608,25 +6608,25 @@ function forumimproved_extend_settings_navigation(settings_navigation $settingsn
     if ($canmanage) {
         $mode = $forumnode->add(get_string('subscriptionmode', 'forumimproved'), null, navigation_node::TYPE_CONTAINER);
 
-        $allowchoice = $mode->add(get_string('subscriptionoptional', 'forumimproved'), new moodle_url('/mod/forumimproved/subscribe.php', array('id'=>$forumobject->id, 'mode'=>HSUFORUM_CHOOSESUBSCRIBE, 'sesskey'=>sesskey())), navigation_node::TYPE_SETTING);
-        $forceforever = $mode->add(get_string("subscriptionforced", "forumimproved"), new moodle_url('/mod/forumimproved/subscribe.php', array('id'=>$forumobject->id, 'mode'=>HSUFORUM_FORCESUBSCRIBE, 'sesskey'=>sesskey())), navigation_node::TYPE_SETTING);
-        $forceinitially = $mode->add(get_string("subscriptionauto", "forumimproved"), new moodle_url('/mod/forumimproved/subscribe.php', array('id'=>$forumobject->id, 'mode'=>HSUFORUM_INITIALSUBSCRIBE, 'sesskey'=>sesskey())), navigation_node::TYPE_SETTING);
-        $disallowchoice = $mode->add(get_string('subscriptiondisabled', 'forumimproved'), new moodle_url('/mod/forumimproved/subscribe.php', array('id'=>$forumobject->id, 'mode'=>HSUFORUM_DISALLOWSUBSCRIBE, 'sesskey'=>sesskey())), navigation_node::TYPE_SETTING);
+        $allowchoice = $mode->add(get_string('subscriptionoptional', 'forumimproved'), new moodle_url('/mod/forumimproved/subscribe.php', array('id'=>$forumobject->id, 'mode'=>FORUMIMPROVED_CHOOSESUBSCRIBE, 'sesskey'=>sesskey())), navigation_node::TYPE_SETTING);
+        $forceforever = $mode->add(get_string("subscriptionforced", "forumimproved"), new moodle_url('/mod/forumimproved/subscribe.php', array('id'=>$forumobject->id, 'mode'=>FORUMIMPROVED_FORCESUBSCRIBE, 'sesskey'=>sesskey())), navigation_node::TYPE_SETTING);
+        $forceinitially = $mode->add(get_string("subscriptionauto", "forumimproved"), new moodle_url('/mod/forumimproved/subscribe.php', array('id'=>$forumobject->id, 'mode'=>FORUMIMPROVED_INITIALSUBSCRIBE, 'sesskey'=>sesskey())), navigation_node::TYPE_SETTING);
+        $disallowchoice = $mode->add(get_string('subscriptiondisabled', 'forumimproved'), new moodle_url('/mod/forumimproved/subscribe.php', array('id'=>$forumobject->id, 'mode'=>FORUMIMPROVED_DISALLOWSUBSCRIBE, 'sesskey'=>sesskey())), navigation_node::TYPE_SETTING);
 
         switch ($subscriptionmode) {
-            case HSUFORUM_CHOOSESUBSCRIBE : // 0
+            case FORUMIMPROVED_CHOOSESUBSCRIBE : // 0
                 $allowchoice->action = null;
                 $allowchoice->add_class('activesetting');
                 break;
-            case HSUFORUM_FORCESUBSCRIBE : // 1
+            case FORUMIMPROVED_FORCESUBSCRIBE : // 1
                 $forceforever->action = null;
                 $forceforever->add_class('activesetting');
                 break;
-            case HSUFORUM_INITIALSUBSCRIBE : // 2
+            case FORUMIMPROVED_INITIALSUBSCRIBE : // 2
                 $forceinitially->action = null;
                 $forceinitially->add_class('activesetting');
                 break;
-            case HSUFORUM_DISALLOWSUBSCRIBE : // 3
+            case FORUMIMPROVED_DISALLOWSUBSCRIBE : // 3
                 $disallowchoice->action = null;
                 $disallowchoice->add_class('activesetting');
                 break;
@@ -6635,16 +6635,16 @@ function forumimproved_extend_settings_navigation(settings_navigation $settingsn
     } else if ($activeenrolled) {
 
         switch ($subscriptionmode) {
-            case HSUFORUM_CHOOSESUBSCRIBE : // 0
+            case FORUMIMPROVED_CHOOSESUBSCRIBE : // 0
                 $notenode = $forumnode->add(get_string('subscriptionoptional', 'forumimproved'));
                 break;
-            case HSUFORUM_FORCESUBSCRIBE : // 1
+            case FORUMIMPROVED_FORCESUBSCRIBE : // 1
                 $notenode = $forumnode->add(get_string('subscriptionforced', 'forumimproved'));
                 break;
-            case HSUFORUM_INITIALSUBSCRIBE : // 2
+            case FORUMIMPROVED_INITIALSUBSCRIBE : // 2
                 $notenode = $forumnode->add(get_string('subscriptionauto', 'forumimproved'));
                 break;
-            case HSUFORUM_DISALLOWSUBSCRIBE : // 3
+            case FORUMIMPROVED_DISALLOWSUBSCRIBE : // 3
                 $notenode = $forumnode->add(get_string('subscriptiondisabled', 'forumimproved'));
                 break;
         }

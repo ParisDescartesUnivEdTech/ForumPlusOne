@@ -181,7 +181,7 @@ if (!is_null($subscribe) and !isguestuser()) {
         }
         if (!forumimproved_is_forcesubscribed($forum)) {
             $subscribed = forumimproved_is_subscribed($USER->id, $forum);
-            if ((has_capability('moodle/course:manageactivities', $coursecontext, $USER->id) || $forum->forcesubscribe != HSUFORUM_DISALLOWSUBSCRIBE) && $subscribe && !$subscribed && $cansub) {
+            if ((has_capability('moodle/course:manageactivities', $coursecontext, $USER->id) || $forum->forcesubscribe != FORUMIMPROVED_DISALLOWSUBSCRIBE) && $subscribe && !$subscribed && $cansub) {
                 forumimproved_subscribe($USER->id, $forumid, $modcontext);
             } else if (!$subscribe && $subscribed) {
                 forumimproved_unsubscribe($USER->id, $forumid, $modcontext);

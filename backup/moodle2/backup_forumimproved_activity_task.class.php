@@ -74,27 +74,27 @@ class backup_forumimproved_activity_task extends backup_activity_task {
 
         // Link to the list of forums
         $search="/(".$base."\/mod\/forumimproved\/index.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@HSUFORUMINDEX*$2@$', $content);
+        $content= preg_replace($search, '$@FORUMIMPROVEDINDEX*$2@$', $content);
 
         // Link to forum view by moduleid
         $search="/(".$base."\/mod\/forumimproved\/view.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@HSUFORUMVIEWBYID*$2@$', $content);
+        $content= preg_replace($search, '$@FORUMIMPROVEDVIEWBYID*$2@$', $content);
 
         // Link to forum view by forumid
         $search="/(".$base."\/mod\/forumimproved\/view.php\?f\=)([0-9]+)/";
-        $content= preg_replace($search, '$@HSUFORUMVIEWBYF*$2@$', $content);
+        $content= preg_replace($search, '$@FORUMIMPROVEDVIEWBYF*$2@$', $content);
 
         // Link to forum discussion with parent syntax
         $search="/(".$base."\/mod\/forumimproved\/discuss.php\?d\=)([0-9]+)\&parent\=([0-9]+)/";
-        $content= preg_replace($search, '$@HSUFORUMDISCUSSIONVIEWPARENT*$2*$3@$', $content);
+        $content= preg_replace($search, '$@FORUMIMPROVEDDISCUSSIONVIEWPARENT*$2*$3@$', $content);
 
         // Link to forum discussion with relative syntax
         $search="/(".$base."\/mod\/forumimproved\/discuss.php\?d\=)([0-9]+)\#([0-9]+)/";
-        $content= preg_replace($search, '$@HSUFORUMDISCUSSIONVIEWINSIDE*$2*$3@$', $content);
+        $content= preg_replace($search, '$@FORUMIMPROVEDDISCUSSIONVIEWINSIDE*$2*$3@$', $content);
 
         // Link to forum discussion by discussionid
         $search="/(".$base."\/mod\/forumimproved\/discuss.php\?d\=)([0-9]+)/";
-        $content= preg_replace($search, '$@HSUFORUMDISCUSSIONVIEW*$2@$', $content);
+        $content= preg_replace($search, '$@FORUMIMPROVEDDISCUSSIONVIEW*$2@$', $content);
 
         return $content;
     }

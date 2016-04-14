@@ -123,7 +123,7 @@ class mod_forumimproved_post_form extends moodleform {
             $mform->setType('subscribe', PARAM_INT);
             $mform->addHelpButton('subscribemessage', 'subscription', 'forumimproved');
 
-        } else if (isset($forum->forcesubscribe)&& $forum->forcesubscribe != HSUFORUM_DISALLOWSUBSCRIBE ||
+        } else if (isset($forum->forcesubscribe)&& $forum->forcesubscribe != FORUMIMPROVED_DISALLOWSUBSCRIBE ||
                    has_capability('moodle/course:manageactivities', $coursecontext)) {
 
                 $options = array();
@@ -132,7 +132,7 @@ class mod_forumimproved_post_form extends moodleform {
 
                 $mform->addElement('select', 'subscribe', get_string('subscription', 'forumimproved'), $options);
                 $mform->addHelpButton('subscribe', 'subscription', 'forumimproved');
-            } else if ($forum->forcesubscribe == HSUFORUM_DISALLOWSUBSCRIBE) {
+            } else if ($forum->forcesubscribe == FORUMIMPROVED_DISALLOWSUBSCRIBE) {
                 $mform->addElement('static', 'subscribemessage', get_string('subscription', 'forumimproved'), get_string('disallowsubscribe', 'forumimproved'));
                 $mform->addElement('hidden', 'subscribe');
                 $mform->setType('subscribe', PARAM_INT);

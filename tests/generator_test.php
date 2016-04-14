@@ -63,7 +63,7 @@ class mod_forumimproved_generator_testcase extends advanced_testcase {
         $this->assertEquals($forum->cmid, $context->instanceid);
 
         // test gradebook integration using low level DB access - DO NOT USE IN PLUGIN CODE!
-        $forum = $generator->create_instance(array('course'=>$course->id, 'gradetype' => HSUFORUM_GRADETYPE_RATING, 'assessed'=>1, 'scale'=>100));
+        $forum = $generator->create_instance(array('course'=>$course->id, 'gradetype' => FORUMIMPROVED_GRADETYPE_RATING, 'assessed'=>1, 'scale'=>100));
         $gitem = $DB->get_record('grade_items', array('courseid'=>$course->id, 'itemtype'=>'mod', 'itemmodule'=>'forumimproved', 'iteminstance'=>$forum->id));
         $this->assertNotEmpty($gitem);
         $this->assertEquals(100, $gitem->grademax);

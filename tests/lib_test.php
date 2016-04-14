@@ -218,7 +218,7 @@ class mod_forumimproved_lib_testcase extends advanced_testcase {
             $this->getDataGenerator()->enrol_user($user->id, $course->id);
         }
 
-        $options = array('course' => $course->id, 'forcesubscribe' => HSUFORUM_INITIALSUBSCRIBE); // Automatic Subscription.
+        $options = array('course' => $course->id, 'forcesubscribe' => FORUMIMPROVED_INITIALSUBSCRIBE); // Automatic Subscription.
         $forum = $this->getDataGenerator()->create_module('forumimproved', $options);
 
         $result = forumimproved_subscribed_users($course, $forum);
@@ -246,7 +246,7 @@ class mod_forumimproved_lib_testcase extends advanced_testcase {
             $this->getDataGenerator()->enrol_user($user->id, $course->id);
         }
 
-        $options = array('course' => $course->id, 'forcesubscribe' => HSUFORUM_FORCESUBSCRIBE); // Forced subscription.
+        $options = array('course' => $course->id, 'forcesubscribe' => FORUMIMPROVED_FORCESUBSCRIBE); // Forced subscription.
         $forum = $this->getDataGenerator()->create_module('forumimproved', $options);
 
         $result = forumimproved_subscribed_users($course, $forum);
@@ -274,7 +274,7 @@ class mod_forumimproved_lib_testcase extends advanced_testcase {
             $this->getDataGenerator()->enrol_user($user->id, $course->id);
         }
 
-        $options = array('course' => $course->id, 'forcesubscribe' => HSUFORUM_CHOOSESUBSCRIBE); // Subscription optional.
+        $options = array('course' => $course->id, 'forcesubscribe' => FORUMIMPROVED_CHOOSESUBSCRIBE); // Subscription optional.
         $forum = $this->getDataGenerator()->create_module('forumimproved', $options);
 
         $result = forumimproved_subscribed_users($course, $forum);
@@ -303,7 +303,7 @@ class mod_forumimproved_lib_testcase extends advanced_testcase {
             $this->getDataGenerator()->enrol_user($user->id, $course->id);
         }
 
-        $options = array('course' => $course->id, 'forcesubscribe' => HSUFORUM_DISALLOWSUBSCRIBE); // Subscription prevented.
+        $options = array('course' => $course->id, 'forcesubscribe' => FORUMIMPROVED_DISALLOWSUBSCRIBE); // Subscription prevented.
         $forum = $this->getDataGenerator()->create_module('forumimproved', $options);
 
         $result = forumimproved_subscribed_users($course, $forum);

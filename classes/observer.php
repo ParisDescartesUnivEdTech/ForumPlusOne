@@ -81,7 +81,7 @@ class mod_forumimproved_observer {
                    AND f.forcesubscribe = :initial
                    AND m.name = 'forumimproved'
                    AND fs.id IS NULL";
-        $params = array('courseid' => $context->instanceid, 'userid' => $userid, 'initial' => HSUFORUM_INITIALSUBSCRIBE);
+        $params = array('courseid' => $context->instanceid, 'userid' => $userid, 'initial' => FORUMIMPROVED_INITIALSUBSCRIBE);
 
         $forums = $DB->get_records_sql($sql, $params);
         foreach ($forums as $forum) {

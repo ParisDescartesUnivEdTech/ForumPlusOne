@@ -1826,7 +1826,7 @@ class mod_forumimproved_events_testcase extends advanced_testcase {
         $forumgen = $this->getDataGenerator()->get_plugin_generator('mod_forumimproved');
 
         $course = $this->getDataGenerator()->create_course();
-        $trackedrecord = array('course' => $course->id, 'type' => 'general', 'forcesubscribe' => HSUFORUM_INITIALSUBSCRIBE);
+        $trackedrecord = array('course' => $course->id, 'type' => 'general', 'forcesubscribe' => FORUMIMPROVED_INITIALSUBSCRIBE);
         $untrackedrecord = array('course' => $course->id, 'type' => 'general');
         $trackedforum = $this->getDataGenerator()->create_module('forumimproved', $trackedrecord);
         $untrackedforum = $this->getDataGenerator()->create_module('forumimproved', $untrackedrecord);
@@ -1871,7 +1871,7 @@ class mod_forumimproved_events_testcase extends advanced_testcase {
         $this->assertEquals(2, $DB->count_records('forumimproved_read', array('userid' => $user->id)));
 
         // The course_module_created observer does it's job adding a subscription.
-        $forumrecord = array('course' => $course->id, 'type' => 'general', 'forcesubscribe' => HSUFORUM_INITIALSUBSCRIBE);
+        $forumrecord = array('course' => $course->id, 'type' => 'general', 'forcesubscribe' => FORUMIMPROVED_INITIALSUBSCRIBE);
         $extraforum = $this->getDataGenerator()->create_module('forumimproved', $forumrecord);
         $this->assertEquals(2, $DB->count_records('forumimproved_subscriptions'));
 

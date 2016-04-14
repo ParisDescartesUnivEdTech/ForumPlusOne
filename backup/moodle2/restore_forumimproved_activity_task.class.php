@@ -92,16 +92,16 @@ class restore_forumimproved_activity_task extends restore_activity_task {
         $rules = array();
 
         // List of forums in course
-        $rules[] = new restore_decode_rule('HSUFORUMINDEX', '/mod/forumimproved/index.php?id=$1', 'course');
+        $rules[] = new restore_decode_rule('FORUMIMPROVEDINDEX', '/mod/forumimproved/index.php?id=$1', 'course');
         // Forum by cm->id and forum->id
-        $rules[] = new restore_decode_rule('HSUFORUMVIEWBYID', '/mod/forumimproved/view.php?id=$1', 'course_module');
-        $rules[] = new restore_decode_rule('HSUFORUMVIEWBYF', '/mod/forumimproved/view.php?f=$1', 'forumimproved');
+        $rules[] = new restore_decode_rule('FORUMIMPROVEDVIEWBYID', '/mod/forumimproved/view.php?id=$1', 'course_module');
+        $rules[] = new restore_decode_rule('FORUMIMPROVEDVIEWBYF', '/mod/forumimproved/view.php?f=$1', 'forumimproved');
         // Link to forum discussion
-        $rules[] = new restore_decode_rule('HSUFORUMDISCUSSIONVIEW', '/mod/forumimproved/discuss.php?d=$1', 'forumimproved_discussion');
+        $rules[] = new restore_decode_rule('FORUMIMPROVEDDISCUSSIONVIEW', '/mod/forumimproved/discuss.php?d=$1', 'forumimproved_discussion');
         // Link to discussion with parent and with anchor posts
-        $rules[] = new restore_decode_rule('HSUFORUMDISCUSSIONVIEWPARENT', '/mod/forumimproved/discuss.php?d=$1&parent=$2',
+        $rules[] = new restore_decode_rule('FORUMIMPROVEDDISCUSSIONVIEWPARENT', '/mod/forumimproved/discuss.php?d=$1&parent=$2',
                                            array('forumimproved_discussion', 'forumimproved_post'));
-        $rules[] = new restore_decode_rule('HSUFORUMDISCUSSIONVIEWINSIDE', '/mod/forumimproved/discuss.php?d=$1#$2',
+        $rules[] = new restore_decode_rule('FORUMIMPROVEDDISCUSSIONVIEWINSIDE', '/mod/forumimproved/discuss.php?d=$1#$2',
                                            array('forumimproved_discussion', 'forumimproved_post'));
 
         return $rules;

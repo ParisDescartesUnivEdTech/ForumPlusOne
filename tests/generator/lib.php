@@ -76,7 +76,7 @@ class mod_forumimproved_generator extends testing_module_generator {
             $record->anonymous = 0;
         }
         if (!isset($record->gradetype)) {
-            $record->gradetype = HSUFORUM_GRADETYPE_NONE;
+            $record->gradetype = FORUMIMPROVED_GRADETYPE_NONE;
         }
         if (!isset($record->assessed)) {
             $record->assessed = 0;
@@ -85,7 +85,7 @@ class mod_forumimproved_generator extends testing_module_generator {
             $record->scale = 0;
         }
         if (!isset($record->forcesubscribe)) {
-            $record->forcesubscribe = HSUFORUM_CHOOSESUBSCRIBE;
+            $record->forcesubscribe = FORUMIMPROVED_CHOOSESUBSCRIBE;
         }
 
         return parent::create_instance($record, (array)$options);

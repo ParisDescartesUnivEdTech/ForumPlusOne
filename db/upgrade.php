@@ -51,7 +51,7 @@ function xmldb_forumimproved_upgrade($oldversion) {
 //===== 1.9.0 upgrade line ======//
 
     if ($oldversion < 2011112801) {
-    /// HSUFORUM UPGRADES
+    /// FORUMIMPROVED UPGRADES
         // Rename field forumimproved on table forumimproved_discussions to forum
         $table = new xmldb_table('forumimproved_discussions');
         $field = new xmldb_field('forumimproved', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'course');
@@ -79,7 +79,7 @@ function xmldb_forumimproved_upgrade($oldversion) {
 
         // Launch rename table for forumimproved_discussion_subscripts
         $dbman->rename_table($table, 'forumimproved_subscriptions_disc');
-    /// HSUFORUM UPGRADES END
+    /// FORUMIMPROVED UPGRADES END
 
         //MDL-13866 - send forum ratins to gradebook again
         require_once($CFG->dirroot.'/mod/forumimproved/lib.php');
@@ -213,7 +213,7 @@ function xmldb_forumimproved_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-    /// HSUFORUM specific upgrades to maxattach and multiattach
+    /// FORUMIMPROVED specific upgrades to maxattach and multiattach
         $field = new xmldb_field('maxattach', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '5');
         if ($dbman->field_exists($table, $field)) {
             $DB->execute("
