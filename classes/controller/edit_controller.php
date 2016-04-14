@@ -18,19 +18,19 @@
  * Edit Discussion or Post Controller
  *
  * @package    mod
- * @subpackage hsuforum
+ * @subpackage forumimproved
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_hsuforum\controller;
+namespace mod_forumimproved\controller;
 
 use coding_exception;
-use mod_hsuforum\response\json_response;
-use mod_hsuforum\service\discussion_service;
-use mod_hsuforum\service\form_service;
-use mod_hsuforum\service\post_service;
+use mod_forumimproved\response\json_response;
+use mod_forumimproved\service\discussion_service;
+use mod_forumimproved\service\form_service;
+use mod_forumimproved\service\post_service;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -105,8 +105,8 @@ class edit_controller extends controller_abstract {
             $context = $PAGE->context;
             $course  = $PAGE->course;
 
-            $parent     = $DB->get_record('hsuforum_posts', array('id' => $reply), '*', MUST_EXIST);
-            $discussion = $DB->get_record('hsuforum_discussions', array('id' => $parent->discussion, 'forum' => $forum->id), '*', MUST_EXIST);
+            $parent     = $DB->get_record('forumimproved_posts', array('id' => $reply), '*', MUST_EXIST);
+            $discussion = $DB->get_record('forumimproved_discussions', array('id' => $parent->discussion, 'forum' => $forum->id), '*', MUST_EXIST);
 
             // If private reply, then map it to the parent author user ID.
             if (!empty($privatereply)) {
@@ -198,15 +198,15 @@ class edit_controller extends controller_abstract {
             $context = $PAGE->context;
             $course  = $PAGE->course;
 
-            $post       = $DB->get_record('hsuforum_posts', array('id' => $postid), '*', MUST_EXIST);
-            $discussion = $DB->get_record('hsuforum_discussions', array('id' => $post->discussion, 'forum' => $forum->id), '*', MUST_EXIST);
+            $post       = $DB->get_record('forumimproved_posts', array('id' => $postid), '*', MUST_EXIST);
+            $discussion = $DB->get_record('forumimproved_discussions', array('id' => $post->discussion, 'forum' => $forum->id), '*', MUST_EXIST);
 
             if (empty($groupid)) {
                 $groupid = -1;
             }
             // If private reply, then map it to the parent author user ID.
             if (!empty($privatereply)) {
-                $parent     = $DB->get_record('hsuforum_posts', array('id' => $post->parent), '*', MUST_EXIST);
+                $parent     = $DB->get_record('forumimproved_posts', array('id' => $post->parent), '*', MUST_EXIST);
                 $privatereply = $parent->userid;
             }
             return $this->postservice->handle_update_post($course, $cm, $forum, $context, $discussion, $post, $files,  array(
@@ -234,10 +234,10 @@ class edit_controller extends controller_abstract {
 
         $postid = required_param('postid', PARAM_INT);
 
-        if (!$post = hsuforum_get_post_full($postid)) {
-            print_error('invalidpostid', 'hsuforum');
+        if (!$post = forumimproved_get_post_full($postid)) {
+            print_error('invalidpostid', 'forumimproved');
         }
-        $discussion = $DB->get_record('hsuforum_discussions', array('id' => $post->discussion), '*', MUST_EXIST);
+        $discussion = $DB->get_record('forumimproved_discussions', array('id' => $post->discussion), '*', MUST_EXIST);
 
         $this->postservice->require_can_edit_post(
             $PAGE->activityrecord, $PAGE->context, $discussion, $post
@@ -265,24 +265,24 @@ class edit_controller extends controller_abstract {
 
         $postid = required_param('postid', PARAM_INT);
 
-        $post       = $DB->get_record('hsuforum_posts', array('id' => $postid), '*', MUST_EXIST);
-        $discussion = $DB->get_record('hsuforum_discussions', array('id' => $post->discussion), '*', MUST_EXIST);
+        $post       = $DB->get_record('forumimproved_posts', array('id' => $postid), '*', MUST_EXIST);
+        $discussion = $DB->get_record('forumimproved_discussions', array('id' => $post->discussion), '*', MUST_EXIST);
 
-        $candeleteown = ($post->userid == $USER->id && has_capability('mod/hsuforum:deleteownpost', $PAGE->context));
+        $candeleteown = ($post->userid == $USER->id && has_capability('mod/forumimproved:deleteownpost', $PAGE->context));
 
-        if (!($candeleteown || has_capability('mod/hsuforum:deleteanypost', $PAGE->context))) {
-            print_error('cannotdeletepost', 'hsuforum');
+        if (!($candeleteown || has_capability('mod/forumimproved:deleteanypost', $PAGE->context))) {
+            print_error('cannotdeletepost', 'forumimproved');
         }
 
-        $redirect = hsuforum_verify_and_delete_post($PAGE->course, $PAGE->cm,
+        $redirect = forumimproved_verify_and_delete_post($PAGE->course, $PAGE->cm,
             $PAGE->activityrecord, $PAGE->context, $discussion, $post);
 
         $html = '';
         if ($discussion->firstpost != $post->id) {
             $html    = $this->discussionservice->render_full_thread($discussion->id);
-            $message = get_string('postdeleted', 'hsuforum');
+            $message = get_string('postdeleted', 'forumimproved');
         } else {
-            $message = get_string('deleteddiscussion', 'hsuforum');
+            $message = get_string('deleteddiscussion', 'forumimproved');
         }
         /** @var \core_renderer $renderer */
         $renderer = $PAGE->get_renderer('core', null, RENDERER_TARGET_GENERAL);

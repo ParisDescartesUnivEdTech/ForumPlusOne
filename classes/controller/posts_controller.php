@@ -18,17 +18,17 @@
  * Post and Discussion Viewing Controller
  *
  * @package    mod
- * @subpackage hsuforum
+ * @subpackage forumimproved
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_hsuforum\controller;
+namespace mod_forumimproved\controller;
 
 use coding_exception;
-use mod_hsuforum\response\json_response;
-use mod_hsuforum\service\discussion_service;
+use mod_forumimproved\response\json_response;
+use mod_forumimproved\service\discussion_service;
 use moodle_url;
 
 defined('MOODLE_INTERNAL') || die();
@@ -61,12 +61,12 @@ class posts_controller extends controller_abstract {
 
         switch ($action) {
             case 'discsubscribers':
-                if (!has_capability('mod/hsuforum:viewsubscribers', $PAGE->context)) {
-                    print_error('nopermissiontosubscribe', 'hsuforum');
+                if (!has_capability('mod/forumimproved:viewsubscribers', $PAGE->context)) {
+                    print_error('nopermissiontosubscribe', 'forumimproved');
                 }
                 break;
             default:
-                require_capability('mod/hsuforum:viewdiscussion', $PAGE->context, null, true, 'noviewdiscussionspermission', 'hsuforum');
+                require_capability('mod/forumimproved:viewdiscussion', $PAGE->context, null, true, 'noviewdiscussionspermission', 'forumimproved');
         }
     }
 
@@ -87,22 +87,22 @@ class posts_controller extends controller_abstract {
         $forum   = $PAGE->activityrecord;
         $cm      = $PAGE->cm;
 
-        if (!$post = hsuforum_get_post_full($postid)) {
-            print_error("notexists", 'hsuforum', "$CFG->wwwroot/mod/hsuforum/view.php?f=$forum->id");
+        if (!$post = forumimproved_get_post_full($postid)) {
+            print_error("notexists", 'forumimproved', "$CFG->wwwroot/mod/forumimproved/view.php?f=$forum->id");
         }
-        $discussion = $DB->get_record('hsuforum_discussions', array('id' => $post->discussion), '*', MUST_EXIST);
+        $discussion = $DB->get_record('forumimproved_discussions', array('id' => $post->discussion), '*', MUST_EXIST);
 
         if ($forum->type == 'news') {
             if (!($USER->id == $discussion->userid || (($discussion->timestart == 0
                 || $discussion->timestart <= time())
                 && ($discussion->timeend == 0 || $discussion->timeend > time())))) {
-                print_error('invaliddiscussionid', 'hsuforum', "$CFG->wwwroot/mod/hsuforum/view.php?f=$forum->id");
+                print_error('invaliddiscussionid', 'forumimproved', "$CFG->wwwroot/mod/forumimproved/view.php?f=$forum->id");
             }
         }
-        if (!hsuforum_user_can_see_post($forum, $discussion, $post, null, $cm)) {
-            print_error('nopermissiontoview', 'hsuforum', "$CFG->wwwroot/mod/hsuforum/view.php?f=$forum->id");
+        if (!forumimproved_user_can_see_post($forum, $discussion, $post, null, $cm)) {
+            print_error('nopermissiontoview', 'forumimproved', "$CFG->wwwroot/mod/forumimproved/view.php?f=$forum->id");
         }
-        hsuforum_tp_add_read_record($USER->id, $post->id);
+        forumimproved_tp_add_read_record($USER->id, $post->id);
         return new json_response(array('postid' => $postid, 'discussionid' => $discussion->id));
     }
 
@@ -119,7 +119,7 @@ class posts_controller extends controller_abstract {
         $discussionid = required_param('discussionid', PARAM_INT);
         $returnurl    = required_param('returnurl', PARAM_LOCALURL);
 
-        $subscribe = new \hsuforum_lib_discussion_subscribe($PAGE->activityrecord, $PAGE->context);
+        $subscribe = new \forumimproved_lib_discussion_subscribe($PAGE->activityrecord, $PAGE->context);
 
         if ($subscribe->is_subscribed($discussionid)) {
             $subscribe->unsubscribe($discussionid);
@@ -148,21 +148,21 @@ class posts_controller extends controller_abstract {
         }
         $PAGE->set_url($url);
 
-        $discussion = $DB->get_record('hsuforum_discussions', array('id' => $discussionid), '*', MUST_EXIST);
+        $discussion = $DB->get_record('forumimproved_discussions', array('id' => $discussionid), '*', MUST_EXIST);
         $forum      = $PAGE->activityrecord;
         $course     = $COURSE;
         $cm         = $PAGE->cm;
         $context    = $PAGE->context;
-        $repo       = new \hsuforum_repository_discussion();
+        $repo       = new \forumimproved_repository_discussion();
 
-        if (hsuforum_is_forcesubscribed($forum)) {
+        if (forumimproved_is_forcesubscribed($forum)) {
             throw new coding_exception('Cannot manage discussion subscriptions when subscription is forced');
         }
 
         $currentgroup = groups_get_activity_group($cm);
         $options = array('forum'=>$forum, 'discussion' => $discussion, 'currentgroup'=>$currentgroup, 'context'=>$context);
-        $existingselector = new \hsuforum_userselector_discussion_existing('existingsubscribers', $options);
-        $subscriberselector = new \hsuforum_userselector_discussion_potential('potentialsubscribers', $options);
+        $existingselector = new \forumimproved_userselector_discussion_existing('existingsubscribers', $options);
+        $subscriberselector = new \forumimproved_userselector_discussion_potential('potentialsubscribers', $options);
 
         if (data_submitted()) {
             require_sesskey();
@@ -189,16 +189,16 @@ class posts_controller extends controller_abstract {
             redirect($PAGE->url);
         }
 
-        $strsubscribers = get_string('discussionsubscribers', 'hsuforum');
+        $strsubscribers = get_string('discussionsubscribers', 'forumimproved');
 
         // This works but it doesn't make a good navbar, would have to change the settings menu.
         // $PAGE->settingsnav->find('discsubscribers', navigation_node::TYPE_SETTING)->make_active();
 
-        $PAGE->navbar->add(shorten_text(format_string($discussion->name)), new moodle_url('/mod/hsuforum/discuss.php', array('d' => $discussion->id)));
+        $PAGE->navbar->add(shorten_text(format_string($discussion->name)), new moodle_url('/mod/forumimproved/discuss.php', array('d' => $discussion->id)));
         $PAGE->navbar->add($strsubscribers);
         $PAGE->set_title($strsubscribers);
         $PAGE->set_heading($COURSE->fullname);
-        if (has_capability('mod/hsuforum:managesubscriptions', $context)) {
+        if (has_capability('mod/forumimproved:managesubscriptions', $context)) {
             if ($edit != -1) {
                 $USER->subscriptionsediting = $edit;
             }

@@ -17,12 +17,12 @@
 /**
  * Controller Router
  *
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_hsuforum\controller;
+namespace mod_forumimproved\controller;
 
 use coding_exception;
 use SplObjectStorage;
@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die();
  * Can work with multiple controllers, first controller
  * that matches the action wins.
  *
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

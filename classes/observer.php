@@ -17,7 +17,7 @@
 /**
  * Event observers used in forum.
  *
- * @package    mod_hsuforum
+ * @package    mod_forumimproved
  * @copyright  2013 Rajesh Taneja <rajesh@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,9 +25,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Event observer for mod_hsuforum.
+ * Event observer for mod_forumimproved.
  */
-class mod_hsuforum_observer {
+class mod_forumimproved_observer {
 
     /**
      * Triggered via user_enrolment_deleted event.
@@ -42,12 +42,12 @@ class mod_hsuforum_observer {
         $cp = (object)$event->other['userenrolment'];
         if ($cp->lastenrol) {
             $params = array('userid' => $cp->userid, 'courseid' => $cp->courseid);
-            $forumselect = "IN (SELECT f.id FROM {hsuforum} f WHERE f.course = :courseid)";
+            $forumselect = "IN (SELECT f.id FROM {forumimproved} f WHERE f.course = :courseid)";
 
-            $DB->delete_records_select('hsuforum_digests', 'userid = :userid AND forum '.$forumselect, $params);
-            $DB->delete_records_select('hsuforum_subscriptions', 'userid = :userid AND forum '.$forumselect, $params);
-            $DB->delete_records_select('hsuforum_track_prefs', 'userid = :userid AND forumid '.$forumselect, $params);
-            $DB->delete_records_select('hsuforum_read', 'userid = :userid AND forumid '.$forumselect, $params);
+            $DB->delete_records_select('forumimproved_digests', 'userid = :userid AND forum '.$forumselect, $params);
+            $DB->delete_records_select('forumimproved_subscriptions', 'userid = :userid AND forum '.$forumselect, $params);
+            $DB->delete_records_select('forumimproved_track_prefs', 'userid = :userid AND forumid '.$forumselect, $params);
+            $DB->delete_records_select('forumimproved_read', 'userid = :userid AND forumid '.$forumselect, $params);
         }
     }
 
@@ -69,17 +69,17 @@ class mod_hsuforum_observer {
         }
 
         // Forum lib required for the constant used below.
-        require_once($CFG->dirroot . '/mod/hsuforum/lib.php');
+        require_once($CFG->dirroot . '/mod/forumimproved/lib.php');
 
         $userid = $event->relateduserid;
         $sql = "SELECT f.id, cm.id AS cmid
-                  FROM {hsuforum} f
+                  FROM {forumimproved} f
                   JOIN {course_modules} cm ON (cm.instance = f.id)
                   JOIN {modules} m ON (m.id = cm.module)
-             LEFT JOIN {hsuforum_subscriptions} fs ON (fs.forum = f.id AND fs.userid = :userid)
+             LEFT JOIN {forumimproved_subscriptions} fs ON (fs.forum = f.id AND fs.userid = :userid)
                  WHERE f.course = :courseid
                    AND f.forcesubscribe = :initial
-                   AND m.name = 'hsuforum'
+                   AND m.name = 'forumimproved'
                    AND fs.id IS NULL";
         $params = array('courseid' => $context->instanceid, 'userid' => $userid, 'initial' => HSUFORUM_INITIALSUBSCRIBE);
 
@@ -87,8 +87,8 @@ class mod_hsuforum_observer {
         foreach ($forums as $forum) {
             // If user doesn't have allowforcesubscribe capability then don't subscribe.
             $modcontext = context_module::instance($forum->cmid);
-            if (has_capability('mod/hsuforum:allowforcesubscribe', $modcontext, $userid)) {
-                hsuforum_subscribe($userid, $forum->id, $modcontext);
+            if (has_capability('mod/forumimproved:allowforcesubscribe', $modcontext, $userid)) {
+                forumimproved_subscribe($userid, $forum->id, $modcontext);
             }
         }
     }
@@ -102,12 +102,12 @@ class mod_hsuforum_observer {
     public static function course_module_created(\core\event\course_module_created $event) {
         global $CFG;
 
-        if ($event->other['modulename'] === 'hsuforum') {
-            // Include the forum library to make use of the hsuforum_instance_created function.
-            require_once($CFG->dirroot . '/mod/hsuforum/lib.php');
+        if ($event->other['modulename'] === 'forumimproved') {
+            // Include the forum library to make use of the forumimproved_instance_created function.
+            require_once($CFG->dirroot . '/mod/forumimproved/lib.php');
 
-            $forum = $event->get_record_snapshot('hsuforum', $event->other['instanceid']);
-            hsuforum_instance_created($event->get_context(), $forum);
+            $forum = $event->get_record_snapshot('forumimproved', $event->other['instanceid']);
+            forumimproved_instance_created($event->get_context(), $forum);
         }
     }
 }

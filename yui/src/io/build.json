@@ -1,7 +1,7 @@
 {
-    "name": "moodle-mod_hsuforum-io",
+    "name": "moodle-mod_forumimproved-io",
     "builds": {
-        "moodle-mod_hsuforum-io": {
+        "moodle-mod_forumimproved-io": {
             "jsfiles": [
                 "io.js"
             ]

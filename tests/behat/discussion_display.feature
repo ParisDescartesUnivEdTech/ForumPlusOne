@@ -1,4 +1,4 @@
-@mod @mod_hsuforum
+@mod @mod_forumimproved
 Feature: Students can choose from 4 discussion display options and their choice is remembered
   In order to read forum posts in a suitable view
   As a user

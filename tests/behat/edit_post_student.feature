@@ -1,4 +1,4 @@
-@mod @mod_hsuforum
+@mod @mod_forumimproved
 Feature: Students can edit or delete their forum posts within a set time limit
   In order to refine forum posts
   As a user

@@ -1,14 +1,14 @@
 /**
  * Forum Article View
  *
- * @module moodle-mod_hsuforum-article
+ * @module moodle-mod_forumimproved-article
  */
 
 /**
  * Handles updating forum article structure
  *
  * @constructor
- * @namespace M.mod_hsuforum
+ * @namespace M.mod_forumimproved
  * @class Article
  * @extends Y.Base
  */
@@ -33,7 +33,7 @@ ARTICLE.ATTRS = {
      * Used for REST calls
      *
      * @attribute io
-     * @type M.mod_hsuforum.Io
+     * @type M.mod_forumimproved.Io
      * @readOnly
      */
     io: { readOnly: true },
@@ -42,7 +42,7 @@ ARTICLE.ATTRS = {
      * Used primarily for updating the DOM
      *
      * @attribute dom
-     * @type M.mod_hsuforum.Dom
+     * @type M.mod_forumimproved.Dom
      * @readOnly
      */
     dom: { readOnly: true },
@@ -51,7 +51,7 @@ ARTICLE.ATTRS = {
      * Used for routing URLs within the same page
      *
      * @attribute router
-     * @type M.mod_hsuforum.Router
+     * @type M.mod_forumimproved.Router
      * @readOnly
      */
     router: { readOnly: true },
@@ -60,7 +60,7 @@ ARTICLE.ATTRS = {
      * Displays, hides and submits forms
      *
      * @attribute form
-     * @type M.mod_hsuforum.Form
+     * @type M.mod_forumimproved.Form
      * @readOnly
      */
     form: { readOnly: true },
@@ -69,7 +69,7 @@ ARTICLE.ATTRS = {
      * Maintains an aria live log.
      *
      * @attribute liveLog
-     * @type M.mod_hsuforum.init_livelog
+     * @type M.mod_forumimproved.init_livelog
      * @readOnly
      */
     liveLog: { readOnly: true },
@@ -91,11 +91,11 @@ Y.extend(ARTICLE, Y.Base,
          * Setup the app
          */
         initializer: function() {
-            this._set('router', new M.mod_hsuforum.Router({article: this, html5: false}));
-            this._set('io', new M.mod_hsuforum.Io({contextId: this.get('contextId')}));
-            this._set('dom', new M.mod_hsuforum.Dom({io: this.get('io')}));
-            this._set('form', new M.mod_hsuforum.Form({io: this.get('io')}));
-            this._set('liveLog', M.mod_hsuforum.init_livelog());
+            this._set('router', new M.mod_forumimproved.Router({article: this, html5: false}));
+            this._set('io', new M.mod_forumimproved.Io({contextId: this.get('contextId')}));
+            this._set('dom', new M.mod_forumimproved.Dom({io: this.get('io')}));
+            this._set('form', new M.mod_forumimproved.Form({io: this.get('io')}));
+            this._set('liveLog', M.mod_forumimproved.init_livelog());
             this.bind();
             // this.get('router').dispatch();
         },
@@ -105,7 +105,7 @@ Y.extend(ARTICLE, Y.Base,
          * @method bind
          */
         bind: function() {
-            var firstUnreadPost = document.getElementsByClassName("hsuforum-post-unread")[0];
+            var firstUnreadPost = document.getElementsByClassName("forumimproved-post-unread")[0];
             if(firstUnreadPost && location.hash === '#unread') {
                 // get the post parent to focus on
                 var post = document.getElementById(firstUnreadPost.id).parentNode;
@@ -129,7 +129,7 @@ Y.extend(ARTICLE, Y.Base,
                 router  = this.get('router');
 
             /* Clean html on paste */
-            Y.delegate('paste', form.handleFormPaste, document, '.hsuforum-textarea', form);
+            Y.delegate('paste', form.handleFormPaste, document, '.forumimproved-textarea', form);
 
             // We bind to document otherwise screen readers read everything as clickable.
             Y.delegate('click', form.handleCancelForm, document, SELECTORS.LINK_CANCEL, form);
@@ -157,20 +157,20 @@ Y.extend(ARTICLE, Y.Base,
                 editor = editArea.ancestor('.editor_atto');
 
                 if (editor){
-                    M.mod_hsuforum.toggleAdvancedEditor(advancedEditLink);
+                    M.mod_forumimproved.toggleAdvancedEditor(advancedEditLink);
                 } else {
                     // The advanced editor isn't available yet, lets try again periodically.
-                    advancedEditLink.setContent(M.util.get_string('loadingeditor', 'hsuforum'));
+                    advancedEditLink.setContent(M.util.get_string('loadingeditor', 'forumimproved'));
                     checkEditArea = setInterval(function(){
                         editor = editArea.ancestor('.editor_atto');
                         if (editor) {
                             clearInterval(checkEditArea);
-                            M.mod_hsuforum.toggleAdvancedEditor(advancedEditLink);
+                            M.mod_forumimproved.toggleAdvancedEditor(advancedEditLink);
                         }
                     }, 500);
                 }
 
-            }, document, '.hsuforum-use-advanced');
+            }, document, '.forumimproved-use-advanced');
 
             // We bind to document for these buttons as they get re-added on each discussion addition.
             Y.delegate('submit', form.handleFormSubmit, document, SELECTORS.FORM, form);
@@ -257,7 +257,7 @@ Y.extend(ARTICLE, Y.Base,
             if (node === null) {
                 return;
             }
-            if (window.confirm(M.str.mod_hsuforum.deletesure) === true) {
+            if (window.confirm(M.str.mod_forumimproved.deletesure) === true) {
                 this.deletePost(postId);
             }
         },
@@ -290,8 +290,8 @@ Y.extend(ARTICLE, Y.Base,
     }
 );
 
-M.mod_hsuforum.Article = ARTICLE;
-M.mod_hsuforum.init_article = function(config) {
+M.mod_forumimproved.Article = ARTICLE;
+M.mod_forumimproved.init_article = function(config) {
     new ARTICLE(config);
 };
 
@@ -299,7 +299,7 @@ M.mod_hsuforum.init_article = function(config) {
  * Trigger click event.
  * @param el
  */
-M.mod_hsuforum.dispatchClick = function(el) {
+M.mod_forumimproved.dispatchClick = function(el) {
     if (document.createEvent) {
         var event = new MouseEvent('click', {
             'view': window,
@@ -315,16 +315,16 @@ M.mod_hsuforum.dispatchClick = function(el) {
 /**
  * Restore editor to original position in DOM.
  */
-M.mod_hsuforum.restoreEditor = function() {
+M.mod_forumimproved.restoreEditor = function() {
     var editCont = Y.one('#hiddenadvancededitorcont');
     if (editCont) {
         var editArea = Y.one('#hiddenadvancededitoreditable'),
         editor = editArea.ancestor('.editor_atto'),
-        advancedEditLink = M.mod_hsuforum.Article.currentEditLink,
+        advancedEditLink = M.mod_forumimproved.Article.currentEditLink,
         contentEditable = false;
 
         if (advancedEditLink) {
-            contentEditable = advancedEditLink.previous('.hsuforum-textarea');
+            contentEditable = advancedEditLink.previous('.forumimproved-textarea');
         }
 
         var editorHidden = (!editor || editor.getComputedStyle('display') === 'none');
@@ -334,7 +334,7 @@ M.mod_hsuforum.restoreEditor = function() {
         if (!editorHidden) {
             if (editor.one('.atto_html_button.highlight')) {
                 // Trigger click on atto source button - we need to update the editor content.
-                M.mod_hsuforum.dispatchClick(editor.one('.atto_html_button.highlight')._node);
+                M.mod_forumimproved.dispatchClick(editor.one('.atto_html_button.highlight')._node);
             }
             // Update content editable div.
             if (contentEditable) {
@@ -345,7 +345,7 @@ M.mod_hsuforum.restoreEditor = function() {
 
 
         // Switch all editor links to hide mode.
-        M.mod_hsuforum.toggleAdvancedEditor(false, true);
+        M.mod_forumimproved.toggleAdvancedEditor(false, true);
 
         // Put editor back in its correct place.
         Y.one('#hiddenadvancededitorcont').show();
@@ -358,7 +358,7 @@ M.mod_hsuforum.restoreEditor = function() {
 /**
  * Toggle advanced editor in place of plain text editor.
  */
-M.mod_hsuforum.toggleAdvancedEditor = function(advancedEditLink, forcehide, keepLink) {
+M.mod_forumimproved.toggleAdvancedEditor = function(advancedEditLink, forcehide, keepLink) {
 
     var showEditor = false;
     if (!forcehide) {
@@ -366,7 +366,7 @@ M.mod_hsuforum.toggleAdvancedEditor = function(advancedEditLink, forcehide, keep
     }
 
     if (advancedEditLink) {
-        M.mod_hsuforum.Article.currentEditLink = advancedEditLink;
+        M.mod_forumimproved.Article.currentEditLink = advancedEditLink;
         if (showEditor) {
             advancedEditLink.removeClass('hideadvancededitor');
         } else {
@@ -381,26 +381,26 @@ M.mod_hsuforum.toggleAdvancedEditor = function(advancedEditLink, forcehide, keep
     if (forcehide) {
         // If advancedEditLink is not set and we are forcing a hide then we need to hide every instance and change all labels.
         if (!advancedEditLink){
-            var links = Y.all('.hsuforum-use-advanced');
+            var links = Y.all('.forumimproved-use-advanced');
             for (var l = 0; l<links.size(); l++) {
                 var link = links.item(l);
                 if (keepLink && keepLink === link){
                     continue; // Do not process this link.
                 }
                 // To hide this link and restore the editor, call myself.
-                M.mod_hsuforum.toggleAdvancedEditor(link, true);
+                M.mod_forumimproved.toggleAdvancedEditor(link, true);
             }
 
             return;
         }
     } else {
         // OK we need to make sure the editor isn't available anywhere else, so call myself.
-        M.mod_hsuforum.toggleAdvancedEditor(false, true, advancedEditLink);
+        M.mod_forumimproved.toggleAdvancedEditor(false, true, advancedEditLink);
     }
 
     var editCont = Y.one('#hiddenadvancededitorcont'),
         editArea,
-        contentEditable = advancedEditLink.previous('.hsuforum-textarea'),
+        contentEditable = advancedEditLink.previous('.forumimproved-textarea'),
         editor;
 
     if (editCont){
@@ -421,7 +421,7 @@ M.mod_hsuforum.toggleAdvancedEditor = function(advancedEditLink, forcehide, keep
 
     if (showEditor) {
         advancedEditLink.setAttribute('aria-pressed', 'true');
-        advancedEditLink.setContent(M.util.get_string('hideadvancededitor', 'hsuforum'));
+        advancedEditLink.setContent(M.util.get_string('hideadvancededitor', 'forumimproved'));
         contentEditable.hide();
         // Are we in source mode?
         if (editor.one('.atto_html_button.highlight')) {
@@ -444,18 +444,18 @@ M.mod_hsuforum.toggleAdvancedEditor = function(advancedEditLink, forcehide, keep
 
         // Whenever the html editor changes its content, update the text area.
         if (window.MutationObserver){
-            M.mod_hsuforum.Article.editorMutateObserver = new MutationObserver(editAreaChanged);
-            M.mod_hsuforum.Article.editorMutateObserver.observe(editArea.getDOMNode(), {childList: true, characterData: true, subtree: true});
+            M.mod_forumimproved.Article.editorMutateObserver = new MutationObserver(editAreaChanged);
+            M.mod_forumimproved.Article.editorMutateObserver.observe(editArea.getDOMNode(), {childList: true, characterData: true, subtree: true});
         } else {
             // Don't use yui delegate as I don't think it supports this event type
             editArea.getDOMNode().addEventListener ('DOMCharacterDataModified', editAreachanged, false);
         }
     } else {
         advancedEditLink.setAttribute('aria-pressed', 'false');
-        if (M.mod_hsuforum.Article.editorMutateObserver){
-            M.mod_hsuforum.Article.editorMutateObserver.disconnect();
+        if (M.mod_forumimproved.Article.editorMutateObserver){
+            M.mod_forumimproved.Article.editorMutateObserver.disconnect();
         }
-        advancedEditLink.setContent(M.util.get_string('useadvancededitor', 'hsuforum'));
+        advancedEditLink.setContent(M.util.get_string('useadvancededitor', 'forumimproved'));
         contentEditable.show();
 
         // If editor is not hidden then we need to update content editable div with editor content.
@@ -463,7 +463,7 @@ M.mod_hsuforum.toggleAdvancedEditor = function(advancedEditLink, forcehide, keep
             // Are we in source mode?
             if (editor.one('.atto_html_button.highlight')) {
                 // Trigger click on atto source button - we need to update the editor content.
-                M.mod_hsuforum.dispatchClick(editor.one('.atto_html_button.highlight')._node);
+                M.mod_forumimproved.dispatchClick(editor.one('.atto_html_button.highlight')._node);
             }
             // Update content of content editable div.
 

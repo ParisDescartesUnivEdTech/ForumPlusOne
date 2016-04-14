@@ -18,7 +18,7 @@
  * Discussion Repository Mapper
  *
  * @package    mod
- * @subpackage hsuforum
+ * @subpackage forumimproved
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,7 +26,7 @@
 
 require_once(__DIR__.'/abstract.php');
 
-class hsuforum_repository_discussion extends hsuforum_repository_abstract {
+class forumimproved_repository_discussion extends forumimproved_repository_abstract {
 
     /**
      * @param int $forumid
@@ -36,8 +36,8 @@ class hsuforum_repository_discussion extends hsuforum_repository_abstract {
     public function get_user_subscriptions($forumid, $userid) {
         return $this->get_db()->get_records_sql_menu("
             SELECT s.id, s.discussion
-              FROM {hsuforum_subscriptions_disc} s
-        INNER JOIN {hsuforum_discussions} d ON d.id = s.discussion
+              FROM {forumimproved_subscriptions_disc} s
+        INNER JOIN {forumimproved_discussions} d ON d.id = s.discussion
              WHERE s.userid = ?
                AND d.forum = ?
         ", array($userid, $forumid));
@@ -56,7 +56,7 @@ class hsuforum_repository_discussion extends hsuforum_repository_abstract {
     public function get_unsubscribed_users($forum, $discussion, context_module $context, $groupid=0, $fields = null, array $search = array(), $sort = 'u.lastname ASC, u.firstname ASC') {
         global $DB, $CFG;
 
-        if ($forum->forcesubscribe == HSUFORUM_DISALLOWSUBSCRIBE or $forum->type == 'single' or hsuforum_is_forcesubscribed($forum)) {
+        if ($forum->forcesubscribe == HSUFORUM_DISALLOWSUBSCRIBE or $forum->type == 'single' or forumimproved_is_forcesubscribed($forum)) {
             return array();
         }
         if (is_null($fields)) {
@@ -96,8 +96,8 @@ class hsuforum_repository_discussion extends hsuforum_repository_abstract {
             SELECT $fields
               FROM {user} u
               JOIN ($esql) je ON je.id = u.id
-   LEFT OUTER JOIN {hsuforum_subscriptions_disc} s ON s.userid = u.id AND s.discussion = :discussionid
-   LEFT OUTER JOIN {hsuforum_subscriptions} fs ON fs.userid = u.id AND fs.forum = :forumid
+   LEFT OUTER JOIN {forumimproved_subscriptions_disc} s ON s.userid = u.id AND s.discussion = :discussionid
+   LEFT OUTER JOIN {forumimproved_subscriptions} fs ON fs.userid = u.id AND fs.forum = :forumid
              WHERE s.id IS NULL AND fs.id IS NULL$where
              ORDER BY $sort
         ", $params);
@@ -123,7 +123,7 @@ class hsuforum_repository_discussion extends hsuforum_repository_abstract {
     public function get_subscribed_users($forum, $discussion, context_module $context, $groupid=0, $fields = null, array $search = array(), $sort = 'u.lastname ASC, u.firstname ASC') {
         global $CFG;
 
-        if ($forum->forcesubscribe == HSUFORUM_DISALLOWSUBSCRIBE or $forum->type == 'single' or hsuforum_is_forcesubscribed($forum)) {
+        if ($forum->forcesubscribe == HSUFORUM_DISALLOWSUBSCRIBE or $forum->type == 'single' or forumimproved_is_forcesubscribed($forum)) {
             return array();
         }
         if (is_null($fields)) {
@@ -161,7 +161,7 @@ class hsuforum_repository_discussion extends hsuforum_repository_abstract {
             SELECT $fields
               FROM {user} u
               JOIN ($esql) je ON je.id = u.id
-              JOIN {hsuforum_subscriptions_disc} s ON s.userid = u.id
+              JOIN {forumimproved_subscriptions_disc} s ON s.userid = u.id
              WHERE s.discussion = :discussionid$where
           ORDER BY $sort
         ", $params);
@@ -175,12 +175,12 @@ class hsuforum_repository_discussion extends hsuforum_repository_abstract {
     /**
      * @param int $discussionid
      * @param int $userid
-     * @return hsuforum_repository_discussion
+     * @return forumimproved_repository_discussion
      */
     public function subscribe($discussionid, $userid) {
         $params = array('userid' => $userid, 'discussion' => $discussionid);
-        if (!$this->get_db()->record_exists('hsuforum_subscriptions_disc', $params)) {
-            $this->get_db()->insert_record('hsuforum_subscriptions_disc', $params);
+        if (!$this->get_db()->record_exists('forumimproved_subscriptions_disc', $params)) {
+            $this->get_db()->insert_record('forumimproved_subscriptions_disc', $params);
         }
         return $this;
     }
@@ -188,11 +188,11 @@ class hsuforum_repository_discussion extends hsuforum_repository_abstract {
     /**
      * @param int $discussionid
      * @param int $userid
-     * @return hsuforum_repository_discussion
+     * @return forumimproved_repository_discussion
      */
     public function unsubscribe($discussionid, $userid) {
         $this->get_db()->delete_records(
-            'hsuforum_subscriptions_disc',
+            'forumimproved_subscriptions_disc',
             array('userid' => $userid, 'discussion' => $discussionid)
         );
         return $this;
@@ -201,13 +201,13 @@ class hsuforum_repository_discussion extends hsuforum_repository_abstract {
     /**
      * @param int $forumid
      * @param int $userid
-     * @return hsuforum_repository_discussion
+     * @return forumimproved_repository_discussion
      */
     public function unsubscribe_all($forumid, $userid) {
         $this->get_db()->execute("
             DELETE s
-              FROM {hsuforum_subscriptions_disc} s
-        INNER JOIN {hsuforum_discussions} d ON d.id = s.discussion
+              FROM {forumimproved_subscriptions_disc} s
+        INNER JOIN {forumimproved_discussions} d ON d.id = s.discussion
              WHERE s.userid = ?
                AND d.forum = ?
         ", array($userid, $forumid));

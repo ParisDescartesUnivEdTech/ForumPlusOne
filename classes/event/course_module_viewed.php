@@ -15,21 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_hsuforum course module viewed event.
+ * The mod_forumimproved course module viewed event.
  *
- * @package    mod_hsuforum
+ * @package    mod_forumimproved
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_hsuforum\event;
+namespace mod_forumimproved\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_hsuforum course module viewed event class.
+ * The mod_forumimproved course module viewed event class.
  *
- * @package    mod_hsuforum
+ * @package    mod_forumimproved
  * @since      Moodle 2.7
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -44,7 +44,7 @@ class course_module_viewed extends \core\event\course_module_viewed {
     protected function init() {
         $this->data['crud'] = 'r';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
-        $this->data['objecttable'] = 'hsuforum';
+        $this->data['objecttable'] = 'forumimproved';
     }
 
     /**
@@ -53,7 +53,7 @@ class course_module_viewed extends \core\event\course_module_viewed {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/hsuforum/view.php', array('f' => $this->objectid));
+        return new \moodle_url('/mod/forumimproved/view.php', array('f' => $this->objectid));
     }
 
     /**
@@ -62,7 +62,7 @@ class course_module_viewed extends \core\event\course_module_viewed {
      * @return array|null
      */
     protected function get_legacy_logdata() {
-        return array($this->courseid, 'hsuforum', 'view forum', 'view.php?f=' . $this->objectid,
+        return array($this->courseid, 'forumimproved', 'view forum', 'view.php?f=' . $this->objectid,
             $this->objectid, $this->contextinstanceid);
     }
 

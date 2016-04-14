@@ -17,7 +17,7 @@
 /**
  * Plugin capabilities
  *
- * @package    mod_hsuforum
+ * @package    mod_forumimproved
  * @copyright  2006 Martin Dougiamas
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
 
-    'mod/hsuforum:addinstance' => array(
+    'mod/forumimproved:addinstance' => array(
         'riskbitmask' => RISK_XSS,
 
         'captype' => 'write',
@@ -40,7 +40,7 @@ $capabilities = array(
         'clonepermissionsfrom' => 'moodle/course:manageactivities'
     ),
 
-    'mod/hsuforum:viewdiscussion' => array(
+    'mod/forumimproved:viewdiscussion' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -54,7 +54,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:viewhiddentimedposts' => array(
+    'mod/forumimproved:viewhiddentimedposts' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -65,7 +65,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:startdiscussion' => array(
+    'mod/forumimproved:startdiscussion' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -79,7 +79,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:replypost' => array(
+    'mod/forumimproved:replypost' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -93,7 +93,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:addnews' => array(
+    'mod/forumimproved:addnews' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -106,7 +106,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:replynews' => array(
+    'mod/forumimproved:replynews' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -119,7 +119,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:viewrating' => array(
+    'mod/forumimproved:viewrating' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -131,7 +131,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:viewanyrating' => array(
+    'mod/forumimproved:viewanyrating' => array(
 
         'riskbitmask' => RISK_PERSONAL,
         'captype' => 'read',
@@ -143,7 +143,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:viewallratings' => array(
+    'mod/forumimproved:viewallratings' => array(
 
         'riskbitmask' => RISK_PERSONAL,
         'captype' => 'read',
@@ -153,10 +153,10 @@ $capabilities = array(
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
         ),
-        'clonepermissionsfrom' =>  'mod/hsuforum:viewanyrating'
+        'clonepermissionsfrom' =>  'mod/forumimproved:viewanyrating'
     ),
 
-    'mod/hsuforum:rate' => array(
+    'mod/forumimproved:rate' => array(
 
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
@@ -167,7 +167,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:createattachment' => array(
+    'mod/forumimproved:createattachment' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -181,7 +181,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:deleteownpost' => array(
+    'mod/forumimproved:deleteownpost' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -193,7 +193,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:deleteanypost' => array(
+    'mod/forumimproved:deleteanypost' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -204,7 +204,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:splitdiscussions' => array(
+    'mod/forumimproved:splitdiscussions' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -215,7 +215,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:movediscussions' => array(
+    'mod/forumimproved:movediscussions' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -226,7 +226,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:editanypost' => array(
+    'mod/forumimproved:editanypost' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -239,7 +239,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:revealpost' => array(
+    'mod/forumimproved:revealpost' => array(
 
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
@@ -250,7 +250,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:viewqandawithoutposting' => array(
+    'mod/forumimproved:viewqandawithoutposting' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -261,7 +261,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:viewsubscribers' => array(
+    'mod/forumimproved:viewsubscribers' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -272,7 +272,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:managesubscriptions' => array(
+    'mod/forumimproved:managesubscriptions' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -285,7 +285,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:postwithoutthrottling' => array(
+    'mod/forumimproved:postwithoutthrottling' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -298,7 +298,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:exportdiscussion' => array(
+    'mod/forumimproved:exportdiscussion' => array(
 
         'riskbitmask' => RISK_PERSONAL,
 
@@ -310,7 +310,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
-    'mod/hsuforum:exportpost' => array(
+    'mod/forumimproved:exportpost' => array(
 
         'riskbitmask' => RISK_PERSONAL,
 
@@ -322,7 +322,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
-    'mod/hsuforum:exportownpost' => array(
+    'mod/forumimproved:exportownpost' => array(
 
         'riskbitmask' => RISK_PERSONAL,
 
@@ -335,7 +335,7 @@ $capabilities = array(
             'student' => CAP_ALLOW,
         )
     ),
-    'mod/hsuforum:addquestion' => array(
+    'mod/forumimproved:addquestion' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -348,7 +348,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:viewposters' => array(
+    'mod/forumimproved:viewposters' => array(
 
         'riskbitmask' => RISK_PERSONAL,
 
@@ -363,7 +363,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:viewflags'=> array(
+    'mod/forumimproved:viewflags'=> array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -376,7 +376,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/hsuforum:allowprivate' => array(
+    'mod/forumimproved:allowprivate' => array(
 
         'captype'      => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -387,7 +387,7 @@ $capabilities = array(
             'teacher'        => CAP_ALLOW
         )
     ),
-    'mod/hsuforum:allowforcesubscribe' => array(
+    'mod/forumimproved:allowforcesubscribe' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,

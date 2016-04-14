@@ -18,7 +18,7 @@
 /**
  * This file adds support to rss feeds generation
  *
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @category rss
  * @copyright 2001 Eloy Lafuente (stronk7) http://contiento.com
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -35,10 +35,10 @@ require_once($CFG->libdir.'/rsslib.php');
  * @param array    $args    the arguments received in the url
  * @return string the full path to the cached RSS feed directory. Null if there is a problem.
  */
-function hsuforum_rss_get_feed($context, $args) {
+function forumimproved_rss_get_feed($context, $args) {
     global $DB;
 
-    $config = get_config('hsuforum');
+    $config = get_config('forumimproved');
 
     //are RSS feeds enabled?
     if (empty($config->enablerssfeeds)) {
@@ -47,25 +47,25 @@ function hsuforum_rss_get_feed($context, $args) {
     }
 
     $forumid  = clean_param($args[3], PARAM_INT);
-    $cm = get_coursemodule_from_instance('hsuforum', $forumid, 0, false, MUST_EXIST);
+    $cm = get_coursemodule_from_instance('forumimproved', $forumid, 0, false, MUST_EXIST);
     $modcontext = context_module::instance($cm->id);
 
     //context id from db should match the submitted one
-    if ($context->id != $modcontext->id || !has_capability('mod/hsuforum:viewdiscussion', $modcontext)) {
+    if ($context->id != $modcontext->id || !has_capability('mod/forumimproved:viewdiscussion', $modcontext)) {
         return null;
     }
 
-    $forum = $DB->get_record('hsuforum', array('id' => $forumid), '*', MUST_EXIST);
-    if (!rss_enabled_for_mod('hsuforum', $forum)) {
+    $forum = $DB->get_record('forumimproved', array('id' => $forumid), '*', MUST_EXIST);
+    if (!rss_enabled_for_mod('forumimproved', $forum)) {
         return null;
     }
 
     //the sql that will retreive the data for the feed and be hashed to get the cache filename
-    list($sql, $params) = hsuforum_rss_get_sql($forum, $cm);
+    list($sql, $params) = forumimproved_rss_get_sql($forum, $cm);
 
     // Hash the sql to get the cache file name.
     $filename = rss_get_file_name($forum, $sql, $params);
-    $cachedfilepath = rss_get_file_full_name('mod_hsuforum', $filename);
+    $cachedfilepath = rss_get_file_full_name('mod_forumimproved', $filename);
 
     //Is the cache out of date?
     $cachedfilelastmodified = 0;
@@ -77,10 +77,10 @@ function hsuforum_rss_get_feed($context, $args) {
     // If it hasn't been generated we will need to create it, otherwise only update
     // if there is new stuff to show and it is older than the cut off date set above.
     if (($cachedfilelastmodified == 0) || (($dontrecheckcutoff > $cachedfilelastmodified) &&
-        hsuforum_rss_newstuff($forum, $cm, $cachedfilelastmodified))) {
+        forumimproved_rss_newstuff($forum, $cm, $cachedfilelastmodified))) {
         // Need to regenerate the cached version.
-        $result = hsuforum_rss_feed_contents($forum, $sql, $params, $modcontext);
-        rss_save_file('mod_hsuforum', $filename, $result);
+        $result = forumimproved_rss_feed_contents($forum, $sql, $params, $modcontext);
+        rss_save_file('mod_forumimproved', $filename, $result);
     }
 
     //return the path to the cached version
@@ -92,8 +92,8 @@ function hsuforum_rss_get_feed($context, $args) {
  *
  * @param stdClass $forum
  */
-function hsuforum_rss_delete_file($forum) {
-    rss_delete_file('mod_hsuforum', $forum);
+function forumimproved_rss_delete_file($forum) {
+    rss_delete_file('mod_forumimproved', $forum);
 }
 
 ///////////////////////////////////////////////////////
@@ -108,10 +108,10 @@ function hsuforum_rss_delete_file($forum) {
  * @param int      $time  check for items since this epoch timestamp
  * @return bool True for new items
  */
-function hsuforum_rss_newstuff($forum, $cm, $time) {
+function forumimproved_rss_newstuff($forum, $cm, $time) {
     global $DB;
 
-    list($sql, $params) = hsuforum_rss_get_sql($forum, $cm, $time);
+    list($sql, $params) = forumimproved_rss_get_sql($forum, $cm, $time);
 
     return $DB->record_exists_sql($sql, $params);
 }
@@ -124,11 +124,11 @@ function hsuforum_rss_newstuff($forum, $cm, $time) {
  * @param int      $time  check for items since this epoch timestamp
  * @return string the SQL query to be used to get the Discussion/Post details from the forum table of the database
  */
-function hsuforum_rss_get_sql($forum, $cm, $time=0) {
+function forumimproved_rss_get_sql($forum, $cm, $time=0) {
     if ($forum->rsstype == 1) { // Discussion RSS
-        return hsuforum_rss_feed_discussions_sql($forum, $cm, $time);
+        return forumimproved_rss_feed_discussions_sql($forum, $cm, $time);
     } else { // Post RSS
-        return hsuforum_rss_feed_posts_sql($forum, $cm, $time);
+        return forumimproved_rss_feed_posts_sql($forum, $cm, $time);
     }
 }
 
@@ -140,10 +140,10 @@ function hsuforum_rss_get_sql($forum, $cm, $time=0) {
  * @param int      $newsince  check for items since this epoch timestamp
  * @return string the SQL query to be used to get the Discussion details from the forum table of the database
  */
-function hsuforum_rss_feed_discussions_sql($forum, $cm, $newsince=0) {
+function forumimproved_rss_feed_discussions_sql($forum, $cm, $newsince=0) {
     global $USER;
 
-    $config = get_config('hsuforum');
+    $config = get_config('forumimproved');
 
     $timelimit = '';
 
@@ -155,7 +155,7 @@ function hsuforum_rss_feed_discussions_sql($forum, $cm, $newsince=0) {
     $modcontext = context_module::instance($cm->id);
 
     if (!empty($config->enabletimedposts)) { /// Users must fulfill timed posts
-        if (!has_capability('mod/hsuforum:viewhiddentimedposts', $modcontext)) {
+        if (!has_capability('mod/forumimproved:viewhiddentimedposts', $modcontext)) {
             $timelimit = " AND ((d.timestart <= :now1 AND (d.timeend = 0 OR d.timeend > :now2))";
             $params['now1'] = $now;
             $params['now2'] = $now;
@@ -178,7 +178,7 @@ function hsuforum_rss_feed_discussions_sql($forum, $cm, $newsince=0) {
     // Get group enforcing SQL.
     $groupmode = groups_get_activity_groupmode($cm);
     $currentgroup = groups_get_activity_group($cm);
-    list($groupselect, $groupparams) = hsuforum_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext);
+    list($groupselect, $groupparams) = forumimproved_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext);
 
     // Add the groupparams to the params array.
     $params = array_merge($params, $groupparams);
@@ -189,8 +189,8 @@ function hsuforum_rss_feed_discussions_sql($forum, $cm, $newsince=0) {
 
     $sql = "SELECT $postdata, d.id as discussionid, d.name as discussionname, d.timemodified, d.usermodified, d.groupid,
                    d.timestart, d.timeend, $userpicturefields
-              FROM {hsuforum_discussions} d
-                   JOIN {hsuforum_posts} p ON p.discussion = d.id
+              FROM {forumimproved_discussions} d
+                   JOIN {forumimproved_posts} p ON p.discussion = d.id
                    JOIN {user} u ON p.userid = u.id
              WHERE d.forum = {$forum->id} AND p.parent = 0
                    $timelimit $groupselect $newsince
@@ -206,7 +206,7 @@ function hsuforum_rss_feed_discussions_sql($forum, $cm, $newsince=0) {
  * @param int      $newsince  check for items since this epoch timestamp
  * @return string the SQL query to be used to get the Post details from the forum table of the database
  */
-function hsuforum_rss_feed_posts_sql($forum, $cm, $newsince=0) {
+function forumimproved_rss_feed_posts_sql($forum, $cm, $newsince=0) {
     global $USER;
 
     $modcontext = context_module::instance($cm->id);
@@ -216,7 +216,7 @@ function hsuforum_rss_feed_posts_sql($forum, $cm, $newsince=0) {
     $currentgroup = groups_get_activity_group($cm);
     $params = array();
 
-    list($groupselect, $groupparams) = hsuforum_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext);
+    list($groupselect, $groupparams) = forumimproved_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext);
 
     // Add the groupparams to the params array.
     $params = array_merge($params, $groupparams);
@@ -246,8 +246,8 @@ function hsuforum_rss_feed_posts_sql($forum, $cm, $newsince=0) {
                  p.messagetrust AS posttrust,
                  p.privatereply AS postprivatereply,
                  p.parent as postparent
-            FROM {hsuforum_discussions} d,
-               {hsuforum_posts} p,
+            FROM {forumimproved_discussions} d,
+               {forumimproved_posts} p,
                {user} u
             WHERE d.forum = {$forum->id} AND
                 p.discussion = d.id AND
@@ -268,7 +268,7 @@ function hsuforum_rss_feed_posts_sql($forum, $cm, $newsince=0) {
  * @param stdClass $modcontext   The context instance of the forum module
  * @return string SQL Query for group details of the forum
  */
-function hsuforum_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext=null) {
+function forumimproved_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext=null) {
     $groupselect = '';
     $params = array();
 
@@ -305,7 +305,7 @@ function hsuforum_rss_get_group_sql($cm, $groupmode, $currentgroup, $modcontext=
  * @Todo MDL-31129 implement post attachment handling
  */
 
-function hsuforum_rss_feed_contents($forum, $sql, $params, $context) {
+function forumimproved_rss_feed_contents($forum, $sql, $params, $context) {
     global $CFG, $DB, $USER;
 
     $status = true;
@@ -318,7 +318,7 @@ function hsuforum_rss_feed_contents($forum, $sql, $params, $context) {
         $isdiscussion = false;
     }
 
-    if (!$cm = get_coursemodule_from_instance('hsuforum', $forum->id, $forum->course)) {
+    if (!$cm = get_coursemodule_from_instance('forumimproved', $forum->id, $forum->course)) {
         print_error('invalidcoursemodule');
     }
 
@@ -342,16 +342,16 @@ function hsuforum_rss_feed_contents($forum, $sql, $params, $context) {
             $post->privatereply = $rec->postprivatereply;
         }
 
-        if ($isdiscussion && !hsuforum_user_can_see_discussion($forum, $discussion, $context)) {
+        if ($isdiscussion && !forumimproved_user_can_see_discussion($forum, $discussion, $context)) {
             // This is a discussion which the user has no permission to view
-            $item->title = get_string('forumsubjecthidden', 'hsuforum');
-            $message = get_string('forumbodyhidden', 'hsuforum');
-            $item->author = get_string('forumauthorhidden', 'hsuforum');
-        } else if (!$isdiscussion && !hsuforum_user_can_see_post($forum, $discussion, $post, $USER, $cm)) {
+            $item->title = get_string('forumsubjecthidden', 'forumimproved');
+            $message = get_string('forumbodyhidden', 'forumimproved');
+            $item->author = get_string('forumauthorhidden', 'forumimproved');
+        } else if (!$isdiscussion && !forumimproved_user_can_see_post($forum, $discussion, $post, $USER, $cm)) {
             // This is a post which the user has no permission to view
-            $item->title = get_string('forumsubjecthidden', 'hsuforum');
-            $message = get_string('forumbodyhidden', 'hsuforum');
-            $item->author = get_string('forumauthorhidden', 'hsuforum');
+            $item->title = get_string('forumsubjecthidden', 'forumimproved');
+            $message = get_string('forumbodyhidden', 'forumimproved');
+            $item->author = get_string('forumauthorhidden', 'forumimproved');
         } else {
             // The user must have permission to view
             if ($isdiscussion && !empty($rec->discussionname)) {
@@ -362,17 +362,17 @@ function hsuforum_rss_feed_contents($forum, $sql, $params, $context) {
                 //we should have an item title by now but if we dont somehow then substitute something somewhat meaningful
                 $item->title = format_string($forum->name.' '.userdate($rec->postcreated,get_string('strftimedatetimeshort', 'langconfig')));
             }
-            $user = hsuforum_anonymize_user($rec, $forum, (object) array('id' => $rec->postid, 'reveal' => $rec->postreveal));
+            $user = forumimproved_anonymize_user($rec, $forum, (object) array('id' => $rec->postid, 'reveal' => $rec->postreveal));
             $item->author = fullname($user);
             $message = file_rewrite_pluginfile_urls($rec->postmessage, 'pluginfile.php', $context->id,
-                     'mod_hsuforum', 'post', $rec->postid);
+                     'mod_forumimproved', 'post', $rec->postid);
             $formatoptions->trusted = $rec->posttrust;
         }
 
         if ($isdiscussion) {
-            $item->link = $CFG->wwwroot."/mod/hsuforum/discuss.php?d=".$rec->discussionid;
+            $item->link = $CFG->wwwroot."/mod/forumimproved/discuss.php?d=".$rec->discussionid;
         } else {
-            $item->link = $CFG->wwwroot."/mod/hsuforum/discuss.php?d=".$rec->discussionid."&parent=".$rec->postid;
+            $item->link = $CFG->wwwroot."/mod/forumimproved/discuss.php?d=".$rec->discussionid."&parent=".$rec->postid;
         }
 
         $formatoptions->trusted = $rec->posttrust;
@@ -380,7 +380,7 @@ function hsuforum_rss_feed_contents($forum, $sql, $params, $context) {
 
         //TODO: MDL-31129 implement post attachment handling
         /*if (!$isdiscussion) {
-            $post_file_area_name = str_replace('//', '/', "$forum->course/$CFG->moddata/hsuforum/$forum->id/$rec->postid");
+            $post_file_area_name = str_replace('//', '/', "$forum->course/$CFG->moddata/forumimproved/$forum->id/$rec->postid");
             $post_files = get_directory_list("$CFG->dataroot/$post_file_area_name");
 
             if (!empty($post_files)) {
@@ -396,7 +396,7 @@ function hsuforum_rss_feed_contents($forum, $sql, $params, $context) {
 
     // Create the RSS header.
     $header = rss_standard_header(strip_tags(format_string($forum->name, true)),
-        $CFG->wwwroot."/mod/hsuforum/view.php?f=".$forum->id,
+        $CFG->wwwroot."/mod/forumimproved/view.php?f=".$forum->id,
         format_string($forum->intro, true)); // TODO: fix format
 // Now all the RSS items, if there are any.
     $articles = '';

@@ -18,7 +18,7 @@
  * Discussion potential user selector
  *
  * @package    mod
- * @subpackage hsuforum
+ * @subpackage forumimproved
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,7 +26,7 @@
 
 require_once(dirname(dirname(dirname(__DIR__))).'/repository/discussion.php');
 
-abstract class hsuforum_userselector_discussion_abstract extends user_selector_base {
+abstract class forumimproved_userselector_discussion_abstract extends user_selector_base {
     /**
      * @var stdClass
      */
@@ -48,7 +48,7 @@ abstract class hsuforum_userselector_discussion_abstract extends user_selector_b
     protected $currentgroup = null;
 
     /**
-     * @var hsuforum_repository_discussion
+     * @var forumimproved_repository_discussion
      */
     protected $repo;
 
@@ -98,20 +98,20 @@ abstract class hsuforum_userselector_discussion_abstract extends user_selector_b
     }
 
     /**
-     * @param \hsuforum_repository_discussion $repo
-     * @return hsuforum_userselector_discussion_abstract
+     * @param \forumimproved_repository_discussion $repo
+     * @return forumimproved_userselector_discussion_abstract
      */
-    public function set_repo(hsuforum_repository_discussion $repo) {
+    public function set_repo(forumimproved_repository_discussion $repo) {
         $this->repo = $repo;
         return $this;
     }
 
     /**
-     * @return \hsuforum_repository_discussion
+     * @return \forumimproved_repository_discussion
      */
     public function get_repo() {
-        if (!$this->repo instanceof hsuforum_repository_discussion) {
-            $this->set_repo(new hsuforum_repository_discussion());
+        if (!$this->repo instanceof forumimproved_repository_discussion) {
+            $this->set_repo(new forumimproved_repository_discussion());
         }
         return $this->repo;
     }

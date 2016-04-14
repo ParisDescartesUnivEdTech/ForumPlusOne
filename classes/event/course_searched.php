@@ -15,19 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_hsuforum course searched event.
+ * The mod_forumimproved course searched event.
  *
- * @package    mod_hsuforum
+ * @package    mod_forumimproved
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_hsuforum\event;
+namespace mod_forumimproved\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_hsuforum course searched event class.
+ * The mod_forumimproved course searched event class.
  *
  * @property-read array $other {
  *      Extra information about the event.
@@ -35,7 +35,7 @@ defined('MOODLE_INTERNAL') || die();
  *      - string searchterm: The searchterm used on forum search.
  * }
  *
- * @package    mod_hsuforum
+ * @package    mod_forumimproved
  * @since      Moodle 2.7
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -69,7 +69,7 @@ class course_searched extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventcoursesearched', 'mod_hsuforum');
+        return get_string('eventcoursesearched', 'mod_forumimproved');
     }
 
     /**
@@ -78,7 +78,7 @@ class course_searched extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/hsuforum/search.php',
+        return new \moodle_url('/mod/forumimproved/search.php',
             array('id' => $this->courseid, 'search' => $this->other['searchterm']));
     }
 
@@ -88,10 +88,10 @@ class course_searched extends \core\event\base {
      * @return array|null
      */
     protected function get_legacy_logdata() {
-        // The legacy log table expects a relative path to /mod/hsuforum/.
-        $logurl = substr($this->get_url()->out_as_local_url(), strlen('/mod/hsuforum/'));
+        // The legacy log table expects a relative path to /mod/forumimproved/.
+        $logurl = substr($this->get_url()->out_as_local_url(), strlen('/mod/forumimproved/'));
 
-        return array($this->courseid, 'hsuforum', 'search', $logurl, $this->other['searchterm']);
+        return array($this->courseid, 'forumimproved', 'search', $logurl, $this->other['searchterm']);
     }
 
     /**

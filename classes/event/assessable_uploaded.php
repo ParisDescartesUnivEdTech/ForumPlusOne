@@ -15,19 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_hsuforum assessable uploaded event.
+ * The mod_forumimproved assessable uploaded event.
  *
- * @package    mod_hsuforum
+ * @package    mod_forumimproved
  * @copyright  2013 Frédéric Massart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_hsuforum\event;
+namespace mod_forumimproved\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_hsuforum assessable uploaded event class.
+ * The mod_forumimproved assessable uploaded event class.
  *
  * @property-read array $other {
  *      Extra information about event.
@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
  *      - string triggeredfrom: name of the function from where event was triggered.
  * }
  *
- * @package    mod_hsuforum
+ * @package    mod_forumimproved
  * @since      Moodle 2.6
  * @copyright  2013 Frédéric Massart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -61,7 +61,7 @@ class assessable_uploaded extends \core\event\assessable_uploaded {
      */
     protected function get_legacy_eventdata() {
         $eventdata = new \stdClass();
-        $eventdata->modulename   = 'hsuforum';
+        $eventdata->modulename   = 'forumimproved';
         $eventdata->name         = $this->other['triggeredfrom'];
         $eventdata->cmid         = $this->contextinstanceid;
         $eventdata->itemid       = $this->objectid;
@@ -89,7 +89,7 @@ class assessable_uploaded extends \core\event\assessable_uploaded {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventassessableuploaded', 'mod_hsuforum');
+        return get_string('eventassessableuploaded', 'mod_forumimproved');
     }
 
     /**
@@ -98,7 +98,7 @@ class assessable_uploaded extends \core\event\assessable_uploaded {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/hsuforum/discuss.php', array('d' => $this->other['discussionid'], 'parent' => $this->objectid));
+        return new \moodle_url('/mod/forumimproved/discuss.php', array('d' => $this->other['discussionid'], 'parent' => $this->objectid));
     }
 
     /**
@@ -108,7 +108,7 @@ class assessable_uploaded extends \core\event\assessable_uploaded {
      */
     protected function init() {
         parent::init();
-        $this->data['objecttable'] = 'hsuforum_posts';
+        $this->data['objecttable'] = 'forumimproved_posts';
     }
 
     /**

@@ -1,7 +1,7 @@
 /**
  * Form Handler
  *
- * @module moodle-mod_hsuforum-form
+ * @module moodle-mod_forumimproved-form
  */
 
 /**
@@ -10,7 +10,7 @@
  *  Adding a discussion
  *
  * @constructor
- * @namespace M.mod_hsuforum
+ * @namespace M.mod_forumimproved
  * @class Form
  * @extends Y.Base
  */
@@ -18,14 +18,14 @@ function FORM() {
     FORM.superclass.constructor.apply(this, arguments);
 }
 
-FORM.NAME = 'moodle-mod_hsuforum-form';
+FORM.NAME = 'moodle-mod_forumimproved-form';
 
 FORM.ATTRS = {
     /**
      * Used for requests
      *
      * @attribute io
-     * @type M.mod_hsuforum.Io
+     * @type M.mod_forumimproved.Io
      * @required
      */
     io: { value: null }
@@ -204,7 +204,7 @@ Y.extend(FORM, Y.Base,
 
             if (parentNode.hasAttribute('data-ispost')) {
                 wrapperNode.one('legend').setHTML(
-                    M.util.get_string('replytox', 'mod_hsuforum', parentNode.getData('author'))
+                    M.util.get_string('replytox', 'mod_forumimproved', parentNode.getData('author'))
                 );
             }
         },
@@ -300,7 +300,7 @@ Y.extend(FORM, Y.Base,
             e.preventDefault();
 
             // Put editor back to its original place in DOM.
-            M.mod_hsuforum.restoreEditor();
+            M.mod_forumimproved.restoreEditor();
 
             var node = e.target.ancestor(SELECTORS.POST_TARGET);
             if (node) {
@@ -327,7 +327,7 @@ Y.extend(FORM, Y.Base,
             e.preventDefault();
 
             // Put editor back to its original place in DOM.
-            M.mod_hsuforum.restoreEditor();
+            M.mod_forumimproved.restoreEditor();
 
             var wrapperNode = e.currentTarget.ancestor(SELECTORS.FORM_REPLY_WRAPPER);
 
@@ -409,4 +409,4 @@ Y.extend(FORM, Y.Base,
     }
 );
 
-M.mod_hsuforum.Form = FORM;
+M.mod_forumimproved.Form = FORM;

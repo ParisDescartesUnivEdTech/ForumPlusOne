@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'hsuforum', language 'en', branch 'MOODLE_20_STABLE'
+ * Strings for component 'forumimproved', language 'en', branch 'MOODLE_20_STABLE'
  *
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -42,9 +42,9 @@ $string['attachment_help'] = 'You can optionally attach one or more files to a f
 $string['attachmentnopost'] = 'You cannot export attachments without a post id';
 $string['attachments'] = 'Attachments';
 $string['blockafter'] = 'Post threshold for blocking';
-$string['blockafter_help'] = 'This setting specifies the maximum number of posts that a user can post in the given time period. Users with the capability mod/hsuforum:postwithoutthrottling are exempt from post limits.';
+$string['blockafter_help'] = 'This setting specifies the maximum number of posts that a user can post in the given time period. Users with the capability mod/forumimproved:postwithoutthrottling are exempt from post limits.';
 $string['blockperiod'] = 'Time period for blocking';
-$string['blockperiod_help'] = 'Students can be blocked from posting more than a given number of posts in a given time period. Users with the capability mod/hsuforum:postwithoutthrottling are exempt from post limits.';
+$string['blockperiod_help'] = 'Students can be blocked from posting more than a given number of posts in a given time period. Users with the capability mod/forumimproved:postwithoutthrottling are exempt from post limits.';
 $string['blockperioddisabled'] = 'Don\'t block';
 $string['blogforum'] = 'Standard forum displayed in a blog-like format';
 $string['bynameondate'] = 'by {$a->name} - {$a->date}';
@@ -90,7 +90,7 @@ $string['configcleanreadtime'] = 'The hour of the day to clean old posts from th
 $string['configdigestmailtime'] = 'People who choose to have emails sent to them in digest form will be emailed the digest daily. This setting controls which time of day the daily mail will be sent (the next cron that runs after this hour will send it).';
 $string['configenablerssfeeds'] = 'This switch will enable the possibility of RSS feeds for all forums.  You will still need to turn feeds on manually in the settings for each forum.';
 $string['configenabletimedposts'] = 'Set to \'yes\' if you want to allow setting of display periods when posting a new forum discussion (Experimental as not yet fully tested)';
-$string['configlongpost'] = 'Any post over this length (in characters not including HTML) is considered long. Posts displayed on the site front page, social format course pages, or user profiles are shortened to a natural break somewhere between the hsuforum_shortpost and hsuforum_longpost values.';
+$string['configlongpost'] = 'Any post over this length (in characters not including HTML) is considered long. Posts displayed on the site front page, social format course pages, or user profiles are shortened to a natural break somewhere between the forumimproved_shortpost and forumimproved_longpost values.';
 $string['configmanydiscussions'] = 'Maximum number of discussions shown in a forum per page';
 $string['configmaxattachments'] = 'Default maximum number of attachments allowed per post.';
 $string['configmaxbytes'] = 'Default maximum size for all forum attachments on the site (subject to course limits and other local settings)';
@@ -186,32 +186,32 @@ $string['existingsubscribers'] = 'Existing subscribers';
 $string['exportdiscussion'] = 'Export whole discussion';
 $string['forcessubscribe'] = 'This forum forces everyone to be subscribed';
 $string['forum'] = 'Forum';
-$string['hsuforum:addinstance'] = 'Add a new forum';
-$string['hsuforum:allowforcesubscribe'] = 'Allow force subscribe';
+$string['forumimproved:addinstance'] = 'Add a new forum';
+$string['forumimproved:allowforcesubscribe'] = 'Allow force subscribe';
 $string['forumauthorhidden'] = 'Author (hidden)';
 $string['forumblockingalmosttoomanyposts'] = 'You are approaching the posting threshold. You have posted {$a->numposts} times in the last {$a->blockperiod} and the limit is {$a->blockafter} posts.';
 $string['forumbodyhidden'] = 'This post cannot be viewed by you, probably because you have not posted in the discussion, the maximum editing time hasn\'t passed yet, the discussion has not started or the discussion has expired.';
-$string['hsuforum:createattachment'] = 'Create attachments';
-$string['hsuforum:deleteanypost'] = 'Delete any posts (anytime)';
-$string['hsuforum:deleteownpost'] = 'Delete own posts (within deadline)';
-$string['hsuforum:editanypost'] = 'Edit any post';
-$string['hsuforum:exportdiscussion'] = 'Export whole discussion';
-$string['hsuforum:exportownpost'] = 'Export own post';
-$string['hsuforum:exportpost'] = 'Export post';
+$string['forumimproved:createattachment'] = 'Create attachments';
+$string['forumimproved:deleteanypost'] = 'Delete any posts (anytime)';
+$string['forumimproved:deleteownpost'] = 'Delete own posts (within deadline)';
+$string['forumimproved:editanypost'] = 'Edit any post';
+$string['forumimproved:exportdiscussion'] = 'Export whole discussion';
+$string['forumimproved:exportownpost'] = 'Export own post';
+$string['forumimproved:exportpost'] = 'Export post';
 $string['forumintro'] = 'Description';
-$string['hsuforum:managesubscriptions'] = 'Manage subscriptions';
-$string['hsuforum:movediscussions'] = 'Move discussions';
-$string['hsuforum:postwithoutthrottling'] = 'Exempt from post threshold';
+$string['forumimproved:managesubscriptions'] = 'Manage subscriptions';
+$string['forumimproved:movediscussions'] = 'Move discussions';
+$string['forumimproved:postwithoutthrottling'] = 'Exempt from post threshold';
 $string['forumname'] = 'Forum name';
 $string['forumposts'] = 'Forum posts';
-$string['hsuforum:addnews'] = 'Add news';
-$string['hsuforum:addquestion'] = 'Add question';
-$string['hsuforum:rate'] = 'Rate posts';
-$string['hsuforum:replynews'] = 'Reply to news';
-$string['hsuforum:replypost'] = 'Reply to posts';
+$string['forumimproved:addnews'] = 'Add news';
+$string['forumimproved:addquestion'] = 'Add question';
+$string['forumimproved:rate'] = 'Rate posts';
+$string['forumimproved:replynews'] = 'Reply to news';
+$string['forumimproved:replypost'] = 'Reply to posts';
 $string['forums'] = 'Forums';
-$string['hsuforum:splitdiscussions'] = 'Split discussions';
-$string['hsuforum:startdiscussion'] = 'Start new discussions';
+$string['forumimproved:splitdiscussions'] = 'Split discussions';
+$string['forumimproved:startdiscussion'] = 'Start new discussions';
 $string['forumsubjecthidden'] = 'Subject (hidden)';
 $string['forumtracked'] = 'Unread posts are being tracked';
 $string['forumtrackednot'] = 'Unread posts are not being tracked';
@@ -223,15 +223,15 @@ $string['forumtype_help'] = 'There are 5 forum types:
 * Q and A forum - Students must first post their perspectives before viewing other students\' posts
 * Standard forum displayed in a blog-like format - An open forum where anyone can start a new discussion at any time, and in which discussion topics are displayed on one page with "Discuss this topic" links
 * Standard forum for general use - An open forum where anyone can start a new discussion at any time';
-$string['hsuforum:viewallratings'] = 'View all raw ratings given by individuals';
-$string['hsuforum:viewanyrating'] = 'View total ratings that anyone received';
-$string['hsuforum:viewdiscussion'] = 'View discussions';
-$string['hsuforum:viewhiddentimedposts'] = 'View hidden timed posts';
-$string['hsuforum:viewqandawithoutposting'] = 'Always see Q and A posts';
-$string['hsuforum:viewrating'] = 'View the total rating you received';
-$string['hsuforum:viewsubscribers'] = 'View subscribers';
-$string['hsuforum:viewposters'] = 'View forum posters';
-$string['hsuforum:allowprivate'] = 'Allow user to respond privately';
+$string['forumimproved:viewallratings'] = 'View all raw ratings given by individuals';
+$string['forumimproved:viewanyrating'] = 'View total ratings that anyone received';
+$string['forumimproved:viewdiscussion'] = 'View discussions';
+$string['forumimproved:viewhiddentimedposts'] = 'View hidden timed posts';
+$string['forumimproved:viewqandawithoutposting'] = 'Always see Q and A posts';
+$string['forumimproved:viewrating'] = 'View the total rating you received';
+$string['forumimproved:viewsubscribers'] = 'View subscribers';
+$string['forumimproved:viewposters'] = 'View forum posters';
+$string['forumimproved:allowprivate'] = 'Allow user to respond privately';
 $string['generalforum'] = 'Standard forum for general use';
 $string['generalforums'] = 'General forums';
 $string['hiddenforumpost'] = 'Hidden forum post';
@@ -291,7 +291,7 @@ Forums have many uses, such as:
 * A help centre where tutors and students can give advice
 * A one-on-one support area for private student-teacher communications (using a forum with separate groups and with one student per group)
 * For extension activities, for example ‘brain teasers’ for students to ponder and suggest solutions';
-$string['modulename_link'] = 'mod/hsuforum/view';
+$string['modulename_link'] = 'mod/forumimproved/view';
 $string['modulenameplural'] = 'Advanced Forums';
 $string['more'] = 'more';
 $string['movedmarker'] = '(Moved)';
@@ -338,9 +338,9 @@ $string['openmode1'] = 'No discussions, but replies are allowed';
 $string['openmode2'] = 'Discussions and replies are allowed';
 $string['overviewnumpostssince'] = '{$a} posts since last login';
 $string['overviewnumunread'] = '{$a} total unread';
-$string['page-mod-hsuforum-x'] = 'Any forum module page';
-$string['page-mod-hsuforum-view'] = 'Forum module main page';
-$string['page-mod-hsuforum-discuss'] = 'Forum module discussion thread page';
+$string['page-mod-forumimproved-x'] = 'Any forum module page';
+$string['page-mod-forumimproved-view'] = 'Forum module main page';
+$string['page-mod-forumimproved-discuss'] = 'Forum module discussion thread page';
 $string['parent'] = 'Show parent';
 $string['parentofthispost'] = 'Parent of this post';
 $string['pluginadministration'] = 'Forum administration';
@@ -476,7 +476,7 @@ $string['unsubscribeshort'] = 'Unsubscribe';
 $string['usermarksread'] = 'Manual message read marking';
 $string['viewalldiscussions'] = 'View all discussions';
 $string['warnafter'] = 'Post threshold for warning';
-$string['warnafter_help'] = 'Students can be warned as they approach the maximum number of posts allowed in a given period. This setting specifies after how many posts they are warned. Users with the capability mod/hsuforum:postwithoutthrottling are exempt from post limits.';
+$string['warnafter_help'] = 'Students can be warned as they approach the maximum number of posts allowed in a given period. This setting specifies after how many posts they are warned. Users with the capability mod/forumimproved:postwithoutthrottling are exempt from post limits.';
 $string['warnformorepost'] = 'Warning! There is more than one discussion in this forum - using the most recent';
 $string['yournewquestion'] = 'Your new question';
 $string['yournewtopic'] = 'Your new discussion topic';
@@ -492,8 +492,8 @@ $string['anonymousmiddlename'] = '';
 $string['anonymousalternatename'] = 'Anonymous';
 $string['reveal'] = 'Reveal yourself in this post';
 $string['reveal_help'] = 'If checked, then your name will be shown in the post and you will no longer be anonymous.';
-$string['hsuforum:revealpost'] = 'Reveal yourself in an anonymous forum';
-$string['hsuforum:viewflags'] = 'View post flags';
+$string['forumimproved:revealpost'] = 'Reveal yourself in an anonymous forum';
+$string['forumimproved:viewflags'] = 'View post flags';
 $string['viewposters'] = 'View posters';
 $string['substantive'] = 'Substantive';
 $string['toggle:bookmark'] = 'Bookmark';

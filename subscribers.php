@@ -18,7 +18,7 @@
 /**
  * This file is used to display and organise forum subscribers
  *
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -32,7 +32,7 @@ $id    = required_param('id',PARAM_INT);           // forum
 $group = optional_param('group',0,PARAM_INT);      // change of group
 $edit  = optional_param('edit',-1,PARAM_BOOL);     // Turn editing on and off
 
-$url = new moodle_url('/mod/hsuforum/subscribers.php', array('id'=>$id));
+$url = new moodle_url('/mod/forumimproved/subscribers.php', array('id'=>$id));
 if ($group !== 0) {
     $url->param('group', $group);
 }
@@ -41,17 +41,17 @@ if ($edit !== 0) {
 }
 $PAGE->set_url($url);
 
-$forum = $DB->get_record('hsuforum', array('id'=>$id), '*', MUST_EXIST);
+$forum = $DB->get_record('forumimproved', array('id'=>$id), '*', MUST_EXIST);
 $course = $DB->get_record('course', array('id'=>$forum->course), '*', MUST_EXIST);
-if (! $cm = get_coursemodule_from_instance('hsuforum', $forum->id, $course->id)) {
+if (! $cm = get_coursemodule_from_instance('forumimproved', $forum->id, $course->id)) {
     $cm->id = 0;
 }
 
 require_login($course, false, $cm);
 
 $context = context_module::instance($cm->id);
-if (!has_capability('mod/hsuforum:viewsubscribers', $context)) {
-    print_error('nopermissiontosubscribe', 'hsuforum');
+if (!has_capability('mod/forumimproved:viewsubscribers', $context)) {
+    print_error('nopermissiontosubscribe', 'forumimproved');
 }
 
 unset($SESSION->fromdiscussion);
@@ -60,14 +60,14 @@ $params = array(
     'context' => $context,
     'other' => array('forumid' => $forum->id),
 );
-$event = \mod_hsuforum\event\subscribers_viewed::create($params);
+$event = \mod_forumimproved\event\subscribers_viewed::create($params);
 $event->trigger();
 
-$forumoutput = $PAGE->get_renderer('mod_hsuforum');
+$forumoutput = $PAGE->get_renderer('mod_forumimproved');
 $currentgroup = groups_get_activity_group($cm);
 $options = array('forumid'=>$forum->id, 'currentgroup'=>$currentgroup, 'context'=>$context);
-$existingselector = new hsuforum_existing_subscriber_selector('existingsubscribers', $options);
-$subscriberselector = new hsuforum_potential_subscriber_selector('potentialsubscribers', $options);
+$existingselector = new forumimproved_existing_subscriber_selector('existingsubscribers', $options);
+$subscriberselector = new forumimproved_potential_subscriber_selector('potentialsubscribers', $options);
 $subscriberselector->set_existing_subscribers($existingselector->find_users(''));
 
 if (data_submitted()) {
@@ -81,15 +81,15 @@ if (data_submitted()) {
     if ($subscribe) {
         $users = $subscriberselector->get_selected_users();
         foreach ($users as $user) {
-            if (!hsuforum_subscribe($user->id, $id)) {
-                print_error('cannotaddsubscriber', 'hsuforum', '', $user->id);
+            if (!forumimproved_subscribe($user->id, $id)) {
+                print_error('cannotaddsubscriber', 'forumimproved', '', $user->id);
             }
         }
     } else if ($unsubscribe) {
         $users = $existingselector->get_selected_users();
         foreach ($users as $user) {
-            if (!hsuforum_unsubscribe($user->id, $id)) {
-                print_error('cannotremovesubscriber', 'hsuforum', '', $user->id);
+            if (!forumimproved_unsubscribe($user->id, $id)) {
+                print_error('cannotremovesubscriber', 'forumimproved', '', $user->id);
             }
         }
     }
@@ -98,23 +98,23 @@ if (data_submitted()) {
     $subscriberselector->set_existing_subscribers($existingselector->find_users(''));
 }
 
-$strsubscribers = get_string("subscribers", "hsuforum");
+$strsubscribers = get_string("subscribers", "forumimproved");
 $PAGE->navbar->add($strsubscribers);
 $PAGE->set_title($strsubscribers);
 $PAGE->set_heading($COURSE->fullname);
-if (has_capability('mod/hsuforum:managesubscriptions', $context)) {
+if (has_capability('mod/forumimproved:managesubscriptions', $context)) {
     if ($edit != -1) {
         $USER->subscriptionsediting = $edit;
     }
-    $PAGE->set_button(hsuforum_update_subscriptions_button($course->id, $id));
+    $PAGE->set_button(forumimproved_update_subscriptions_button($course->id, $id));
 } else {
     unset($USER->subscriptionsediting);
 }
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('forum', 'hsuforum').' '.$strsubscribers);
+echo $OUTPUT->heading(get_string('forum', 'forumimproved').' '.$strsubscribers);
 if (empty($USER->subscriptionsediting)) {
-    echo $forumoutput->subscriber_overview(hsuforum_subscribed_users($course, $forum, $currentgroup, $context), $forum->name, $forum, $course);
-} else if (hsuforum_is_forcesubscribed($forum)) {
+    echo $forumoutput->subscriber_overview(forumimproved_subscribed_users($course, $forum, $currentgroup, $context), $forum->name, $forum, $course);
+} else if (forumimproved_is_forcesubscribed($forum)) {
     $subscriberselector->set_force_subscribed(true);
     echo $forumoutput->subscribed_users($subscriberselector);
 } else {

@@ -18,13 +18,13 @@
  * Discussion Sorting Management
  *
  * @package    mod
- * @subpackage hsuforum
+ * @subpackage forumimproved
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class hsuforum_lib_discussion_sort implements Serializable {
+class forumimproved_lib_discussion_sort implements Serializable {
     /**
      * @var string
      */
@@ -69,20 +69,20 @@ class hsuforum_lib_discussion_sort implements Serializable {
      * @static
      * @param stdClass $forum
      * @param context_module $context
-     * @return hsuforum_lib_discussion_sort
+     * @return forumimproved_lib_discussion_sort
      */
     public static function get_from_session($forum, context_module $context) {
         global $SESSION;
 
         require_once(__DIR__.'/subscribe.php');
 
-        if (!empty($SESSION->hsuforum_lib_discussion_sort)) {
-            /** @var $instance hsuforum_lib_discussion_sort */
-            $instance = unserialize($SESSION->hsuforum_lib_discussion_sort);
+        if (!empty($SESSION->forumimproved_lib_discussion_sort)) {
+            /** @var $instance forumimproved_lib_discussion_sort */
+            $instance = unserialize($SESSION->forumimproved_lib_discussion_sort);
         } else {
             $instance = new self();
         }
-        $dsub = new hsuforum_lib_discussion_subscribe($forum, $context);
+        $dsub = new forumimproved_lib_discussion_subscribe($forum, $context);
         if (!$dsub->can_subscribe()) {
             $instance->disable('subscribe');
         }
@@ -91,16 +91,16 @@ class hsuforum_lib_discussion_sort implements Serializable {
 
     /**
      * @static
-     * @param hsuforum_lib_discussion_sort $sort
+     * @param forumimproved_lib_discussion_sort $sort
      */
-    public static function set_to_session(hsuforum_lib_discussion_sort $sort) {
+    public static function set_to_session(forumimproved_lib_discussion_sort $sort) {
         global $SESSION;
-        $SESSION->hsuforum_lib_discussion_sort = serialize($sort);
+        $SESSION->forumimproved_lib_discussion_sort = serialize($sort);
     }
 
     /**
      * @param array $disabled
-     * @return hsuforum_lib_discussion_sort
+     * @return forumimproved_lib_discussion_sort
      */
     public function set_disabled(array $disabled) {
         if (in_array('lastreply', $disabled)) {
@@ -133,7 +133,7 @@ class hsuforum_lib_discussion_sort implements Serializable {
 
     /**
      * @param string $direction
-     * @return hsuforum_lib_discussion_sort
+     * @return forumimproved_lib_discussion_sort
      */
     public function set_direction($direction) {
         if (!in_array($direction, $this->get_directionopts())) {
@@ -152,7 +152,7 @@ class hsuforum_lib_discussion_sort implements Serializable {
 
     /**
      * @param string $key
-     * @return hsuforum_lib_discussion_sort
+     * @return forumimproved_lib_discussion_sort
      */
     public function set_key($key) {
         if (!array_key_exists($key, $this->get_keyopts())) {
@@ -179,7 +179,7 @@ class hsuforum_lib_discussion_sort implements Serializable {
         $menu = array();
         foreach ($this->get_keyopts() as $key => $sort) {
             if (!in_array($key, $this->get_disabled())) {
-                $menu[$key] = get_string('discussionsortkey:'.$key, 'hsuforum');
+                $menu[$key] = get_string('discussionsortkey:'.$key, 'forumimproved');
             }
         }
         return $menu;
@@ -191,7 +191,7 @@ class hsuforum_lib_discussion_sort implements Serializable {
     public function get_direction_options_menu() {
         $menu = array();
         foreach ($this->get_directionopts() as $direction) {
-            $menu[$direction] = get_string('discussionsortdirection:'.$direction, 'hsuforum');
+            $menu[$direction] = get_string('discussionsortdirection:'.$direction, 'forumimproved');
         }
         return $menu;
     }
@@ -206,7 +206,7 @@ class hsuforum_lib_discussion_sort implements Serializable {
 
     /**
      * @param $key
-     * @return hsuforum_lib_discussion_sort
+     * @return forumimproved_lib_discussion_sort
      */
     public function disable($key) {
         $disabled = $this->get_disabled();

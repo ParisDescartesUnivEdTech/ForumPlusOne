@@ -3,68 +3,68 @@
     border-bottom:1px solid #ccc;
 }
 
-#page-local-joulegrader-view .hsuforum-post-pubdate:after {
+#page-local-joulegrader-view .forumimproved-post-pubdate:after {
     content: attr(title);
     padding-left: 1em;
 }
 
-#local-joulegrader .content .mod-hsuforum-posts-container,
-#local-joulegrader .content .mod-hsuforum-posts-container .content {
+#local-joulegrader .content .mod-forumimproved-posts-container,
+#local-joulegrader .content .mod-forumimproved-posts-container .content {
     text-align: left;
     margin-right: 0;
     overflow: hidden;
 }
-#local-joulegrader .content .mod-hsuforum-posts-container {
+#local-joulegrader .content .mod-forumimproved-posts-container {
     margin: 0 4%;
 }
 
 /* export page print styles */
-#page-mod-hsuforum-route.pagelayout-embedded a[aria-pressed="false"]{
+#page-mod-forumimproved-route.pagelayout-embedded a[aria-pressed="false"]{
     display:none;
 }
 
 
-.hsuforum_postincontext_dialog .yui3-widget-hd { cursor: move; }
+.forumimproved_postincontext_dialog .yui3-widget-hd { cursor: move; }
 
 /* Activity instance has a height set to 2em. This is madness, and we need to reset it or it causes lots of issues. */
-.activity.modtype_hsuforum .activityinstance {
+.activity.modtype_forumimproved .activityinstance {
     height:auto !important;
 }
 
 
-.path-mod-hsuforum #gradetype_warning.hidden { display: none; }
-.path-mod-hsuforum #gradetype_warning { color: #660000; padding-left: 5px; }
+.path-mod-forumimproved #gradetype_warning.hidden { display: none; }
+.path-mod-forumimproved #gradetype_warning { color: #660000; padding-left: 5px; }
 
 
 
 /* Hide things in the main view */
-.hsuforum-thread .hsuforum-footer-reply,
-.hsuforum-thread .hsuforum-thread-body,
-.hsuforum-thread .hsuforum-thread-content,
-.hsuforum-thread .hsuforum-replycount-link,
-.hsuforum-reply-wrapper + header {
+.forumimproved-thread .forumimproved-footer-reply,
+.forumimproved-thread .forumimproved-thread-body,
+.forumimproved-thread .forumimproved-thread-content,
+.forumimproved-thread .forumimproved-replycount-link,
+.forumimproved-reply-wrapper + header {
     display: none;
 }
 /* Show things if thread is expaned or on single discussion page */
-#page-mod-hsuforum-discuss .hsuforum-footer-reply,
-#page-mod-hsuforum-discuss .hsuforum-thread-body,
-#page-mod-hsuforum-discuss .hsuforum-thread-content,
-.hsuforum-thread-article-expanded .hsuforum-footer-reply,
-.hsuforum-thread-article-expanded .hsuforum-thread-body,
-.forumtype-blog .hsuforum-thread-body,
-.forumtype-blog .hsuforum-thread-content,
-.forumtype-blog .hsuforum-replycount-link{
+#page-mod-forumimproved-discuss .forumimproved-footer-reply,
+#page-mod-forumimproved-discuss .forumimproved-thread-body,
+#page-mod-forumimproved-discuss .forumimproved-thread-content,
+.forumimproved-thread-article-expanded .forumimproved-footer-reply,
+.forumimproved-thread-article-expanded .forumimproved-thread-body,
+.forumtype-blog .forumimproved-thread-body,
+.forumtype-blog .forumimproved-thread-content,
+.forumtype-blog .forumimproved-replycount-link{
     display: block;
 }
 
-.forumtype-blog .hsuforum-replycount,
-.forumtype-blog .hsuforum-unreadcount,
-.forumtype-blog .hsuforum-thread-title + .hsuforum-thread-meta {
+.forumtype-blog .forumimproved-replycount,
+.forumtype-blog .forumimproved-unreadcount,
+.forumtype-blog .forumimproved-thread-title + .forumimproved-thread-meta {
     display: none;
 }
 
-.forumtype-blog  .hsuforum-thread-title,
-.forumtype-blog  .hsuforum-thread-meta {
+.forumtype-blog  .forumimproved-thread-title,
+.forumtype-blog  .forumimproved-thread-meta {
     clear:both;
     display:block;
     width:100%;
@@ -73,24 +73,24 @@
 }
 
 /* Hide cancel button on forum reply in footer */
-.hsuforum-footer-reply .hsuforum-cancel{
+.forumimproved-footer-reply .forumimproved-cancel{
     display:none;
 }
 /* Hidden advanced editor */
-.path-mod-hsuforum #hiddenadvancededitorcont div {
+.path-mod-forumimproved #hiddenadvancededitorcont div {
     display:none;
 }
 
 /* Hide post itself when doing inline editing */
-.hsuforum-thread-edit .hsuforum-thread-header,
-.hsuforum-thread-edit .hsuforum-thread-tools,
-.hsuforum-thread-edit .hsuforum-thread-content,
-.hsuforum-post-edit > .hsuforum-post-figure,
-.hsuforum-post-edit > .hsuforum-post-body {
+.forumimproved-thread-edit .forumimproved-thread-header,
+.forumimproved-thread-edit .forumimproved-thread-tools,
+.forumimproved-thread-edit .forumimproved-thread-content,
+.forumimproved-post-edit > .forumimproved-post-figure,
+.forumimproved-post-edit > .forumimproved-post-body {
     display: none;
 }
 
-#page-mod-hsuforum-view #intro.generalbox {
+#page-mod-forumimproved-view #intro.generalbox {
     border:0;
     -webkit-box-shadow:none;
     box-shadow:none;
@@ -103,9 +103,9 @@
 -------------------------*/
 
 /* borderbox reset */
-.mod-hsuforum-posts-container.article *,
-.mod-hsuforum-posts-container.article *:before,
-.mod-hsuforum-posts-container.article *:after {
+.mod-forumimproved-posts-container.article *,
+.mod-forumimproved-posts-container.article *:before,
+.mod-forumimproved-posts-container.article *:after {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -113,67 +113,67 @@
 
 
 /* consistent padding */
-.hsuforum-thread-figure,
-.hsuforum-thread-content,
-.hsuforum-thread-tools,
-.hsuforum-post-figure,
-.hsuforum-thread-body {
+.forumimproved-thread-figure,
+.forumimproved-thread-content,
+.forumimproved-thread-tools,
+.forumimproved-post-figure,
+.forumimproved-thread-body {
     padding:0.33em 2.36%;
 }
 
 /* bold text to be bold */
-#page-mod-hsuforum-discuss strong,
-#page-mod-hsuforum-view strong {
+#page-mod-forumimproved-discuss strong,
+#page-mod-forumimproved-view strong {
     font-weight:700;
 }
 
 /* header issue in express */
-.hsuforum-thread-title h4{
+.forumimproved-thread-title h4{
     text-align:left;
 }
 
 
 /* all imgs responsive */
-.hsuforum-thread img {
+.forumimproved-thread img {
     max-width:100%;
     height:auto;
 }
 
 
-.hsuforum-thread-article,
-.hsuforum-reply,
-.hsuforum-thread-replies{
+.forumimproved-thread-article,
+.forumimproved-reply,
+.forumimproved-thread-replies{
     padding:0.5em 2.36%;
 }
-.hsuforum-post-content .posting{
+.forumimproved-post-content .posting{
     padding:1em 0;
 }
-.hsuforum-post-content-hidden {
+.forumimproved-post-content-hidden {
     padding:1em 2.36%;
 }
 
-#page-mod-hsuforum-search #searchform {
+#page-mod-forumimproved-search #searchform {
     max-width: 35em;
 }
 
-#page-mod-hsuforum-search #searchform label {
+#page-mod-forumimproved-search #searchform label {
     display: block;
 }
-#page-mod-hsuforum-search .hsuforum-post:before {
+#page-mod-forumimproved-search .forumimproved-post:before {
     display:none;
 }
 
 /* FORUM HEADER */
-.hsuforum-search .helptooltip {
+.forumimproved-search .helptooltip {
     display: none;
 }
 
-#page-mod-hsuforum-search .hsuforum-search #searchforums {
+#page-mod-forumimproved-search .forumimproved-search #searchforums {
     left: 0;
     position: relative;
 }
 
-#page-mod-hsuforum-view #selectgroup label {
+#page-mod-forumimproved-view #selectgroup label {
     display:none;
 }
 #newdiscussionform div,
@@ -182,7 +182,7 @@
 }
 
 /* THREAD AND POSTS */
-.hsuforum-thread {
+.forumimproved-thread {
     border-bottom:1px solid #ddd;
     margin:0.5em 0;
     padding:0.5em 2.36%;
@@ -193,11 +193,11 @@
         hyphens: auto;
 }
 
-#page-mod-hsuforum-discuss .hsuforum-thread{
+#page-mod-forumimproved-discuss .forumimproved-thread{
     border-color:transparent;
 }
-#page-mod-hsuforum-discuss .hsuforum-thread-author,
-#page-mod-hsuforum-discuss .hsuforum-thread-header {
+#page-mod-forumimproved-discuss .forumimproved-thread-author,
+#page-mod-forumimproved-discuss .forumimproved-thread-header {
     width:100%;
     padding:0.33em 2.34%;
 }
@@ -205,16 +205,16 @@
 
 
 /* THREAD AND POST TITLES */
-.hsuforum-thread-title >h4 {
+.forumimproved-thread-title >h4 {
     margin:0;
     padding-right:2.34%;
 }
 
-#page-mod-hsuforum-view:not(.forumtype-blog) .hsuforum-thread-title > h4{
+#page-mod-forumimproved-view:not(.forumtype-blog) .forumimproved-thread-title > h4{
     font-size:1.3em;
 }
 
-.hsuforum-post-byline{
+.forumimproved-post-byline{
     font-size:1em;
     font-weight:normal;
     line-height:1.5;
@@ -222,43 +222,43 @@
     margin-bottom:0;
 }
 
-.hsuforum-post-title{
+.forumimproved-post-title{
     font-size:0.85em;
     font-style:oblique;
     -webkit-transition: opacity .3s;
     transition: opacity .3s;
     opacity:0.3;
 }
-.hsuforum-post:hover .hsuforum-post-title{
+.forumimproved-post:hover .forumimproved-post-title{
     opacity:0.85;
 }
-.hsuforum-thread-content {
+.forumimproved-thread-content {
     clear:both;
 }
 
 
-.hsuforum-thread-flags {
+.forumimproved-thread-flags {
     text-align:right;
 }
 
-.hsuforum-thread-replies-list {
+.forumimproved-thread-replies-list {
     list-style:none;
     margin:0;
 }
-.hsuforum-thread-replies-meta{
+.forumimproved-thread-replies-meta{
     display:block;
 }
-.hsuforum-replycount{
+.forumimproved-replycount{
     font-size:small;
 }
 
 /* POST LIST STYLES */
-.hsuforum-post{
+.forumimproved-post{
     position:relative;
     clear:both;
 }
 
-.hsuforum-post:before{
+.forumimproved-post:before{
     content: attr(data-count);
     position: absolute;
     top: 3em;
@@ -272,17 +272,17 @@
     line-height: 2;
 }
 
-.hsuforum-post:hover:before{
+.forumimproved-post:hover:before{
     background-color: #333;
     -webkit-transition: all .3s;
     transition: all .3s;
 }
 /* for focus/target spacinging in themes with a fixed header */
-.hsuforum-post-wrapper{
+.forumimproved-post-wrapper{
     padding-top:3em;
 }
 
-.hsuforum-parent-post-link {
+.forumimproved-parent-post-link {
 border-radius: 50%;
 background-color: orange;
 display: inline-block;
@@ -294,12 +294,12 @@ color: white !important;
 }
 
 /* user image secions */
-.hsuforum-thread-author,
-.hsuforum-post-figure{
+.forumimproved-thread-author,
+.forumimproved-post-figure{
     text-align:center;
 }
-.hsuforum-thread-author .userpicture,
-.hsuforum-post-figure .userpicture{
+.forumimproved-thread-author .userpicture,
+.forumimproved-post-figure .userpicture{
     width:75px;
     max-width:100%;
     height:auto;
@@ -307,9 +307,9 @@ color: white !important;
     margin:0 auto;
     display:block;
 }
-.hsuforum-thread-participants .userpicture,
-.hsuforum-thread-replies-meta .userpicture,
-.hsuforum-post-byline .userpicture{
+.forumimproved-thread-participants .userpicture,
+.forumimproved-thread-replies-meta .userpicture,
+.forumimproved-post-byline .userpicture{
     display: inline-block;
     width: 32px;
     max-width: 32px;
@@ -322,7 +322,7 @@ color: white !important;
 
 
 /* unread posts flag */
-.hsuforum-unreadcount {
+.forumimproved-unreadcount {
     background-color: #FFA500;
     color: #FFF !important;
     display:inline-block;
@@ -333,7 +333,7 @@ color: white !important;
     line-height:2;
     border-radius:3px;
 }
-.hsuforum-post .hsuforum-unreadcount {
+.forumimproved-post .forumimproved-unreadcount {
     display:inline-block;
 
 }
@@ -345,19 +345,19 @@ color: white !important;
 }
 
 
-.hsuforum-thread-content .attachments {
+.forumimproved-thread-content .attachments {
     margin-top: 1em;
 }
 
-.hsuforum-tools{
+.forumimproved-tools{
     font-family:'Roboto','Open sans','Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight:normal;
     padding-bottom:1em;
 }
-.hsuforum-tools .hsuforum-reply-link{
+.forumimproved-tools .forumimproved-reply-link{
     margin-left:0;
 }
-.hsuforum-tools a:not(.btn) {
+.forumimproved-tools a:not(.btn) {
     padding: 0 0.2em;
 }
 
@@ -368,21 +368,21 @@ color: white !important;
 /* -------------------------
 ACTIONS
 -------------------------*/
-.hsuforum-toggle {
+.forumimproved-toggle {
     display:inline-block;
     border-radius:0;
     padding:0 0.2em;
     color:white !important;
     font-family:"Roboto",'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
-.hsuforum-toggle .svg-icon {
+.forumimproved-toggle .svg-icon {
     fill:#ddd;
     width: 1.3em;
     height: 1.3em;
     display:inline-block;
 }
 
-.hsuforum-toggle:hover {
+.forumimproved-toggle:hover {
     -webkit-transform: scale(1.06);
     -ms-transform: scale(1.06);
     transform: scale(1.06);
@@ -391,17 +391,17 @@ ACTIONS
     background-color:#eee;
 }
 
-.hsuforum-toggle-subscribe.hsuforum-toggled .svg-icon,
-.hsuforum-toggle-subscribe:hover .svg-icon{
+.forumimproved-toggle-subscribe.forumimproved-toggled .svg-icon,
+.forumimproved-toggle-subscribe:hover .svg-icon{
     fill:#ffac0d;
 }
 
-.hsuforum-toggle-substantive.hsuforum-toggled .svg-icon,
-.hsuforum-toggle-substantive:hover .svg-icon{
+.forumimproved-toggle-substantive.forumimproved-toggled .svg-icon,
+.forumimproved-toggle-substantive:hover .svg-icon{
     fill:#5fa9dd;
 }
-.hsuforum-toggle-bookmark.hsuforum-toggled .svg-icon,
-.hsuforum-toggle-bookmark:hover .svg-icon{
+.forumimproved-toggle-bookmark.forumimproved-toggled .svg-icon,
+.forumimproved-toggle-bookmark:hover .svg-icon{
     fill:#f05454;
 }
 
@@ -414,27 +414,27 @@ ACTIONS
 FUN WITH FORMS
 -------------------------*/
 
-.hsuforum-reply-wrapper {
+.forumimproved-reply-wrapper {
     clear: both;
 }
 
 
-.hsuforum-form fieldset{
+.forumimproved-form fieldset{
     margin:0 auto;
 }
 
-.hsuforum-form legend {
+.forumimproved-form legend {
     margin:1em 0;
     font-size:1.25em;
 }
 
-.hsuforum-form label {
+.forumimproved-form label {
     display:block;
     margin-bottom:0.5em;
 }
 
 
-.hsuforum-form .hsuforum-textarea {
+.forumimproved-form .forumimproved-textarea {
     cursor: text;
     -moz-appearance: textfield-multiline;
     -webkit-appearance: textarea;
@@ -450,71 +450,71 @@ FUN WITH FORMS
 }
 
 
-.hsuforum-form .hidden {
+.forumimproved-form .hidden {
     display: none;
 }
 
-.hsuforum-form div[contenteditable=true]:empty:not(:focus):before {
+.forumimproved-form div[contenteditable=true]:empty:not(:focus):before {
     content: attr(data-placeholder);
     color: #999;
 }
 
 
-.hsuforum-form button {
+.forumimproved-form button {
     clear:both;
 }
 
-.hsuforum-use-advanced {
+.forumimproved-use-advanced {
     clear:both;
     float:right;
 }
 
-.hsuforum-validation-errors.notifyproblem {
+.forumimproved-validation-errors.notifyproblem {
     text-align: left;
 }
-.path-mod-hsuforum .discussioncontrols {
+.path-mod-forumimproved .discussioncontrols {
     text-align:center;
 }
 
 /* -------------------------  MEDIA Qs  -------------------------*/
 
 @media all and (min-width: 35em) {
-    #page-mod-hsuforum-view .groupselector{
+    #page-mod-forumimproved-view .groupselector{
         text-align:right;
     }
 
     /* GRID ME UP */
-    .hsuforum-thread-author{
+    .forumimproved-thread-author{
         width:18%;
         margin-right:5.6%;
         float:left;
     }
 
 
-    .hsuforum-thread-header,
-    .hsuforum-thread-title{
+    .forumimproved-thread-header,
+    .forumimproved-thread-title{
         float:left;
         width:76.4%;
     }
 
-    .hsuforum-thread-meta{
+    .forumimproved-thread-meta{
         float:right;
         width:23.6%;
         text-align:right;
     }
 
-    .hsuforum-post-figure {
+    .forumimproved-post-figure {
         float:left;
         width:15.73%;
 
     }
-    .hsuforum-post-body{
+    .forumimproved-post-body{
         float:left;
         width:84.27%;
     }
 
 
-    .depth0 .hsuforum-reply-wrapper{
+    .depth0 .forumimproved-reply-wrapper{
         margin-left:15.73%;
     }
     .hsuform-post-date{
@@ -522,78 +522,78 @@ FUN WITH FORMS
         line-height:3;
     }
 
-    .hsuforum-post-byline{
+    .forumimproved-post-byline{
         display:inline;
     }
 
-    .hsuforum-postflagging{
+    .forumimproved-postflagging{
         float:right;
     }
 
     /* increase form with */
-    .hsuforum-form input[type=text],
-    .hsuforum-form textarea {
+    .forumimproved-form input[type=text],
+    .forumimproved-form textarea {
         width:100%;
     }
 
-    .hsuforum-add-discussion,
-    .hsuforum-search {
+    .forumimproved-add-discussion,
+    .forumimproved-search {
         width:50%;
         display:inline-block;
         text-align:left;
     }
-    .hsuforum-search {
+    .forumimproved-search {
         text-align:right;
     }
     /* search on discuss page only for single simple discussion */
-    #page-mod-hsuforum-discuss .hsuforum-search {
+    #page-mod-forumimproved-discuss .forumimproved-search {
         width: 100%;
     }
-    #hsuforum-filter-options {
+    #forumimproved-filter-options {
         text-align:right;
     }
-    .hsuforum-discussion-sort {
+    .forumimproved-discussion-sort {
         display:inline-block;
     }
 
     #menudsortdirection + input {
         display:inline;
     }
-    .hsuforum-parent-post-link{
+    .forumimproved-parent-post-link{
         float:left;
     }
 
 
 
 
-    .hsuforum-post[data-depth] .hsuforum-post-wrapper{margin-left:31.45%;} /* max depth catch all */
+    .forumimproved-post[data-depth] .forumimproved-post-wrapper{margin-left:31.45%;} /* max depth catch all */
     /* 5.24 */
-    .hsuforum-post[data-depth="0"] .hsuforum-post-wrapper{margin-left:0%;}
-    .hsuforum-post[data-depth="1"] .hsuforum-post-wrapper{margin-left:15.73%;}
-    .hsuforum-post[data-depth="2"] .hsuforum-post-wrapper{margin-left:20.97%;}
-    .hsuforum-post[data-depth="3"] .hsuforum-post-wrapper{margin-left:26.21%;}
-    .hsuforum-post[data-depth="4"] .hsuforum-post-wrapper{margin-left:31.45%;}
-    /* .hsuforum-post[data-depth="5"] .hsuforum-post-wrapper{margin-left:36.69%;} */
+    .forumimproved-post[data-depth="0"] .forumimproved-post-wrapper{margin-left:0%;}
+    .forumimproved-post[data-depth="1"] .forumimproved-post-wrapper{margin-left:15.73%;}
+    .forumimproved-post[data-depth="2"] .forumimproved-post-wrapper{margin-left:20.97%;}
+    .forumimproved-post[data-depth="3"] .forumimproved-post-wrapper{margin-left:26.21%;}
+    .forumimproved-post[data-depth="4"] .forumimproved-post-wrapper{margin-left:31.45%;}
+    /* .forumimproved-post[data-depth="5"] .forumimproved-post-wrapper{margin-left:36.69%;} */
 }
 
 @media all and (min-width: 62em) {
     /* REALLY BIG SCREENS */
-    #page-mod-hsuforum-view #region-main{
+    #page-mod-forumimproved-view #region-main{
         max-width:60.5em;
         padding:1em 2%;
     }
 
-    .forumtype-single .hsuforum-thread-header,
-    .forumtype-single .hsuforum-thread-title,
-    .forumtype-single .hsuforum-thread-meta {
+    .forumtype-single .forumimproved-thread-header,
+    .forumtype-single .forumimproved-thread-title,
+    .forumtype-single .forumimproved-thread-meta {
         display:block;
         width:100%;
         float:none;
     }
-    .forumtype-single .hsuforum-thread-meta {
+    .forumtype-single .forumimproved-thread-meta {
         text-align:left;
     }
-    .forumtype-single .hsuforum-thread-participants {
+    .forumtype-single .forumimproved-thread-participants {
         display:inline-block;
         margin-left:3%;
         min-width:80%;
@@ -604,32 +604,32 @@ FUN WITH FORMS
 
 /* small screen */
 @media (max-width: 35em) {
-    .hsuforum-thread-meta,
-    .hsuforum-thread-replies-meta,
-    .hsuforum-thread-figure,
+    .forumimproved-thread-meta,
+    .forumimproved-thread-replies-meta,
+    .forumimproved-thread-figure,
     .hsuform-post-date,
-    .hsuforum-postflagging {
+    .forumimproved-postflagging {
 		clear:both;
         display:block;
 		width:100%;
 		float:none;
 	}
-    .hsuforum-post-figure{
+    .forumimproved-post-figure{
         float:left;
     }
-    .hsuforum-post-figure .userpicture {
+    .forumimproved-post-figure .userpicture {
         max-width:50px;
     }
     .hsuform-post-date,
-    .hsuforum-postflagging {
+    .forumimproved-postflagging {
         text-align:right;
     }
 
-    .hsuforum-thread{
+    .forumimproved-thread{
         padding:1em 1.18%;
         margin:0 2.36%;
     }
-    .hsuforum-post-byline{
+    .forumimproved-post-byline{
         font-size:0.9em;
         line-height:1;
     }
@@ -640,39 +640,39 @@ FUN WITH FORMS
 
 /* recent activity, recent posts output in non-Snap themes */
 
-.section .activity.modtype_hsuforum .activityinstance div {
+.section .activity.modtype_forumimproved .activityinstance div {
     display:block; /* overwrite core shame */
 }
 
-.block_flexpagemod_hsuforum .hsuforum-recent-heading,
-.hsuforum.modtype_hsuforum .hsuforum-recent-heading,
-.section .activity.modtype_hsuforum .availabilityinfo {
+.block_flexpagemod_forumimproved .forumimproved-recent-heading,
+.forumimproved.modtype_forumimproved .forumimproved-recent-heading,
+.section .activity.modtype_forumimproved .availabilityinfo {
     font-size:1em;
     clear:both;
 }
-.block_flexpagemod_hsuforum .snap-media-object,
-.hsuforum.modtype_hsuforum .snap-media-object,
+.block_flexpagemod_forumimproved .snap-media-object,
+.forumimproved.modtype_forumimproved .snap-media-object,
 .block_recent_activity .snap-media-object {
     margin-bottom: 0.3em;
     font-size:small;
 }
-.block_flexpagemod_hsuforum .snap-media-object,
-.hsuforum.modtype_hsuforum .snap-media-object {
+.block_flexpagemod_forumimproved .snap-media-object,
+.forumimproved.modtype_forumimproved .snap-media-object {
     width:50%;
     float:left;
     min-width: 200px;
 }
 
-.block_flexpagemod_hsuforum .snap-media-object > a,
-.modtype_hsuforum .snap-media-object > a,
+.block_flexpagemod_forumimproved .snap-media-object > a,
+.modtype_forumimproved .snap-media-object > a,
 .block_recent_activity .snap-media-object > a {
     text-decoration: none;
 }
 
-.format-flexpage .block_flexpagemod_hsuforum .snap-media-object > a > img,
-.block_flexpagemod_hsuforum .snap-media-object > img,
-.modtype_hsuforum .snap-media-object > a > img,
-.modtype_hsuforum .snap-media-object > img,
+.format-flexpage .block_flexpagemod_forumimproved .snap-media-object > a > img,
+.block_flexpagemod_forumimproved .snap-media-object > img,
+.modtype_forumimproved .snap-media-object > a > img,
+.modtype_forumimproved .snap-media-object > img,
 .block_recent_activity .snap-media-object > a > img,
 .block_recent_activity .snap-media-object > img {
     float: left;
@@ -683,25 +683,25 @@ FUN WITH FORMS
     vertical-align: baseline;
 }
 
-.block_flexpagemod_hsuforum .snap-media-body,
-.activity.modtype_hsuforum .snap-media-body,
+.block_flexpagemod_forumimproved .snap-media-body,
+.activity.modtype_forumimproved .snap-media-body,
 .block_recent_activity .snap-media-body {
     overflow: hidden;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.block_flexpagemod_hsuforum .snap-media-body p,
-.modtype_hsuforum .snap-media-body p,
+.block_flexpagemod_forumimproved .snap-media-body p,
+.modtype_forumimproved .snap-media-body p,
 .block_recent_activity .snap-media-body p {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.format-flexpage .block_flexpagemod_hsuforum .snap-media-body  h3,
-.block_flexpagemod_hsuforum .snap-media-body  h3 small,
-.modtype_hsuforum .snap-media-body  h3,
-.modtype_hsuforum .snap-media-body  h3 small,
+.format-flexpage .block_flexpagemod_forumimproved .snap-media-body  h3,
+.block_flexpagemod_forumimproved .snap-media-body  h3 small,
+.modtype_forumimproved .snap-media-body  h3,
+.modtype_forumimproved .snap-media-body  h3 small,
 .block_recent_activity .snap-media-body  h3,
 .block_recent_activity .snap-media-body  h3 small {
     color: inherit;
@@ -710,47 +710,47 @@ FUN WITH FORMS
     margin: 0;
 }
 
-.block_flexpagemod_hsuforum .snap-media-body  h3 small,
-.modtype_hsuforum .snap-media-body  h3 small,
+.block_flexpagemod_forumimproved .snap-media-body  h3 small,
+.modtype_forumimproved .snap-media-body  h3 small,
 .block_recent_activity .snap-media-body  h3 small {
         opacity: 0.75;
 }
 
-.block_flexpagemod_hsuforum .snap-media-meta,
-.modtype_hsuforum .snap-media-meta,
+.block_flexpagemod_forumimproved .snap-media-meta,
+.modtype_forumimproved .snap-media-meta,
 .block_recent_activity .snap-media-meta {
     display: block;
     font-size: small;
     opacity: 0.75;
 }
 
-.block_flexpagemod_hsuforum .snap-media-meta  time,
-.modtype_hsuforum .snap-media-meta  time,
+.block_flexpagemod_forumimproved .snap-media-meta  time,
+.modtype_forumimproved .snap-media-meta  time,
 .block_recent_activity .snap-media-meta  time {
     margin-right: 1em;
 }
 
-.format-flexpage .block_flexpagemod_hsuforum .snap-media-object h3 {
+.format-flexpage .block_flexpagemod_forumimproved .snap-media-object h3 {
     padding: 0;
 }
 
-.format-flexpage  .block_flexpagemod_hsuforum .activityinstance,
-.modtype_hsuforum .activityinstance{
+.format-flexpage  .block_flexpagemod_forumimproved .activityinstance,
+.modtype_forumimproved .activityinstance{
     display: block !important;
 }
 
-.modtype_hsuforum.activity:before,
-.modtype_hsuforum.activity:after,
-.format-flexpage  .block_flexpagemod_hsuforum li.activity:before,
-.format-flexpage  .block_flexpagemod_hsuforum li.activity:after,
-.activity.modtype_hsuforum .unread:before {
+.modtype_forumimproved.activity:before,
+.modtype_forumimproved.activity:after,
+.format-flexpage  .block_flexpagemod_forumimproved li.activity:before,
+.format-flexpage  .block_flexpagemod_forumimproved li.activity:after,
+.activity.modtype_forumimproved .unread:before {
     content: "";
     display: table;
 }
 
-.modtype_hsuforum .no-overflow,
-.modtype_hsuforum.activity:after,
-.format-flexpage  .block_flexpagemod_hsuforum li.activity:after {
+.modtype_forumimproved .no-overflow,
+.modtype_forumimproved.activity:after,
+.format-flexpage  .block_flexpagemod_forumimproved li.activity:after {
     clear: both;
 }
 
@@ -782,16 +782,16 @@ FUN WITH FORMS
     float:right;
 }
 
-.hsuforum-threshold-blocked .hsuforum-post-figure,
-.hsuforum-threshold-blocked .hsuforum-post-body {
+.forumimproved-threshold-blocked .forumimproved-post-figure,
+.forumimproved-threshold-blocked .forumimproved-post-body {
     display: none;
 }
 
-.format-flexpage .block_flexpagemod_hsuforum li.activity:before,
-.format-flexpage .block_flexpagemod_hsuforum li.activity:after,
-.modtype_hsuforum.activity:before,
-.modtype_hsuforum.activity:after,
-.modtype_hsuforum.activity .unread:before {
+.format-flexpage .block_flexpagemod_forumimproved li.activity:before,
+.format-flexpage .block_flexpagemod_forumimproved li.activity:after,
+.modtype_forumimproved.activity:before,
+.modtype_forumimproved.activity:after,
+.modtype_forumimproved.activity .unread:before {
     content: "";
     display: table;
     clear: both;

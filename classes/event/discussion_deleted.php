@@ -15,19 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_hsuforum discussion deleted event.
+ * The mod_forumimproved discussion deleted event.
  *
- * @package    mod_hsuforum
+ * @package    mod_forumimproved
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_hsuforum\event;
+namespace mod_forumimproved\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_hsuforum discussion deleted event class.
+ * The mod_forumimproved discussion deleted event class.
  *
  * @property-read array $other {
  *      Extra information about the event.
@@ -35,7 +35,7 @@ defined('MOODLE_INTERNAL') || die();
  *      - int forumid: The id of the forum the discussion is in.
  * }
  *
- * @package    mod_hsuforum
+ * @package    mod_forumimproved
  * @since      Moodle 2.7
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -50,7 +50,7 @@ class discussion_deleted extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'd';
         $this->data['edulevel'] = self::LEVEL_OTHER;
-        $this->data['objecttable'] = 'hsuforum_discussions';
+        $this->data['objecttable'] = 'forumimproved_discussions';
     }
 
     /**
@@ -69,7 +69,7 @@ class discussion_deleted extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventdiscussiondeleted', 'mod_hsuforum');
+        return get_string('eventdiscussiondeleted', 'mod_forumimproved');
     }
 
     /**
@@ -78,7 +78,7 @@ class discussion_deleted extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/hsuforum/view.php', array('id' => $this->contextinstanceid));
+        return new \moodle_url('/mod/forumimproved/view.php', array('id' => $this->contextinstanceid));
     }
 
     /**
@@ -87,7 +87,7 @@ class discussion_deleted extends \core\event\base {
      * @return array|null
      */
     protected function get_legacy_logdata() {
-        return array($this->courseid, 'hsuforum', 'delete discussion', 'view.php?id=' . $this->contextinstanceid,
+        return array($this->courseid, 'forumimproved', 'delete discussion', 'view.php?id=' . $this->contextinstanceid,
             $this->other['forumid'], $this->contextinstanceid);
     }
 

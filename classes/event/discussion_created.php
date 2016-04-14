@@ -15,19 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_hsuforum discussion created event.
+ * The mod_forumimproved discussion created event.
  *
- * @package    mod_hsuforum
+ * @package    mod_forumimproved
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_hsuforum\event;
+namespace mod_forumimproved\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_hsuforum discussion created event class.
+ * The mod_forumimproved discussion created event class.
  *
  * @property-read array $other {
  *      Extra information about the event.
@@ -35,7 +35,7 @@ defined('MOODLE_INTERNAL') || die();
  *      - int forumid: The id of the forum the discussion is in.
  * }
  *
- * @package    mod_hsuforum
+ * @package    mod_forumimproved
  * @since      Moodle 2.7
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -49,7 +49,7 @@ class discussion_created extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
-        $this->data['objecttable'] = 'hsuforum_discussions';
+        $this->data['objecttable'] = 'forumimproved_discussions';
     }
 
     /**
@@ -68,7 +68,7 @@ class discussion_created extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventdiscussioncreated', 'mod_hsuforum');
+        return get_string('eventdiscussioncreated', 'mod_forumimproved');
     }
 
     /**
@@ -77,7 +77,7 @@ class discussion_created extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/hsuforum/discuss.php', array('d' => $this->objectid));
+        return new \moodle_url('/mod/forumimproved/discuss.php', array('d' => $this->objectid));
     }
 
     /**
@@ -87,10 +87,10 @@ class discussion_created extends \core\event\base {
      */
     protected function get_legacy_logdata() {
 
-        // The legacy log table expects a relative path to /mod/hsuforum/.
-        $logurl = substr($this->get_url()->out_as_local_url(), strlen('/mod/hsuforum/'));
+        // The legacy log table expects a relative path to /mod/forumimproved/.
+        $logurl = substr($this->get_url()->out_as_local_url(), strlen('/mod/forumimproved/'));
 
-        return array($this->courseid, 'hsuforum', 'add discussion', $logurl, $this->objectid, $this->contextinstanceid);
+        return array($this->courseid, 'forumimproved', 'add discussion', $logurl, $this->objectid, $this->contextinstanceid);
     }
 
     /**

@@ -1,5 +1,5 @@
 {
-    "moodle-mod_hsuforum-livelog": {
+    "moodle-mod_forumimproved-livelog": {
         "requires": [
             "widget"
         ]

@@ -18,7 +18,7 @@
 /**
  * The module forums external functions unit tests
  *
- * @package    mod_hsuforum
+ * @package    mod_forumimproved
  * @category   external
  * @copyright  2013 Andrew Nicols
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
-class mod_hsuforum_maildigest_testcase extends advanced_testcase {
+class mod_forumimproved_maildigest_testcase extends advanced_testcase {
 
     /**
      * Keep track of the message and mail sinks that we set up for each
@@ -70,17 +70,17 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
 
         // Tell Moodle that we've not sent any digest messages out recently.
         // NOTE: we can't temporarilly set the global variable anymore now that the config is a plugin config
-        // $CFG->hsuforum_digestmailtimelast = 0;
-        $this->initialconfig->digestmailtimelast = get_config('hsuforum', 'digestmailtimelast');
-        set_config('digestmailtimelast', 0, 'hsuforum');
+        // $CFG->forumimproved_digestmailtimelast = 0;
+        $this->initialconfig->digestmailtimelast = get_config('forumimproved', 'digestmailtimelast');
+        set_config('digestmailtimelast', 0, 'forumimproved');
 
 
         // And set the digest sending time to a negative number - this has
         // the effect of making it 11pm the previous day.
         // NOTE: we can't temporarilly set the global variable anymore now that the config is a plugin config
-        // $CFG->hsuforum_digestmailtime = -1;
-        $this->initialconfig->digestmailtime = get_config('hsuforum', 'digestmailtime');
-        set_config('digestmailtime', -1, 'hsuforum');
+        // $CFG->forumimproved_digestmailtime = -1;
+        $this->initialconfig->digestmailtime = get_config('forumimproved', 'digestmailtime');
+        set_config('digestmailtime', -1, 'forumimproved');
 
         // Forcibly reduce the maxeditingtime to a one second to ensure that
         // messages are sent out.
@@ -101,8 +101,8 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
         $this->helper->mailsink->close();
 
         // Restore config variables.
-        set_config('digestmailtimelast', $this->initialconfig->digestmailtimelast, 'hsuforum');
-        set_config('digestmailtime', $this->initialconfig->digestmailtime, 'hsuforum');
+        set_config('digestmailtimelast', $this->initialconfig->digestmailtimelast, 'forumimproved');
+        set_config('digestmailtime', $this->initialconfig->digestmailtime, 'forumimproved');
     }
 
     /**
@@ -131,10 +131,10 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
         $record->course = $return->courses->course1->id;
         $record->forcesubscribe = 1;
 
-        $return->forums->forum1 = $this->getDataGenerator()->create_module('hsuforum', $record);
+        $return->forums->forum1 = $this->getDataGenerator()->create_module('forumimproved', $record);
         $return->forumsids[] = $return->forums->forum1->id;
 
-        $return->forums->forum2 = $this->getDataGenerator()->create_module('hsuforum', $record);
+        $return->forums->forum2 = $this->getDataGenerator()->create_module('forumimproved', $record);
         $return->forumsids[] = $return->forums->forum2->id;
 
         // Check the forum was correctly created.
@@ -155,9 +155,9 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
         // Fake all of the post editing times because digests aren't sent until
         // the start of an hour where the modification time on the message is before
         // the start of that hour
-        $digesttime = usergetmidnight(time(), $CFG->timezone) + (get_config('hsuforum', 'digestmailtime') * 3600) - (60 * 60);
-        $DB->set_field('hsuforum_posts', 'modified', $digesttime, array('mailed' => 0));
-        $DB->set_field('hsuforum_posts', 'created', $digesttime, array('mailed' => 0));
+        $digesttime = usergetmidnight(time(), $CFG->timezone) + (get_config('forumimproved', 'digestmailtime') * 3600) - (60 * 60);
+        $DB->set_field('forumimproved_posts', 'modified', $digesttime, array('mailed' => 0));
+        $DB->set_field('forumimproved_posts', 'created', $digesttime, array('mailed' => 0));
     }
 
     /**
@@ -173,7 +173,7 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
         } else {
             $this->expectOutputRegex("/Email digests successfully sent to {$expected} users/");
         }
-        hsuforum_cron();
+        forumimproved_cron();
 
         // Now check the results in the message sink.
         $messages = $this->helper->messagesink->get_messages();
@@ -202,7 +202,7 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
         self::setUser($helper->user);
 
         // Confirm that there is no current value.
-        $currentsetting = $DB->get_record('hsuforum_digests', array(
+        $currentsetting = $DB->get_record('forumimproved_digests', array(
             'forum' => $forum1->id,
             'userid' => $user->id,
         ));
@@ -210,30 +210,30 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
 
         // Test with each of the valid values:
         // 0, 1, and 2 are valid values.
-        hsuforum_set_user_maildigest($forum1, 0, $user);
-        $currentsetting = $DB->get_record('hsuforum_digests', array(
+        forumimproved_set_user_maildigest($forum1, 0, $user);
+        $currentsetting = $DB->get_record('forumimproved_digests', array(
             'forum' => $forum1->id,
             'userid' => $user->id,
         ));
         $this->assertEquals($currentsetting->maildigest, 0);
 
-        hsuforum_set_user_maildigest($forum1, 1, $user);
-        $currentsetting = $DB->get_record('hsuforum_digests', array(
+        forumimproved_set_user_maildigest($forum1, 1, $user);
+        $currentsetting = $DB->get_record('forumimproved_digests', array(
             'forum' => $forum1->id,
             'userid' => $user->id,
         ));
         $this->assertEquals($currentsetting->maildigest, 1);
 
-        hsuforum_set_user_maildigest($forum1, 2, $user);
-        $currentsetting = $DB->get_record('hsuforum_digests', array(
+        forumimproved_set_user_maildigest($forum1, 2, $user);
+        $currentsetting = $DB->get_record('forumimproved_digests', array(
             'forum' => $forum1->id,
             'userid' => $user->id,
         ));
         $this->assertEquals($currentsetting->maildigest, 2);
 
         // And the default value - this should delete the record again
-        hsuforum_set_user_maildigest($forum1, -1, $user);
-        $currentsetting = $DB->get_record('hsuforum_digests', array(
+        forumimproved_set_user_maildigest($forum1, -1, $user);
+        $currentsetting = $DB->get_record('forumimproved_digests', array(
             'forum' => $forum1->id,
             'userid' => $user->id,
         ));
@@ -241,7 +241,7 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
 
         // Try with an invalid value.
         $this->setExpectedException('moodle_exception');
-        hsuforum_set_user_maildigest($forum1, 42, $user);
+        forumimproved_set_user_maildigest($forum1, 42, $user);
     }
 
     public function test_get_user_digest_options_default() {
@@ -260,27 +260,27 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
 
         // We test against these options.
         $digestoptions = array(
-            '0' => get_string('emaildigestoffshort', 'mod_hsuforum'),
-            '1' => get_string('emaildigestcompleteshort', 'mod_hsuforum'),
-            '2' => get_string('emaildigestsubjectsshort', 'mod_hsuforum'),
+            '0' => get_string('emaildigestoffshort', 'mod_forumimproved'),
+            '1' => get_string('emaildigestcompleteshort', 'mod_forumimproved'),
+            '2' => get_string('emaildigestsubjectsshort', 'mod_forumimproved'),
         );
 
         // The default settings is 0.
         $this->assertEquals(0, $user->maildigest);
-        $options = hsuforum_get_user_digest_options();
-        $this->assertEquals($options[-1], get_string('emaildigestdefault', 'mod_hsuforum', $digestoptions[0]));
+        $options = forumimproved_get_user_digest_options();
+        $this->assertEquals($options[-1], get_string('emaildigestdefault', 'mod_forumimproved', $digestoptions[0]));
 
         // Update the setting to 1.
         $USER->maildigest = 1;
         $this->assertEquals(1, $USER->maildigest);
-        $options = hsuforum_get_user_digest_options();
-        $this->assertEquals($options[-1], get_string('emaildigestdefault', 'mod_hsuforum', $digestoptions[1]));
+        $options = forumimproved_get_user_digest_options();
+        $this->assertEquals($options[-1], get_string('emaildigestdefault', 'mod_forumimproved', $digestoptions[1]));
 
         // Update the setting to 2.
         $USER->maildigest = 2;
         $this->assertEquals(2, $USER->maildigest);
-        $options = hsuforum_get_user_digest_options();
-        $this->assertEquals($options[-1], get_string('emaildigestdefault', 'mod_hsuforum', $digestoptions[2]));
+        $options = forumimproved_get_user_digest_options();
+        $this->assertEquals($options[-1], get_string('emaildigestdefault', 'mod_forumimproved', $digestoptions[2]));
     }
 
     public function test_get_user_digest_options_sorting() {
@@ -298,7 +298,7 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
         self::setUser($helper->user);
 
         // Retrieve the list of applicable options.
-        $options = hsuforum_get_user_digest_options();
+        $options = forumimproved_get_user_digest_options();
 
         // The default option must always be at the top of the list.
         $lastoption = -2;
@@ -344,13 +344,13 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
         // Add 5 discussions to forum 1.
         $record->forum = $forum1->id;
         for ($i = 0; $i < 5; $i++) {
-            $this->getDataGenerator()->get_plugin_generator('mod_hsuforum')->create_discussion($record);
+            $this->getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
         }
 
         // Add 5 discussions to forum 2.
         $record->forum = $forum2->id;
         for ($i = 0; $i < 5; $i++) {
-            $this->getDataGenerator()->get_plugin_generator('mod_hsuforum')->create_discussion($record);
+            $this->getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
         }
 
         // Ensure that the creation times mean that the messages will be sent.
@@ -360,10 +360,10 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
         $DB->set_field('user', 'maildigest', 0, array('id' => $user->id));
 
         // Set the maildigest preference for forum1 to default.
-        hsuforum_set_user_maildigest($forum1, -1, $user);
+        forumimproved_set_user_maildigest($forum1, -1, $user);
 
         // Set the maildigest preference for forum2 to default.
-        hsuforum_set_user_maildigest($forum2, -1, $user);
+        forumimproved_set_user_maildigest($forum2, -1, $user);
 
         // No digests mails should be sent, but 10 forum mails will be sent.
         $this->helper_run_cron_check_count(0, 10, 0);
@@ -394,13 +394,13 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
         // Add 5 discussions to forum 1.
         $record->forum = $forum1->id;
         for ($i = 0; $i < 5; $i++) {
-            $this->getDataGenerator()->get_plugin_generator('mod_hsuforum')->create_discussion($record);
+            $this->getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
         }
 
         // Add 5 discussions to forum 2.
         $record->forum = $forum2->id;
         for ($i = 0; $i < 5; $i++) {
-            $this->getDataGenerator()->get_plugin_generator('mod_hsuforum')->create_discussion($record);
+            $this->getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
         }
 
         // Ensure that the creation times mean that the messages will be sent.
@@ -410,10 +410,10 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
         $DB->set_field('user', 'maildigest', 1, array('id' => $user->id));
 
         // Set the maildigest preference for forum1 to default.
-        hsuforum_set_user_maildigest($forum1, -1, $user);
+        forumimproved_set_user_maildigest($forum1, -1, $user);
 
         // Set the maildigest preference for forum2 to default.
-        hsuforum_set_user_maildigest($forum2, -1, $user);
+        forumimproved_set_user_maildigest($forum2, -1, $user);
 
         // One digest mail should be sent, with no notifications, and one e-mail.
         $this->helper_run_cron_check_count(1, 0, 1);
@@ -445,13 +445,13 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
         // Add 5 discussions to forum 1.
         $record->forum = $forum1->id;
         for ($i = 0; $i < 5; $i++) {
-            $this->getDataGenerator()->get_plugin_generator('mod_hsuforum')->create_discussion($record);
+            $this->getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
         }
 
         // Add 5 discussions to forum 2.
         $record->forum = $forum2->id;
         for ($i = 0; $i < 5; $i++) {
-            $this->getDataGenerator()->get_plugin_generator('mod_hsuforum')->create_discussion($record);
+            $this->getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
         }
 
         // Ensure that the creation times mean that the messages will be sent.
@@ -461,10 +461,10 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
         $DB->set_field('user', 'maildigest', 0, array('id' => $user->id));
 
         // Set the maildigest preference for forum1 to digest.
-        hsuforum_set_user_maildigest($forum1, 1, $user);
+        forumimproved_set_user_maildigest($forum1, 1, $user);
 
         // Set the maildigest preference for forum2 to default (single).
-        hsuforum_set_user_maildigest($forum2, -1, $user);
+        forumimproved_set_user_maildigest($forum2, -1, $user);
 
         // One digest e-mail should be sent, and five individual notifications.
         $this->helper_run_cron_check_count(1, 5, 1);
@@ -496,13 +496,13 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
         // Add 5 discussions to forum 1.
         $record->forum = $forum1->id;
         for ($i = 0; $i < 5; $i++) {
-            $this->getDataGenerator()->get_plugin_generator('mod_hsuforum')->create_discussion($record);
+            $this->getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
         }
 
         // Add 5 discussions to forum 2.
         $record->forum = $forum2->id;
         for ($i = 0; $i < 5; $i++) {
-            $this->getDataGenerator()->get_plugin_generator('mod_hsuforum')->create_discussion($record);
+            $this->getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
         }
 
         // Ensure that the creation times mean that the messages will be sent.
@@ -512,10 +512,10 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
         $DB->set_field('user', 'maildigest', 1, array('id' => $user->id));
 
         // Set the maildigest preference for forum1 to digest.
-        hsuforum_set_user_maildigest($forum1, -1, $user);
+        forumimproved_set_user_maildigest($forum1, -1, $user);
 
         // Set the maildigest preference for forum2 to single.
-        hsuforum_set_user_maildigest($forum2, 0, $user);
+        forumimproved_set_user_maildigest($forum2, 0, $user);
 
         // One digest e-mail should be sent, and five individual notifications.
         $this->helper_run_cron_check_count(1, 5, 1);
@@ -546,13 +546,13 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
         // Add 5 discussions to forum 1.
         $record->forum = $forum1->id;
         for ($i = 0; $i < 5; $i++) {
-            $this->getDataGenerator()->get_plugin_generator('mod_hsuforum')->create_discussion($record);
+            $this->getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
         }
 
         // Add 5 discussions to forum 2.
         $record->forum = $forum2->id;
         for ($i = 0; $i < 5; $i++) {
-            $this->getDataGenerator()->get_plugin_generator('mod_hsuforum')->create_discussion($record);
+            $this->getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
         }
 
         // Ensure that the creation times mean that the messages will be sent.
@@ -562,10 +562,10 @@ class mod_hsuforum_maildigest_testcase extends advanced_testcase {
         $DB->set_field('user', 'maildigest', 0, array('id' => $user->id));
 
         // Set the maildigest preference for forum1 to digest (complete).
-        hsuforum_set_user_maildigest($forum1, 1, $user);
+        forumimproved_set_user_maildigest($forum1, 1, $user);
 
         // Set the maildigest preference for forum2 to digest (short).
-        hsuforum_set_user_maildigest($forum2, 2, $user);
+        forumimproved_set_user_maildigest($forum2, 2, $user);
 
         // One digest e-mail should be sent, and no individual notifications.
         $this->helper_run_cron_check_count(1, 0, 1);

@@ -17,19 +17,19 @@
 /**
  * Export Manager
  *
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_hsuforum\export;
+namespace mod_forumimproved\export;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(dirname(__DIR__)).'/lib.php');
 
 /**
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -61,7 +61,7 @@ class export_manager {
     public function export_discussions($userid = 0) {
         $this->adapter->initialization();
 
-        $rs = hsuforum_get_discussions($this->cm, null, 'd.*');
+        $rs = forumimproved_get_discussions($this->cm, null, 'd.*');
         foreach ($rs as $discussion) {
             $this->process_discussion($discussion, $userid);
         }
@@ -79,7 +79,7 @@ class export_manager {
     public function export_discussion($discussionid, $userid = 0) {
         global $DB;
 
-        $discussion = $DB->get_record('hsuforum_discussions', array('id' => $discussionid), '*', MUST_EXIST);
+        $discussion = $DB->get_record('forumimproved_discussions', array('id' => $discussionid), '*', MUST_EXIST);
 
         $this->adapter->initialization($discussion);
         $this->process_discussion($discussion, $userid);
@@ -95,7 +95,7 @@ class export_manager {
     public function process_discussion($discussion, $userid = 0) {
         global $USER;
 
-        if (hsuforum_get_cm_forum($this->cm)->type == 'news') {
+        if (forumimproved_get_cm_forum($this->cm)->type == 'news') {
             if (!($USER->id == $discussion->userid || (($discussion->timestart == 0 || $discussion->timestart <= time()) && ($discussion->timeend == 0 || $discussion->timeend > time())))) {
                 return;
             }
@@ -105,14 +105,14 @@ class export_manager {
         } else {
             $conditions = array();
         }
-        $posts = hsuforum_get_all_discussion_posts($discussion->id, $conditions);
+        $posts = forumimproved_get_all_discussion_posts($discussion->id, $conditions);
 
         if (array_key_exists($discussion->firstpost, $posts)) {
             $post = $posts[$discussion->firstpost];
         } else {
-            $post = hsuforum_get_post_full($discussion->firstpost);
+            $post = forumimproved_get_post_full($discussion->firstpost);
         }
-        if (!hsuforum_user_can_see_post(hsuforum_get_cm_forum($this->cm), $discussion, $post, null, $this->cm)) {
+        if (!forumimproved_user_can_see_post(forumimproved_get_cm_forum($this->cm), $discussion, $post, null, $this->cm)) {
             return;
         }
         $this->clean_posts($discussion, $posts);
@@ -127,7 +127,7 @@ class export_manager {
      */
     public function clean_posts($discussion, &$posts) {
         foreach ($posts as $key => $post) {
-            if (!hsuforum_user_can_see_post(hsuforum_get_cm_forum($this->cm), $discussion, $post, null, $this->cm)) {
+            if (!forumimproved_user_can_see_post(forumimproved_get_cm_forum($this->cm), $discussion, $post, null, $this->cm)) {
                 unset($posts[$key]);
                 continue;
             }

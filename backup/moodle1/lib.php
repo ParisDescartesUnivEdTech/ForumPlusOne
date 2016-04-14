@@ -18,7 +18,7 @@
 /**
  * Provides support for the conversion of moodle1 backup to the moodle2 format
  *
- * @package    mod_hsuforum
+ * @package    mod_forumimproved
  * @copyright  2011 Mark Nielsen <mark@moodlerooms.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Forum conversion handler
  */
-class moodle1_mod_hsuforum_handler extends moodle1_mod_handler {
+class moodle1_mod_forumimproved_handler extends moodle1_mod_handler {
 
     /** @var moodle1_file_manager */
     protected $fileman = null;
@@ -53,7 +53,7 @@ class moodle1_mod_hsuforum_handler extends moodle1_mod_handler {
      */
     public function get_paths() {
         return array(
-            new convert_path('hsuforum', '/MOODLE_BACKUP/COURSE/MODULES/MOD/HSUFORUM',
+            new convert_path('forumimproved', '/MOODLE_BACKUP/COURSE/MODULES/MOD/HSUFORUM',
                 array(
                     'renamefields' => array(
                         'format' => 'messageformat',
@@ -73,7 +73,7 @@ class moodle1_mod_hsuforum_handler extends moodle1_mod_handler {
     /**
      * Converts /MOODLE_BACKUP/COURSE/MODULES/MOD/HSUFORUM data
      */
-    public function process_hsuforum($data) {
+    public function process_forumimproved($data) {
         // get the course module id and context id
         $instanceid     = $data['id'];
         $cminfo         = $this->get_cminfo($instanceid);
@@ -81,7 +81,7 @@ class moodle1_mod_hsuforum_handler extends moodle1_mod_handler {
         $contextid      = $this->converter->get_contextid(CONTEXT_MODULE, $this->moduleid);
 
         // get a fresh new file manager for this instance
-        $this->fileman = $this->converter->get_file_manager($contextid, 'mod_hsuforum');
+        $this->fileman = $this->converter->get_file_manager($contextid, 'mod_forumimproved');
 
         // convert course files embedded into the intro
         $this->fileman->filearea = 'intro';
@@ -97,10 +97,10 @@ class moodle1_mod_hsuforum_handler extends moodle1_mod_handler {
         unset($data['multiattach']);
 
         // start writing forum.xml
-        $this->open_xml_writer("activities/hsuforum_{$this->moduleid}/hsuforum.xml");
+        $this->open_xml_writer("activities/forumimproved_{$this->moduleid}/forumimproved.xml");
         $this->xmlwriter->begin_tag('activity', array('id' => $instanceid, 'moduleid' => $this->moduleid,
-            'modulename' => 'hsuforum', 'contextid' => $contextid));
-        $this->xmlwriter->begin_tag('hsuforum', array('id' => $instanceid));
+            'modulename' => 'forumimproved', 'contextid' => $contextid));
+        $this->xmlwriter->begin_tag('forumimproved', array('id' => $instanceid));
 
         foreach ($data as $field => $value) {
             if ($field <> 'id') {
@@ -114,17 +114,17 @@ class moodle1_mod_hsuforum_handler extends moodle1_mod_handler {
     }
 
     /**
-     * This is executed when we reach the closing </MOD> tag of our 'hsuforum' path
+     * This is executed when we reach the closing </MOD> tag of our 'forumimproved' path
      */
-    public function on_hsuforum_end() {
-        // finish writing hsuforum.xml
+    public function on_forumimproved_end() {
+        // finish writing forumimproved.xml
         $this->xmlwriter->end_tag('discussions');
-        $this->xmlwriter->end_tag('hsuforum');
+        $this->xmlwriter->end_tag('forumimproved');
         $this->xmlwriter->end_tag('activity');
         $this->close_xml_writer();
 
         // write inforef.xml
-        $this->open_xml_writer("activities/hsuforum_{$this->moduleid}/inforef.xml");
+        $this->open_xml_writer("activities/forumimproved_{$this->moduleid}/inforef.xml");
         $this->xmlwriter->begin_tag('inforef');
         $this->xmlwriter->begin_tag('fileref');
         foreach ($this->fileman->get_fileids() as $fileid) {

@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * mod_hsuforum data generator
+ * mod_forumimproved data generator
  *
- * @package    mod_hsuforum
+ * @package    mod_forumimproved
  * @category   test
  * @copyright  2012 Petr Skoda {@link http://skodak.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -29,12 +29,12 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Forum module data generator class
  *
- * @package    mod_hsuforum
+ * @package    mod_forumimproved
  * @category   test
  * @copyright  2012 Petr Skoda {@link http://skodak.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_hsuforum_generator extends testing_module_generator {
+class mod_forumimproved_generator extends testing_module_generator {
 
     /**
      * @var int keep track of how many forum discussions have been created.
@@ -66,7 +66,7 @@ class mod_hsuforum_generator extends testing_module_generator {
 
     public function create_instance($record = null, array $options = null) {
         global $CFG;
-        require_once($CFG->dirroot.'/mod/hsuforum/lib.php');
+        require_once($CFG->dirroot.'/mod/forumimproved/lib.php');
         $record = (object)(array)$record;
 
         if (!isset($record->type)) {
@@ -120,7 +120,7 @@ class mod_hsuforum_generator extends testing_module_generator {
         $record = (object)$record;
 
         // Add the subscription.
-        $record->id = $DB->insert_record('hsuforum_subscriptions', $record);
+        $record->id = $DB->insert_record('forumimproved_subscriptions', $record);
 
         return $record;
     }
@@ -198,7 +198,7 @@ class mod_hsuforum_generator extends testing_module_generator {
         $record = (object) $record;
 
         // Add the discussion.
-        $record->id = hsuforum_add_discussion($record, null, null, $record->userid);
+        $record->id = forumimproved_add_discussion($record, null, null, $record->userid);
 
         return $record;
     }
@@ -279,10 +279,10 @@ class mod_hsuforum_generator extends testing_module_generator {
         $record = (object) $record;
 
         // Add the post.
-        $record->id = $DB->insert_record('hsuforum_posts', $record);
+        $record->id = $DB->insert_record('forumimproved_posts', $record);
 
         // Update the last post.
-        hsuforum_discussion_update_last_post($record->discussion);
+        forumimproved_discussion_update_last_post($record->discussion);
 
         return $record;
     }
@@ -297,13 +297,13 @@ class mod_hsuforum_generator extends testing_module_generator {
         if (empty($record['discussion']) && empty($record['parent'])) {
             // Create discussion.
             $discussion = $this->create_discussion($record);
-            $post = $DB->get_record('hsuforum_posts', array('id' => $discussion->firstpost));
+            $post = $DB->get_record('forumimproved_posts', array('id' => $discussion->firstpost));
         } else {
             // Create post.
             if (empty($record['parent'])) {
-                $record['parent'] = $DB->get_field('hsuforum_discussions', 'firstpost', array('id' => $record['discussion']), MUST_EXIST);
+                $record['parent'] = $DB->get_field('forumimproved_discussions', 'firstpost', array('id' => $record['discussion']), MUST_EXIST);
             } else if (empty($record['discussion'])) {
-                $record['discussion'] = $DB->get_field('hsuforum_posts', 'discussion', array('id' => $record['parent']), MUST_EXIST);
+                $record['discussion'] = $DB->get_field('forumimproved_posts', 'discussion', array('id' => $record['parent']), MUST_EXIST);
             }
             $post = $this->create_post($record);
         }

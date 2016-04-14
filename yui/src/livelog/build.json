@@ -1,7 +1,7 @@
 {
-    "name": "moodle-mod_hsuforum-livelog",
+    "name": "moodle-mod_forumimproved-livelog",
     "builds": {
-        "moodle-mod_hsuforum-livelog": {
+        "moodle-mod_forumimproved-livelog": {
             "jsfiles": [
                 "livelog.js"
             ]

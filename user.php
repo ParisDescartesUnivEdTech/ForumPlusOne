@@ -18,7 +18,7 @@
 /**
  * Display user activity reports for a course
  *
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -26,7 +26,7 @@
  */
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once($CFG->dirroot.'/mod/hsuforum/lib.php');
+require_once($CFG->dirroot.'/mod/forumimproved/lib.php');
 require_once($CFG->dirroot.'/rating/lib.php');
 
 $courseid  = optional_param('course', null, PARAM_INT); // Limit the posts to just this course
@@ -46,7 +46,7 @@ $discussionsonly = ($mode !== 'posts');
 $isspecificcourse = !is_null($courseid);
 $iscurrentuser = ($USER->id == $userid);
 
-$url = new moodle_url('/mod/hsuforum/user.php', array('id' => $userid));
+$url = new moodle_url('/mod/forumimproved/user.php', array('id' => $userid));
 if ($isspecificcourse) {
     $url->param('course', $courseid);
 }
@@ -114,7 +114,7 @@ if ($isspecificcourse) {
 
     // Now we need to get all of the courses to search.
     // All courses where the user has posted within a forum will be returned.
-    $courses = hsuforum_get_courses_user_posted_in($user, $discussionsonly);
+    $courses = forumimproved_get_courses_user_posted_in($user, $discussionsonly);
 }
 
 
@@ -123,11 +123,11 @@ $params = array(
     'relateduserid' => $user->id,
     'other' => array('reportmode' => $mode),
 );
-$event = \mod_hsuforum\event\user_report_viewed::create($params);
+$event = \mod_forumimproved\event\user_report_viewed::create($params);
 $event->trigger();
 
 // Get the posts by the requested user that the current user can access.
-$result = hsuforum_get_posts_by_user($user, $courses, $isspecificcourse, $discussionsonly, ($page * $perpage), $perpage);
+$result = forumimproved_get_posts_by_user($user, $courses, $isspecificcourse, $discussionsonly, ($page * $perpage), $perpage);
 
 // Check whether there are not posts to display.
 if (empty($result->posts)) {
@@ -162,13 +162,13 @@ if (empty($result->posts)) {
     }
 
     // Prepare the page title
-    $pagetitle = get_string('noposts', 'mod_hsuforum');
+    $pagetitle = get_string('noposts', 'mod_forumimproved');
 
     // Get the page heading
     if ($isspecificcourse) {
         $pageheading = format_string($course->shortname, true, array('context' => $coursecontext));
     } else {
-        $pageheading = get_string('pluginname', 'mod_hsuforum');
+        $pageheading = get_string('pluginname', 'mod_forumimproved');
     }
 
     // Next we need to set up the loading of the navigation and choose a message
@@ -177,23 +177,23 @@ if (empty($result->posts)) {
         // No need to extend the navigation it happens automatically for the
         // current user.
         if ($discussionsonly) {
-            $notification = get_string('nodiscussionsstartedbyyou', 'hsuforum');
+            $notification = get_string('nodiscussionsstartedbyyou', 'forumimproved');
         } else {
-            $notification = get_string('nopostsmadebyyou', 'hsuforum');
+            $notification = get_string('nopostsmadebyyou', 'forumimproved');
         }
     } else if ($canviewuser) {
         $PAGE->navigation->extend_for_user($user);
         $PAGE->navigation->set_userid_for_parent_checks($user->id); // see MDL-25805 for reasons and for full commit reference for reversal when fixed.
         $fullname = fullname($user);
         if ($discussionsonly) {
-            $notification = get_string('nodiscussionsstartedby', 'hsuforum', $fullname);
+            $notification = get_string('nodiscussionsstartedby', 'forumimproved', $fullname);
         } else {
-            $notification = get_string('nopostsmadebyuser', 'hsuforum', $fullname);
+            $notification = get_string('nopostsmadebyuser', 'forumimproved', $fullname);
         }
     } else {
         // Don't extend the navigation it would be giving out information that
         // the current uesr doesn't have access to.
-        $notification = get_string('cannotviewusersposts', 'hsuforum');
+        $notification = get_string('cannotviewusersposts', 'forumimproved');
         if ($isspecificcourse) {
             $url = new moodle_url('/course/view.php', array('id' => $courseid));
         } else {
@@ -223,17 +223,17 @@ $discussions = array();
 foreach ($result->posts as $post) {
     $discussions[] = $post->discussion;
 }
-$discussions = $DB->get_records_list('hsuforum_discussions', 'id', array_unique($discussions));
+$discussions = $DB->get_records_list('forumimproved_discussions', 'id', array_unique($discussions));
 
 //todo Rather than retrieving the ratings for each post individually it would be nice to do them in groups
 //however this requires creating arrays of posts with each array containing all of the posts from a particular forum,
 //retrieving the ratings then reassembling them all back into a single array sorted by post.modified (descending)
 $rm = new rating_manager();
 $ratingoptions = new stdClass;
-$ratingoptions->component = 'mod_hsuforum';
+$ratingoptions->component = 'mod_forumimproved';
 $ratingoptions->ratingarea = 'post';
 
-$renderer = $PAGE->get_renderer('mod_hsuforum');
+$renderer = $PAGE->get_renderer('mod_forumimproved');
 echo $renderer->svg_sprite();
 
 foreach ($result->posts as $post) {
@@ -246,8 +246,8 @@ foreach ($result->posts as $post) {
     $discussion = $discussions[$post->discussion];
     $course = $result->courses[$discussion->course];
 
-    $forumurl = new moodle_url('/mod/hsuforum/view.php', array('id' => $cm->id));
-    $discussionurl = new moodle_url('/mod/hsuforum/discuss.php', array('d' => $post->discussion));
+    $forumurl = new moodle_url('/mod/forumimproved/view.php', array('id' => $cm->id));
+    $discussionurl = new moodle_url('/mod/forumimproved/discuss.php', array('d' => $post->discussion));
 
     // TODO actually display if the search result has been read, for now just
     // hide the unread status marker for all results.
@@ -294,7 +294,7 @@ foreach ($result->posts as $post) {
         if ($post->parent != 0) {
             $postname = format_string($post->subject, true, array('context' => $cm->context));
             if (!$isspecificcourse && !$hasparentaccess) {
-                $fullsubjects[] .= html_writer::link(new moodle_url('/mod/hsuforum/discuss.php', array('d' => $post->discussion, 'parent' => $post->id)), $postname);
+                $fullsubjects[] .= html_writer::link(new moodle_url('/mod/forumimproved/discuss.php', array('d' => $post->discussion, 'parent' => $post->id)), $postname);
             } else {
                 $fullsubjects[] .= html_writer::tag('span', $postname);
             }
@@ -305,7 +305,7 @@ foreach ($result->posts as $post) {
     // we've added will be lost.
     $post->subjectnoformat = true;
     $discussionurl->set_anchor('p'.$post->id);
-    $fulllink = html_writer::link($discussionurl, get_string("postincontext", "hsuforum"));
+    $fulllink = html_writer::link($discussionurl, get_string("postincontext", "forumimproved"));
 
     $commands = array('seeincontext' => $fulllink);
     $postoutput[] = $renderer->post($cm, $discussion, $post, false, null, $commands);
@@ -314,9 +314,9 @@ foreach ($result->posts as $post) {
 $userfullname = fullname($user);
 
 if ($discussionsonly) {
-    $inpageheading = get_string('discussionsstartedby', 'mod_hsuforum', $userfullname);
+    $inpageheading = get_string('discussionsstartedby', 'mod_forumimproved', $userfullname);
 } else {
-    $inpageheading = get_string('postsmadebyuser', 'mod_hsuforum', $userfullname);
+    $inpageheading = get_string('postsmadebyuser', 'mod_forumimproved', $userfullname);
 }
 if ($isspecificcourse) {
     $a = new stdClass;
@@ -324,9 +324,9 @@ if ($isspecificcourse) {
     $a->coursename = format_string($course->shortname, true, array('context' => $coursecontext));
     $pageheading = $a->coursename;
     if ($discussionsonly) {
-        $pagetitle = get_string('discussionsstartedbyuserincourse', 'mod_hsuforum', $a);
+        $pagetitle = get_string('discussionsstartedbyuserincourse', 'mod_forumimproved', $a);
     } else {
-        $pagetitle = get_string('postsmadebyuserincourse', 'mod_hsuforum', $a);
+        $pagetitle = get_string('postsmadebyuserincourse', 'mod_forumimproved', $a);
     }
 } else {
     $pagetitle = $inpageheading;
@@ -348,9 +348,9 @@ if (!empty($postoutput)) {
     }
     echo $OUTPUT->paging_bar($result->totalcount, $page, $perpage, $url);
 } else if ($discussionsonly) {
-    echo $OUTPUT->heading(get_string('nodiscussionsstartedby', 'hsuforum', $userfullname));
+    echo $OUTPUT->heading(get_string('nodiscussionsstartedby', 'forumimproved', $userfullname));
 } else {
-    echo $OUTPUT->heading(get_string('noposts', 'hsuforum'));
+    echo $OUTPUT->heading(get_string('noposts', 'forumimproved'));
 }
 
 echo html_writer::end_tag('div');

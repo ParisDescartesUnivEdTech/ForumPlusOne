@@ -1,4 +1,4 @@
-@mod @mod_hsuforum
+@mod @mod_forumimproved
 Feature: Posting to all groups in a separate group discussion is restricted to users with access to all groups
   In order to post to all groups in a forum with separate groups
   As a teacher

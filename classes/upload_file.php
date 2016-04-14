@@ -17,12 +17,12 @@
 /**
  * Upload File
  *
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_hsuforum;
+namespace mod_forumimproved;
 
 require_once(__DIR__.'/attachments.php');
 
@@ -31,7 +31,7 @@ use moodle_exception;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -185,7 +185,7 @@ class upload_file {
             throw new moodle_exception('nofile');
         }
         if (!is_uploaded_file($file['tmp_name'])) {
-            throw new moodle_exception('notuploadedfile', 'hsuforum');
+            throw new moodle_exception('notuploadedfile', 'forumimproved');
         }
         if (!$this->validate_file_contents($file['tmp_name'])) {
             throw new moodle_exception('upload_error_invalid_file', 'repository_upload', '', clean_param($file['name'], PARAM_FILE));

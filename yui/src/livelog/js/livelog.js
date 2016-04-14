@@ -8,7 +8,7 @@
  * read to screen readers.  Behavior of the reading can be changed
  * by changing the attributes.
  *
- * @module moodle-mod_hsuforum-livelog
+ * @module moodle-mod_forumimproved-livelog
  */
 var BOX = 'contentBox',
     LOG_BOX_TEMPLATE = '<div></div>';
@@ -17,7 +17,7 @@ var BOX = 'contentBox',
  * Live log
  *
  * @constructor
- * @namespace M.mod_hsuforum
+ * @namespace M.mod_forumimproved
  * @class LiveLog
  * @extends Y.Widget
  */
@@ -158,9 +158,9 @@ Y.extend(LIVE_LOG, Y.Widget,
     }
 );
 
-M.mod_hsuforum = M.mod_hsuforum || {};
-M.mod_hsuforum.LiveLog = LIVE_LOG;
-M.mod_hsuforum.init_livelog = function(config) {
+M.mod_forumimproved = M.mod_forumimproved || {};
+M.mod_forumimproved.LiveLog = LIVE_LOG;
+M.mod_forumimproved.init_livelog = function(config) {
     var widget = new LIVE_LOG(config);
     widget.render();
     return widget;

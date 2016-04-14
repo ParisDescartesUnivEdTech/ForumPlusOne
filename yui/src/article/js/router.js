@@ -1,18 +1,18 @@
 /**
  * Forum Router
  *
- * @module moodle-mod_hsuforum-router
+ * @module moodle-mod_forumimproved-router
  */
 
 /**
  * Handles URL routing
  *
  * @constructor
- * @namespace M.mod_hsuforum
+ * @namespace M.mod_forumimproved
  * @class Router
  * @extends Y.Router
  */
-var ROUTER = Y.Base.create('hsuforumRouter', Y.Router, [], {
+var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
     /**
      *
      * @method initializer
@@ -78,7 +78,7 @@ var ROUTER = Y.Base.create('hsuforumRouter', Y.Router, [], {
             return;
         }
         // Whenever a route takes us somewhere else we need to move the editor back to its original container.
-        M.mod_hsuforum.restoreEditor();
+        M.mod_forumimproved.restoreEditor();
 
         if (this.routeUrl(e.currentTarget.get('href'))) {
             e.preventDefault();
@@ -110,7 +110,7 @@ var ROUTER = Y.Base.create('hsuforumRouter', Y.Router, [], {
         e.preventDefault();
 
         // Put editor back to its original place in DOM.
-        M.mod_hsuforum.restoreEditor();
+        M.mod_forumimproved.restoreEditor();
 
         var formNode = e.currentTarget,
             forumId  = formNode.one(SELECTORS.INPUT_FORUM).get('value');
@@ -154,7 +154,7 @@ var ROUTER = Y.Base.create('hsuforumRouter', Y.Router, [], {
          * Used for responding to routing actions
          *
          * @attribute article
-         * @type M.mod_hsuforum.Article
+         * @type M.mod_forumimproved.Article
          * @required
          */
         article: { value: null },
@@ -164,11 +164,11 @@ var ROUTER = Y.Base.create('hsuforumRouter', Y.Router, [], {
          *
          * @attribute root
          * @type String
-         * @default '/mod/hsuforum'
+         * @default '/mod/forumimproved'
          * @required
          */
         root: {
-            value: '/mod/hsuforum'
+            value: '/mod/forumimproved'
         },
 
         /**
@@ -188,4 +188,4 @@ var ROUTER = Y.Base.create('hsuforumRouter', Y.Router, [], {
     }
 });
 
-M.mod_hsuforum.Router = ROUTER;
+M.mod_forumimproved.Router = ROUTER;

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace mod_hsuforum\form;
+namespace mod_forumimproved\form;
 
 global $CFG;
 
@@ -29,24 +29,24 @@ class export_form extends \moodleform {
         } else {
             $options2 = $this->get_discussion_user_options();
         }
-        $hierselect = $mform->addElement('hierselect', 'discussionopts', get_string('discussions', 'hsuforum'), null, ' '.get_string('participants', 'hsuforum').' ');
+        $hierselect = $mform->addElement('hierselect', 'discussionopts', get_string('discussions', 'forumimproved'), null, ' '.get_string('participants', 'forumimproved').' ');
         $hierselect->setOptions(array($options1, $options2));
         $mform->setType('discussionopts', PARAM_INT);
 
         $options = array(
-            'print' => get_string('print', 'hsuforum'),
-            'csv'   => get_string('csv', 'hsuforum'),
-            'text'  => get_string('plaintext', 'hsuforum'),
+            'print' => get_string('print', 'forumimproved'),
+            'csv'   => get_string('csv', 'forumimproved'),
+            'text'  => get_string('plaintext', 'forumimproved'),
 
         );
 
-        $mform->addElement('select', 'format', get_string('exportformat', 'hsuforum'), $options);
+        $mform->addElement('select', 'format', get_string('exportformat', 'forumimproved'), $options);
         $mform->setType('format', PARAM_ALPHA);
 
-        $mform->addElement('advcheckbox', 'attachments', get_string('exportattachments', 'hsuforum'));
+        $mform->addElement('advcheckbox', 'attachments', get_string('exportattachments', 'forumimproved'));
         $mform->setType('attachments', PARAM_BOOL);
         $mform->disabledIf('attachments', 'format', 'eq', 'print');
-        $this->add_action_buttons(true, get_string('export', 'hsuforum'));
+        $this->add_action_buttons(true, get_string('export', 'forumimproved'));
     }
 
     /**
@@ -57,8 +57,8 @@ class export_form extends \moodleform {
      * @return array
      */
     public function get_discussion_options() {
-        $options = array(0 => get_string('all', 'hsuforum'));
-        $rs       = hsuforum_get_discussions($this->_customdata->cm, 'd.name');
+        $options = array(0 => get_string('all', 'forumimproved'));
+        $rs       = forumimproved_get_discussions($this->_customdata->cm, 'd.name');
         foreach ($rs as $discussion) {
             $options[$discussion->discussion] = shorten_text(format_string($discussion->name));
         }
@@ -80,8 +80,8 @@ class export_form extends \moodleform {
     public function get_anonymous_discussion_user_options($discussions) {
         global $USER;
 
-        $posted  = hsuforum_discussions_user_has_posted_in($this->_customdata->forum->id, $USER->id);
-        $options = array(0 => array(0 => get_string('all', 'hsuforum')));
+        $posted  = forumimproved_discussions_user_has_posted_in($this->_customdata->forum->id, $USER->id);
+        $options = array(0 => array(0 => get_string('all', 'forumimproved')));
 
         if (!empty($posted)) {
             $options[0][$USER->id] = $this->get_fullname($USER);
@@ -90,7 +90,7 @@ class export_form extends \moodleform {
             if (empty($discussionid)) {
                 continue;  // This is the zero (AKA All) option, skip!
             }
-            $useropts = array(0 => get_string('all', 'hsuforum'));
+            $useropts = array(0 => get_string('all', 'forumimproved'));
             if (array_key_exists($discussionid, $posted)) {
                 $useropts[$USER->id] = $this->get_fullname($USER);
             }
@@ -108,12 +108,12 @@ class export_form extends \moodleform {
      * @return array
      */
     public function get_discussion_user_options() {
-        $options = array(0 => array(0 => get_string('all', 'hsuforum')));
+        $options = array(0 => array(0 => get_string('all', 'forumimproved')));
         $all     =& $options[0];
         $rs = $this->get_discussion_users();
         foreach ($rs as $user) {
             if (!array_key_exists($user->discussionid, $options)) {
-                $options[$user->discussionid] = array(0 => get_string('all', 'hsuforum'));
+                $options[$user->discussionid] = array(0 => get_string('all', 'forumimproved'));
             }
             $options[$user->discussionid][$user->id] = $this->get_fullname($user);
 
@@ -138,8 +138,8 @@ class export_form extends \moodleform {
 
         return $DB->get_recordset_sql("
             SELECT DISTINCT d.id discussionid, u.id, $fields
-              FROM {hsuforum_discussions} d
-              JOIN {hsuforum_posts} p ON d.id = p.discussion
+              FROM {forumimproved_discussions} d
+              JOIN {forumimproved_posts} p ON d.id = p.discussion
               JOIN {user} u ON p.userid = u.id
              WHERE d.forum = ?
                AND (p.privatereply = 0 OR p.privatereply = ? OR p.userid = ?)

@@ -18,7 +18,7 @@
  * Displays a post, and all the posts below it.
  * If no post is given, displays all posts in a discussion
  *
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -35,26 +35,26 @@
     $postid = optional_param('postid', 0, PARAM_INT);        // Used for tracking read posts if user initiated.
     $warned = optional_param('warned', 0, PARAM_INT);
 
-    $config = get_config('hsuforum');
+    $config = get_config('forumimproved');
 
-    $url = new moodle_url('/mod/hsuforum/discuss.php', array('d'=>$d));
+    $url = new moodle_url('/mod/forumimproved/discuss.php', array('d'=>$d));
     if ($root !== 0) {
         $url->param('root', $root);
     }
     $PAGE->set_url($url);
 
-    $discussion = $DB->get_record('hsuforum_discussions', array('id' => $d), '*', MUST_EXIST);
+    $discussion = $DB->get_record('forumimproved_discussions', array('id' => $d), '*', MUST_EXIST);
     $course = $DB->get_record('course', array('id' => $discussion->course), '*', MUST_EXIST);
-    $forum = $DB->get_record('hsuforum', array('id' => $discussion->forum), '*', MUST_EXIST);
-    $cm = get_coursemodule_from_instance('hsuforum', $forum->id, $course->id, false, MUST_EXIST);
+    $forum = $DB->get_record('forumimproved', array('id' => $discussion->forum), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_instance('forumimproved', $forum->id, $course->id, false, MUST_EXIST);
 
     require_course_login($course, true, $cm);
 
     // move this down fix for MDL-6926
-    require_once($CFG->dirroot.'/mod/hsuforum/lib.php');
+    require_once($CFG->dirroot.'/mod/forumimproved/lib.php');
 
     $modcontext = context_module::instance($cm->id);
-    require_capability('mod/hsuforum:viewdiscussion', $modcontext, NULL, true, 'noviewdiscussionspermission', 'hsuforum');
+    require_capability('mod/forumimproved:viewdiscussion', $modcontext, NULL, true, 'noviewdiscussionspermission', 'forumimproved');
 
     if ($forum->type == 'single') {
         // If we are viewing a simple single forum then we need to log forum as viewed.
@@ -65,10 +65,10 @@
             'context' => $modcontext,
             'objectid' => $forum->id
         );
-        $event = \mod_hsuforum\event\course_module_viewed::create($params);
+        $event = \mod_forumimproved\event\course_module_viewed::create($params);
         $event->add_record_snapshot('course_modules', $cm);
         $event->add_record_snapshot('course', $course);
-        $event->add_record_snapshot('hsuforum', $forum);
+        $event->add_record_snapshot('forumimproved', $forum);
         $event->trigger();
     }
 
@@ -76,47 +76,47 @@
         require_once("$CFG->libdir/rsslib.php");
 
         $rsstitle = format_string($course->shortname, true, array('context' => context_course::instance($course->id))) . ': ' . format_string($forum->name);
-        rss_add_http_header($modcontext, 'mod_hsuforum', $forum, $rsstitle);
+        rss_add_http_header($modcontext, 'mod_forumimproved', $forum, $rsstitle);
     }
 
 /// move discussion if requested
     if ($move > 0 and confirm_sesskey()) {
-        $return = $CFG->wwwroot.'/mod/hsuforum/discuss.php?d='.$discussion->id;
+        $return = $CFG->wwwroot.'/mod/forumimproved/discuss.php?d='.$discussion->id;
 
-        require_capability('mod/hsuforum:movediscussions', $modcontext);
+        require_capability('mod/forumimproved:movediscussions', $modcontext);
 
         if ($forum->type == 'single') {
-            print_error('cannotmovefromsingleforum', 'hsuforum', $return);
+            print_error('cannotmovefromsingleforum', 'forumimproved', $return);
         }
 
-        if (!$forumto = $DB->get_record('hsuforum', array('id' => $move))) {
-            print_error('cannotmovetonotexist', 'hsuforum', $return);
+        if (!$forumto = $DB->get_record('forumimproved', array('id' => $move))) {
+            print_error('cannotmovetonotexist', 'forumimproved', $return);
         }
 
         if ($forumto->type == 'single') {
-            print_error('cannotmovetosingleforum', 'hsuforum', $return);
+            print_error('cannotmovetosingleforum', 'forumimproved', $return);
         }
 
         // Get target forum cm and check it is visible to current user.
         $modinfo = get_fast_modinfo($course);
-        $forums = $modinfo->get_instances_of('hsuforum');
+        $forums = $modinfo->get_instances_of('forumimproved');
         if (!array_key_exists($forumto->id, $forums)) {
-            print_error('cannotmovetonotfound', 'hsuforum', $return);
+            print_error('cannotmovetonotfound', 'forumimproved', $return);
         }
         $cmto = $forums[$forumto->id];
         if (!$cmto->uservisible) {
-            print_error('cannotmovenotvisible', 'hsuforum', $return);
+            print_error('cannotmovenotvisible', 'forumimproved', $return);
         }
 
         $destinationctx = context_module::instance($cmto->id);
-        require_capability('mod/hsuforum:startdiscussion', $destinationctx);
+        require_capability('mod/forumimproved:startdiscussion', $destinationctx);
 
         if (!$forum->anonymous or $warned) {
-            if (!hsuforum_move_attachments($discussion, $forum->id, $forumto->id)) {
+            if (!forumimproved_move_attachments($discussion, $forum->id, $forumto->id)) {
                 echo $OUTPUT->notification("Errors occurred while moving attachment directories - check your file permissions");
             }
-            $DB->set_field('hsuforum_discussions', 'forum', $forumto->id, array('id' => $discussion->id));
-            $DB->set_field('hsuforum_read', 'forumid', $forumto->id, array('discussionid' => $discussion->id));
+            $DB->set_field('forumimproved_discussions', 'forum', $forumto->id, array('id' => $discussion->id));
+            $DB->set_field('forumimproved_read', 'forumid', $forumto->id, array('discussionid' => $discussion->id));
 
             $params = array(
                 'context'  => $destinationctx,
@@ -126,16 +126,16 @@
                     'toforumid'   => $forumto->id,
                 )
             );
-            $event  = \mod_hsuforum\event\discussion_moved::create($params);
-            $event->add_record_snapshot('hsuforum_discussions', $discussion);
-            $event->add_record_snapshot('hsuforum', $forum);
-            $event->add_record_snapshot('hsuforum', $forumto);
+            $event  = \mod_forumimproved\event\discussion_moved::create($params);
+            $event->add_record_snapshot('forumimproved_discussions', $discussion);
+            $event->add_record_snapshot('forumimproved', $forum);
+            $event->add_record_snapshot('forumimproved', $forumto);
             $event->trigger();
 
             // Delete the RSS files for the 2 forums to force regeneration of the feeds
-            require_once($CFG->dirroot.'/mod/hsuforum/rsslib.php');
-            hsuforum_rss_delete_file($forum);
-            hsuforum_rss_delete_file($forumto);
+            require_once($CFG->dirroot.'/mod/forumimproved/rsslib.php');
+            forumimproved_rss_delete_file($forum);
+            forumimproved_rss_delete_file($forumto);
 
             redirect($return.'&moved=-1&sesskey='.sesskey());
         }
@@ -145,9 +145,9 @@
         'context' => $modcontext,
         'objectid' => $discussion->id,
     );
-    $event = \mod_hsuforum\event\discussion_viewed::create($params);
-    $event->add_record_snapshot('hsuforum_discussions', $discussion);
-    $event->add_record_snapshot('hsuforum', $forum);
+    $event = \mod_forumimproved\event\discussion_viewed::create($params);
+    $event->add_record_snapshot('forumimproved_discussions', $discussion);
+    $event->add_record_snapshot('forumimproved', $forum);
     $event->trigger();
 
     unset($SESSION->fromdiscussion);
@@ -156,16 +156,16 @@
         $root = $discussion->firstpost;
     }
 
-    if (! $post = hsuforum_get_post_full($root)) {
-        print_error("notexists", 'hsuforum', "$CFG->wwwroot/mod/hsuforum/view.php?f=$forum->id");
+    if (! $post = forumimproved_get_post_full($root)) {
+        print_error("notexists", 'forumimproved', "$CFG->wwwroot/mod/forumimproved/view.php?f=$forum->id");
     }
 
-    if (!hsuforum_user_can_see_post($forum, $discussion, $post, null, $cm)) {
-        print_error('noviewdiscussionspermission', 'hsuforum', "$CFG->wwwroot/mod/hsuforum/view.php?id=$forum->id");
+    if (!forumimproved_user_can_see_post($forum, $discussion, $post, null, $cm)) {
+        print_error('noviewdiscussionspermission', 'forumimproved', "$CFG->wwwroot/mod/forumimproved/view.php?id=$forum->id");
     }
 
     if ($mark == 'read') {
-        hsuforum_tp_add_read_record($USER->id, $postid);
+        forumimproved_tp_add_read_record($USER->id, $postid);
     }
 
 
@@ -175,23 +175,23 @@
     } else {
         $forumnode->make_active();
     }
-    $node = $forumnode->add(format_string($discussion->name), new moodle_url('/mod/hsuforum/discuss.php', array('d'=>$discussion->id)));
+    $node = $forumnode->add(format_string($discussion->name), new moodle_url('/mod/forumimproved/discuss.php', array('d'=>$discussion->id)));
     $node->display = false;
     if ($node && $post->id != $discussion->firstpost) {
         $node->add(format_string($post->subject), $PAGE->url);
     }
 
-    $dsort = hsuforum_lib_discussion_sort::get_from_session($forum, $modcontext);
+    $dsort = forumimproved_lib_discussion_sort::get_from_session($forum, $modcontext);
 
-    $renderer = $PAGE->get_renderer('mod_hsuforum');
-    $PAGE->requires->js_init_call('M.mod_hsuforum.init', null, false, $renderer->get_js_module());
+    $renderer = $PAGE->get_renderer('mod_forumimproved');
+    $PAGE->requires->js_init_call('M.mod_forumimproved.init', null, false, $renderer->get_js_module());
 
     $PAGE->set_title("$course->shortname: $discussion->name");
     $PAGE->set_heading($course->fullname);
     echo $OUTPUT->header();
 
     if ($forum->type != 'single') {
-         echo "<h2><a href='$CFG->wwwroot/mod/hsuforum/view.php?f=$forum->id'>&#171; ".format_string($forum->name)."</a></h2>";
+         echo "<h2><a href='$CFG->wwwroot/mod/forumimproved/view.php?f=$forum->id'>&#171; ".format_string($forum->name)."</a></h2>";
     }
      echo $renderer->svg_sprite();
 
@@ -200,7 +200,7 @@
 /// If so, make sure the current person is allowed to see this discussion
 /// Also, if we know they should be able to reply, then explicitly set $canreply for performance reasons
 
-    $canreply = hsuforum_user_can_post($forum, $discussion, $USER, $cm, $course, $modcontext);
+    $canreply = forumimproved_user_can_post($forum, $discussion, $USER, $cm, $course, $modcontext);
     if (!$canreply and $forum->type !== 'news') {
         if (isguestuser() or !isloggedin()) {
             $canreply = true;
@@ -216,9 +216,9 @@
     // Print Notice of Warning if Moving this Discussion
     if ($move > 0 and confirm_sesskey()) {
         echo $OUTPUT->confirm(
-            get_string('anonymouswarning', 'hsuforum'),
-            new moodle_url('/mod/hsuforum/discuss.php', array('d' => $discussion->id, 'move' => $move, 'warned' => 1)),
-            new moodle_url('/mod/hsuforum/discuss.php', array('d' => $discussion->id))
+            get_string('anonymouswarning', 'forumimproved'),
+            new moodle_url('/mod/forumimproved/discuss.php', array('d' => $discussion->id, 'move' => $move, 'warned' => 1)),
+            new moodle_url('/mod/forumimproved/discuss.php', array('d' => $discussion->id))
         );
     }
 
@@ -226,28 +226,28 @@
         $a = new stdClass();
         $a->blockafter  = $forum->blockafter;
         $a->blockperiod = get_string('secondstotime'.$forum->blockperiod);
-        echo $OUTPUT->notification(get_string('thisforumisthrottled','hsuforum',$a));
+        echo $OUTPUT->notification(get_string('thisforumisthrottled','forumimproved',$a));
     }
 
-    if ($forum->type == 'qanda' && !has_capability('mod/hsuforum:viewqandawithoutposting', $modcontext) &&
-                !hsuforum_user_has_posted($forum->id,$discussion->id,$USER->id)) {
-        echo $OUTPUT->notification(get_string('qandanotify','hsuforum'));
+    if ($forum->type == 'qanda' && !has_capability('mod/forumimproved:viewqandawithoutposting', $modcontext) &&
+                !forumimproved_user_has_posted($forum->id,$discussion->id,$USER->id)) {
+        echo $OUTPUT->notification(get_string('qandanotify','forumimproved'));
     }
 
     if ($move == -1 and confirm_sesskey()) {
-        echo $OUTPUT->notification(get_string('discussionmoved', 'hsuforum', format_string($forum->name,true)));
+        echo $OUTPUT->notification(get_string('discussionmoved', 'forumimproved', format_string($forum->name,true)));
     }
 
-    $canrate = has_capability('mod/hsuforum:rate', $modcontext);
-    hsuforum_print_discussion($course, $cm, $forum, $discussion, $post, $canreply, $canrate);
+    $canrate = has_capability('mod/forumimproved:rate', $modcontext);
+    forumimproved_print_discussion($course, $cm, $forum, $discussion, $post, $canreply, $canrate);
 
     echo '<div class="discussioncontrols">';
 
-    if (!empty($CFG->enableportfolios) && has_capability('mod/hsuforum:exportdiscussion', $modcontext) && empty($forum->anonymous)) {
+    if (!empty($CFG->enableportfolios) && has_capability('mod/forumimproved:exportdiscussion', $modcontext) && empty($forum->anonymous)) {
         require_once($CFG->libdir.'/portfoliolib.php');
         $button = new portfolio_add_button();
-        $button->set_callback_options('hsuforum_portfolio_caller', array('discussionid' => $discussion->id), 'mod_hsuforum');
-        $button = $button->to_html(PORTFOLIO_ADD_FULL_FORM, get_string('exportdiscussion', 'mod_hsuforum'));
+        $button->set_callback_options('forumimproved_portfolio_caller', array('discussionid' => $discussion->id), 'mod_forumimproved');
+        $button = $button->to_html(PORTFOLIO_ADD_FULL_FORM, get_string('exportdiscussion', 'mod_forumimproved'));
         $buttonextraclass = '';
         if (empty($button)) {
             // no portfolio plugin available.
@@ -258,17 +258,17 @@
     }
 
     if ($course->format !='singleactivity' && $forum->type != 'single'
-                && has_capability('mod/hsuforum:movediscussions', $modcontext)) {
+                && has_capability('mod/forumimproved:movediscussions', $modcontext)) {
         echo '<div class="discussioncontrol movediscussion">';
         // Popup menu to move discussions to other forums. The discussion in a
         // single discussion forum can't be moved.
         $modinfo = get_fast_modinfo($course);
-        if (isset($modinfo->instances['hsuforum'])) {
+        if (isset($modinfo->instances['forumimproved'])) {
             $forummenu = array();
             // Check forum types and eliminate simple discussions.
-            $forumcheck = $DB->get_records('hsuforum', array('course' => $course->id),'', 'id, type');
-            foreach ($modinfo->instances['hsuforum'] as $forumcm) {
-                if (!$forumcm->uservisible || !has_capability('mod/hsuforum:startdiscussion',
+            $forumcheck = $DB->get_records('forumimproved', array('course' => $course->id),'', 'id, type');
+            foreach ($modinfo->instances['forumimproved'] as $forumcm) {
+                if (!$forumcm->uservisible || !has_capability('mod/forumimproved:startdiscussion',
                     context_module::instance($forumcm->id))) {
                     continue;
                 }
@@ -280,7 +280,7 @@
                 $forumidcompare = $forumcm->instance != $forum->id;
                 $forumtypecheck = $forumcheck[$forumcm->instance]->type !== 'single';
                 if ($forumidcompare and $forumtypecheck) {
-                    $url = "/mod/hsuforum/discuss.php?d=$discussion->id&move=$forumcm->instance&sesskey=".sesskey();
+                    $url = "/mod/forumimproved/discuss.php?d=$discussion->id&move=$forumcm->instance&sesskey=".sesskey();
                     $forummenu[$section][$sectionname][$url] = format_string($forumcm->name);
                 }
             }
@@ -290,16 +290,16 @@
     if (!empty($forummenu)) {
         echo '<div class="movediscussionoption">';
         $select = new url_select($forummenu, '',
-            array(''=>get_string("movethisdiscussionto", "hsuforum")),
+            array(''=>get_string("movethisdiscussionto", "forumimproved")),
             'forummenu');
         echo $OUTPUT->render($select);
         echo "</div>";
     }
     if ($forum->type == 'single') {
-        echo  hsuforum_search_form($course, $forum->id);
+        echo  forumimproved_search_form($course, $forum->id);
     }
 
-    $neighbours = hsuforum_get_discussion_neighbours($cm, $discussion);
+    $neighbours = forumimproved_get_discussion_neighbours($cm, $discussion);
     echo $renderer->discussion_navigation($neighbours['prev'], $neighbours['next']);
     echo "</div>";
 

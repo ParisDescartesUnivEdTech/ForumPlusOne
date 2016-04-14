@@ -17,19 +17,19 @@
 /**
  * Text Export Format
  *
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_hsuforum\export;
+namespace mod_forumimproved\export;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__.'/format_abstract.php');
 
 /**
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -63,7 +63,7 @@ class text_format extends format_abstract {
      */
     public function export_discussion($id, $subject, $author, $date, $message, $attachments) {
         $this->write_separator();
-        fwrite($this->fp, get_string('discussion:x', 'hsuforum', $subject)."\n");
+        fwrite($this->fp, get_string('discussion:x', 'forumimproved', $subject)."\n");
         $this->export_post($id, $subject, $subject, $author, $date, $message, $attachments, '');
     }
 
@@ -83,16 +83,16 @@ class text_format extends format_abstract {
         $a = array('subject' => $subject, 'author' => $author, 'date' => $userdate);
 
         if (!empty($private)) {
-            $heading = get_string('subjectbyprivateuserondate', 'hsuforum', $a);
+            $heading = get_string('subjectbyprivateuserondate', 'forumimproved', $a);
         } else {
-            $heading = get_string('subjectbyuserondate', 'hsuforum', $a);
+            $heading = get_string('subjectbyuserondate', 'forumimproved', $a);
         }
         $this->write_separator();
         fwrite($this->fp, $heading."\n\n");
         fwrite($this->fp, $message."\n");
 
         if (!empty($attachments)) {
-            fwrite($this->fp, "\n".get_string('attachments:x', 'hsuforum', implode(' | ', $attachments))."\n");
+            fwrite($this->fp, "\n".get_string('attachments:x', 'forumimproved', implode(' | ', $attachments))."\n");
         }
     }
 }

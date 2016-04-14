@@ -18,19 +18,19 @@
  * Route entry
  *
  * @package    mod
- * @subpackage hsuforum
+ * @subpackage forumimproved
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use mod_hsuforum\controller\edit_controller;
-use mod_hsuforum\controller\export_controller;
-use mod_hsuforum\controller\flag_controller;
-use mod_hsuforum\controller\kernel;
-use mod_hsuforum\controller\posters_controller;
-use mod_hsuforum\controller\posts_controller;
-use mod_hsuforum\controller\router;
+use mod_forumimproved\controller\edit_controller;
+use mod_forumimproved\controller\export_controller;
+use mod_forumimproved\controller\flag_controller;
+use mod_forumimproved\controller\kernel;
+use mod_forumimproved\controller\posters_controller;
+use mod_forumimproved\controller\posts_controller;
+use mod_forumimproved\controller\router;
 
 if ((!empty($_SERVER['HTTP_X_REQUESTED_WITH'])
     && strcasecmp($_SERVER['HTTP_X_REQUESTED_WITH'], 'XMLHttpRequest') === 0)
@@ -59,7 +59,7 @@ list($context, $course, $cm) = get_context_info_array($contextid);
 if (empty($cm)) {
     throw new coding_exception("Failed to find course module record with contextid of $contextid");
 }
-$instance = $DB->get_record('hsuforum', array('id' => $cm->instance), '*', MUST_EXIST);
+$instance = $DB->get_record('forumimproved', array('id' => $cm->instance), '*', MUST_EXIST);
 
 require_login($course, true, $cm);
 
@@ -67,7 +67,7 @@ $PAGE->set_title("$course->shortname: $instance->name");
 $PAGE->set_heading($course->fullname);
 $PAGE->set_activity_record($instance);
 $PAGE->set_context($context);
-$PAGE->set_url('/mod/hsuforum/route.php', array(
+$PAGE->set_url('/mod/forumimproved/route.php', array(
     'contextid' => $context->id,
     'action'    => $action,
 ));

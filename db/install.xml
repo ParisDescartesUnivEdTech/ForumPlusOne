@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/hsuforum/db" VERSION="20140404" COMMENT="XMLDB file for Moodle mod/hsuforum"
+<XMLDB PATH="mod/forumimproved/db" VERSION="20140404" COMMENT="XMLDB file for Moodle mod/forumimproved"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="hsuforum" COMMENT="Forums contain and structure discussion">
+    <TABLE NAME="forumimproved" COMMENT="Forums contain and structure discussion">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -43,7 +43,7 @@
         <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="hsuforum_discussions" COMMENT="Forums are composed of discussions">
+    <TABLE NAME="forumimproved_discussions" COMMENT="Forums are composed of discussions">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -66,7 +66,7 @@
         <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="hsuforum_posts" COMMENT="All posts are stored in this table">
+    <TABLE NAME="forumimproved_posts" COMMENT="All posts are stored in this table">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="discussion" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -88,8 +88,8 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="discussion" TYPE="foreign" FIELDS="discussion" REFTABLE="hsuforum_discussions" REFFIELDS="id"/>
-        <KEY NAME="parent" TYPE="foreign" FIELDS="parent" REFTABLE="hsuforum_posts" REFFIELDS="id" COMMENT="note that to make this recursive FK working someday, the parent field must be decalred NULL"/>
+        <KEY NAME="discussion" TYPE="foreign" FIELDS="discussion" REFTABLE="forumimproved_discussions" REFFIELDS="id"/>
+        <KEY NAME="parent" TYPE="foreign" FIELDS="parent" REFTABLE="forumimproved_posts" REFFIELDS="id" COMMENT="note that to make this recursive FK working someday, the parent field must be decalred NULL"/>
       </KEYS>
       <INDEXES>
         <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
@@ -98,7 +98,7 @@
         <INDEX NAME="privatereply" UNIQUE="false" FIELDS="privatereply"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="hsuforum_queue" COMMENT="For keeping track of posts that will be mailed in digest form">
+    <TABLE NAME="forumimproved_queue" COMMENT="For keeping track of posts that will be mailed in digest form">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -108,14 +108,14 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="discussionid" TYPE="foreign" FIELDS="discussionid" REFTABLE="hsuforum_discussions" REFFIELDS="id"/>
-        <KEY NAME="postid" TYPE="foreign" FIELDS="postid" REFTABLE="hsuforum_posts" REFFIELDS="id"/>
+        <KEY NAME="discussionid" TYPE="foreign" FIELDS="discussionid" REFTABLE="forumimproved_discussions" REFFIELDS="id"/>
+        <KEY NAME="postid" TYPE="foreign" FIELDS="postid" REFTABLE="forumimproved_posts" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
         <INDEX NAME="user" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="hsuforum_subscriptions" COMMENT="Keeps track of who is subscribed to what forum">
+    <TABLE NAME="forumimproved_subscriptions" COMMENT="Keeps track of who is subscribed to what forum">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -129,7 +129,7 @@
         <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="hsuforum_subscriptions_disc" COMMENT="Contains the discussion subscriptions">
+    <TABLE NAME="forumimproved_subscriptions_disc" COMMENT="Contains the discussion subscriptions">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -137,13 +137,13 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="discussion" TYPE="foreign" FIELDS="discussion" REFTABLE="hsuforum_discussion" REFFIELDS="id"/>
+        <KEY NAME="discussion" TYPE="foreign" FIELDS="discussion" REFTABLE="forumimproved_discussion" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
         <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="hsuforum_digests" COMMENT="Keeps track of user mail delivery preferences for each forum">
+    <TABLE NAME="forumimproved_digests" COMMENT="Keeps track of user mail delivery preferences for each forum">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -157,7 +157,7 @@
         <KEY NAME="forumdigest" TYPE="unique" FIELDS="forum, userid, maildigest"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="hsuforum_read" COMMENT="Tracks each users read posts">
+    <TABLE NAME="forumimproved_read" COMMENT="Tracks each users read posts">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -176,7 +176,7 @@
         <INDEX NAME="postid-userid" UNIQUE="false" FIELDS="postid, userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="hsuforum_track_prefs" COMMENT="Tracks each users untracked forums">
+    <TABLE NAME="forumimproved_track_prefs" COMMENT="Tracks each users untracked forums">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

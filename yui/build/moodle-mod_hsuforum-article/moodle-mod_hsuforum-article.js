@@ -1,47 +1,47 @@
-YUI.add('moodle-mod_hsuforum-article', function (Y, NAME) {
+YUI.add('moodle-mod_forumimproved-article', function (Y, NAME) {
 
 var CSS = {
-        DISCUSSION_EDIT: 'hsuforum-thread-edit',
-        DISCUSSION_EXPANDED: 'hsuforum-thread-article-expanded',
-        POST_EDIT: 'hsuforum-post-edit'
+        DISCUSSION_EDIT: 'forumimproved-thread-edit',
+        DISCUSSION_EXPANDED: 'forumimproved-thread-article-expanded',
+        POST_EDIT: 'forumimproved-post-edit'
     },
     SELECTORS = {
         ADD_DISCUSSION: '#newdiscussionform',
-        ADD_DISCUSSION_TARGET: '.hsuforum-add-discussion-target',
-        ALL_FORMS: '.hsuforum-reply-wrapper form',
-        CONTAINER: '.mod-hsuforum-posts-container',
-        CONTAINER_LINKS: '.mod-hsuforum-posts-container a',
-        DISCUSSION: '.hsuforum-thread',
-        DISCUSSIONS: '.hsuforum-threads-wrapper',
+        ADD_DISCUSSION_TARGET: '.forumimproved-add-discussion-target',
+        ALL_FORMS: '.forumimproved-reply-wrapper form',
+        CONTAINER: '.mod-forumimproved-posts-container',
+        CONTAINER_LINKS: '.mod-forumimproved-posts-container a',
+        DISCUSSION: '.forumimproved-thread',
+        DISCUSSIONS: '.forumimproved-threads-wrapper',
         DISCUSSION_EDIT: '.' + CSS.DISCUSSION_EDIT,
-        DISCUSSION_BY_ID: '.hsuforum-thread[data-discussionid="%d"]',
-        DISCUSSION_COUNT: '.hsuforum-discussion-count',
-        DISCUSSION_TARGET: '.hsuforum-new-discussion-target',
-        DISCUSSION_TEMPLATE: '#hsuforum-discussion-template',
-        DISCUSSION_VIEW: '.hsuforum-thread-view',
+        DISCUSSION_BY_ID: '.forumimproved-thread[data-discussionid="%d"]',
+        DISCUSSION_COUNT: '.forumimproved-discussion-count',
+        DISCUSSION_TARGET: '.forumimproved-new-discussion-target',
+        DISCUSSION_TEMPLATE: '#forumimproved-discussion-template',
+        DISCUSSION_VIEW: '.forumimproved-thread-view',
         EDITABLE_MESSAGE: '[contenteditable]',
-        FORM: '.hsuforum-form',
-        FORM_ADVANCED: '.hsuforum-use-advanced',
-        FORM_REPLY_WRAPPER: '.hsuforum-reply-wrapper',
+        FORM: '.forumimproved-form',
+        FORM_ADVANCED: '.forumimproved-use-advanced',
+        FORM_REPLY_WRAPPER: '.forumimproved-reply-wrapper',
         INPUT_FORUM: 'input[name="forum"]',
         INPUT_MESSAGE: 'textarea[name="message"]',
         INPUT_REPLY: 'input[name="reply"]',
         INPUT_SUBJECT: 'input[name="subject"]',
-        LINK_CANCEL: '.hsuforum-cancel',
+        LINK_CANCEL: '.forumimproved-cancel',
         NO_DISCUSSIONS: '.forumnodiscuss',
-        NOTIFICATION: '.hsuforum-notification',
-        OPTIONS_TO_PROCESS: '.hsuforum-options-menu.unprocessed',
+        NOTIFICATION: '.forumimproved-notification',
+        OPTIONS_TO_PROCESS: '.forumimproved-options-menu.unprocessed',
         PLACEHOLDER: '.thread-replies-placeholder',
-        POSTS: '.hsuforum-thread-replies',
-        POST_BY_ID: '.hsuforum-post-target[data-postid="%d"]',
+        POSTS: '.forumimproved-thread-replies',
+        POST_BY_ID: '.forumimproved-post-target[data-postid="%d"]',
         POST_EDIT: '.' + CSS.POST_EDIT,
-        POST_TARGET: '.hsuforum-post-target',
+        POST_TARGET: '.forumimproved-post-target',
         RATE: '.forum-post-rating',
         RATE_POPUP: '.forum-post-rating a',
-        REPLY_TEMPLATE: '#hsuforum-reply-template',
-        SEARCH_PAGE: '#page-mod-hsuforum-search',
-        VALIDATION_ERRORS: '.hsuforum-validation-errors',
-        VIEW_POSTS: '.hsuforum-view-posts'
+        REPLY_TEMPLATE: '#forumimproved-reply-template',
+        SEARCH_PAGE: '#page-mod-forumimproved-search',
+        VALIDATION_ERRORS: '.forumimproved-validation-errors',
+        VIEW_POSTS: '.forumimproved-view-posts'
     },
     EVENTS = {
         DISCUSSION_CREATED: 'discussion:created',
@@ -52,18 +52,18 @@ var CSS = {
         POST_UPDATED: 'post:updated'
     };
 
-M.mod_hsuforum = M.mod_hsuforum || {};
+M.mod_forumimproved = M.mod_forumimproved || {};
 /**
  * DOM Updater
  *
- * @module moodle-mod_hsuforum-dom
+ * @module moodle-mod_forumimproved-dom
  */
 
 /**
  * Handles updating forum DOM structures.
  *
  * @constructor
- * @namespace M.mod_hsuforum
+ * @namespace M.mod_forumimproved
  * @class Dom
  * @extends Y.Base
  */
@@ -71,14 +71,14 @@ function DOM() {
     DOM.superclass.constructor.apply(this, arguments);
 }
 
-DOM.NAME = 'moodle-mod_hsuforum-dom';
+DOM.NAME = 'moodle-mod_forumimproved-dom';
 
 DOM.ATTRS = {
     /**
      * Used for requests
      *
      * @attribute io
-     * @type M.mod_hsuforum.Io
+     * @type M.mod_forumimproved.Io
      * @required
      */
     io: { value: null }
@@ -200,7 +200,7 @@ Y.extend(DOM, Y.Base,
             if (countNode !== null) {
                 // Increment the count and update display.
                 countNode.setData('count', parseInt(countNode.getData('count'), 10) + increment);
-                countNode.setHTML(M.util.get_string('xdiscussions', 'mod_hsuforum', countNode.getData('count')));
+                countNode.setHTML(M.util.get_string('xdiscussions', 'mod_forumimproved', countNode.getData('count')));
             }
         },
 
@@ -295,22 +295,22 @@ Y.extend(DOM, Y.Base,
     }
 );
 
-M.mod_hsuforum.Dom = DOM;
+M.mod_forumimproved.Dom = DOM;
 /**
  * Forum Router
  *
- * @module moodle-mod_hsuforum-router
+ * @module moodle-mod_forumimproved-router
  */
 
 /**
  * Handles URL routing
  *
  * @constructor
- * @namespace M.mod_hsuforum
+ * @namespace M.mod_forumimproved
  * @class Router
  * @extends Y.Router
  */
-var ROUTER = Y.Base.create('hsuforumRouter', Y.Router, [], {
+var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
     /**
      *
      * @method initializer
@@ -376,7 +376,7 @@ var ROUTER = Y.Base.create('hsuforumRouter', Y.Router, [], {
             return;
         }
         // Whenever a route takes us somewhere else we need to move the editor back to its original container.
-        M.mod_hsuforum.restoreEditor();
+        M.mod_forumimproved.restoreEditor();
 
         if (this.routeUrl(e.currentTarget.get('href'))) {
             e.preventDefault();
@@ -408,7 +408,7 @@ var ROUTER = Y.Base.create('hsuforumRouter', Y.Router, [], {
         e.preventDefault();
 
         // Put editor back to its original place in DOM.
-        M.mod_hsuforum.restoreEditor();
+        M.mod_forumimproved.restoreEditor();
 
         var formNode = e.currentTarget,
             forumId  = formNode.one(SELECTORS.INPUT_FORUM).get('value');
@@ -452,7 +452,7 @@ var ROUTER = Y.Base.create('hsuforumRouter', Y.Router, [], {
          * Used for responding to routing actions
          *
          * @attribute article
-         * @type M.mod_hsuforum.Article
+         * @type M.mod_forumimproved.Article
          * @required
          */
         article: { value: null },
@@ -462,11 +462,11 @@ var ROUTER = Y.Base.create('hsuforumRouter', Y.Router, [], {
          *
          * @attribute root
          * @type String
-         * @default '/mod/hsuforum'
+         * @default '/mod/forumimproved'
          * @required
          */
         root: {
-            value: '/mod/hsuforum'
+            value: '/mod/forumimproved'
         },
 
         /**
@@ -486,11 +486,11 @@ var ROUTER = Y.Base.create('hsuforumRouter', Y.Router, [], {
     }
 });
 
-M.mod_hsuforum.Router = ROUTER;
+M.mod_forumimproved.Router = ROUTER;
 /**
  * Form Handler
  *
- * @module moodle-mod_hsuforum-form
+ * @module moodle-mod_forumimproved-form
  */
 
 /**
@@ -499,7 +499,7 @@ M.mod_hsuforum.Router = ROUTER;
  *  Adding a discussion
  *
  * @constructor
- * @namespace M.mod_hsuforum
+ * @namespace M.mod_forumimproved
  * @class Form
  * @extends Y.Base
  */
@@ -507,14 +507,14 @@ function FORM() {
     FORM.superclass.constructor.apply(this, arguments);
 }
 
-FORM.NAME = 'moodle-mod_hsuforum-form';
+FORM.NAME = 'moodle-mod_forumimproved-form';
 
 FORM.ATTRS = {
     /**
      * Used for requests
      *
      * @attribute io
-     * @type M.mod_hsuforum.Io
+     * @type M.mod_forumimproved.Io
      * @required
      */
     io: { value: null }
@@ -693,7 +693,7 @@ Y.extend(FORM, Y.Base,
 
             if (parentNode.hasAttribute('data-ispost')) {
                 wrapperNode.one('legend').setHTML(
-                    M.util.get_string('replytox', 'mod_hsuforum', parentNode.getData('author'))
+                    M.util.get_string('replytox', 'mod_forumimproved', parentNode.getData('author'))
                 );
             }
         },
@@ -786,7 +786,7 @@ Y.extend(FORM, Y.Base,
             e.preventDefault();
 
             // Put editor back to its original place in DOM.
-            M.mod_hsuforum.restoreEditor();
+            M.mod_forumimproved.restoreEditor();
 
             var node = e.target.ancestor(SELECTORS.POST_TARGET);
             if (node) {
@@ -812,7 +812,7 @@ Y.extend(FORM, Y.Base,
             e.preventDefault();
 
             // Put editor back to its original place in DOM.
-            M.mod_hsuforum.restoreEditor();
+            M.mod_forumimproved.restoreEditor();
 
             var wrapperNode = e.currentTarget.ancestor(SELECTORS.FORM_REPLY_WRAPPER);
 
@@ -892,18 +892,18 @@ Y.extend(FORM, Y.Base,
     }
 );
 
-M.mod_hsuforum.Form = FORM;
+M.mod_forumimproved.Form = FORM;
 /**
  * Forum Article View
  *
- * @module moodle-mod_hsuforum-article
+ * @module moodle-mod_forumimproved-article
  */
 
 /**
  * Handles updating forum article structure
  *
  * @constructor
- * @namespace M.mod_hsuforum
+ * @namespace M.mod_forumimproved
  * @class Article
  * @extends Y.Base
  */
@@ -928,7 +928,7 @@ ARTICLE.ATTRS = {
      * Used for REST calls
      *
      * @attribute io
-     * @type M.mod_hsuforum.Io
+     * @type M.mod_forumimproved.Io
      * @readOnly
      */
     io: { readOnly: true },
@@ -937,7 +937,7 @@ ARTICLE.ATTRS = {
      * Used primarily for updating the DOM
      *
      * @attribute dom
-     * @type M.mod_hsuforum.Dom
+     * @type M.mod_forumimproved.Dom
      * @readOnly
      */
     dom: { readOnly: true },
@@ -946,7 +946,7 @@ ARTICLE.ATTRS = {
      * Used for routing URLs within the same page
      *
      * @attribute router
-     * @type M.mod_hsuforum.Router
+     * @type M.mod_forumimproved.Router
      * @readOnly
      */
     router: { readOnly: true },
@@ -955,7 +955,7 @@ ARTICLE.ATTRS = {
      * Displays, hides and submits forms
      *
      * @attribute form
-     * @type M.mod_hsuforum.Form
+     * @type M.mod_forumimproved.Form
      * @readOnly
      */
     form: { readOnly: true },
@@ -964,7 +964,7 @@ ARTICLE.ATTRS = {
      * Maintains an aria live log.
      *
      * @attribute liveLog
-     * @type M.mod_hsuforum.init_livelog
+     * @type M.mod_forumimproved.init_livelog
      * @readOnly
      */
     liveLog: { readOnly: true },
@@ -986,11 +986,11 @@ Y.extend(ARTICLE, Y.Base,
          * Setup the app
          */
         initializer: function() {
-            this._set('router', new M.mod_hsuforum.Router({article: this, html5: false}));
-            this._set('io', new M.mod_hsuforum.Io({contextId: this.get('contextId')}));
-            this._set('dom', new M.mod_hsuforum.Dom({io: this.get('io')}));
-            this._set('form', new M.mod_hsuforum.Form({io: this.get('io')}));
-            this._set('liveLog', M.mod_hsuforum.init_livelog());
+            this._set('router', new M.mod_forumimproved.Router({article: this, html5: false}));
+            this._set('io', new M.mod_forumimproved.Io({contextId: this.get('contextId')}));
+            this._set('dom', new M.mod_forumimproved.Dom({io: this.get('io')}));
+            this._set('form', new M.mod_forumimproved.Form({io: this.get('io')}));
+            this._set('liveLog', M.mod_forumimproved.init_livelog());
             this.bind();
             // this.get('router').dispatch();
         },
@@ -1000,7 +1000,7 @@ Y.extend(ARTICLE, Y.Base,
          * @method bind
          */
         bind: function() {
-            var firstUnreadPost = document.getElementsByClassName("hsuforum-post-unread")[0];
+            var firstUnreadPost = document.getElementsByClassName("forumimproved-post-unread")[0];
             if(firstUnreadPost && location.hash === '#unread') {
                 // get the post parent to focus on
                 var post = document.getElementById(firstUnreadPost.id).parentNode;
@@ -1023,7 +1023,7 @@ Y.extend(ARTICLE, Y.Base,
                 router  = this.get('router');
 
             /* Clean html on paste */
-            Y.delegate('paste', form.handleFormPaste, document, '.hsuforum-textarea', form);
+            Y.delegate('paste', form.handleFormPaste, document, '.forumimproved-textarea', form);
 
             // We bind to document otherwise screen readers read everything as clickable.
             Y.delegate('click', form.handleCancelForm, document, SELECTORS.LINK_CANCEL, form);
@@ -1051,20 +1051,20 @@ Y.extend(ARTICLE, Y.Base,
                 editor = editArea.ancestor('.editor_atto');
 
                 if (editor){
-                    M.mod_hsuforum.toggleAdvancedEditor(advancedEditLink);
+                    M.mod_forumimproved.toggleAdvancedEditor(advancedEditLink);
                 } else {
                     // The advanced editor isn't available yet, lets try again periodically.
-                    advancedEditLink.setContent(M.util.get_string('loadingeditor', 'hsuforum'));
+                    advancedEditLink.setContent(M.util.get_string('loadingeditor', 'forumimproved'));
                     checkEditArea = setInterval(function(){
                         editor = editArea.ancestor('.editor_atto');
                         if (editor) {
                             clearInterval(checkEditArea);
-                            M.mod_hsuforum.toggleAdvancedEditor(advancedEditLink);
+                            M.mod_forumimproved.toggleAdvancedEditor(advancedEditLink);
                         }
                     }, 500);
                 }
 
-            }, document, '.hsuforum-use-advanced');
+            }, document, '.forumimproved-use-advanced');
 
             // We bind to document for these buttons as they get re-added on each discussion addition.
             Y.delegate('submit', form.handleFormSubmit, document, SELECTORS.FORM, form);
@@ -1150,7 +1150,7 @@ Y.extend(ARTICLE, Y.Base,
             if (node === null) {
                 return;
             }
-            if (window.confirm(M.str.mod_hsuforum.deletesure) === true) {
+            if (window.confirm(M.str.mod_forumimproved.deletesure) === true) {
                 this.deletePost(postId);
             }
         },
@@ -1182,8 +1182,8 @@ Y.extend(ARTICLE, Y.Base,
     }
 );
 
-M.mod_hsuforum.Article = ARTICLE;
-M.mod_hsuforum.init_article = function(config) {
+M.mod_forumimproved.Article = ARTICLE;
+M.mod_forumimproved.init_article = function(config) {
     new ARTICLE(config);
 };
 
@@ -1191,7 +1191,7 @@ M.mod_hsuforum.init_article = function(config) {
  * Trigger click event.
  * @param el
  */
-M.mod_hsuforum.dispatchClick = function(el) {
+M.mod_forumimproved.dispatchClick = function(el) {
     if (document.createEvent) {
         var event = new MouseEvent('click', {
             'view': window,
@@ -1207,16 +1207,16 @@ M.mod_hsuforum.dispatchClick = function(el) {
 /**
  * Restore editor to original position in DOM.
  */
-M.mod_hsuforum.restoreEditor = function() {
+M.mod_forumimproved.restoreEditor = function() {
     var editCont = Y.one('#hiddenadvancededitorcont');
     if (editCont) {
         var editArea = Y.one('#hiddenadvancededitoreditable'),
         editor = editArea.ancestor('.editor_atto'),
-        advancedEditLink = M.mod_hsuforum.Article.currentEditLink,
+        advancedEditLink = M.mod_forumimproved.Article.currentEditLink,
         contentEditable = false;
 
         if (advancedEditLink) {
-            contentEditable = advancedEditLink.previous('.hsuforum-textarea');
+            contentEditable = advancedEditLink.previous('.forumimproved-textarea');
         }
 
         var editorHidden = (!editor || editor.getComputedStyle('display') === 'none');
@@ -1226,7 +1226,7 @@ M.mod_hsuforum.restoreEditor = function() {
         if (!editorHidden) {
             if (editor.one('.atto_html_button.highlight')) {
                 // Trigger click on atto source button - we need to update the editor content.
-                M.mod_hsuforum.dispatchClick(editor.one('.atto_html_button.highlight')._node);
+                M.mod_forumimproved.dispatchClick(editor.one('.atto_html_button.highlight')._node);
             }
             // Update content editable div.
             if (contentEditable) {
@@ -1237,7 +1237,7 @@ M.mod_hsuforum.restoreEditor = function() {
 
 
         // Switch all editor links to hide mode.
-        M.mod_hsuforum.toggleAdvancedEditor(false, true);
+        M.mod_forumimproved.toggleAdvancedEditor(false, true);
 
         // Put editor back in its correct place.
         Y.one('#hiddenadvancededitorcont').show();
@@ -1250,7 +1250,7 @@ M.mod_hsuforum.restoreEditor = function() {
 /**
  * Toggle advanced editor in place of plain text editor.
  */
-M.mod_hsuforum.toggleAdvancedEditor = function(advancedEditLink, forcehide, keepLink) {
+M.mod_forumimproved.toggleAdvancedEditor = function(advancedEditLink, forcehide, keepLink) {
 
     var showEditor = false;
     if (!forcehide) {
@@ -1258,7 +1258,7 @@ M.mod_hsuforum.toggleAdvancedEditor = function(advancedEditLink, forcehide, keep
     }
 
     if (advancedEditLink) {
-        M.mod_hsuforum.Article.currentEditLink = advancedEditLink;
+        M.mod_forumimproved.Article.currentEditLink = advancedEditLink;
         if (showEditor) {
             advancedEditLink.removeClass('hideadvancededitor');
         } else {
@@ -1273,26 +1273,26 @@ M.mod_hsuforum.toggleAdvancedEditor = function(advancedEditLink, forcehide, keep
     if (forcehide) {
         // If advancedEditLink is not set and we are forcing a hide then we need to hide every instance and change all labels.
         if (!advancedEditLink){
-            var links = Y.all('.hsuforum-use-advanced');
+            var links = Y.all('.forumimproved-use-advanced');
             for (var l = 0; l<links.size(); l++) {
                 var link = links.item(l);
                 if (keepLink && keepLink === link){
                     continue; // Do not process this link.
                 }
                 // To hide this link and restore the editor, call myself.
-                M.mod_hsuforum.toggleAdvancedEditor(link, true);
+                M.mod_forumimproved.toggleAdvancedEditor(link, true);
             }
 
             return;
         }
     } else {
         // OK we need to make sure the editor isn't available anywhere else, so call myself.
-        M.mod_hsuforum.toggleAdvancedEditor(false, true, advancedEditLink);
+        M.mod_forumimproved.toggleAdvancedEditor(false, true, advancedEditLink);
     }
 
     var editCont = Y.one('#hiddenadvancededitorcont'),
         editArea,
-        contentEditable = advancedEditLink.previous('.hsuforum-textarea'),
+        contentEditable = advancedEditLink.previous('.forumimproved-textarea'),
         editor;
 
     if (editCont){
@@ -1313,7 +1313,7 @@ M.mod_hsuforum.toggleAdvancedEditor = function(advancedEditLink, forcehide, keep
 
     if (showEditor) {
         advancedEditLink.setAttribute('aria-pressed', 'true');
-        advancedEditLink.setContent(M.util.get_string('hideadvancededitor', 'hsuforum'));
+        advancedEditLink.setContent(M.util.get_string('hideadvancededitor', 'forumimproved'));
         contentEditable.hide();
         // Are we in source mode?
         if (editor.one('.atto_html_button.highlight')) {
@@ -1336,18 +1336,18 @@ M.mod_hsuforum.toggleAdvancedEditor = function(advancedEditLink, forcehide, keep
 
         // Whenever the html editor changes its content, update the text area.
         if (window.MutationObserver){
-            M.mod_hsuforum.Article.editorMutateObserver = new MutationObserver(editAreaChanged);
-            M.mod_hsuforum.Article.editorMutateObserver.observe(editArea.getDOMNode(), {childList: true, characterData: true, subtree: true});
+            M.mod_forumimproved.Article.editorMutateObserver = new MutationObserver(editAreaChanged);
+            M.mod_forumimproved.Article.editorMutateObserver.observe(editArea.getDOMNode(), {childList: true, characterData: true, subtree: true});
         } else {
             // Don't use yui delegate as I don't think it supports this event type
             editArea.getDOMNode().addEventListener ('DOMCharacterDataModified', editAreachanged, false);
         }
     } else {
         advancedEditLink.setAttribute('aria-pressed', 'false');
-        if (M.mod_hsuforum.Article.editorMutateObserver){
-            M.mod_hsuforum.Article.editorMutateObserver.disconnect();
+        if (M.mod_forumimproved.Article.editorMutateObserver){
+            M.mod_forumimproved.Article.editorMutateObserver.disconnect();
         }
-        advancedEditLink.setContent(M.util.get_string('useadvancededitor', 'hsuforum'));
+        advancedEditLink.setContent(M.util.get_string('useadvancededitor', 'forumimproved'));
         contentEditable.show();
 
         // If editor is not hidden then we need to update content editable div with editor content.
@@ -1355,7 +1355,7 @@ M.mod_hsuforum.toggleAdvancedEditor = function(advancedEditLink, forcehide, keep
             // Are we in source mode?
             if (editor.one('.atto_html_button.highlight')) {
                 // Trigger click on atto source button - we need to update the editor content.
-                M.mod_hsuforum.dispatchClick(editor.one('.atto_html_button.highlight')._node);
+                M.mod_forumimproved.dispatchClick(editor.one('.atto_html_button.highlight')._node);
             }
             // Update content of content editable div.
 
@@ -1375,8 +1375,8 @@ M.mod_hsuforum.toggleAdvancedEditor = function(advancedEditLink, forcehide, keep
         "router",
         "core_rating",
         "querystring",
-        "moodle-mod_hsuforum-io",
-        "moodle-mod_hsuforum-livelog",
+        "moodle-mod_forumimproved-io",
+        "moodle-mod_forumimproved-livelog",
         "moodle-core-formchangechecker"
     ]
 });

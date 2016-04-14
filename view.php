@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -36,13 +36,13 @@
     if (!$f && !$id) {
         print_error('missingparameter');
     } else if ($f) {
-        $forum = $DB->get_record('hsuforum', array('id' => $f));
+        $forum = $DB->get_record('forumimproved', array('id' => $f));
         $params['f'] = $forum->id;
     } else {
-        if (!$cm = get_coursemodule_from_id('hsuforum', $id)){
+        if (!$cm = get_coursemodule_from_id('forumimproved', $id)){
             print_error('missingparameter');
         }
-        $forum = $DB->get_record('hsuforum', array('id' => $cm->instance));
+        $forum = $DB->get_record('forumimproved', array('id' => $cm->instance));
         $params['id'] = $cm->id;
     }
 
@@ -52,23 +52,23 @@
     if ($search) {
         $params['search'] = $search;
     }
-    $PAGE->set_url('/mod/hsuforum/view.php', $params);
+    $PAGE->set_url('/mod/forumimproved/view.php', $params);
 
     $course = $DB->get_record('course', array('id' => $forum->course));
 
-    if (!$cm && !$cm = get_coursemodule_from_instance("hsuforum", $forum->id, $course->id)) {
+    if (!$cm && !$cm = get_coursemodule_from_instance("forumimproved", $forum->id, $course->id)) {
         print_error('missingparameter');
     }
 
     if ($forum->type == 'single') {
-        $discussions = $DB->get_records('hsuforum_discussions', array('forum'=>$forum->id), 'timemodified ASC');
+        $discussions = $DB->get_records('forumimproved_discussions', array('forum'=>$forum->id), 'timemodified ASC');
         $discussion = array_pop($discussions);
 
         if (empty($discussion)) {
-            print_error('cannotfindfirstpost', 'hsuforum');
+            print_error('cannotfindfirstpost', 'forumimproved');
         }
 
-        redirect(new moodle_url('/mod/hsuforum/discuss.php', array('d' => $discussion->id)));
+        redirect(new moodle_url('/mod/forumimproved/discuss.php', array('d' => $discussion->id)));
     }
 
 // move require_course_login here to use forced language for course
@@ -82,7 +82,7 @@
     $PAGE->add_body_class('forumtype-'.$forum->type);
     $PAGE->set_heading($course->fullname);
 
-    $renderer = $PAGE->get_renderer('mod_hsuforum');
+    $renderer = $PAGE->get_renderer('mod_forumimproved');
 /// This has to be called before we start setting up page as it triggers view events.
     $discussionview = $renderer->render_discussionsview($forum);
 
@@ -94,8 +94,8 @@
         notice(get_string("activityiscurrentlyhidden"));
     }
 
-    if (!has_capability('mod/hsuforum:viewdiscussion', $context)) {
-        notice(get_string('noviewdiscussionspermission', 'hsuforum'));
+    if (!has_capability('mod/forumimproved:viewdiscussion', $context)) {
+        notice(get_string('noviewdiscussionspermission', 'forumimproved'));
     }
 
     echo $discussionview;

@@ -1,5 +1,5 @@
 {
-    "moodle-mod_hsuforum-article": {
+    "moodle-mod_forumimproved-article": {
         "requires": [
             "base",
             "node",
@@ -7,8 +7,8 @@
             "router",
             "core_rating",
             "querystring",
-            "moodle-mod_hsuforum-io",
-            "moodle-mod_hsuforum-livelog",
+            "moodle-mod_forumimproved-io",
+            "moodle-mod_forumimproved-livelog",
             "moodle-core-formchangechecker"
         ]
     }

@@ -17,36 +17,36 @@
 /**
  * Post services
  *
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_hsuforum\service;
+namespace mod_forumimproved\service;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class form_service {
     /**
-     * @var \mod_hsuforum_renderer
+     * @var \mod_forumimproved_renderer
      */
     protected $renderer;
 
     /**
      * Lazy load renderer
      *
-     * @return \mod_hsuforum_renderer|\renderer_base
+     * @return \mod_forumimproved_renderer|\renderer_base
      */
     protected function get_renderer() {
         global $PAGE;
 
-        if (!$this->renderer instanceof \mod_hsuforum_renderer) {
-            $this->renderer = $PAGE->get_renderer('mod_hsuforum');
+        if (!$this->renderer instanceof \mod_forumimproved_renderer) {
+            $this->renderer = $PAGE->get_renderer('mod_forumimproved');
         }
         return $this->renderer;
     }
@@ -58,8 +58,8 @@ class form_service {
         $context = \context_module::instance($cm->id);
         $post    = trusttext_pre_edit($post, 'message', $context);
         $itemid  = file_get_submitted_draft_itemid('message');
-        $message = file_prepare_draft_area($itemid, $context->id, 'mod_hsuforum', 'post',
-            $post->id, \mod_hsuforum_post_form::editor_options($context, $post->id), $post->message);
+        $message = file_prepare_draft_area($itemid, $context->id, 'mod_forumimproved', 'post',
+            $post->id, \mod_forumimproved_post_form::editor_options($context, $post->id), $post->message);
 
         return array($message, $itemid);
     }
@@ -78,10 +78,10 @@ class form_service {
             if ($post->messageformat == FORMAT_HTML) {
                 $data->name = '<a href="'.$CFG->wwwroot.'/user/view.php?id='.$USER->id.'&course='.$COURSE->id.'">'.
                     fullname($USER).'</a>';
-                $post->message .= '<p><span class="edited">('.get_string('editedby', 'hsuforum', $data).')</span></p>';
+                $post->message .= '<p><span class="edited">('.get_string('editedby', 'forumimproved', $data).')</span></p>';
             } else {
                 $data->name = fullname($USER);
-                $post->message .= "\n\n(".get_string('editedby', 'hsuforum', $data).')';
+                $post->message .= "\n\n(".get_string('editedby', 'forumimproved', $data).')';
             }
             unset($data);
         }

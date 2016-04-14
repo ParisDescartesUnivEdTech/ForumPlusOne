@@ -36,14 +36,14 @@
  * Please do not forget to use upgrade_set_timeout()
  * before any action that may take longer time to finish.
  *
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright 2003 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author Mark Nielsen
  */
 
-function xmldb_hsuforum_upgrade($oldversion) {
+function xmldb_forumimproved_upgrade($oldversion) {
     global $CFG, $DB, $OUTPUT;
 
     $dbman = $DB->get_manager(); // loads ddl manager and xmldb classes
@@ -52,44 +52,44 @@ function xmldb_hsuforum_upgrade($oldversion) {
 
     if ($oldversion < 2011112801) {
     /// HSUFORUM UPGRADES
-        // Rename field hsuforum on table hsuforum_discussions to forum
-        $table = new xmldb_table('hsuforum_discussions');
-        $field = new xmldb_field('hsuforum', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'course');
+        // Rename field forumimproved on table forumimproved_discussions to forum
+        $table = new xmldb_table('forumimproved_discussions');
+        $field = new xmldb_field('forumimproved', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'course');
 
-        // Launch rename field hsuforum
+        // Launch rename field forumimproved
         $dbman->rename_field($table, $field, 'forum');
 
-        // Rename field hsuforum on table hsuforum_subscriptions to forum
-        $table = new xmldb_table('hsuforum_subscriptions');
-        $field = new xmldb_field('hsuforum', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'userid');
+        // Rename field forumimproved on table forumimproved_subscriptions to forum
+        $table = new xmldb_table('forumimproved_subscriptions');
+        $field = new xmldb_field('forumimproved', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'userid');
 
-        // Launch rename field hsuforum
+        // Launch rename field forumimproved
         $dbman->rename_field($table, $field, 'forum');
 
-        // Rename field hsuforumid on table hsuforum_read to forumid
-        $table = new xmldb_table('hsuforum_read');
-        $field = new xmldb_field('hsuforumid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'userid');
+        // Rename field forumimprovedid on table forumimproved_read to forumid
+        $table = new xmldb_table('forumimproved_read');
+        $field = new xmldb_field('forumimprovedid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'userid');
 
-        // Launch rename field hsuforumid
+        // Launch rename field forumimprovedid
         $dbman->rename_field($table, $field, 'forumid');
 
-        // hsuforum_discussion_subscripts was too long of a name
-        // Define table hsuforum_discussion_subscripts to be renamed to hsuforum_subscriptions_disc
-        $table = new xmldb_table('hsuforum_discussion_subscripts');
+        // forumimproved_discussion_subscripts was too long of a name
+        // Define table forumimproved_discussion_subscripts to be renamed to forumimproved_subscriptions_disc
+        $table = new xmldb_table('forumimproved_discussion_subscripts');
 
-        // Launch rename table for hsuforum_discussion_subscripts
-        $dbman->rename_table($table, 'hsuforum_subscriptions_disc');
+        // Launch rename table for forumimproved_discussion_subscripts
+        $dbman->rename_table($table, 'forumimproved_subscriptions_disc');
     /// HSUFORUM UPGRADES END
 
         //MDL-13866 - send forum ratins to gradebook again
-        require_once($CFG->dirroot.'/mod/hsuforum/lib.php');
-        hsuforum_upgrade_grades();
-        upgrade_mod_savepoint(true, 2011112801, 'hsuforum');
+        require_once($CFG->dirroot.'/mod/forumimproved/lib.php');
+        forumimproved_upgrade_grades();
+        upgrade_mod_savepoint(true, 2011112801, 'forumimproved');
     }
 
     if ($oldversion < 2011112802) {
     /// Define field completiondiscussions to be added to forum
-        $table = new xmldb_table('hsuforum');
+        $table = new xmldb_table('forumimproved');
         $field = new xmldb_field('completiondiscussions');
         $field->set_attributes(XMLDB_TYPE_INTEGER, '9', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'blockperiod');
 
@@ -114,7 +114,7 @@ function xmldb_hsuforum_upgrade($oldversion) {
         if(!$dbman->field_exists($table,$field)) {
             $dbman->add_field($table, $field);
         }
-        upgrade_mod_savepoint(true, 2011112802, 'hsuforum');
+        upgrade_mod_savepoint(true, 2011112802, 'forumimproved');
     }
 
     if ($oldversion < 2011112803) {
@@ -127,10 +127,10 @@ function xmldb_hsuforum_upgrade($oldversion) {
 
         $empty = $DB->sql_empty(); // silly oracle empty string handling workaround
 
-        $sqlfrom = "FROM {hsuforum_posts} p
-                    JOIN {hsuforum_discussions} d ON d.id = p.discussion
-                    JOIN {hsuforum} f ON f.id = d.forum
-                    JOIN {modules} m ON m.name = 'hsuforum'
+        $sqlfrom = "FROM {forumimproved_posts} p
+                    JOIN {forumimproved_discussions} d ON d.id = p.discussion
+                    JOIN {forumimproved} f ON f.id = d.forum
+                    JOIN {modules} m ON m.name = 'forumimproved'
                     JOIN {course_modules} cm ON (cm.module = m.id AND cm.instance = f.id)
                    WHERE p.attachment <> '$empty' AND p.attachment <> '1'";
 
@@ -150,7 +150,7 @@ function xmldb_hsuforum_upgrade($oldversion) {
 
                 $attachmentmigrated = false;
 
-                $basepath = "$CFG->dataroot/$post->course/$CFG->moddata/hsuforum/$post->forum/$post->id";
+                $basepath = "$CFG->dataroot/$post->course/$CFG->moddata/forumimproved/$post->forum/$post->id";
                 $files    = get_directory_list($basepath);
                 foreach ($files as $file) {
                     $filepath = "$basepath/$file";
@@ -159,7 +159,7 @@ function xmldb_hsuforum_upgrade($oldversion) {
                         //file missing??
                         echo $OUTPUT->notification("File not readable, skipping: ".$filepath);
                         $post->attachment = '';
-                        $DB->update_record('hsuforum_posts', $post);
+                        $DB->update_record('forumimproved_posts', $post);
                         continue;
                     }
                     $context = context_module::instance($post->cmid);
@@ -169,12 +169,12 @@ function xmldb_hsuforum_upgrade($oldversion) {
                     if ($filename === '') {
                         echo $OUTPUT->notification("Unsupported post filename, skipping: ".$filepath);
                         $post->attachment = '';
-                        $DB->update_record('hsuforum_posts', $post);
+                        $DB->update_record('forumimproved_posts', $post);
                         continue;
                     }
-                    if (!$fs->file_exists($context->id, 'mod_hsuforum', $filearea, $post->id, '/', $filename)) {
+                    if (!$fs->file_exists($context->id, 'mod_forumimproved', $filearea, $post->id, '/', $filename)) {
                         $file_record = array('contextid'=> $context->id,
-                                             'component'=> 'mod_hsuforum',
+                                             'component'=> 'mod_forumimproved',
                                              'filearea' => $filearea,
                                              'itemid'   => $post->id,
                                              'filepath' => '/',
@@ -188,24 +188,24 @@ function xmldb_hsuforum_upgrade($oldversion) {
                 }
                 if ($attachmentmigrated) {
                     $post->attachment = '1';
-                    $DB->update_record('hsuforum_posts', $post);
+                    $DB->update_record('forumimproved_posts', $post);
                 }
 
                 // remove dirs if empty
-                @rmdir("$CFG->dataroot/$post->course/$CFG->moddata/hsuforum/$post->forum/$post->id");
-                @rmdir("$CFG->dataroot/$post->course/$CFG->moddata/hsuforum/$post->forum");
-                @rmdir("$CFG->dataroot/$post->course/$CFG->moddata/hsuforum");
+                @rmdir("$CFG->dataroot/$post->course/$CFG->moddata/forumimproved/$post->forum/$post->id");
+                @rmdir("$CFG->dataroot/$post->course/$CFG->moddata/forumimproved/$post->forum");
+                @rmdir("$CFG->dataroot/$post->course/$CFG->moddata/forumimproved");
             }
         }
         $rs->close();
 
-        upgrade_mod_savepoint(true, 2011112803, 'hsuforum');
+        upgrade_mod_savepoint(true, 2011112803, 'forumimproved');
     }
 
     if ($oldversion < 2011112804) {
 
     /// Define field maxattachments to be added to forum
-        $table = new xmldb_table('hsuforum');
+        $table = new xmldb_table('forumimproved');
         $field = new xmldb_field('maxattachments', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '1', 'maxbytes');
 
     /// Conditionally launch add field maxattachments
@@ -217,7 +217,7 @@ function xmldb_hsuforum_upgrade($oldversion) {
         $field = new xmldb_field('maxattach', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '5');
         if ($dbman->field_exists($table, $field)) {
             $DB->execute("
-                UPDATE {hsuforum}
+                UPDATE {forumimproved}
                    SET maxattachments = maxattach
             ");
 
@@ -227,7 +227,7 @@ function xmldb_hsuforum_upgrade($oldversion) {
         if ($dbman->field_exists($table, $field)) {
             // This disabled attachments, so clear out maxattachments
             $DB->execute("
-                UPDATE {hsuforum}
+                UPDATE {forumimproved}
                    SET maxattachments = 0
                  WHERE multiattach = 0
             ");
@@ -237,38 +237,38 @@ function xmldb_hsuforum_upgrade($oldversion) {
 
 
     /// forum savepoint reached
-        upgrade_mod_savepoint(true, 2011112804, 'hsuforum');
+        upgrade_mod_savepoint(true, 2011112804, 'forumimproved');
     }
 
     if ($oldversion < 2011112805) {
 
-    /// Rename field format on table hsuforum_posts to messageformat
-        $table = new xmldb_table('hsuforum_posts');
+    /// Rename field format on table forumimproved_posts to messageformat
+        $table = new xmldb_table('forumimproved_posts');
         $field = new xmldb_field('format', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'message');
 
     /// Launch rename field format
         $dbman->rename_field($table, $field, 'messageformat');
 
     /// forum savepoint reached
-        upgrade_mod_savepoint(true, 2011112805, 'hsuforum');
+        upgrade_mod_savepoint(true, 2011112805, 'forumimproved');
     }
 
     if ($oldversion < 2011112806) {
 
-    /// Define field messagetrust to be added to hsuforum_posts
-        $table = new xmldb_table('hsuforum_posts');
+    /// Define field messagetrust to be added to forumimproved_posts
+        $table = new xmldb_table('forumimproved_posts');
         $field = new xmldb_field('messagetrust', XMLDB_TYPE_INTEGER, '2', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'messageformat');
 
     /// Launch add field messagetrust
         $dbman->add_field($table, $field);
 
     /// forum savepoint reached
-        upgrade_mod_savepoint(true, 2011112806, 'hsuforum');
+        upgrade_mod_savepoint(true, 2011112806, 'forumimproved');
     }
 
     if ($oldversion < 2011112807) {
         $trustmark = '#####TRUSTTEXT#####';
-        $rs = $DB->get_recordset_sql("SELECT * FROM {hsuforum_posts} WHERE message LIKE ?", array($trustmark.'%'));
+        $rs = $DB->get_recordset_sql("SELECT * FROM {forumimproved_posts} WHERE message LIKE ?", array($trustmark.'%'));
         foreach ($rs as $post) {
             if (strpos($post->message, $trustmark) !== 0) {
                 // probably lowercase in some DBs?
@@ -276,18 +276,18 @@ function xmldb_hsuforum_upgrade($oldversion) {
             }
             $post->message      = str_replace($trustmark, '', $post->message);
             $post->messagetrust = 1;
-            $DB->update_record('hsuforum_posts', $post);
+            $DB->update_record('forumimproved_posts', $post);
         }
         $rs->close();
 
     /// forum savepoint reached
-        upgrade_mod_savepoint(true, 2011112807, 'hsuforum');
+        upgrade_mod_savepoint(true, 2011112807, 'forumimproved');
     }
 
     if ($oldversion < 2011112808) {
 
     /// Define field introformat to be added to forum
-        $table = new xmldb_table('hsuforum');
+        $table = new xmldb_table('forumimproved');
         $field = new xmldb_field('introformat', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'intro');
 
     /// Launch add field introformat
@@ -297,78 +297,78 @@ function xmldb_hsuforum_upgrade($oldversion) {
 
         // conditionally migrate to html format in intro
         if ($CFG->texteditors !== 'textarea') {
-            $rs = $DB->get_recordset('hsuforum', array('introformat'=>FORMAT_MOODLE), '', 'id,intro,introformat');
+            $rs = $DB->get_recordset('forumimproved', array('introformat'=>FORMAT_MOODLE), '', 'id,intro,introformat');
             foreach ($rs as $f) {
                 $f->intro       = text_to_html($f->intro, false, false, true);
                 $f->introformat = FORMAT_HTML;
-                $DB->update_record('hsuforum', $f);
+                $DB->update_record('forumimproved', $f);
                 upgrade_set_timeout();
             }
             $rs->close();
         }
 
     /// forum savepoint reached
-        upgrade_mod_savepoint(true, 2011112808, 'hsuforum');
+        upgrade_mod_savepoint(true, 2011112808, 'forumimproved');
     }
 
     /// Dropping all enums/check contraints from core. MDL-18577
     if ($oldversion < 2011112809) {
 
     /// Changing list of values (enum) of field type on table forum to none
-        $table = new xmldb_table('hsuforum');
+        $table = new xmldb_table('forumimproved');
         $field = new xmldb_field('type', XMLDB_TYPE_CHAR, '20', null, XMLDB_NOTNULL, null, 'general', 'course');
 
     /// Launch change of list of values for field type
         $dbman->drop_enum_from_field($table, $field);
 
     /// forum savepoint reached
-        upgrade_mod_savepoint(true, 2011112809, 'hsuforum');
+        upgrade_mod_savepoint(true, 2011112809, 'forumimproved');
     }
 
     if ($oldversion < 2011112810) {
 
     /// Clean existing wrong rates. MDL-18227
-        $DB->delete_records('hsuforum_ratings', array('post' => 0));
+        $DB->delete_records('forumimproved_ratings', array('post' => 0));
 
     /// forum savepoint reached
-        upgrade_mod_savepoint(true, 2011112810, 'hsuforum');
+        upgrade_mod_savepoint(true, 2011112810, 'forumimproved');
     }
 
     if ($oldversion < 2011112811) {
         //migrate forumratings to the central rating table
-        $table = new xmldb_table('hsuforum_ratings');
+        $table = new xmldb_table('forumimproved_ratings');
         if ($dbman->table_exists($table)) {
             //forum ratings only have a single time column so use it for both time created and modified
             $sql = "INSERT INTO {rating} (contextid, component, ratingarea, scaleid, itemid, rating, userid, timecreated, timemodified)
 
-                    SELECT cxt.id, 'mod_hsuforum', 'post', f.scale, r.post AS itemid, r.rating, r.userid, r.time AS timecreated, r.time AS timemodified
-                      FROM {hsuforum_ratings} r
-                      JOIN {hsuforum_posts} p ON p.id=r.post
-                      JOIN {hsuforum_discussions} d ON d.id=p.discussion
-                      JOIN {hsuforum} f ON f.id=d.forum
+                    SELECT cxt.id, 'mod_forumimproved', 'post', f.scale, r.post AS itemid, r.rating, r.userid, r.time AS timecreated, r.time AS timemodified
+                      FROM {forumimproved_ratings} r
+                      JOIN {forumimproved_posts} p ON p.id=r.post
+                      JOIN {forumimproved_discussions} d ON d.id=p.discussion
+                      JOIN {forumimproved} f ON f.id=d.forum
                       JOIN {course_modules} cm ON cm.instance=f.id
                       JOIN {context} cxt ON cxt.instanceid=cm.id
                       JOIN {modules} m ON m.id=cm.module
                      WHERE m.name = :modname AND cxt.contextlevel = :contextlevel";
-            $params['modname'] = 'hsuforum';
+            $params['modname'] = 'forumimproved';
             $params['contextlevel'] = CONTEXT_MODULE;
 
             $DB->execute($sql, $params);
 
-            //now drop hsuforum_ratings
+            //now drop forumimproved_ratings
             $dbman->drop_table($table);
         }
 
-        upgrade_mod_savepoint(true, 2011112811, 'hsuforum');
+        upgrade_mod_savepoint(true, 2011112811, 'forumimproved');
     }
 
     if ($oldversion < 2011112812) {
 
         // Remove the forum digests message provider MDL-23145
-        $DB->delete_records('message_providers', array('name' => 'digests','component'=>'mod_hsuforum'));
+        $DB->delete_records('message_providers', array('name' => 'digests','component'=>'mod_forumimproved'));
 
         // forum savepoint reached
-        upgrade_mod_savepoint(true, 2011112812, 'hsuforum');
+        upgrade_mod_savepoint(true, 2011112812, 'forumimproved');
     }
 
     if ($oldversion < 2011112813) {
@@ -377,37 +377,37 @@ function xmldb_hsuforum_upgrade($oldversion) {
         $rs = $DB->get_recordset('files', array('component'=>'mod_form'));
         foreach ($rs as $oldrecord) {
             $file = $fs->get_file_instance($oldrecord);
-            $newrecord = array('component'=>'mod_hsuforum');
-            if (!$fs->file_exists($oldrecord->contextid, 'mod_hsuforum', $oldrecord->filearea, $oldrecord->itemid, $oldrecord->filepath, $oldrecord->filename)) {
+            $newrecord = array('component'=>'mod_forumimproved');
+            if (!$fs->file_exists($oldrecord->contextid, 'mod_forumimproved', $oldrecord->filearea, $oldrecord->itemid, $oldrecord->filepath, $oldrecord->filename)) {
                 $fs->create_file_from_storedfile($newrecord, $file);
             }
             $file->delete();
         }
         $rs->close();
-        upgrade_mod_savepoint(true, 2011112813, 'hsuforum');
+        upgrade_mod_savepoint(true, 2011112813, 'forumimproved');
     }
 
     if ($oldversion < 2011112814) {
         // rating.component and rating.ratingarea have now been added as mandatory fields.
-        // Presently you can only rate forum posts so component = 'mod_hsuforum' and ratingarea = 'post'
+        // Presently you can only rate forum posts so component = 'mod_forumimproved' and ratingarea = 'post'
         // for all ratings with a forum context.
         // We want to update all ratings that belong to a forum context and don't already have a
         // component set.
         // This could take a while reset upgrade timeout to 5 min
         upgrade_set_timeout(60 * 20);
         $sql = "UPDATE {rating}
-                SET component = 'mod_hsuforum', ratingarea = 'post'
+                SET component = 'mod_forumimproved', ratingarea = 'post'
                 WHERE contextid IN (
                     SELECT ctx.id
                       FROM {context} ctx
                       JOIN {course_modules} cm ON cm.id = ctx.instanceid
                       JOIN {modules} m ON m.id = cm.module
                      WHERE ctx.contextlevel = 70 AND
-                           m.name = 'hsuforum'
+                           m.name = 'forumimproved'
                 ) AND component = 'unknown'";
         $DB->execute($sql);
 
-        upgrade_mod_savepoint(true, 2011112814, 'hsuforum');
+        upgrade_mod_savepoint(true, 2011112814, 'forumimproved');
     }
 
     // Moodle v2.1.0 release upgrade line
@@ -416,8 +416,8 @@ function xmldb_hsuforum_upgrade($oldversion) {
     // Moodle v2.2.0 release upgrade line
     // Put any upgrade step following this
     if ($oldversion < 2011112907) {
-        /// Conditionally add field privatereply to be added to hsuforum
-        $table = new xmldb_table('hsuforum_posts');
+        /// Conditionally add field privatereply to be added to forumimproved
+        $table = new xmldb_table('forumimproved_posts');
         $field = new xmldb_field('privatereply');
         $field->set_attributes(XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'flags');
 
@@ -425,8 +425,8 @@ function xmldb_hsuforum_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Define index privatereply (not unique) to be added to hsuforum_posts
-        $table = new xmldb_table('hsuforum_posts');
+        // Define index privatereply (not unique) to be added to forumimproved_posts
+        $table = new xmldb_table('forumimproved_posts');
         $index = new xmldb_index('privatereply', XMLDB_INDEX_NOTUNIQUE, array('privatereply'));
 
         // Conditionally launch add index privatereply
@@ -434,17 +434,17 @@ function xmldb_hsuforum_upgrade($oldversion) {
             $dbman->add_index($table, $index);
         }
 
-        // Rename field hsuforumid on table hsuforum_track_prefs to forumid
-        $table = new xmldb_table('hsuforum_track_prefs');
-        $field = new xmldb_field('hsuforumid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'userid');
+        // Rename field forumimprovedid on table forumimproved_track_prefs to forumid
+        $table = new xmldb_table('forumimproved_track_prefs');
+        $field = new xmldb_field('forumimprovedid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'userid');
 
-        // Conditionally launch rename field hsuforumid (if it exists)
+        // Conditionally launch rename field forumimprovedid (if it exists)
         if($dbman->field_exists($table,$field)) {
             $dbman->rename_field($table, $field, 'forumid');
         }
 
-        // hsuforum savepoint reached
-        upgrade_mod_savepoint(true, 2011112907, 'hsuforum');
+        // forumimproved savepoint reached
+        upgrade_mod_savepoint(true, 2011112907, 'forumimproved');
     }
 
     // Moodle v2.2.0 release upgrade line
@@ -457,40 +457,40 @@ function xmldb_hsuforum_upgrade($oldversion) {
     // Moodle v2.4.0 release upgrade line
     // Put any upgrade step following this
 
-    // Forcefully assign mod/hsuforum:allowforcesubscribe to frontpage role, as we missed that when
+    // Forcefully assign mod/forumimproved:allowforcesubscribe to frontpage role, as we missed that when
     // capability was introduced.
     if ($oldversion < 2012112901) {
-        // If capability mod/hsuforum:allowforcesubscribe is defined then set it for frontpage role.
-        if (get_capability_info('mod/hsuforum:allowforcesubscribe')) {
-            assign_legacy_capabilities('mod/hsuforum:allowforcesubscribe', array('frontpage' => CAP_ALLOW));
+        // If capability mod/forumimproved:allowforcesubscribe is defined then set it for frontpage role.
+        if (get_capability_info('mod/forumimproved:allowforcesubscribe')) {
+            assign_legacy_capabilities('mod/forumimproved:allowforcesubscribe', array('frontpage' => CAP_ALLOW));
         }
         // Forum savepoint reached.
-        upgrade_mod_savepoint(true, 2012112901, 'hsuforum');
+        upgrade_mod_savepoint(true, 2012112901, 'forumimproved');
     }
 
     if ($oldversion < 2012112902) {
-        // Forum and hsuforum were reading from the same $CFG values, create new ones for hsuforum.
+        // Forum and forumimproved were reading from the same $CFG values, create new ones for forumimproved.
 
         $digestmailtime = 17; // Default in settings.php
         if (!empty($CFG->digestmailtime)) {
             $digestmailtime = $CFG->digestmailtime;
         }
-        set_config('hsuforum_digestmailtime', $digestmailtime);
+        set_config('forumimproved_digestmailtime', $digestmailtime);
 
         $digestmailtimelast = 0;
         if (!empty($CFG->digestmailtimelast)) {
             $digestmailtimelast = $CFG->digestmailtimelast;
         }
-        set_config('hsuforum_digestmailtimelast', $digestmailtimelast);
+        set_config('forumimproved_digestmailtimelast', $digestmailtimelast);
 
         // Forum savepoint reached.
-        upgrade_mod_savepoint(true, 2012112902, 'hsuforum');
+        upgrade_mod_savepoint(true, 2012112902, 'forumimproved');
     }
 
     if ($oldversion < 2013020500) {
 
         // Define field displaywordcount to be added to forum.
-        $table = new xmldb_table('hsuforum');
+        $table = new xmldb_table('forumimproved');
         $field = new xmldb_field('displaywordcount', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'completionposts');
 
         // Conditionally launch add field displaywordcount.
@@ -499,34 +499,34 @@ function xmldb_hsuforum_upgrade($oldversion) {
         }
 
         // Forum savepoint reached.
-        upgrade_mod_savepoint(true, 2013020500, 'hsuforum');
+        upgrade_mod_savepoint(true, 2013020500, 'forumimproved');
     }
 
     // Moodle v2.5.0 release upgrade line.
     // Put any upgrade step following this.
     if ($oldversion < 2014021900) {
-        // Define table hsuforum_digests to be created.
-        $table = new xmldb_table('hsuforum_digests');
+        // Define table forumimproved_digests to be created.
+        $table = new xmldb_table('forumimproved_digests');
 
-        // Adding fields to table hsuforum_digests.
+        // Adding fields to table forumimproved_digests.
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('forum', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('maildigest', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '-1');
 
-        // Adding keys to table hsuforum_digests.
+        // Adding keys to table forumimproved_digests.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
         $table->add_key('userid', XMLDB_KEY_FOREIGN, array('userid'), 'user', array('id'));
         $table->add_key('forum', XMLDB_KEY_FOREIGN, array('forum'), 'forum', array('id'));
         $table->add_key('forumdigest', XMLDB_KEY_UNIQUE, array('forum', 'userid', 'maildigest'));
 
-        // Conditionally launch create table for hsuforum_digests.
+        // Conditionally launch create table for forumimproved_digests.
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
 
         // Forum savepoint reached.
-        upgrade_mod_savepoint(true, 2014021900, 'hsuforum');
+        upgrade_mod_savepoint(true, 2014021900, 'forumimproved');
     }
 
     // Moodle v2.6.0 release upgrade line.
@@ -534,8 +534,8 @@ function xmldb_hsuforum_upgrade($oldversion) {
 
     if ($oldversion < 2014040400) {
 
-        // Define index userid-postid (not unique) to be dropped form hsuforum_read.
-        $table = new xmldb_table('hsuforum_read');
+        // Define index userid-postid (not unique) to be dropped form forumimproved_read.
+        $table = new xmldb_table('forumimproved_read');
         $index = new xmldb_index('userid-postid', XMLDB_INDEX_NOTUNIQUE, array('userid', 'postid'));
 
         // Conditionally launch drop index userid-postid.
@@ -544,7 +544,7 @@ function xmldb_hsuforum_upgrade($oldversion) {
         }
 
 
-        // Define index postid-userid (not unique) to be added to hsuforum_read.
+        // Define index postid-userid (not unique) to be added to forumimproved_read.
         $index = new xmldb_index('postid-userid', XMLDB_INDEX_NOTUNIQUE, array('postid', 'userid'));
 
         // Conditionally launch add index postid-userid.
@@ -553,7 +553,7 @@ function xmldb_hsuforum_upgrade($oldversion) {
         }
 
         // Forum savepoint reached.
-        upgrade_mod_savepoint(true, 2014040400, 'hsuforum');
+        upgrade_mod_savepoint(true, 2014040400, 'forumimproved');
     }
 
     // Moodle v2.7.0 release upgrade line.
@@ -570,11 +570,11 @@ function xmldb_hsuforum_upgrade($oldversion) {
 
         // Run the replacements.
         foreach ($replacements as $old => $new) {
-            $DB->set_field('hsuforum', 'maxattachments', $new, array('maxattachments' => $old));
+            $DB->set_field('forumimproved', 'maxattachments', $new, array('maxattachments' => $old));
         }
 
         // Forum savepoint reached.
-        upgrade_mod_savepoint(true, 2014051201, 'hsuforum');
+        upgrade_mod_savepoint(true, 2014051201, 'forumimproved');
     }
 
     if ($oldversion < 2014051203) {
@@ -582,13 +582,13 @@ function xmldb_hsuforum_upgrade($oldversion) {
         // Later we will remove all those which don't match this ID.
         $sql = "
             SELECT MIN(id) as lowid, userid, postid
-            FROM {hsuforum_read}
+            FROM {forumimproved_read}
             GROUP BY userid, postid
             HAVING COUNT(id) > 1";
 
         if ($duplicatedrows = $DB->get_recordset_sql($sql)) {
             foreach ($duplicatedrows as $row) {
-                $DB->delete_records_select('hsuforum_read', 'userid = ? AND postid = ? AND id <> ?', array(
+                $DB->delete_records_select('forumimproved_read', 'userid = ? AND postid = ? AND id <> ?', array(
                     $row->userid,
                     $row->postid,
                     $row->lowid,
@@ -598,13 +598,13 @@ function xmldb_hsuforum_upgrade($oldversion) {
         $duplicatedrows->close();
 
         // Forum savepoint reached.
-        upgrade_mod_savepoint(true, 2014051203, 'hsuforum');
+        upgrade_mod_savepoint(true, 2014051203, 'forumimproved');
     }
 
     if ($oldversion < 2014092400) {
 
-        // Define fields to be added to hsuforum table.
-        $table = new xmldb_table('hsuforum');
+        // Define fields to be added to forumimproved table.
+        $table = new xmldb_table('forumimproved');
         $fields = array();
         $fields[] = new xmldb_field('showsubstantive', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'displaywordcount');
         $fields[] = new xmldb_field('showbookmark', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'showsubstantive');
@@ -618,12 +618,12 @@ function xmldb_hsuforum_upgrade($oldversion) {
         }
 
         // Hsuforum savepoint reached.
-        upgrade_mod_savepoint(true, 2014092400, 'hsuforum');
+        upgrade_mod_savepoint(true, 2014092400, 'forumimproved');
     }
 
     if ($oldversion < 2014093000) {
-        // Define fields to be added to hsuforum table.
-        $table = new xmldb_table('hsuforum');
+        // Define fields to be added to forumimproved table.
+        $table = new xmldb_table('forumimproved');
         $field = new xmldb_field('allowprivatereplies', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'showbookmark');
 
         // Conditionally launch add field.
@@ -632,13 +632,13 @@ function xmldb_hsuforum_upgrade($oldversion) {
         }
 
         // Hsuforum savepoint reached.
-        upgrade_mod_savepoint(true, 2014093000, 'hsuforum');
+        upgrade_mod_savepoint(true, 2014093000, 'forumimproved');
     }
 
     if ($oldversion < 2014093001) {
         // Set default settings for existing forums.
         $DB->execute("
-                UPDATE {hsuforum}
+                UPDATE {forumimproved}
                    SET allowprivatereplies = 1,
                        showsubstantive = 1,
                        showbookmark = 1
@@ -646,7 +646,7 @@ function xmldb_hsuforum_upgrade($oldversion) {
         ");
 
         // Hsuforum savepoint reached.
-        upgrade_mod_savepoint(true, 2014093001, 'hsuforum');
+        upgrade_mod_savepoint(true, 2014093001, 'forumimproved');
     }
 
 
@@ -679,23 +679,23 @@ function xmldb_hsuforum_upgrade($oldversion) {
 
         // Migrate legacy configs to plugin configs.
         foreach ($configs as $config) {
-            $oldvar = 'hsuforum_'.$config;
+            $oldvar = 'forumimproved_'.$config;
             if (isset($CFG->$oldvar)){
                 // Set new config variable up based on legacy config.
-                set_config($config, $CFG->$oldvar, 'hsuforum');
+                set_config($config, $CFG->$oldvar, 'forumimproved');
                 // Delete legacy config.
                 unset_config($oldvar);
             }
         }
 
         // Hsuforum savepoint reached.
-        upgrade_mod_savepoint(true, 2014100600, 'hsuforum');
+        upgrade_mod_savepoint(true, 2014100600, 'forumimproved');
 
     }
 
     if ($oldversion < 2014121700) {
-        // Define fields to be added to hsuforum table.
-        $table = new xmldb_table('hsuforum');
+        // Define fields to be added to forumimproved table.
+        $table = new xmldb_table('forumimproved');
         $field = new xmldb_field('showrecent', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'displaywordcount');
 
         // Conditionally launch add field.
@@ -704,7 +704,7 @@ function xmldb_hsuforum_upgrade($oldversion) {
         }
 
         // Hsuforum savepoint reached.
-        upgrade_mod_savepoint(true, 2014121700, 'hsuforum');
+        upgrade_mod_savepoint(true, 2014121700, 'forumimproved');
     }
 
 

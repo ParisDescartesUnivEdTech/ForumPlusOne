@@ -1,8 +1,8 @@
 /**
- * @namespace M.mod_hsuforum
+ * @namespace M.mod_forumimproved
  * @author Mark Nielsen
  */
-M.mod_hsuforum = M.mod_hsuforum || {};
+M.mod_forumimproved = M.mod_forumimproved || {};
 
 /**
  * Set toggle link label and accessibility stuff on ajax reponse.
@@ -10,13 +10,13 @@ M.mod_hsuforum = M.mod_hsuforum || {};
  * @param link
  * @author Guy Thomas
  */
-M.mod_hsuforum.onToggleResponse = function(link) {
+M.mod_forumimproved.onToggleResponse = function(link) {
     var active,
         status,
         title,
         svgTitle;
 
-    link.toggleClass('hsuforum-toggled');
+    link.toggleClass('forumimproved-toggled');
 
     if (link.getAttribute('aria-pressed') == 'true') {
         link.setAttribute('aria-pressed', false);
@@ -28,19 +28,19 @@ M.mod_hsuforum.onToggleResponse = function(link) {
 
     // Set new link title;
     status = active ? 'toggled' : 'toggle';
-    title = M.util.get_string(status+':'+link.getData('toggletype'),'hsuforum');
+    title = M.util.get_string(status+':'+link.getData('toggletype'),'forumimproved');
     svgTitle = link.one('svg title');
     svgTitle.set('text', title);
 }
 
-M.mod_hsuforum.toggleStatesApplied = false;
+M.mod_forumimproved.toggleStatesApplied = false;
 
 /**
  * Initialise advanced forum javascript.
  * @param Y
  */
-M.mod_hsuforum.init = function(Y) {
-    M.mod_hsuforum.applyToggleState(Y);
+M.mod_forumimproved.init = function(Y) {
+    M.mod_forumimproved.applyToggleState(Y);
 }
 
 /**
@@ -49,13 +49,13 @@ M.mod_hsuforum.init = function(Y) {
  *
  * @author Mark Neilsen / Guy Thomas
  */
-M.mod_hsuforum.applyToggleState = function(Y) {
+M.mod_forumimproved.applyToggleState = function(Y) {
     // @todo - Get rid of this check by making sure that lib.php and renderer.php only call this once.
-    if (M.mod_hsuforum.toggleStatesApplied) {
+    if (M.mod_forumimproved.toggleStatesApplied) {
         return;
     }
-    M.mod_hsuforum.toggleStatesApplied = true;
-    if (Y.all('.mod-hsuforum-posts-container').isEmpty()) {
+    M.mod_forumimproved.toggleStatesApplied = true;
+    if (Y.all('.mod-forumimproved-posts-container').isEmpty()) {
         return;
     }
     // We bind to document otherwise screen readers read everything as clickable.
@@ -64,16 +64,16 @@ M.mod_hsuforum.applyToggleState = function(Y) {
         e.preventDefault();
         e.stopPropagation();
 
-        M.mod_hsuforum.io(Y, link.get('href'), function() {
-            M.mod_hsuforum.onToggleResponse(link);
+        M.mod_forumimproved.io(Y, link.get('href'), function() {
+            M.mod_forumimproved.onToggleResponse(link);
         });
-    }, document, 'a.hsuforum_flag, a.hsuforum_discussion_subscribe');
+    }, document, 'a.forumimproved_flag, a.forumimproved_discussion_subscribe');
 
     // IE fix - When clicking on an SVG, the Y.delegate function above fails, the click function is never triggered
     // and the user ends up with a page refresh instead of an AJAX update. This code fixes the issue by making the svg
     // absolutely positioned and with a relatively positioned span taking its place.
     if (navigator.userAgent.match(/Trident|MSIE/)){
-        Y.all('a.hsuforum_flag, a.hsuforum_discussion_subscribe').each(function (targNode) {
+        Y.all('a.forumimproved_flag, a.forumimproved_discussion_subscribe').each(function (targNode) {
            var svgwidth = targNode.one('svg').getStyle('width');
            var item = Y.Node.create('<span style="display:inline-block;width:'+svgwidth+';min-width:'+svgwidth+';">&nbsp;</span>');
            targNode.append(item);
@@ -86,14 +86,14 @@ M.mod_hsuforum.applyToggleState = function(Y) {
 /**
  * @author Mark Nielsen
  */
-M.mod_hsuforum.io = function(Y, url, successCallback, failureCallback) {
+M.mod_forumimproved.io = function(Y, url, successCallback, failureCallback) {
     Y.io(url, {
         on: {
             success: function(id, o) {
-                M.mod_hsuforum.io_success_handler(Y, o, successCallback);
+                M.mod_forumimproved.io_success_handler(Y, o, successCallback);
             },
             failure: function() {
-                M.mod_hsuforum.io_failure_handler(Y, failureCallback);
+                M.mod_forumimproved.io_failure_handler(Y, failureCallback);
             }
         }
     });
@@ -102,7 +102,7 @@ M.mod_hsuforum.io = function(Y, url, successCallback, failureCallback) {
 /**
  * @author Mark Nielsen
  */
-M.mod_hsuforum.io_success_handler = function(Y, response, callback) {
+M.mod_forumimproved.io_success_handler = function(Y, response, callback) {
     var data = {};
     if (response.responseText) {
         try {
@@ -117,7 +117,7 @@ M.mod_hsuforum.io_success_handler = function(Y, response, callback) {
                 return;
             }
         } catch (ex) {
-            alert(M.str.hsuforum.jsondecodeerror);
+            alert(M.str.forumimproved.jsondecodeerror);
             return;
         }
     }
@@ -129,8 +129,8 @@ M.mod_hsuforum.io_success_handler = function(Y, response, callback) {
 /**
  * @author Mark Nielsen
  */
-M.mod_hsuforum.io_failure_handler = function(Y, callback) {
-    alert(M.str.hsuforum.ajaxrequesterror);
+M.mod_forumimproved.io_failure_handler = function(Y, callback) {
+    alert(M.str.forumimproved.ajaxrequesterror);
 
     if (callback) {
         callback();
@@ -140,11 +140,11 @@ M.mod_hsuforum.io_failure_handler = function(Y, callback) {
 /**
  * @author Mark Nielsen
  */
-M.mod_hsuforum.init_modform = function(Y, HSUFORUM_GRADETYPE_MANUAL) {
-    var gradetype = Y.one('.path-mod-hsuforum select[name="gradetype"]');
+M.mod_forumimproved.init_modform = function(Y, HSUFORUM_GRADETYPE_MANUAL) {
+    var gradetype = Y.one('.path-mod-forumimproved select[name="gradetype"]');
 
     if (gradetype) {
-        var warning = Y.Node.create('<span id="gradetype_warning" class="hidden">' + M.str.hsuforum.manualwarning + '</span>');
+        var warning = Y.Node.create('<span id="gradetype_warning" class="hidden">' + M.str.forumimproved.manualwarning + '</span>');
         gradetype.get('parentNode').appendChild(warning);
 
         var updateMessage = function() {

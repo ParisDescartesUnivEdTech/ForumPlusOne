@@ -19,17 +19,17 @@
  * Library of functions for forum outside of the core api
  */
 
-require_once($CFG->dirroot . '/mod/hsuforum/lib.php');
+require_once($CFG->dirroot . '/mod/forumimproved/lib.php');
 require_once($CFG->libdir . '/portfolio/caller.php');
 
 /**
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author Mark Nielsen
  */
-class hsuforum_portfolio_caller extends portfolio_module_caller_base {
+class forumimproved_portfolio_caller extends portfolio_module_caller_base {
 
     protected $postid;
     protected $discussionid;
@@ -57,7 +57,7 @@ class hsuforum_portfolio_caller extends portfolio_module_caller_base {
     function __construct($callbackargs) {
         parent::__construct($callbackargs);
         if (!$this->postid && !$this->discussionid) {
-            throw new portfolio_caller_exception('mustprovidediscussionorpost', 'hsuforum');
+            throw new portfolio_caller_exception('mustprovidediscussionorpost', 'forumimproved');
         }
     }
     /**
@@ -67,8 +67,8 @@ class hsuforum_portfolio_caller extends portfolio_module_caller_base {
         global $DB;
 
         if ($this->postid) {
-            if (!$this->post = $DB->get_record('hsuforum_posts', array('id' => $this->postid))) {
-                throw new portfolio_caller_exception('invalidpostid', 'hsuforum');
+            if (!$this->post = $DB->get_record('forumimproved_posts', array('id' => $this->postid))) {
+                throw new portfolio_caller_exception('invalidpostid', 'forumimproved');
             }
         }
 
@@ -78,18 +78,18 @@ class hsuforum_portfolio_caller extends portfolio_module_caller_base {
         } else if ($this->post) {
             $dbparams = array('id' => $this->post->discussion);
         } else {
-            throw new portfolio_caller_exception('mustprovidediscussionorpost', 'hsuforum');
+            throw new portfolio_caller_exception('mustprovidediscussionorpost', 'forumimproved');
         }
 
-        if (!$this->discussion = $DB->get_record('hsuforum_discussions', $dbparams)) {
-            throw new portfolio_caller_exception('invaliddiscussionid', 'hsuforum');
+        if (!$this->discussion = $DB->get_record('forumimproved_discussions', $dbparams)) {
+            throw new portfolio_caller_exception('invaliddiscussionid', 'forumimproved');
         }
 
-        if (!$this->forum = $DB->get_record('hsuforum', array('id' => $this->discussion->forum))) {
-            throw new portfolio_caller_exception('invalidforumid', 'hsuforum');
+        if (!$this->forum = $DB->get_record('forumimproved', array('id' => $this->discussion->forum))) {
+            throw new portfolio_caller_exception('invalidforumid', 'forumimproved');
         }
 
-        if (!$this->cm = get_coursemodule_from_instance('hsuforum', $this->forum->id)) {
+        if (!$this->cm = get_coursemodule_from_instance('forumimproved', $this->forum->id)) {
             throw new portfolio_caller_exception('invalidcoursemodule');
         }
 
@@ -99,8 +99,8 @@ class hsuforum_portfolio_caller extends portfolio_module_caller_base {
             if ($this->attachment) {
                 $this->set_file_and_format_data($this->attachment);
             } else {
-                $attach = $fs->get_area_files($this->modcontext->id, 'mod_hsuforum', 'attachment', $this->post->id, 'timemodified', false);
-                $embed  = $fs->get_area_files($this->modcontext->id, 'mod_hsuforum', 'post', $this->post->id, 'timemodified', false);
+                $attach = $fs->get_area_files($this->modcontext->id, 'mod_forumimproved', 'attachment', $this->post->id, 'timemodified', false);
+                $embed  = $fs->get_area_files($this->modcontext->id, 'mod_forumimproved', 'post', $this->post->id, 'timemodified', false);
                 $files = array_merge($attach, $embed);
                 $this->set_file_and_format_data($files);
             }
@@ -111,11 +111,11 @@ class hsuforum_portfolio_caller extends portfolio_module_caller_base {
             }
         } else { // whole thread
             $fs = get_file_storage();
-            $this->posts = hsuforum_get_all_discussion_posts($this->discussion->id);
+            $this->posts = forumimproved_get_all_discussion_posts($this->discussion->id);
             $this->multifiles = array();
             foreach ($this->posts as $post) {
-                $attach = $fs->get_area_files($this->modcontext->id, 'mod_hsuforum', 'attachment', $post->id, 'timemodified', false);
-                $embed  = $fs->get_area_files($this->modcontext->id, 'mod_hsuforum', 'post', $post->id, 'timemodified', false);
+                $attach = $fs->get_area_files($this->modcontext->id, 'mod_forumimproved', 'attachment', $post->id, 'timemodified', false);
+                $embed  = $fs->get_area_files($this->modcontext->id, 'mod_forumimproved', 'post', $post->id, 'timemodified', false);
                 $files = array_merge($attach, $embed);
                 if ($files) {
                     $this->keyedfiles[$post->id] = $files;
@@ -144,7 +144,7 @@ class hsuforum_portfolio_caller extends portfolio_module_caller_base {
      */
     function get_return_url() {
         global $CFG;
-        return $CFG->wwwroot . '/mod/hsuforum/discuss.php?d=' . $this->discussion->id;
+        return $CFG->wwwroot . '/mod/forumimproved/discuss.php?d=' . $this->discussion->id;
     }
     /**
      * @global object
@@ -156,7 +156,7 @@ class hsuforum_portfolio_caller extends portfolio_module_caller_base {
         $navlinks = array();
         $navlinks[] = array(
             'name' => format_string($this->discussion->name),
-            'link' => $CFG->wwwroot . '/mod/hsuforum/discuss.php?d=' . $this->discussion->id,
+            'link' => $CFG->wwwroot . '/mod/forumimproved/discuss.php?d=' . $this->discussion->id,
             'type' => 'title'
         );
         return array($navlinks, $this->cm);
@@ -205,7 +205,7 @@ class hsuforum_portfolio_caller extends portfolio_module_caller_base {
             if ($writingleap) {
                 // add on an extra 'selection' entry
                 $selection = new portfolio_format_leap2a_entry('forumdiscussion' . $this->discussionid,
-                    get_string('discussion', 'hsuforum') . ': ' . $this->discussion->name, 'selection');
+                    get_string('discussion', 'forumimproved') . ': ' . $this->discussion->name, 'selection');
                 $leapwriter->add_entry($selection);
                 $leapwriter->make_selection($selection, $ids, 'Grouping');
                 $content = $leapwriter->to_xml();
@@ -276,7 +276,7 @@ class hsuforum_portfolio_caller extends portfolio_module_caller_base {
         }
     }
     /**
-     * this is a very cut down version of what is in hsuforum_make_mail_post
+     * this is a very cut down version of what is in forumimproved_make_mail_post
      *
      * @global object
      * @param int $post
@@ -298,7 +298,7 @@ class hsuforum_portfolio_caller extends portfolio_module_caller_base {
         $options = portfolio_format_text_options();
         $format = $this->get('exporter')->get('format');
         $formattedtext = format_text($post->message, $post->messageformat, $options, $this->get('course')->id);
-        $formattedtext = portfolio_rewrite_pluginfile_urls($formattedtext, $this->modcontext->id, 'mod_hsuforum', 'post', $post->id, $format);
+        $formattedtext = portfolio_rewrite_pluginfile_urls($formattedtext, $this->modcontext->id, 'mod_forumimproved', 'post', $post->id, $format);
 
         $output = '<table border="0" cellpadding="3" cellspacing="0" class="forumpost">';
 
@@ -316,7 +316,7 @@ class hsuforum_portfolio_caller extends portfolio_module_caller_base {
         $by = new stdClass();
         $by->name = $fullname;
         $by->date = userdate($post->modified, '', $this->user->timezone);
-        $output .= '<div class="author">'.get_string('bynameondate', 'hsuforum', $by).'</div>';
+        $output .= '<div class="author">'.get_string('bynameondate', 'forumimproved', $by).'</div>';
 
         $output .= '</td></tr>';
 
@@ -328,7 +328,7 @@ class hsuforum_portfolio_caller extends portfolio_module_caller_base {
 
         if (is_array($this->keyedfiles) && array_key_exists($post->id, $this->keyedfiles) && is_array($this->keyedfiles[$post->id]) && count($this->keyedfiles[$post->id]) > 0) {
             $output .= '<div class="attachments">';
-            $output .= '<br /><b>' .  get_string('attachments', 'hsuforum') . '</b>:<br /><br />';
+            $output .= '<br /><b>' .  get_string('attachments', 'forumimproved') . '</b>:<br /><br />';
             foreach ($this->keyedfiles[$post->id] as $file) {
                 $output .= $format->file_output($file)  . '<br/ >';
             }
@@ -376,17 +376,17 @@ class hsuforum_portfolio_caller extends portfolio_module_caller_base {
     function check_permissions() {
         $context = context_module::instance($this->cm->id);
         if ($this->post) {
-            return (has_capability('mod/hsuforum:exportpost', $context)
+            return (has_capability('mod/forumimproved:exportpost', $context)
                 || ($this->post->userid == $this->user->id
-                    && has_capability('mod/hsuforum:exportownpost', $context)));
+                    && has_capability('mod/forumimproved:exportownpost', $context)));
         }
-        return has_capability('mod/hsuforum:exportdiscussion', $context);
+        return has_capability('mod/forumimproved:exportdiscussion', $context);
     }
     /**
      * @return string
      */
     public static function display_name() {
-        return get_string('modulename', 'hsuforum');
+        return get_string('modulename', 'forumimproved');
     }
 
     public static function base_supported_formats() {
@@ -402,7 +402,7 @@ class hsuforum_portfolio_caller extends portfolio_module_caller_base {
  * @copyright 2012 David Mudrak <david@moodle.com>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class hsuforum_file_info_container extends file_info {
+class forumimproved_file_info_container extends file_info {
     /** @var file_browser */
     protected $browser;
     /** @var stdClass */
@@ -433,7 +433,7 @@ class hsuforum_file_info_container extends file_info {
         $this->browser = $browser;
         $this->course = $course;
         $this->cm = $cm;
-        $this->component = 'mod_hsuforum';
+        $this->component = 'mod_forumimproved';
         $this->context = $context;
         $this->areas = $areas;
         $this->filearea = $filearea;
@@ -521,7 +521,7 @@ class hsuforum_file_info_container extends file_info {
         $rs = $DB->get_recordset_sql($sql, $params);
         $children = array();
         foreach ($rs as $record) {
-            if (($child = $this->browser->get_file_info($this->context, 'mod_hsuforum', $this->filearea, $record->itemid))
+            if (($child = $this->browser->get_file_info($this->context, 'mod_forumimproved', $this->filearea, $record->itemid))
                     && ($returnemptyfolders || $child->count_non_empty_children($extensions))) {
                 $children[] = $child;
             }

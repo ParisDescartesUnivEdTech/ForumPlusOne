@@ -17,17 +17,17 @@
 /**
  * Discussion services
  *
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_hsuforum\service;
+namespace mod_forumimproved\service;
 
-use mod_hsuforum\attachments;
-use mod_hsuforum\event\discussion_created;
-use mod_hsuforum\response\json_response;
-use mod_hsuforum\upload_file;
+use mod_forumimproved\attachments;
+use mod_forumimproved\event\discussion_created;
+use mod_forumimproved\response\json_response;
+use mod_forumimproved\upload_file;
 use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
@@ -37,7 +37,7 @@ require_once(dirname(__DIR__).'/upload_file.php');
 require_once(dirname(dirname(__DIR__)).'/lib.php');
 
 /**
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -70,15 +70,15 @@ class discussion_service {
         global $PAGE, $OUTPUT;
 
         $uploader = new upload_file(
-            new attachments($forum, $context), \mod_hsuforum_post_form::attachment_options($forum)
+            new attachments($forum, $context), \mod_forumimproved_post_form::attachment_options($forum)
         );
 
         $discussion = $this->create_discussion_object($forum, $context, $options);
         $errors = $this->validate_discussion($cm, $forum, $context, $discussion, $uploader);
 
         if (!empty($errors)) {
-            /** @var \mod_hsuforum_renderer $renderer */
-            $renderer = $PAGE->get_renderer('mod_hsuforum');
+            /** @var \mod_forumimproved_renderer $renderer */
+            $renderer = $PAGE->get_renderer('mod_forumimproved');
 
             return new json_response((object) array(
                 'errors' => true,
@@ -88,9 +88,9 @@ class discussion_service {
         $this->save_discussion($discussion, $uploader);
         $this->trigger_discussion_created($course, $context, $cm, $forum, $discussion);
 
-        $message = get_string('postaddedsuccess', 'hsuforum');
+        $message = get_string('postaddedsuccess', 'forumimproved');
 
-        $renderer = $PAGE->get_renderer('mod_hsuforum');
+        $renderer = $PAGE->get_renderer('mod_forumimproved');
 
         return new json_response((object) array(
             'eventaction'      => 'discussioncreated',
@@ -144,21 +144,21 @@ class discussion_service {
      */
     public function validate_discussion($cm, $forum, $context, $discussion, upload_file $uploader) {
         $errors = array();
-        if (!hsuforum_user_can_post_discussion($forum, $discussion->groupid, -1, $cm, $context)) {
-            $errors[] = new \moodle_exception('nopostforum', 'hsuforum');
+        if (!forumimproved_user_can_post_discussion($forum, $discussion->groupid, -1, $cm, $context)) {
+            $errors[] = new \moodle_exception('nopostforum', 'forumimproved');
         }
 
-        $thresholdwarning = hsuforum_check_throttling($forum, $cm);
+        $thresholdwarning = forumimproved_check_throttling($forum, $cm);
         if ($thresholdwarning !== false && $thresholdwarning->canpost === false) {
             $errors[] = new \moodle_exception($thresholdwarning->errorcode, $thresholdwarning->module, $thresholdwarning->additional);
         }
 
         $subject = trim($discussion->subject);
         if (empty($subject)) {
-            $errors[] = new \moodle_exception('subjectisrequired', 'hsuforum');
+            $errors[] = new \moodle_exception('subjectisrequired', 'forumimproved');
         }
-        if (hsuforum_str_empty($discussion->message)) {
-            $errors[] = new \moodle_exception('messageisrequired', 'hsuforum');
+        if (forumimproved_str_empty($discussion->message)) {
+            $errors[] = new \moodle_exception('messageisrequired', 'forumimproved');
         }
         if ($uploader->was_file_uploaded()) {
             try {
@@ -178,11 +178,11 @@ class discussion_service {
      */
     public function save_discussion($discussion, upload_file $uploader) {
         $message        = '';
-        $discussion->id = hsuforum_add_discussion($discussion, null, $message);
+        $discussion->id = forumimproved_add_discussion($discussion, null, $message);
 
         $file = $uploader->process_file_upload($discussion->firstpost);
         if (!is_null($file)) {
-            $this->db->set_field('hsuforum_posts', 'attachment', 1, array('id' => $discussion->firstpost));
+            $this->db->set_field('forumimproved_posts', 'attachment', 1, array('id' => $discussion->firstpost));
         }
     }
 
@@ -215,7 +215,7 @@ class discussion_service {
             )
         );
         $event = discussion_created::create($params);
-        $event->add_record_snapshot('hsuforum_discussions', $discussion);
+        $event->add_record_snapshot('forumimproved_discussions', $discussion);
         $event->trigger();
     }
 
@@ -228,10 +228,10 @@ class discussion_service {
     public function get_posts($discussionid) {
         global $PAGE, $DB, $CFG, $COURSE, $USER;
 
-        $discussion = $DB->get_record('hsuforum_discussions', array('id' => $discussionid), '*', MUST_EXIST);
+        $discussion = $DB->get_record('forumimproved_discussions', array('id' => $discussionid), '*', MUST_EXIST);
         $forum      = $PAGE->activityrecord;
         $course     = $COURSE;
-        $cm         = get_coursemodule_from_id('hsuforum', $PAGE->cm->id, $course->id, false, MUST_EXIST); // Cannot use cm_info because it is read only.
+        $cm         = get_coursemodule_from_id('forumimproved', $PAGE->cm->id, $course->id, false, MUST_EXIST); // Cannot use cm_info because it is read only.
         $context    = $PAGE->context;
 
         if ($forum->type == 'news') {
@@ -239,20 +239,20 @@ class discussion_service {
                         || $discussion->timestart <= time())
                     && ($discussion->timeend == 0 || $discussion->timeend > time())))
             ) {
-                print_error('invaliddiscussionid', 'hsuforum', "$CFG->wwwroot/mod/hsuforum/view.php?f=$forum->id");
+                print_error('invaliddiscussionid', 'forumimproved', "$CFG->wwwroot/mod/forumimproved/view.php?f=$forum->id");
             }
         }
-        if (!$post = hsuforum_get_post_full($discussion->firstpost)) {
-            print_error("notexists", 'hsuforum', "$CFG->wwwroot/mod/hsuforum/view.php?f=$forum->id");
+        if (!$post = forumimproved_get_post_full($discussion->firstpost)) {
+            print_error("notexists", 'forumimproved', "$CFG->wwwroot/mod/forumimproved/view.php?f=$forum->id");
         }
-        if (!hsuforum_user_can_see_post($forum, $discussion, $post, null, $cm)) {
-            print_error('nopermissiontoview', 'hsuforum', "$CFG->wwwroot/mod/hsuforum/view.php?f=$forum->id");
+        if (!forumimproved_user_can_see_post($forum, $discussion, $post, null, $cm)) {
+            print_error('nopermissiontoview', 'forumimproved', "$CFG->wwwroot/mod/forumimproved/view.php?f=$forum->id");
         }
 
-        $posts        = hsuforum_get_all_discussion_posts($discussion->id);
-        $canreply     = hsuforum_user_can_post($forum, $discussion, $USER, $cm, $course, $context);
+        $posts        = forumimproved_get_all_discussion_posts($discussion->id);
+        $canreply     = forumimproved_user_can_post($forum, $discussion, $USER, $cm, $course, $context);
 
-        hsuforum_get_ratings_for_posts($context, $forum, $posts);
+        forumimproved_get_ratings_for_posts($context, $forum, $posts);
 
         return array($cm, $discussion, $posts, $canreply);
     }
@@ -268,7 +268,7 @@ class discussion_service {
     public function render_discussion($discussionid, $fullthread = false) {
         global $PAGE;
 
-        $renderer = $PAGE->get_renderer('mod_hsuforum');
+        $renderer = $PAGE->get_renderer('mod_forumimproved');
 
         list($cm, $discussion, $posts, $canreply) = $this->get_posts($discussionid);
 

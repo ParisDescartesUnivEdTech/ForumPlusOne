@@ -1,7 +1,7 @@
 {
-    "name": "moodle-mod_hsuforum-article",
+    "name": "moodle-mod_forumimproved-article",
     "builds": {
-        "moodle-mod_hsuforum-article": {
+        "moodle-mod_forumimproved-article": {
             "jsfiles": [
                 "common.js",
                 "dom.js",

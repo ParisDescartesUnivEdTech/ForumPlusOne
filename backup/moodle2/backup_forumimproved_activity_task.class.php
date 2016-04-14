@@ -16,9 +16,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines backup_hsuforum_activity_task class
+ * Defines backup_forumimproved_activity_task class
  *
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @category  backup
  * @copyright 2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,13 +28,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/mod/hsuforum/backup/moodle2/backup_hsuforum_stepslib.php');
-require_once($CFG->dirroot.'/mod/hsuforum/backup/moodle2/backup_hsuforum_settingslib.php');
+require_once($CFG->dirroot.'/mod/forumimproved/backup/moodle2/backup_forumimproved_stepslib.php');
+require_once($CFG->dirroot.'/mod/forumimproved/backup/moodle2/backup_forumimproved_settingslib.php');
 
 /**
  * Provides the steps to perform one complete backup of the Forum instance
  */
-class backup_hsuforum_activity_task extends backup_activity_task {
+class backup_forumimproved_activity_task extends backup_activity_task {
 
     /**
      * No specific settings for this activity
@@ -44,10 +44,10 @@ class backup_hsuforum_activity_task extends backup_activity_task {
     }
 
     /**
-     * Defines a backup step to store the instance data in the hsuforum.xml file
+     * Defines a backup step to store the instance data in the forumimproved.xml file
      */
     protected function define_my_steps() {
-        $this->add_step(new backup_hsuforum_activity_structure_step('hsuforum_structure', 'hsuforum.xml'));
+        $this->add_step(new backup_forumimproved_activity_structure_step('forumimproved_structure', 'forumimproved.xml'));
     }
 
 
@@ -56,7 +56,7 @@ class backup_hsuforum_activity_task extends backup_activity_task {
      */
     public function get_comment_file_annotation_info() {
         return (object) array(
-            'component' => 'mod_hsuforum',
+            'component' => 'mod_forumimproved',
             'filearea' => 'comments',
         );
     }
@@ -73,27 +73,27 @@ class backup_hsuforum_activity_task extends backup_activity_task {
         $base = preg_quote($CFG->wwwroot,"/");
 
         // Link to the list of forums
-        $search="/(".$base."\/mod\/hsuforum\/index.php\?id\=)([0-9]+)/";
+        $search="/(".$base."\/mod\/forumimproved\/index.php\?id\=)([0-9]+)/";
         $content= preg_replace($search, '$@HSUFORUMINDEX*$2@$', $content);
 
         // Link to forum view by moduleid
-        $search="/(".$base."\/mod\/hsuforum\/view.php\?id\=)([0-9]+)/";
+        $search="/(".$base."\/mod\/forumimproved\/view.php\?id\=)([0-9]+)/";
         $content= preg_replace($search, '$@HSUFORUMVIEWBYID*$2@$', $content);
 
         // Link to forum view by forumid
-        $search="/(".$base."\/mod\/hsuforum\/view.php\?f\=)([0-9]+)/";
+        $search="/(".$base."\/mod\/forumimproved\/view.php\?f\=)([0-9]+)/";
         $content= preg_replace($search, '$@HSUFORUMVIEWBYF*$2@$', $content);
 
         // Link to forum discussion with parent syntax
-        $search="/(".$base."\/mod\/hsuforum\/discuss.php\?d\=)([0-9]+)\&parent\=([0-9]+)/";
+        $search="/(".$base."\/mod\/forumimproved\/discuss.php\?d\=)([0-9]+)\&parent\=([0-9]+)/";
         $content= preg_replace($search, '$@HSUFORUMDISCUSSIONVIEWPARENT*$2*$3@$', $content);
 
         // Link to forum discussion with relative syntax
-        $search="/(".$base."\/mod\/hsuforum\/discuss.php\?d\=)([0-9]+)\#([0-9]+)/";
+        $search="/(".$base."\/mod\/forumimproved\/discuss.php\?d\=)([0-9]+)\#([0-9]+)/";
         $content= preg_replace($search, '$@HSUFORUMDISCUSSIONVIEWINSIDE*$2*$3@$', $content);
 
         // Link to forum discussion by discussionid
-        $search="/(".$base."\/mod\/hsuforum\/discuss.php\?d\=)([0-9]+)/";
+        $search="/(".$base."\/mod\/forumimproved\/discuss.php\?d\=)([0-9]+)/";
         $content= preg_replace($search, '$@HSUFORUMDISCUSSIONVIEW*$2@$', $content);
 
         return $content;

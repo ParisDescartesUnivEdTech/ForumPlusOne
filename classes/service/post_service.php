@@ -17,18 +17,18 @@
 /**
  * Post services
  *
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_hsuforum\service;
+namespace mod_forumimproved\service;
 
-use mod_hsuforum\attachments;
-use mod_hsuforum\event\post_created;
-use mod_hsuforum\event\post_updated;
-use mod_hsuforum\response\json_response;
-use mod_hsuforum\upload_file;
+use mod_forumimproved\attachments;
+use mod_forumimproved\event\post_created;
+use mod_forumimproved\event\post_updated;
+use mod_forumimproved\response\json_response;
+use mod_forumimproved\upload_file;
 use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
@@ -38,7 +38,7 @@ require_once(dirname(__DIR__).'/upload_file.php');
 require_once(dirname(dirname(__DIR__)).'/lib.php');
 
 /**
- * @package   mod_hsuforum
+ * @package   mod_forumimproved
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -80,7 +80,7 @@ class post_service {
      */
     public function handle_reply($course, $cm, $forum, $context, $discussion, $parent, array $options) {
         $uploader = new upload_file(
-            new attachments($forum, $context), \mod_hsuforum_post_form::attachment_options($forum)
+            new attachments($forum, $context), \mod_forumimproved_post_form::attachment_options($forum)
         );
 
         $post   = $this->create_post_object($discussion, $parent, $context, $options);
@@ -96,7 +96,7 @@ class post_service {
             'eventaction'  => 'postcreated',
             'discussionid' => (int) $discussion->id,
             'postid'       => (int) $post->id,
-            'livelog'      => get_string('postcreated', 'hsuforum'),
+            'livelog'      => get_string('postcreated', 'forumimproved'),
             'html'         => $this->discussionservice->render_full_thread($discussion->id),
         ));
     }
@@ -119,7 +119,7 @@ class post_service {
         $this->require_can_edit_post($forum, $context, $discussion, $post);
 
         $uploader = new upload_file(
-            new attachments($forum, $context, $deletefiles), \mod_hsuforum_post_form::attachment_options($forum)
+            new attachments($forum, $context, $deletefiles), \mod_forumimproved_post_form::attachment_options($forum)
         );
 
         // Apply updates to the post.
@@ -137,8 +137,8 @@ class post_service {
         $this->save_post($discussion, $post, $uploader);
 
         // If the user has access to all groups and they are changing the group, then update the post.
-        if (empty($post->parent) && has_capability('mod/hsuforum:movediscussions', $context)) {
-            $this->db->set_field('hsuforum_discussions', 'groupid', $options['groupid'], array('id' => $discussion->id));
+        if (empty($post->parent) && has_capability('mod/forumimproved:movediscussions', $context)) {
+            $this->db->set_field('forumimproved_discussions', 'groupid', $options['groupid'], array('id' => $discussion->id));
         }
 
         $this->trigger_post_updated($context, $forum, $discussion, $post);
@@ -147,7 +147,7 @@ class post_service {
             'eventaction'  => 'postupdated',
             'discussionid' => (int) $discussion->id,
             'postid'       => (int) $post->id,
-            'livelog'      => get_string('postwasupdated', 'hsuforum'),
+            'livelog'      => get_string('postwasupdated', 'forumimproved'),
             'html'         => $this->discussionservice->render_full_thread($discussion->id),
         ));
     }
@@ -166,13 +166,13 @@ class post_service {
 
         if (!($forum->type == 'news' && !$post->parent && $discussion->timestart > time())) {
             if (((time() - $post->created) > $CFG->maxeditingtime) and
-                !has_capability('mod/hsuforum:editanypost', $context)
+                !has_capability('mod/forumimproved:editanypost', $context)
             ) {
-                print_error('maxtimehaspassed', 'hsuforum', '', format_time($CFG->maxeditingtime));
+                print_error('maxtimehaspassed', 'forumimproved', '', format_time($CFG->maxeditingtime));
             }
         }
-        if (($post->userid <> $USER->id) && !has_capability('mod/hsuforum:editanypost', $context)) {
-            print_error('cannoteditposts', 'hsuforum');
+        if (($post->userid <> $USER->id) && !has_capability('mod/forumimproved:editanypost', $context)) {
+            print_error('cannoteditposts', 'forumimproved');
         }
     }
 
@@ -203,7 +203,7 @@ class post_service {
         $post->groupid       = ($discussion->groupid == -1) ? 0 : $discussion->groupid;
         $post->flags         = null;
 
-        $strre = get_string('re', 'hsuforum');
+        $strre = get_string('re', 'forumimproved');
         if (!(substr($post->subject, 0, strlen($strre)) == $strre)) {
             $post->subject = $strre.' '.$post->subject;
         }
@@ -231,35 +231,35 @@ class post_service {
         global $USER;
 
         $errors = array();
-        if (!hsuforum_user_can_post($forum, $discussion, null, $cm, $course, $context)) {
-            $errors[] = new \moodle_exception('nopostforum', 'hsuforum');
+        if (!forumimproved_user_can_post($forum, $discussion, null, $cm, $course, $context)) {
+            $errors[] = new \moodle_exception('nopostforum', 'forumimproved');
         }
         if (!empty($post->id)) {
-            if (!(($post->userid == $USER->id && (has_capability('mod/hsuforum:replypost', $context)
-                        || has_capability('mod/hsuforum:startdiscussion', $context))) ||
-                has_capability('mod/hsuforum:editanypost', $context))
+            if (!(($post->userid == $USER->id && (has_capability('mod/forumimproved:replypost', $context)
+                        || has_capability('mod/forumimproved:startdiscussion', $context))) ||
+                has_capability('mod/forumimproved:editanypost', $context))
             ) {
-                $errors[] = new \moodle_exception('cannotupdatepost', 'hsuforum');
+                $errors[] = new \moodle_exception('cannotupdatepost', 'forumimproved');
             }
         }
         if (empty($post->id)) {
-            $thresholdwarning = hsuforum_check_throttling($forum, $cm);
+            $thresholdwarning = forumimproved_check_throttling($forum, $cm);
             if ($thresholdwarning !== false && $thresholdwarning->canpost === false) {
                 $errors[] = new \moodle_exception($thresholdwarning->errorcode, $thresholdwarning->module, $thresholdwarning->additional);
             }
         }
-        if (hsuforum_str_empty($post->subject)) {
-            $errors[] = new \moodle_exception('subjectisrequired', 'hsuforum');
+        if (forumimproved_str_empty($post->subject)) {
+            $errors[] = new \moodle_exception('subjectisrequired', 'forumimproved');
         }
-        if (hsuforum_str_empty($post->message)) {
-            $errors[] = new \moodle_exception('messageisrequired', 'hsuforum');
+        if (forumimproved_str_empty($post->message)) {
+            $errors[] = new \moodle_exception('messageisrequired', 'forumimproved');
         }
 
         if ($post->privatereply) {
-            if (!has_capability('mod/hsuforum:allowprivate', $context)
+            if (!has_capability('mod/forumimproved:allowprivate', $context)
                 || !$forum->allowprivatereplies
             ) {
-                $errors[] = new \moodle_exception('cannotmakeprivatereplies', 'hsuforum');
+                $errors[] = new \moodle_exception('cannotmakeprivatereplies', 'forumimproved');
             }
         }
 
@@ -290,9 +290,9 @@ class post_service {
         $post->timeend   = $discussion->timeend;
 
         if (!empty($post->id)) {
-            hsuforum_update_post($post, null, $message, $uploader);
+            forumimproved_update_post($post, null, $message, $uploader);
         } else {
-            hsuforum_add_new_post($post, null, $message, $uploader);
+            forumimproved_add_new_post($post, null, $message, $uploader);
         }
     }
 
@@ -329,8 +329,8 @@ class post_service {
             )
         );
         $event = post_created::create($params);
-        $event->add_record_snapshot('hsuforum_posts', $post);
-        $event->add_record_snapshot('hsuforum_discussions', $discussion);
+        $event->add_record_snapshot('forumimproved_posts', $post);
+        $event->add_record_snapshot('forumimproved_discussions', $discussion);
         $event->trigger();
     }
 
@@ -360,7 +360,7 @@ class post_service {
         }
 
         $event = post_updated::create($params);
-        $event->add_record_snapshot('hsuforum_discussions', $discussion);
+        $event->add_record_snapshot('forumimproved_discussions', $discussion);
         $event->trigger();
     }
 
@@ -371,8 +371,8 @@ class post_service {
     public function create_error_response(array $errors) {
         global $PAGE;
 
-        /** @var \mod_hsuforum_renderer $renderer */
-        $renderer = $PAGE->get_renderer('mod_hsuforum');
+        /** @var \mod_forumimproved_renderer $renderer */
+        $renderer = $PAGE->get_renderer('mod_forumimproved');
 
         return new json_response((object) array(
             'errors' => true,
