@@ -264,15 +264,15 @@ $string['maxattachmentsize'] = 'Maximum attachment size';
 $string['maxattachmentsize_help'] = 'This setting specifies the largest size of file that can be attached to a forum post.';
 $string['maxtimehaspassed'] = 'Sorry, but the maximum time for editing this post ({$a}) has passed!';
 $string['message'] = 'Message';
-$string['messageprovider:digests'] = 'Subscribed advanced forum digests';
-$string['messageprovider:posts'] = 'Subscribed advanced forum posts';
+$string['messageprovider:digests'] = 'Subscribed forum improved digests';
+$string['messageprovider:posts'] = 'Subscribed forum improved posts';
 $string['missingsearchterms'] = 'The following search terms occur only in the HTML markup of this message:';
 $string['modeflatnewestfirst'] = 'Display replies flat, with newest first';
 $string['modeflatoldestfirst'] = 'Display replies flat, with oldest first';
 $string['modenested'] = 'Display replies in nested form';
 $string['modethreaded'] = 'Display replies in threaded form';
-$string['modulename'] = 'Advanced Forum';
-$string['modulename_help'] = 'The Advanced Forum activity module enables participants to have asynchronous discussions,
+$string['modulename'] = 'Forum Improved';
+$string['modulename_help'] = 'The Forum Improved activity module enables participants to have asynchronous discussions,
 i.e., discussions that take place over an extended period of time.
 
 There are several forum types to choose from, such as a standard forum where anyone can start a new discussion at any time; a forum where each student can post exactly one discussion; or a question and answer forum where students must first post before being able to view other students\' posts. A teacher can allow files to be attached to forum posts. Attached images are displayed in the forum post.
@@ -292,7 +292,7 @@ Forums have many uses, such as:
 * A one-on-one support area for private student-teacher communications (using a forum with separate groups and with one student per group)
 * For extension activities, for example ‘brain teasers’ for students to ponder and suggest solutions';
 $string['modulename_link'] = 'mod/forumimproved/view';
-$string['modulenameplural'] = 'Advanced Forums';
+$string['modulenameplural'] = 'Forums Improved';
 $string['more'] = 'more';
 $string['movedmarker'] = '(Moved)';
 $string['movethisdiscussionto'] = 'Move this discussion to ...';
@@ -344,7 +344,7 @@ $string['page-mod-forumimproved-discuss'] = 'Forum module discussion thread page
 $string['parent'] = 'Show parent';
 $string['parentofthispost'] = 'Parent of this post';
 $string['pluginadministration'] = 'Forum administration';
-$string['pluginname'] = 'Advanced Forum';
+$string['pluginname'] = 'Forum Improved';
 $string['postadded'] = '<p>Your post was successfully added.</p> <p>You have {$a} to edit it if you want to make any changes.</p>';
 $string['postaddedsuccess'] = 'Your post was successfully added.';
 $string['postaddedtimeleft'] = 'You have {$a} to edit it if you want to make any changes.';
