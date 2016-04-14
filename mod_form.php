@@ -128,10 +128,10 @@ class mod_forumimproved_mod_form extends moodleform_mod {
         $mform->addElement('header', 'subscriptionhdr', get_string('subscription', 'forumimproved'));
 
         $options = array();
+        $options[FORUMIMPROVED_DISALLOWSUBSCRIBE] = get_string('subscriptiondisabled','forumimproved');
         $options[FORUMIMPROVED_CHOOSESUBSCRIBE] = get_string('subscriptionoptional', 'forumimproved');
         $options[FORUMIMPROVED_FORCESUBSCRIBE] = get_string('subscriptionforced', 'forumimproved');
         $options[FORUMIMPROVED_INITIALSUBSCRIBE] = get_string('subscriptionauto', 'forumimproved');
-        $options[FORUMIMPROVED_DISALLOWSUBSCRIBE] = get_string('subscriptiondisabled','forumimproved');
         $mform->addElement('select', 'forcesubscribe', get_string('subscriptionmode', 'forumimproved'), $options);
         $mform->addHelpButton('forcesubscribe', 'subscriptionmode', 'forumimproved');
 

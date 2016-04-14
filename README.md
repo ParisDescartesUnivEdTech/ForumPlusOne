@@ -5,6 +5,14 @@ Copyright 2016 University Paris Descartes
 Forum Improved is a evolution of the forum moodle module based on [Advanced Forum](https://github.com/moodlerooms/moodle-mod_hsuforum/)
 
 
+What's new ? Why "Improved" ?
+-----------------------------
+
+First, we are based on Advanced Forum , so we have all the imporvement of Advanced Forum.
+
+More, currently, we disable subscriptions, by default.
+
+
 Support
 -------
 
