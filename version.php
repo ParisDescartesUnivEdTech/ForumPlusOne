@@ -18,7 +18,7 @@
  * Version information
  *
  * @package    mod
- * @subpackage hsuforum
+ * @subpackage forumimproved
  * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -27,9 +27,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2014121900;       // The current module version (Date: YYYYMMDDXX)
+$plugin->version   = 2016041400;       // The current module version (Date: YYYYMMDDXX)
 $plugin->requires  = 2014051203;       // Requires this Moodle version
-$plugin->component = 'mod_hsuforum';   // Full name of the plugin (used for diagnostics)
-$plugin->release   = '2.7.0 (Build: 20141229)';
-$plugin->maturity  = MATURITY_STABLE;
+$plugin->component = 'mod_forumimproved';   // Full name of the plugin (used for diagnostics)
+$plugin->release   = '1.0.0a1 (Build: 20160414)';
+$plugin->maturity  = MATURITY_ALPHA;
 $plugin->cron      = 60;
