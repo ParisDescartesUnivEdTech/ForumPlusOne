@@ -2,7 +2,7 @@
 
 Copyright 2016 University Paris Descartes
 
-Forum Improved is a evolution of the forum moodle module based on [Advenced Forum](https://github.com/moodlerooms/moodle-mod_hsuforum/)
+Forum Improved is a evolution of the forum moodle module based on [Advanced Forum](https://github.com/moodlerooms/moodle-mod_hsuforum/)
 
 
 Support
