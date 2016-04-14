@@ -74,11 +74,11 @@ function xmldb_forumimproved_upgrade($oldversion) {
         $dbman->rename_field($table, $field, 'forumid');
 
         // forumimproved_discussion_subscripts was too long of a name
-        // Define table forumimproved_discussion_subscripts to be renamed to forumimproved_subscriptions_disc
+        // Define table forumimproved_discussion_subscripts to be renamed to forumimproved_subs_disc
         $table = new xmldb_table('forumimproved_discussion_subscripts');
 
         // Launch rename table for forumimproved_discussion_subscripts
-        $dbman->rename_table($table, 'forumimproved_subscriptions_disc');
+        $dbman->rename_table($table, 'forumimproved_subs_disc');
     /// FORUMIMPROVED UPGRADES END
 
         //MDL-13866 - send forum ratins to gradebook again

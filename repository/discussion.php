@@ -36,7 +36,7 @@ class forumimproved_repository_discussion extends forumimproved_repository_abstr
     public function get_user_subscriptions($forumid, $userid) {
         return $this->get_db()->get_records_sql_menu("
             SELECT s.id, s.discussion
-              FROM {forumimproved_subscriptions_disc} s
+              FROM {forumimproved_subs_disc} s
         INNER JOIN {forumimproved_discussions} d ON d.id = s.discussion
              WHERE s.userid = ?
                AND d.forum = ?
@@ -96,7 +96,7 @@ class forumimproved_repository_discussion extends forumimproved_repository_abstr
             SELECT $fields
               FROM {user} u
               JOIN ($esql) je ON je.id = u.id
-   LEFT OUTER JOIN {forumimproved_subscriptions_disc} s ON s.userid = u.id AND s.discussion = :discussionid
+   LEFT OUTER JOIN {forumimproved_subs_disc} s ON s.userid = u.id AND s.discussion = :discussionid
    LEFT OUTER JOIN {forumimproved_subscriptions} fs ON fs.userid = u.id AND fs.forum = :forumid
              WHERE s.id IS NULL AND fs.id IS NULL$where
              ORDER BY $sort
@@ -161,7 +161,7 @@ class forumimproved_repository_discussion extends forumimproved_repository_abstr
             SELECT $fields
               FROM {user} u
               JOIN ($esql) je ON je.id = u.id
-              JOIN {forumimproved_subscriptions_disc} s ON s.userid = u.id
+              JOIN {forumimproved_subs_disc} s ON s.userid = u.id
              WHERE s.discussion = :discussionid$where
           ORDER BY $sort
         ", $params);
@@ -179,8 +179,8 @@ class forumimproved_repository_discussion extends forumimproved_repository_abstr
      */
     public function subscribe($discussionid, $userid) {
         $params = array('userid' => $userid, 'discussion' => $discussionid);
-        if (!$this->get_db()->record_exists('forumimproved_subscriptions_disc', $params)) {
-            $this->get_db()->insert_record('forumimproved_subscriptions_disc', $params);
+        if (!$this->get_db()->record_exists('forumimproved_subs_disc', $params)) {
+            $this->get_db()->insert_record('forumimproved_subs_disc', $params);
         }
         return $this;
     }
@@ -192,7 +192,7 @@ class forumimproved_repository_discussion extends forumimproved_repository_abstr
      */
     public function unsubscribe($discussionid, $userid) {
         $this->get_db()->delete_records(
-            'forumimproved_subscriptions_disc',
+            'forumimproved_subs_disc',
             array('userid' => $userid, 'discussion' => $discussionid)
         );
         return $this;
@@ -206,7 +206,7 @@ class forumimproved_repository_discussion extends forumimproved_repository_abstr
     public function unsubscribe_all($forumid, $userid) {
         $this->get_db()->execute("
             DELETE s
-              FROM {forumimproved_subscriptions_disc} s
+              FROM {forumimproved_subs_disc} s
         INNER JOIN {forumimproved_discussions} d ON d.id = s.discussion
              WHERE s.userid = ?
                AND d.forum = ?

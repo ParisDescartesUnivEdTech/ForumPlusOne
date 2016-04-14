@@ -110,7 +110,7 @@ class restore_forumimproved_activity_structure_step extends restore_activity_str
         $data->discussion = $this->get_new_parentid('forumimproved_discussion');
         $data->userid     = $this->get_mappingid('user', $data->userid);
 
-        $DB->insert_record('forumimproved_subscriptions_disc', $data);
+        $DB->insert_record('forumimproved_subs_disc', $data);
     }
 
     protected function process_forumimproved_post($data) {

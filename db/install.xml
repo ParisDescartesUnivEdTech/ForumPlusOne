@@ -129,7 +129,7 @@
         <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="forumimproved_subscriptions_disc" COMMENT="Contains the discussion subscriptions">
+    <TABLE NAME="forumimproved_subs_disc" COMMENT="Contains the discussion subscriptions">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

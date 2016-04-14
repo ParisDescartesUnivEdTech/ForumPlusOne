@@ -2737,7 +2737,7 @@ LEFT OUTER JOIN {forumimproved_read} r ON (r.postid = p.id AND r.userid = ?)
     $subscribe = new forumimproved_lib_discussion_subscribe($forum, $modcontext);
     if ($subscribe->can_subscribe()) {
         $subscribeselect = ' sd.id AS subscriptionid, ';
-        $subscribesql = 'LEFT OUTER JOIN {forumimproved_subscriptions_disc} sd ON d.id = sd.discussion AND sd.userid = ?';
+        $subscribesql = 'LEFT OUTER JOIN {forumimproved_subs_disc} sd ON d.id = sd.discussion AND sd.userid = ?';
         $params[] = $USER->id;
     } else {
         $subscribeselect = $subscribesql = '';
@@ -4202,7 +4202,7 @@ function forumimproved_delete_discussion($discussion, $fulldelete, $course, $cm,
     if (!$DB->delete_records("forumimproved_discussions", array("id"=>$discussion->id))) {
         $result = false;
     }
-    if (!$DB->delete_records('forumimproved_subscriptions_disc', array('discussion' => $discussion->id))) {
+    if (!$DB->delete_records('forumimproved_subs_disc', array('discussion' => $discussion->id))) {
         $result = false;
     }
 
