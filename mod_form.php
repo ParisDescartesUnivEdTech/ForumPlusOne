@@ -124,6 +124,32 @@ class mod_forumimproved_mod_form extends moodleform_mod {
 
 
 
+
+        // Vote.
+        $mform->addElement('header', 'voteshdr', get_string('votes_section_header', 'forumimproved'));
+
+        $mform->addElement('checkbox', 'enable_vote', get_string('enable_vote', 'forumimproved'));
+        $mform->addHelpButton('enable_vote', 'enable_vote', 'forumimproved');
+        $mform->setDefault('enable_vote', 0);
+
+        $mform->addElement('checkbox', 'votetime', get_string('votetime', 'forumimproved'));
+        $mform->disabledIf('votetime', 'enable_vote', 'notchecked');
+
+        $mform->addElement('date_time_selector', 'votetimestart', get_string('from'));
+        $mform->disabledIf('votetimestart', 'enable_vote', 'notchecked');
+        $mform->disabledIf('votetimestart', 'votetime');
+
+        $mform->addElement('date_time_selector', 'votetimefinish', get_string('to'));
+        $mform->disabledIf('votetimefinish', 'enable_vote', 'notchecked');
+        $mform->disabledIf('votetimefinish', 'votetime');
+
+
+
+
+
+
+
+
         // Subscription and tracking.
         $mform->addElement('header', 'subscriptionhdr', get_string('subscription', 'forumimproved'));
 
