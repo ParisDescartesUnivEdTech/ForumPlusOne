@@ -708,6 +708,48 @@ function xmldb_forumimproved_upgrade($oldversion) {
     }
 
 
+
+
+    if ($oldversion < 2016041500) {
+        // Define fields to be added to forumimproved table.
+        $tableFI = new xmldb_table('forumimproved');
+        $fieldStart = new xmldb_field('votetimestart', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $fieldStop = new xmldb_field('votetimestop', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        // Conditionally launch add field.
+        if (!$dbman->field_exists($tableFI, $fieldStart)) {
+            $dbman->add_field($tableFI, $fieldStart);
+        }
+        if (!$dbman->field_exists($tableFI, $fieldStop)) {
+            $dbman->add_field($tableFI, $fieldStop);
+        }
+
+
+
+
+        $tableFI_Votes = new xmldb_table('forumimproved_vote');
+
+        $tableFI_Votes->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE);
+        $tableFI_Votes->add_field('postid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $tableFI_Votes->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $tableFI_Votes->add_field('timestamp', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+
+        $tableFI_Votes->add_index('userid', XMLDB_INDEX_NOTUNIQUE, array('userid'));
+
+        $tableFI_Votes->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $tableFI_Votes->add_key('post_fk', XMLDB_KEY_FOREIGN, array('postid'), array('forumimproved_posts'), array('id'));
+
+
+        if (!$dbman->table_exists($tableFI_Votes)) {
+            $dbman->create_table($tableFI_Votes);
+        }
+
+
+        // Hsuforum savepoint reached.
+        upgrade_mod_savepoint(true, 2016041500, 'forumimproved');
+    }
+
+
     return true;
 }
 
