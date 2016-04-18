@@ -710,13 +710,17 @@ function xmldb_forumimproved_upgrade($oldversion) {
 
 
 
-    if ($oldversion < 2016041500) {
+    if ($oldversion < 2016041800) {
         // Define fields to be added to forumimproved table.
         $tableFI = new xmldb_table('forumimproved');
+        $fieldEnable = new xmldb_field('enable_vote', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
         $fieldStart = new xmldb_field('votetimestart', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $fieldStop = new xmldb_field('votetimestop', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
 
         // Conditionally launch add field.
+        if (!$dbman->field_exists($tableFI, $fieldEnable)) {
+            $dbman->add_field($tableFI, $fieldEnable);
+        }
         if (!$dbman->field_exists($tableFI, $fieldStart)) {
             $dbman->add_field($tableFI, $fieldStart);
         }
@@ -746,7 +750,7 @@ function xmldb_forumimproved_upgrade($oldversion) {
 
 
         // Hsuforum savepoint reached.
-        upgrade_mod_savepoint(true, 2016041500, 'forumimproved');
+        upgrade_mod_savepoint(true, 2016041800, 'forumimproved');
     }
 
 
