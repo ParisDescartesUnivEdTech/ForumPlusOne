@@ -139,9 +139,9 @@ class mod_forumimproved_mod_form extends moodleform_mod {
         $mform->disabledIf('votetimestart', 'enable_vote', 'notchecked');
         $mform->disabledIf('votetimestart', 'votetime');
 
-        $mform->addElement('date_time_selector', 'votetimefinish', get_string('to'));
-        $mform->disabledIf('votetimefinish', 'enable_vote', 'notchecked');
-        $mform->disabledIf('votetimefinish', 'votetime');
+        $mform->addElement('date_time_selector', 'votetimestop', get_string('to'));
+        $mform->disabledIf('votetimestop', 'enable_vote', 'notchecked');
+        $mform->disabledIf('votetimestop', 'votetime');
 
 
 
