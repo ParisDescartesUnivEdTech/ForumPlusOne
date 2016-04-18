@@ -84,6 +84,16 @@ function forumimproved_add_instance($forum, $mform = null) {
         $forum->assesstimefinish = 0;
     }
 
+    if (empty($forum->enable_vote)) {
+        $forum->enable_vote = 0;
+    }
+
+    if (empty($forum->votetime) or empty($forum->enable_vote)) {
+        $forum->votetimestart  = 0;
+        $forum->votetimestop = 0;
+    }
+
+
     $forum->id = $DB->insert_record('forumimproved', $forum);
     $modcontext = context_module::instance($forum->coursemodule);
 
@@ -166,6 +176,15 @@ function forumimproved_update_instance($forum, $mform) {
     if (empty($forum->ratingtime) or empty($forum->assessed)) {
         $forum->assesstimestart  = 0;
         $forum->assesstimefinish = 0;
+    }
+
+    if (empty($forum->enable_vote)) {
+        $forum->enable_vote = 0;
+    }
+
+    if (empty($forum->votetime) or empty($forum->enable_vote)) {
+        $forum->votetimestart  = 0;
+        $forum->votetimestop = 0;
     }
 
     $oldforum = $DB->get_record('forumimproved', array('id'=>$forum->id));
