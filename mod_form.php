@@ -312,6 +312,16 @@ class mod_forumimproved_mod_form extends moodleform_mod {
         if (empty($default_values['completionposts'])) {
             $default_values['completionposts']=1;
         }
+        
+        
+        if (empty($default_values['enable_vote']) || $default_values['enable_vote'] == 0){
+            $default_values['votetime'] = 0;
+        }
+        else {
+            $default_values['votetime']=
+                ($default_values['votetimestart'] && $default_values['votetimestop']) ? 1 : 0;
+        }
+        
     }
 
       function add_completion_rules() {
