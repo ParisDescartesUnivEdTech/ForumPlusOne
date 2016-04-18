@@ -324,7 +324,7 @@ class mod_forumimproved_mod_form extends moodleform_mod {
         
     }
 
-      function add_completion_rules() {
+    function add_completion_rules() {
         $mform =& $this->_form;
 
         $group=array();
