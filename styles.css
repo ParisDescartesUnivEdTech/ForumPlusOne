@@ -517,7 +517,7 @@ FUN WITH FORMS
     .depth0 .forumimproved-reply-wrapper{
         margin-left:15.73%;
     }
-    .hsuform-post-date{
+    .improvedform-post-date{
         float:right;
         line-height:3;
     }
@@ -607,7 +607,7 @@ FUN WITH FORMS
     .forumimproved-thread-meta,
     .forumimproved-thread-replies-meta,
     .forumimproved-thread-figure,
-    .hsuform-post-date,
+    .improvedform-post-date,
     .forumimproved-postflagging {
 		clear:both;
         display:block;
@@ -620,7 +620,7 @@ FUN WITH FORMS
     .forumimproved-post-figure .userpicture {
         max-width:50px;
     }
-    .hsuform-post-date,
+    .improvedform-post-date,
     .forumimproved-postflagging {
         text-align:right;
     }

@@ -717,7 +717,7 @@ HTML;
         <h6 role="heading" aria-level="6" class="forumimproved-post-byline" id="forumimproved-post-$p->id">
             $unread $byline $revealed
         </h6>
-        <small class='hsuform-post-date'><a href="$p->permalink" class="disable-router"$newwindow>$datecreated</a></small>
+        <small class='improvedform-post-date'><a href="$p->permalink" class="disable-router"$newwindow>$datecreated</a></small>
 
         <div class="forumimproved-post-content">
             <div class="forumimproved-post-title">$p->subject</div>
