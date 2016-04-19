@@ -617,7 +617,7 @@ function xmldb_forumimproved_upgrade($oldversion) {
             }
         }
 
-        // Hsuforum savepoint reached.
+        // ForumImproved savepoint reached.
         upgrade_mod_savepoint(true, 2014092400, 'forumimproved');
     }
 
@@ -631,7 +631,7 @@ function xmldb_forumimproved_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Hsuforum savepoint reached.
+        // ForumImproved savepoint reached.
         upgrade_mod_savepoint(true, 2014093000, 'forumimproved');
     }
 
@@ -645,7 +645,7 @@ function xmldb_forumimproved_upgrade($oldversion) {
 
         ");
 
-        // Hsuforum savepoint reached.
+        // ForumImproved savepoint reached.
         upgrade_mod_savepoint(true, 2014093001, 'forumimproved');
     }
 
@@ -688,7 +688,7 @@ function xmldb_forumimproved_upgrade($oldversion) {
             }
         }
 
-        // Hsuforum savepoint reached.
+        // ForumImproved savepoint reached.
         upgrade_mod_savepoint(true, 2014100600, 'forumimproved');
 
     }
@@ -703,7 +703,7 @@ function xmldb_forumimproved_upgrade($oldversion) {
             $dbman->add_field($table, $field);
         }
 
-        // Hsuforum savepoint reached.
+        // ForumImproved savepoint reached.
         upgrade_mod_savepoint(true, 2014121700, 'forumimproved');
     }
 
@@ -749,7 +749,7 @@ function xmldb_forumimproved_upgrade($oldversion) {
         }
 
 
-        // Hsuforum savepoint reached.
+        // ForumImproved savepoint reached.
         upgrade_mod_savepoint(true, 2016041800, 'forumimproved');
     }
 
