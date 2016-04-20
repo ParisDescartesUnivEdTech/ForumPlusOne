@@ -2040,7 +2040,7 @@ function forumimproved_get_all_discussion_posts($discussionid, $conditions = arr
         $conditionsql .= " AND $field = ?";
         $params[] = $value;
     }
-    if (!$posts = $DB->get_records_sql("SELECT p.*, $allnames, u.email, u.picture, u.imagealt, $tr_sel
+    if (!$posts = $DB->get_records_sql("SELECT p.*, $allnames, u.email, u.picture, u.imagealt, $tr_sel, ( SELECT COUNT(v.id) FROM {forumimproved_vote} v WHERE p.id = v.postid ) AS votecount
                                      FROM {forumimproved_posts} p
                                           LEFT JOIN {user} u ON p.userid = u.id
                                           $tr_join
