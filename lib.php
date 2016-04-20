@@ -2026,7 +2026,7 @@ function forumimproved_get_all_discussion_posts($discussionid, $conditions = arr
     $params = array();
 
     $now = time();
-    $tr_sel  = ", fr.id AS postread";
+    $tr_sel  = "fr.id AS postread";
     $tr_join = "LEFT JOIN {forumimproved_read} fr ON (fr.postid = p.id AND fr.userid = ?)";
     $params[] = $USER->id;
 
@@ -2040,7 +2040,7 @@ function forumimproved_get_all_discussion_posts($discussionid, $conditions = arr
         $conditionsql .= " AND $field = ?";
         $params[] = $value;
     }
-    if (!$posts = $DB->get_records_sql("SELECT p.*, $allnames, u.email, u.picture, u.imagealt $tr_sel
+    if (!$posts = $DB->get_records_sql("SELECT p.*, $allnames, u.email, u.picture, u.imagealt, $tr_sel
                                      FROM {forumimproved_posts} p
                                           LEFT JOIN {user} u ON p.userid = u.id
                                           $tr_join
