@@ -1606,8 +1606,9 @@ HTML;
 
         $forum = forumimproved_get_cm_forum($cm);
 
+        $postuser   = forumimproved_extract_postuser($post, $forum, context_module::instance($cm->id));
+
         if ($canreply and empty($post->privatereply)) {
-            $postuser   = forumimproved_extract_postuser($post, $forum, context_module::instance($cm->id));
             $replytitle = get_string('replybuttontitle', 'forumimproved', strip_tags($postuser->fullname));
             $commands['reply'] = html_writer::link(
                 new moodle_url('/mod/forumimproved/post.php', array('reply' => $post->id)),
@@ -1616,6 +1617,33 @@ HTML;
                     'title' => $replytitle,
                     'class' => 'forumimproved-reply-link btn btn-default',
                 )
+            );
+        }
+
+        if (!$ownpost) {
+            $votetitle = get_string('votebuttontitle', 'forumimproved', strip_tags($postuser->fullname));
+            $commands['vote'] = html_writer::link(
+                new moodle_url('/mod/forumimproved/post.php', array(
+                    'vote' => $post->id)
+                    // TODO CSRF !!!
+                ),
+                get_string('vote', 'forumimproved'),
+                array(
+                    'title' => $votetitle,
+                    'class' => 'btn btn-default',
+                )
+            );
+        }
+
+
+        if (has_capability('mod/forumimproved:viewhowvote', context_module::instance($cm->id))) { // display the count of vote for this post
+            $commands['countVote'] = html_writer::link(
+                new moodle_url('/mod/forumimproved/route.php', array(
+                    'vote' => $post->id,
+                    // TODO 'contextid' => $context->id
+                    'action' => 'howvote'
+                )),
+                get_string('countvote', 'forumimproved', $post->votecount)
             );
         }
 

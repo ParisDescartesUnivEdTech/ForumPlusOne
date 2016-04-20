@@ -637,3 +637,7 @@ $string['enable_vote_help'] = 'Allow students to vote on posts.';
 
 $string['votetime'] = 'Restrict votes with dates in this range:';
 
+$string['votebuttontitle'] = '+1 to this message';
+$string['vote'] = '+1';
+$string['countvote'] = 'Number of votes : {$a}';
+
