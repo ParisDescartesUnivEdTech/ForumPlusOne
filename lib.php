@@ -2000,7 +2000,7 @@ function forumimproved_get_post_full($postid) {
     global $CFG, $DB;
 
     $allnames = get_all_user_name_fields(true, 'u');
-    return $DB->get_record_sql("SELECT p.*, d.forum, $allnames, u.email, u.picture, u.imagealt, r.lastread AS postread
+    return $DB->get_record_sql("SELECT p.*, d.forum, $allnames, u.email, u.picture, u.imagealt, r.lastread AS postread, ( SELECT COUNT(v.id) FROM {forumimproved_vote} v WHERE p.id = v.postid ) AS votecount
                              FROM {forumimproved_posts} p
                                   JOIN {forumimproved_discussions} d ON p.discussion = d.id
                                   LEFT JOIN {user} u ON p.userid = u.id
@@ -2318,7 +2318,8 @@ function forumimproved_search_posts($searchterms, $courseid=0, $limitfrom=0, $li
                          u.email,
                          u.picture,
                          u.imagealt,
-                         u.email
+                         u.email,
+                         ( SELECT COUNT(v.id) FROM {forumimproved_vote} v WHERE p.id = v.postid ) AS votecount
                     FROM $fromsql
                    WHERE $selectsql
                 ORDER BY p.modified DESC";
@@ -2501,7 +2502,7 @@ function forumimproved_get_user_posts($forumid, $userid, context_module $context
     }
 
     $allnames = get_all_user_name_fields(true, 'u');
-    return $DB->get_records_sql("SELECT p.*, d.forum, $allnames, u.email, u.picture, u.imagealt, r.lastread AS postread
+    return $DB->get_records_sql("SELECT p.*, d.forum, $allnames, u.email, u.picture, u.imagealt, r.lastread AS postread, ( SELECT COUNT(v.id) FROM {forumimproved_vote} v WHERE p.id = v.postid ) AS votecount
                               FROM {forumimproved} f
                                    JOIN {forumimproved_discussions} d ON d.forum = f.id
                                    JOIN {forumimproved_posts} p       ON p.discussion = d.id
@@ -2598,7 +2599,7 @@ function forumimproved_count_user_posts($forumid, $userid) {
 function forumimproved_get_firstpost_from_discussion($discussionid) {
     global $CFG, $DB;
 
-    return $DB->get_record_sql("SELECT p.*
+    return $DB->get_record_sql("SELECT p.*, ( SELECT COUNT(v.id) FROM {forumimproved_vote} v WHERE p.id = v.postid ) AS votecount
                              FROM {forumimproved_discussions} d,
                                   {forumimproved_posts} p
                             WHERE d.id = ?
@@ -2828,6 +2829,7 @@ LEFT OUTER JOIN {forumimproved_read} r ON (r.postid = p.id AND r.userid = ?)
     } else {
         $postdata = "p.*";
     }
+    $postdata .= ", ( SELECT COUNT(v.id) FROM {forumimproved_vote} v WHERE p.id = v.postid ) AS votecount";
 
     if (empty($userlastmodified)) {  // We don't need to know this
         $umfields = "";
@@ -5531,7 +5533,8 @@ function forumimproved_get_recent_mod_activity(&$activities, &$index, $timestart
     $allnames = get_all_user_name_fields(true, 'u');
     if (!$posts = $DB->get_records_sql("SELECT p.*, f.anonymous AS forumanonymous, f.type AS forumtype, d.forum, d.groupid,
                                               d.timestart, d.timeend, d.userid AS duserid,
-                                              $allnames, u.email, u.picture, u.imagealt, u.email
+                                              $allnames, u.email, u.picture, u.imagealt, u.email,
+                                              ( SELECT COUNT(v.id) FROM {forumimproved_vote} v WHERE p.id = v.postid ) AS votecount
                                          FROM {forumimproved_posts} p
                                               JOIN {forumimproved_discussions} d ON d.id = p.discussion
                                               JOIN {forumimproved} f             ON f.id = d.forum
@@ -7383,7 +7386,7 @@ function forumimproved_get_posts_by_user($user, array $courses, $musthaveaccess 
     // oracle and mssql.
     $userfields = user_picture::fields('u', null, 'useridx');
     $countsql = 'SELECT COUNT(*) ';
-    $selectsql = 'SELECT p.*, d.forum, d.name AS discussionname, '.$userfields.' ';
+    $selectsql = 'SELECT p.*, d.forum, d.name AS discussionname, '.$userfields.', ( SELECT COUNT(v.id) FROM {forumimproved_vote} v WHERE p.id = v.postid ) AS votecount';
     $wheresql = implode(" OR ", $forumsearchwhere);
 
     if ($discussionsonly) {
