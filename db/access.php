@@ -398,5 +398,22 @@ $capabilities = array(
             'frontpage' => CAP_ALLOW
         )
     ),
+
+
+
+    'mod/forumimproved:viewhowvote' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW,
+            'coursecreator' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
+            'student' => CAP_PREVENT,
+            'guest' => CAP_PREVENT,
+            'user' => CAP_PREVENT,
+            'frontpage' => CAP_PREVENT
+        )
+    ),
 );
 
