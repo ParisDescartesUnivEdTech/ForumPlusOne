@@ -1640,7 +1640,7 @@ HTML;
             $commands['countVote'] = html_writer::link(
                 new moodle_url('/mod/forumimproved/route.php', array(
                     'vote' => $post->id,
-                    // TODO 'contextid' => $context->id
+                    'contextid' => context_module::instance($cm->id)->id,
                     'action' => 'howvote'
                 )),
                 get_string('countvote', 'forumimproved', $post->votecount)
