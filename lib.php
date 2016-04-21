@@ -6596,6 +6596,45 @@ function forumimproved_get_extra_capabilities() {
 }
 
 /**
+ * Toggle a vote
+ * @param object $forum   the forum of the post
+ * @param int    $postid  the post id
+ * @param int    $userid  the user id
+ */
+function forumimproved_toggle_vote($forum, $postid, $userid) {
+    global $DB;
+
+    $now = time();
+
+    if (!$forum->enable_vote) {
+        throw new coding_exception("vote_disabled_error");
+    }
+
+    if ($forum->votetimestart > 0 && $now < $forum->votetimestart) {
+        throw new coding_exception("to_early_to_vote_error");
+    }
+
+    if ($forum->votetimestop > 0 && $now > $forum->votetimestop) {
+        throw new coding_exception("to_late_to_vote_error");
+    }
+
+
+
+    if ($DB->record_exists('forumimproved_vote', array('userid' => $userid, 'postid' => $postid))) {
+        // Delete
+        $DB->delete_records('forumimproved_vote', array('userid' => $userid, 'postid' => $postid));
+    }
+    else {
+        // Add
+        $vote = new stdClass();
+        $vote->postid = $postid;
+        $vote->userid = $userid;
+        $vote->timestamp = $now;
+        $DB->insert_record('forumimproved_vote', $vote);
+    }
+}
+
+/**
  * Adds module specific settings to the settings block
  *
  * @param settings_navigation $settings The settings navigation object

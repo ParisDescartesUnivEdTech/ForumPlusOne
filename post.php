@@ -30,6 +30,7 @@ require_once('lib.php');
 require_once($CFG->libdir.'/completionlib.php');
 
 $reply   = optional_param('reply', 0, PARAM_INT);
+$vote    = optional_param('vote', 0, PARAM_INT);
 $forum   = optional_param('forum', 0, PARAM_INT);
 $edit    = optional_param('edit', 0, PARAM_INT);
 $delete  = optional_param('delete', 0, PARAM_INT);
@@ -40,6 +41,7 @@ $groupid = optional_param('groupid', null, PARAM_INT);
 
 $PAGE->set_url('/mod/forumimproved/post.php', array(
         'reply' => $reply,
+        'vote'  => $vote,
         'forum' => $forum,
         'edit'  => $edit,
         'delete'=> $delete,
@@ -69,6 +71,16 @@ if (!isloggedin() or isguestuser()) {
             print_error('invalidparentpostid', 'forumimproved');
         }
         if (! $discussion = $DB->get_record('forumimproved_discussions', array('id' => $parent->discussion))) {
+            print_error('notpartofdiscussion', 'forumimproved');
+        }
+        if (! $forum = $DB->get_record('forumimproved', array('id' => $discussion->forum))) {
+            print_error('invalidforumid');
+        }
+    } else if (!empty($vote)) {      // User is voting
+        if (! $post = forumimproved_get_post_full($vote)) {
+            print_error('invalidpostid', 'forumimproved');
+        }
+        if (! $discussion = $DB->get_record('forumimproved_discussions', array('id' => $post->discussion))) {
             print_error('notpartofdiscussion', 'forumimproved');
         }
         if (! $forum = $DB->get_record('forumimproved', array('id' => $discussion->forum))) {
@@ -230,6 +242,68 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
     }
 
     unset($SESSION->fromdiscussion);
+
+} else if (!empty($vote)) {      // User is voting
+
+    if (! $post = forumimproved_get_post_full($vote)) {
+        print_error('invalidpostid', 'forumimproved');
+    }
+    if (! $discussion = $DB->get_record("forumimproved_discussions", array("id" => $post->discussion))) {
+        print_error('notpartofdiscussion', 'forumimproved');
+    }
+    if (! $forum = $DB->get_record("forumimproved", array("id" => $discussion->forum))) {
+        print_error('invalidforumid', 'forumimproved');
+    }
+    if (! $course = $DB->get_record("course", array("id" => $discussion->course))) {
+        print_error('invalidcourseid');
+    }
+    if (! $cm = get_coursemodule_from_instance("forumimproved", $forum->id, $course->id)) {
+        print_error('invalidcoursemodule');
+    }
+
+
+
+    // Make sure user can vote here
+    if (isset($cm->groupmode) && empty($course->groupmodeforce)) {
+        $groupmode =  $cm->groupmode;
+    } else {
+        $groupmode = $course->groupmode;
+    }
+    if ($groupmode == SEPARATEGROUPS and !has_capability('moodle/site:accessallgroups', $modcontext)) {
+        if ($discussion->groupid == -1) {
+            print_error('nopostforum', 'forumimproved');
+        } else {
+            if (!groups_is_member($discussion->groupid)) {
+                print_error('nopostforum', 'forumimproved');
+            }
+        }
+    }
+
+    if (!$cm->visible and !has_capability('moodle/course:viewhiddenactivities', $modcontext)) {
+        print_error("activityiscurrentlyhidden");
+    }
+
+
+    try {
+        forumimproved_toggle_vote($forum, $vote, $USER->id);
+    }
+    catch (coding_exception $e) {
+        if (in_array($e->a, array(
+                "vote_disabled_error",
+                "to_early_to_vote_error",
+                "to_late_to_vote_error"
+            ))) {
+                print_error($e->a, 'forumimproved');
+        }
+        else
+            throw $e;
+    }
+
+
+    redirect(forumimproved_go_back_to("discuss.php?d=$post->discussion"), null, 0);
+
+    die;
+
 
 } else if (!empty($edit)) {  // User is editing their own post
 
