@@ -53,6 +53,17 @@ within your Moodle root, this file is mod/forumimporved/README.md. Then visit th
 Moodle notifications page to install.
 
 
+How to build
+------------
+
+You need to build **ONLY** if you want to contribute. In this case, follow this steps:
+
+1. Intall [grunt](http://gruntjs.com/getting-started#installing-the-cli)
+2. Install the npm dependancies, using the command `npmm install`
+3. Build with the command `grunt`
+4. Enjoy :D
+
+
 Documentation
 -------------
 
