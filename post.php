@@ -114,13 +114,11 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
     $coursecontext = context_course::instance($course->id);
 
     if (! forumimproved_user_can_post_discussion($forum, $groupid, -1, $cm)) {
-        if (!isguestuser()) {
-            if (!is_enrolled($coursecontext)) {
-                if (enrol_selfenrol_available($course->id)) {
-                    $SESSION->wantsurl = qualified_me();
-                    $SESSION->enrolcancel = get_referer(false);
-                    redirect($CFG->wwwroot.'/enrol/index.php?id='.$course->id, get_string('youneedtoenrol'));
-                }
+        if (!is_enrolled($coursecontext)) {
+            if (enrol_selfenrol_available($course->id)) {
+                $SESSION->wantsurl = qualified_me();
+                $SESSION->enrolcancel = get_referer(false);
+                redirect($CFG->wwwroot.'/enrol/index.php?id='.$course->id, get_string('youneedtoenrol'));
             }
         }
         print_error('nopostforum', 'forumimproved');
@@ -183,12 +181,10 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
     $coursecontext = context_course::instance($course->id);
 
     if (! forumimproved_user_can_post($forum, $discussion, $USER, $cm, $course, $modcontext)) {
-        if (!isguestuser()) {
-            if (!is_enrolled($coursecontext)) {  // User is a guest here!
-                $SESSION->wantsurl = qualified_me();
-                $SESSION->enrolcancel = get_referer(false);
-                redirect($CFG->wwwroot.'/enrol/index.php?id='.$course->id, get_string('youneedtoenrol'));
-            }
+        if (!is_enrolled($coursecontext)) {  // User is a guest here!
+            $SESSION->wantsurl = qualified_me();
+            $SESSION->enrolcancel = get_referer(false);
+            redirect($CFG->wwwroot.'/enrol/index.php?id='.$course->id, get_string('youneedtoenrol'));
         }
         print_error('nopostforum', 'forumimproved');
     }
@@ -504,11 +500,6 @@ if (!$cm = get_coursemodule_from_instance('forumimproved', $forum->id, $course->
 }
 $modcontext = context_module::instance($cm->id);
 require_login($course, false, $cm);
-
-if (isguestuser()) {
-    // just in case
-    print_error('noguest');
-}
 
 if (!isset($forum->maxattachments)) {  // TODO - delete this once we add a field to the forum table
     $forum->maxattachments = 3;
