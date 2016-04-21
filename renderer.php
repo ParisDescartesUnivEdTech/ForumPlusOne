@@ -1620,7 +1620,8 @@ HTML;
             );
         }
 
-        if (!$ownpost) {
+        // here, the usage of $canreply is a hack  avoid to add a "$canvote" on prototype of the function
+        if ($canreply and !$ownpost) {
             $votetitle = get_string('votebuttontitle', 'forumimproved', strip_tags($postuser->fullname));
             $commands['vote'] = html_writer::link(
                 new moodle_url('/mod/forumimproved/post.php', array(
@@ -1636,7 +1637,8 @@ HTML;
         }
 
 
-        if (has_capability('mod/forumimproved:viewhowvote', context_module::instance($cm->id))) { // display the count of vote for this post
+        // here, the usage of $canreply is a hack  avoid to add a "$canvote" on prototype of the function
+        if ($canreply && has_capability('mod/forumimproved:viewhowvote', context_module::instance($cm->id))) { // display the count of vote for this post
             $commands['countVote'] = html_writer::link(
                 new moodle_url('/mod/forumimproved/route.php', array(
                     'vote' => $post->id,
