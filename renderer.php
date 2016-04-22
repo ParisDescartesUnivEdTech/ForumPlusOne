@@ -1623,6 +1623,11 @@ HTML;
         // here, the usage of $canreply is a hack  avoid to add a "$canvote" on prototype of the function
         if ($canreply and !$ownpost) {
             $votetitle = get_string('votebuttontitle', 'forumimproved', strip_tags($postuser->fullname));
+            $classes = 'forumimproved-vote-link btn btn-default';
+
+            if (forumimproved_has_vote($post->id, $USER->id))
+                $classes .= ' active';
+
             $commands['vote'] = html_writer::link(
                 new moodle_url('/mod/forumimproved/post.php', array(
                     'vote' => $post->id)
@@ -1631,7 +1636,7 @@ HTML;
                 get_string('vote', 'forumimproved'),
                 array(
                     'title' => $votetitle,
-                    'class' => 'btn btn-default',
+                    'class' => $classes
                 )
             );
         }
@@ -1645,7 +1650,7 @@ HTML;
                     'contextid' => context_module::instance($cm->id)->id,
                     'action' => 'howvote'
                 )),
-                get_string('countvote', 'forumimproved', $post->votecount)
+                get_string('countvote', 'forumimproved', '<span class="forumimproved-votes-counter">' . $post->votecount . '</span>')
             );
         }
 

@@ -6596,6 +6596,18 @@ function forumimproved_get_extra_capabilities() {
 }
 
 /**
+ * check if a user has vote to a post
+ * @param object $forum   the forum of the post
+ * @param int    $postid  the post id
+ * @param int    $userid  the user id
+ */
+function forumimproved_has_vote($postid, $userid) {
+    global $DB;
+
+    return $DB->record_exists('forumimproved_vote', array('userid' => $userid, 'postid' => $postid));
+}
+
+/**
  * Toggle a vote
  * @param object $forum   the forum of the post
  * @param int    $postid  the post id
@@ -6620,7 +6632,7 @@ function forumimproved_toggle_vote($forum, $postid, $userid) {
 
 
 
-    if ($DB->record_exists('forumimproved_vote', array('userid' => $userid, 'postid' => $postid))) {
+    if (forumimproved_has_vote($postid, $userid)) {
         // Delete
         $DB->delete_records('forumimproved_vote', array('userid' => $userid, 'postid' => $postid));
     }
