@@ -401,7 +401,7 @@ $capabilities = array(
 
 
 
-    'mod/forumimproved:viewhowvote' => array(
+    'mod/forumimproved:viewwhovote' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
