@@ -25,6 +25,7 @@
  */
 
 use mod_forumimproved\controller\edit_controller;
+use mod_forumimproved\controller\vote_controller;
 use mod_forumimproved\controller\export_controller;
 use mod_forumimproved\controller\flag_controller;
 use mod_forumimproved\controller\kernel;
@@ -78,6 +79,7 @@ $router->add_controller(new flag_controller());
 $router->add_controller(new posts_controller());
 $router->add_controller(new export_controller());
 $router->add_controller(new edit_controller());
+$router->add_controller(new vote_controller());
 
 $kernel = new kernel($router);
 $kernel->handle($action);

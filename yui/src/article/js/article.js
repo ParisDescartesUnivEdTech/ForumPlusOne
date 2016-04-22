@@ -286,6 +286,47 @@ Y.extend(ARTICLE, Y.Base,
                     this.fire(EVENTS.POST_DELETED, data);
                 }
             }, this);
+        },
+
+        /**
+         * toggle a vote for a post
+         *
+         * @method toogleVote
+         * @param {Integer} postId
+         */
+        toggleVote: function(postId) {
+            var btnVote = Y.one(SELECTORS.VOTE_BTN_BY_POST_ID.replace('%d', postId));
+            if (btnVote === null) {
+                return;
+            }
+
+            var countVotes = Y.one(SELECTORS.VOTES_COUNTER_BY_POST_ID.replace('%d', postId));
+            if (countVotes === null) {
+                return;
+            }
+
+            Y.log('Toggle vote for post n°' + postId);
+
+            this.get('io').send({
+                postid: postId,
+                action: 'vote'
+            }, function(data) {
+                if (typeof data.errorCode == "undefined" || data.errorCode == "0") {
+                    var class2add = "active",
+                        delta = 0;
+                    btnVote.toggleClass(class2add);
+                    delta = btnVote.hasClass(class2add) ? 1 : -1;
+                    countVotes.set("innerHTML",
+                        parseInt(countVotes.get("innerHTML")) + delta
+                    );
+                }
+                else {
+                    Y.log(data.errorMsg || errorCode, "error");
+                    if (Y.Lang.isUndefined(data.errorMsg)) {
+                        alert(data.errorMsg);
+                    }
+                }
+            }, this);
         }
     }
 );

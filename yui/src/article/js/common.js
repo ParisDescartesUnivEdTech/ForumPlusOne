@@ -39,7 +39,9 @@ var CSS = {
         REPLY_TEMPLATE: '#forumimproved-reply-template',
         SEARCH_PAGE: '#page-mod-forumimproved-search',
         VALIDATION_ERRORS: '.forumimproved-validation-errors',
-        VIEW_POSTS: '.forumimproved-view-posts'
+        VIEW_POSTS: '.forumimproved-view-posts',
+        VOTE_BTN_BY_POST_ID: '.forumimproved-post-target[data-postid="%d"] .forumimproved-vote-link',
+        VOTES_COUNTER_BY_POST_ID: '.forumimproved-post-target[data-postid="%d"] .forumimproved-votes-counter'
     },
     EVENTS = {
         DISCUSSION_CREATED: 'discussion:created',

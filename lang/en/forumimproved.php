@@ -641,3 +641,10 @@ $string['votebuttontitle'] = '+1 to this message';
 $string['vote'] = '+1';
 $string['countvote'] = 'Number of votes : {$a}';
 
+
+
+
+
+$string['vote_disabled_error'] = 'You can\'t vote : the vote is disabled';
+$string['to_early_to_vote_error'] = 'You can\'t vote : the vote is not yet enabled.';
+$string['to_late_to_vote_error'] = 'You can\'t vote : it\'s too late to vote.';

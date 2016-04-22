@@ -67,6 +67,30 @@ class post_service {
     }
 
     /**
+     * Toggle a vote
+     *
+     * @param object $forum
+     * @param int    $postid
+     * @param int    $userid
+     * @return json_response
+     */
+    public function handle_vote($forum, $postid, $userid) {
+        $response = array();
+
+        try {
+            forumimproved_toggle_vote($forum, $postid, $userid);
+            $response['errorCode'] = 0;
+        }
+        catch (coding_exception $e) {
+            $response['errorCode'] = $e->a;
+            $response['errorMsg'] = getString($e->a, 'forumimproved');
+        }
+
+
+        return new json_response((object) $response);
+    }
+
+    /**
      * Does all the grunt work for adding a reply to a discussion
      *
      * @param object $course
