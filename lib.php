@@ -6630,6 +6630,10 @@ function forumimproved_toggle_vote($forum, $postid, $userid) {
         throw new coding_exception("to_late_to_vote_error");
     }
 
+    if ($DB->get_record('forumimproved_posts', array('id' => $postid))->userid == $userid) {
+        throw new coding_exception("own_vote_error");
+    }
+
 
 
     if (forumimproved_has_vote($postid, $userid)) {
