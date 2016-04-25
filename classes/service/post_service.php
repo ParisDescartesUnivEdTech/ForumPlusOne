@@ -83,7 +83,7 @@ class post_service {
         }
         catch (coding_exception $e) {
             $response['errorCode'] = $e->a;
-            $response['errorMsg'] = getString($e->a, 'forumimproved');
+            $response['errorMsg'] = get_string($e->a, 'forumimproved');
         }
 
 
