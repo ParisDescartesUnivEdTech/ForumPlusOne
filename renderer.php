@@ -1645,12 +1645,14 @@ HTML;
         // here, the usage of $canreply is a hack  avoid to add a "$canvote" on prototype of the function
         if ($canreply && has_capability('mod/forumimproved:viewwhovote', context_module::instance($cm->id))) { // display the count of vote for this post
             $commands['countVote'] = html_writer::link(
-                new moodle_url('/mod/forumimproved/route.php', array(
-                    'vote' => $post->id,
-                    'contextid' => context_module::instance($cm->id)->id,
-                    'action' => 'whovote'
+                new moodle_url('/mod/forumimproved/whovote.php', array(
+                    'postid' => $post->id,
+                    'contextid' => context_module::instance($cm->id)->id
                 )),
-                get_string('countvote', 'forumimproved', '<span class="forumimproved-votes-counter">' . $post->votecount . '</span>')
+                get_string('countvote', 'forumimproved', '<span class="forumimproved-votes-counter">' . $post->votecount . '</span>'),
+                array(
+                    'class' => 'forumimproved-show-voters-link'
+                )
             );
         }
 

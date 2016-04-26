@@ -3128,6 +3128,35 @@ function forumimproved_subscribed_users($course, $forum, $groupid=0, $context = 
     return groups_filter_users_by_course_module_visible($modinfo->get_cm($cm->id), $results);
 }
 
+/**
+ * Gets all vote for a post
+ *
+ * @param int $postid
+ * @param string $sortSql
+ * @return array of vote, with voters datas
+ */
+function forumimproved_get_all_post_votes($postid, $sqlSort = null) {
+    global $DB;
+
+    $allnames = get_all_user_name_fields(true, 'u');
+
+    $req = "SELECT v.*, $allnames, u.email, u.picture, u.imagealt
+            FROM {forumimproved_vote} v, {user} u
+            WHERE v.userid = u.id AND v.postid = ?";
+
+    if (!empty($sqlSort)) {
+        $req .= 'ORDER BY ';
+        $req .= $sqlSort;
+    }
+
+    if (!$votes = $DB->get_records_sql($req, array($postid))) {
+        return array();
+    }
+
+
+    return $votes;
+}
+
 
 
 // OTHER FUNCTIONS ///////////////////////////////////////////////////////////

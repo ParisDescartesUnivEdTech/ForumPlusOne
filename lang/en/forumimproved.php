@@ -645,7 +645,9 @@ $string['countvote'] = 'Number of votes : {$a}';
 
 
 
-$string['vote_disabled_error'] = 'You can\'t vote : the vote is disabled';
+$string['novotes'] = 'No votes submitted';
+$string['vote_disabled_error'] = 'The vote is disabled';
 $string['to_early_to_vote_error'] = 'You can\'t vote : the vote is not yet enabled.';
 $string['to_late_to_vote_error'] = 'You can\'t vote : it\'s too late to vote.';
 $string['own_vote_error'] = 'You can\'t vote for your own vote.';
+$string['allvoteforitem'] = 'Voters list';

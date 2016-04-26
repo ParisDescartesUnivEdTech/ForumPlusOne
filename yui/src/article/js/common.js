@@ -40,6 +40,7 @@ var CSS = {
         SEARCH_PAGE: '#page-mod-forumimproved-search',
         VALIDATION_ERRORS: '.forumimproved-validation-errors',
         VIEW_POSTS: '.forumimproved-view-posts',
+        VOTERS_LINK_BY_POST_ID: '.forumimproved-post-target[data-postid="%d"] .forumimproved-show-voters-link',
         VOTE_BTN_BY_POST_ID: '.forumimproved-post-target[data-postid="%d"] .forumimproved-vote-link',
         VOTES_COUNTER_BY_POST_ID: '.forumimproved-post-target[data-postid="%d"] .forumimproved-votes-counter'
     },

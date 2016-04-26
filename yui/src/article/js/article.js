@@ -327,6 +327,38 @@ Y.extend(ARTICLE, Y.Base,
                     }
                 }
             }, this);
+        },
+
+        /**
+         * show votes for a post in a popup
+         *
+         * @method showVoters
+         * @param postid
+         */
+        showVoters: function(postid) {
+            var link = Y.one(SELECTORS.VOTERS_LINK_BY_POST_ID.replace('%d', postid));
+
+            if (link === null) {
+                return;
+            }
+
+            var args = {
+                'url': link.getAttribute('href'),
+                'name': 'showVoters',
+                'options': 'height=400,width=600,top=0,left=0,menubar=0,location=0,scrollbars,resizable,toolbar,status,directories=0,fullscreen=0,dependent'
+            };
+
+            if (args.url.indexOf('?') === -1) {
+                args.url += '?popup=1';
+            }
+            else {
+                args.url += '&popup=1';
+            }
+
+            if (openpopup.apply(link, [null, args])) {
+                // window not open :3
+                location.href = link.getAttribute('href');
+            }
         }
     }
 );
