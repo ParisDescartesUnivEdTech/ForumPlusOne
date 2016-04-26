@@ -1621,7 +1621,10 @@ HTML;
         }
 
         // here, the usage of $canreply is a hack  avoid to add a "$canvote" on prototype of the function
-        if ($canreply and !$ownpost) {
+        $canvote = $canreply && $forum->enable_vote;
+        $isInTime = (time() >= $forum->votetimestart && time() <= $forum->votetimestop) || ($forum->votetimestart == 0 && $forum->votetimestop == 0);
+
+        if ($canvote and $isInTime and !$ownpost) {
             $votetitle = get_string('votebuttontitle', 'forumimproved', strip_tags($postuser->fullname));
             $classes = 'forumimproved-vote-link btn btn-default';
 
@@ -1641,9 +1644,7 @@ HTML;
             );
         }
 
-
-        // here, the usage of $canreply is a hack  avoid to add a "$canvote" on prototype of the function
-        if ($canreply && has_capability('mod/forumimproved:viewwhovote', context_module::instance($cm->id))) { // display the count of vote for this post
+        if ($canvote && has_capability('mod/forumimproved:viewwhovote', context_module::instance($cm->id))) { // display the count of vote for this post
             $commands['countVote'] = html_writer::link(
                 new moodle_url('/mod/forumimproved/whovote.php', array(
                     'postid' => $post->id,
