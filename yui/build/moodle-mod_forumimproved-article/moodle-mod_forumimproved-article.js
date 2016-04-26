@@ -1224,7 +1224,7 @@ Y.extend(ARTICLE, Y.Base,
                     btnVote.toggleClass(class2add);
                     delta = btnVote.hasClass(class2add) ? 1 : -1;
                     countVotes.set("innerHTML",
-                        parseInt(countVotes.get("innerHTML")) + delta
+                        parseInt(countVotes.get("innerHTML"), 10) + delta
                     );
                 }
                 else {
