@@ -1644,16 +1644,34 @@ HTML;
             );
         }
 
-        if ($canvote && has_capability('mod/forumimproved:viewwhovote', context_module::instance($cm->id))) { // display the count of vote for this post
+        $canSeeVoter = $canvote;
+
+        if ( $forum->vote_display_name && !has_capability('mod/forumimproved:viewwhovote', context_module::instance($cm->id)))
+            $canSeeVoter = false;
+
+        if ( !$forum->vote_display_name && !has_capability('mod/forumimproved:viewwhovote_annonymousvote', context_module::instance($cm->id)))
+            $canSeeVoter = false;
+        
+        
+        $spanClass = 'forumimproved-show-voters-link';
+        $spanContent = get_string('countvote', 'forumimproved', html_writer::span($post->votecount, 'forumimproved-votes-counter'));
+
+        if ($canSeeVoter) {
             $commands['countVote'] = html_writer::link(
                 new moodle_url('/mod/forumimproved/whovote.php', array(
                     'postid' => $post->id,
                     'contextid' => context_module::instance($cm->id)->id
                 )),
-                get_string('countvote', 'forumimproved', '<span class="forumimproved-votes-counter">' . $post->votecount . '</span>'),
+                $spanContent,
                 array(
-                    'class' => 'forumimproved-show-voters-link'
+                    'class' => $spanClass
                 )
+            );
+        }
+        else {
+            $commands['countVote'] = html_writer::span(
+                $spanContent,
+                $spanClass
             );
         }
 

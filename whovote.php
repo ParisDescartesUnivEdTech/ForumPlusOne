@@ -52,11 +52,18 @@ if ($popup) {
 
 $params = array('contextid' => $contextid);
 
-if (!has_capability('mod/forumimproved:viewwhovote', $context)) {
-    print_error('vote_view_forbidden', 'forumimproved');
-}
-
 $forum   = $PAGE->activityrecord;
+
+if ($forum->vote_display_name) {
+    if (!has_capability('mod/forumimproved:viewwhovote', $context)) {
+        print_error('vote_view_forbidden', 'forumimproved');
+    }
+}
+else {
+    if (!has_capability('mod/forumimproved:viewwhovote_annonymousvote', $context)) {
+        print_error('vote_view_forbidden', 'forumimproved');
+    }
+}
 
 if (!$forum->enable_vote) {
     print_error('vote_disabled_error', 'forumimproved');

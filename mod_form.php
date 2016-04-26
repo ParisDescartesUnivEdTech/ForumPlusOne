@@ -132,6 +132,11 @@ class mod_forumimproved_mod_form extends moodleform_mod {
         $mform->addHelpButton('enable_vote', 'enable_vote', 'forumimproved');
         $mform->setDefault('enable_vote', 0);
 
+        $mform->addElement('advcheckbox', 'vote_display_name', get_string('vote_display_name', 'forumimproved'));
+        $mform->addHelpButton('vote_display_name', 'vote_display_name', 'forumimproved');
+        $mform->disabledIf('vote_display_name', 'enable_vote', 'notchecked');
+        $mform->setDefault('vote_display_name', 1);
+
         $mform->addElement('checkbox', 'votetime', get_string('votetime', 'forumimproved'));
         $mform->disabledIf('votetime', 'enable_vote', 'notchecked');
 

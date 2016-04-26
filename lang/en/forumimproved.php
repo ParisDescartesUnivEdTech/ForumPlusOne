@@ -635,6 +635,9 @@ $string['votes_section_header'] = 'Votes';
 $string['enable_vote'] = 'Enable votes';
 $string['enable_vote_help'] = 'Allow students to vote on posts.';
 
+$string['vote_display_name'] = 'Display voters\' name to students';
+$string['vote_display_name_help'] = 'Allow students to access to the list of voters.';
+
 $string['votetime'] = 'Restrict votes with dates in this range:';
 
 $string['votebuttontitle'] = '+1 to this message';
