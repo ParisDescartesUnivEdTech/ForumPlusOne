@@ -30,6 +30,6 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->version   = 2016042602;       // The current module version (Date: YYYYMMDDXX)
 $plugin->requires  = 2014051203;       // Requires this Moodle version
 $plugin->component = 'mod_forumimproved';   // Full name of the plugin (used for diagnostics)
-$plugin->release   = '1.0.0a1 (Build: 20160418)';
+$plugin->release   = '1.0.0a2 (Build: 20160427)';
 $plugin->maturity  = MATURITY_ALPHA;
 $plugin->cron      = 60;

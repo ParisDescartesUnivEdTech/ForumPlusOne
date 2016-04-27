@@ -10,7 +10,9 @@ What's new ? Why "Improved" ?
 
 First, we are based on Advanced Forum , so we have all the imporvement of Advanced Forum.
 
-More, currently, we disable subscriptions, by default.
+More, we disable subscriptions, by default, and users can vote for posts, using a "+1" button.
+
+![The +1 button](.readme/+1Btn.png)
 
 
 Support
