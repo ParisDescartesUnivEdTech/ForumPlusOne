@@ -713,7 +713,7 @@ function xmldb_forumimproved_upgrade($oldversion) {
     if ($oldversion < 2016042601) {
         // Define fields to be added to forumimproved table.
         $tableFI = new xmldb_table('forumimproved');
-        $fieldEnable = new xmldb_field('enable_vote', XMLDB_TYPE_INTEGER, '1', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+        $fieldEnable = new xmldb_field('enable_vote', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
         $fieldDisplaName = new xmldb_field('vote_display_name', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1');
         $fieldStart = new xmldb_field('votetimestart', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $fieldStop = new xmldb_field('votetimestop', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
