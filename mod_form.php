@@ -65,6 +65,24 @@ class mod_forumimproved_mod_form extends moodleform_mod {
         $mform->addHelpButton('type', 'forumtype', 'forumimproved');
         $mform->setDefault('type', 'general');
 
+
+
+
+
+
+/*
+        // Misc
+        $mform->addElement('header', 'mischdr', get_string('misc_section_header', 'forumimproved'));
+*/
+        $mform->addElement('advcheckbox', 'enable_close_disc', get_string('enable_close_disc', 'forumimproved'));
+        $mform->addHelpButton('enable_close_disc', 'enable_close_disc', 'forumimproved');
+        $mform->setDefault('enable_close_disc', 1);
+
+
+
+
+
+
         // Post options.
         $mform->addElement('header', 'postoptshdr', get_string('postoptions', 'forumimproved'));
 

@@ -654,3 +654,10 @@ $string['to_early_to_vote_error'] = 'You can\'t vote : the vote is not yet enabl
 $string['to_late_to_vote_error'] = 'You can\'t vote : it\'s too late to vote.';
 $string['own_vote_error'] = 'You can\'t vote for your own vote.';
 $string['allvoteforitem'] = 'Voters list';
+
+
+
+
+$string['enable_close_disc'] = 'Allow the close of discussions';
+$string['enable_close_disc_help'] = 'When a discussion is closed, nobody can reply. But votes are enabled and works.';
+
