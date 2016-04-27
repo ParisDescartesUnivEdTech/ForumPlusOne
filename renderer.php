@@ -286,6 +286,7 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
 
         $data           = new stdClass;
         $data->id       = $discussion->id;
+        $data->state    = $discussion->state;
         $data->postid   = $post->id;
         $data->unread   = $discussion->unread;
         $data->fullname = $postuser->fullname;
@@ -344,7 +345,7 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
         $subscribe = new forumimproved_lib_discussion_subscribe($forum, context_module::instance($cm->id));
         $data->subscribe = $this->discussion_subscribe_link($cm, $discussion, $subscribe) ;
 
-        return $this->discussion_template($data, $forum->type);
+        return $this->discussion_template($data, $forum);
     }
 
     public function article_assets($cm) {
@@ -456,7 +457,7 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
         return $this->post_template($data);
     }
 
-    public function discussion_template($d, $forumtype) {
+    public function discussion_template($d, $forum) {
         $replies = '';
         if(!empty($d->replies)) {
             $xreplies = forumimproved_xreplies($d->replies);
@@ -523,13 +524,47 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
             $revealed = '<span class="label label-danger">'.$nonanonymous.'</span>';
         }
 
+
+
+
+
+        $stateLabel= '';
+        $buttonToggleState = '';
+        
+        if ($forum->enable_close_disc) {
+            if ($d->state) {
+                $stateLabel = '<span class="label label-warning">' . get_string('state_thread_close', 'forumimproved') . '</span>';
+                $toggleStateButtonLabel = get_string('open_thread_title', 'forumimproved');
+            }
+            else {
+                $toggleStateButtonLabel = get_string('close_thread_title', 'forumimproved');
+            }
+            
+            $buttonToggleState = html_writer::link(
+                new moodle_url('/mod/forumimproved/post.php', array(
+                    'close' => $d->id,
+                    'fullthread' => (int) $d->fullthread
+                )),
+                $toggleStateButtonLabel,
+                array(
+                    'class' => 'forumimproved-toggle-state-link btn btn-default'
+                )
+            );
+        }
+
+
+
+
+
+
         $threadheader = <<<HTML
         <div class="forumimproved-thread-header">
             <div class="forumimproved-thread-title">
                 <h4 id='thread-title-{$d->id}' role="heading" aria-level="4">
-                    $threadtitle
+                    $stateLabel $threadtitle
                 </h4>
-                <small>$datecreated</small>
+                <p><small>$datecreated</small></p>
+                <p>$buttonToggleState</p>
             </div>
             $threadmeta
         </div>

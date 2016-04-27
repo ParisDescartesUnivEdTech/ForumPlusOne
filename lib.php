@@ -109,6 +109,7 @@ function forumimproved_add_instance($forum, $mform = null) {
         $discussion->mailnow       = false;
         $discussion->groupid       = -1;
         $discussion->reveal        =  0;
+        $discussion->state        =  0;
 
         $message = '';
 
@@ -2845,7 +2846,7 @@ LEFT OUTER JOIN {forumimproved_read} r ON (r.postid = p.id AND r.userid = ?)
         $selectsql = $forumselect;
     } else {
         $allnames  = get_all_user_name_fields(true, 'u');
-        $selectsql = "$postdata, d.name, d.timemodified, d.usermodified, d.groupid, d.timestart, d.timeend, d.assessed,
+        $selectsql = "$postdata, d.name, d.timemodified, d.usermodified, d.groupid, d.timestart, d.timeend, d.assessed, d.state,
                            d.firstpost, extra.replies, lastpost.postid lastpostid,$trackselect$subscribeselect
                            $allnames, u.email, u.picture, u.imagealt $umfields";
     }
@@ -4117,6 +4118,7 @@ function forumimproved_add_discussion($discussion, $mform=null, $unused=null, $u
     $discussion->usermodified = $post->userid;
     $discussion->userid       = $userid;
     $discussion->assessed     = 0;
+    $discussion->state        = 0;
 
     $post->discussion = $DB->insert_record("forumimproved_discussions", $discussion);
 
@@ -7695,6 +7697,7 @@ function forumimproved_extract_discussion($post, $forum) {
         'usermodified' => $post->usermodified,
         'timestart'    => $post->timestart,
         'timeend'      => $post->timeend,
+        'state'        => $post->state,
     );
 
     // Rest of these are "meta" items that might not always be there.

@@ -661,3 +661,8 @@ $string['allvoteforitem'] = 'Voters list';
 $string['enable_close_disc'] = 'Allow the close of discussions';
 $string['enable_close_disc_help'] = 'When a discussion is closed, nobody can reply. But votes are enabled and works.';
 
+$string['close_thread_title'] = 'Close discussion';
+$string['open_thread_title'] = 'Reopen discussion';
+
+$string['state_thread_close'] = 'Closed';
+
