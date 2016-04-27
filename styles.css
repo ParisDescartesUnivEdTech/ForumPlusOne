@@ -132,6 +132,12 @@
     text-align:left;
 }
 
+/* header issue in express */
+.forumimproved-thread-title h4 .label {
+    font-size: .9em;
+    line-height: 1.1em;
+}
+
 
 /* all imgs responsive */
 .forumimproved-thread img {
