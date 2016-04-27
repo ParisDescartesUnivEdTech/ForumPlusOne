@@ -754,7 +754,33 @@ function xmldb_forumimproved_upgrade($oldversion) {
 
 
         // ForumImproved savepoint reached.
-        upgrade_mod_savepoint(true, 2016041800, 'forumimproved');
+        upgrade_mod_savepoint(true, 2016042601, 'forumimproved');
+    }
+
+
+    if ($oldversion < 2016042702) {
+        $tableFI = new xmldb_table('forumimproved');
+        $fieldEnable = new xmldb_field('enable_close_disc', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1');
+
+        // Conditionally launch add field.
+        if (!$dbman->field_exists($tableFI, $fieldEnable)) {
+            $dbman->add_field($tableFI, $fieldEnable);
+        }
+
+
+
+        $tableFI_Disc = new xmldb_table('forumimproved_discussions');
+        $fieldState = new xmldb_field('state', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+
+        // Conditionally launch add field.
+        if (!$dbman->field_exists($tableFI_Disc, $fieldState)) {
+            $dbman->add_field($tableFI_Disc, $fieldState);
+        }
+
+
+
+        // ForumImproved savepoint reached.
+        upgrade_mod_savepoint(true, 2016042701, 'forumimproved');
     }
 
 
