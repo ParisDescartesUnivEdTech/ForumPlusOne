@@ -666,3 +666,7 @@ $string['open_thread_title'] = 'Reopen discussion';
 
 $string['state_thread_close'] = 'Closed';
 
+$string['forumimproved:close_discussion'] = 'Close a discussion';
+
+
+

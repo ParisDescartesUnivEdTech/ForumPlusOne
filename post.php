@@ -29,19 +29,23 @@ require_once('../../config.php');
 require_once('lib.php');
 require_once($CFG->libdir.'/completionlib.php');
 
-$reply   = optional_param('reply', 0, PARAM_INT);
-$vote    = optional_param('vote', 0, PARAM_INT);
-$forum   = optional_param('forum', 0, PARAM_INT);
-$edit    = optional_param('edit', 0, PARAM_INT);
-$delete  = optional_param('delete', 0, PARAM_INT);
-$prune   = optional_param('prune', 0, PARAM_INT);
-$name    = optional_param('name', '', PARAM_CLEAN);
-$confirm = optional_param('confirm', 0, PARAM_INT);
-$groupid = optional_param('groupid', null, PARAM_INT);
+$reply      = optional_param('reply', 0, PARAM_INT);
+$vote       = optional_param('vote', 0, PARAM_INT);
+$close      = optional_param('close', 0, PARAM_INT);
+$fullthread = optional_param('fullthread', false, PARAM_BOOL);
+$forum      = optional_param('forum', 0, PARAM_INT);
+$edit       = optional_param('edit', 0, PARAM_INT);
+$delete     = optional_param('delete', 0, PARAM_INT);
+$prune      = optional_param('prune', 0, PARAM_INT);
+$name       = optional_param('name', '', PARAM_CLEAN);
+$confirm    = optional_param('confirm', 0, PARAM_INT);
+$groupid    = optional_param('groupid', null, PARAM_INT);
 
 $PAGE->set_url('/mod/forumimproved/post.php', array(
         'reply' => $reply,
         'vote'  => $vote,
+        'close' => $close,
+        'fullthread'=>$fullthread,
         'forum' => $forum,
         'edit'  => $edit,
         'delete'=> $delete,
@@ -304,6 +308,62 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
 
     die;
 
+
+} else if (!empty($close)) {      // User is closing a discussion
+
+    if (! $discussion = $DB->get_record("forumimproved_discussions", array("id" => $close))) {
+        print_error('invaliddiscussionid', 'forumimproved');
+    }
+    if (! $forum = $DB->get_record("forumimproved", array("id" => $discussion->forum))) {
+        print_error('invalidforumid', 'forumimproved');
+    }
+    if (! $course = $DB->get_record("course", array("id" => $discussion->course))) {
+        print_error('invalidcourseid');
+    }
+    if (! $cm = get_coursemodule_from_instance("forumimproved", $forum->id, $course->id)) {
+        print_error('invalidcoursemodule');
+    }
+
+
+    // Retrieve the context
+    $modcontext = context_module::instance($cm->id);
+
+
+    // Make sure user can close this discussion
+    if (isset($cm->groupmode) && empty($course->groupmodeforce)) {
+        $groupmode =  $cm->groupmode;
+    } else {
+        $groupmode = $course->groupmode;
+    }
+    if ($groupmode == SEPARATEGROUPS and !has_capability('moodle/site:accessallgroups', $modcontext)) {
+        if ($discussion->groupid == -1) {
+            print_error('nopostforum', 'forumimproved');
+        } else {
+            if (!groups_is_member($discussion->groupid)) {
+                print_error('nopostforum', 'forumimproved');
+            }
+        }
+    }
+
+    if (!$cm->visible and !has_capability('moodle/course:viewhiddenactivities', $modcontext)) {
+        print_error("activityiscurrentlyhidden");
+    }
+
+
+    require_capability('mod/forumimproved:close_discussion', $modcontext);
+
+
+    forumimproved_toggle_discussion_state($forum, $discussion);
+
+
+    if ($fullthread) {
+        redirect(forumimproved_go_back_to("discuss.php?d=$close"), null, 0);
+    }
+    else {
+        redirect(forumimproved_go_back_to("view.php?f=$forum->discussion"), null, 0);
+    }
+
+    die;
 
 } else if (!empty($edit)) {  // User is editing their own post
 
