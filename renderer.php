@@ -532,7 +532,7 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
         $buttonToggleState = '';
         
         if ($forum->enable_close_disc) {
-            if ($d->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
+            if (forumimproved_is_discussion_closed($forum, $d)) {
                 $stateLabel = '<span class="label label-warning">' . get_string('state_thread_close', 'forumimproved') . '</span>';
                 $toggleStateButtonLabel = get_string('open_thread_title', 'forumimproved');
             }

@@ -6686,6 +6686,70 @@ function forumimproved_toggle_vote($forum, $postid, $userid) {
 }
 
 /**
+ * check if a discussion is closed or not
+ * @param object $forum         the forum, containing the discussion
+ * @param object discussion    the discussion
+ * @return true if the discussion id closed ; false else
+ */
+function forumimproved_is_discussion_closed($forum, $discussion) {
+    if (!$forum->enable_close_disc) {
+        return false;
+    }
+
+    return $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE;
+}
+
+/**
+ * Close a discussion
+ * @param object $forum         the forum, containing the discussion
+ * @param object $discussion    the discussion to close
+ */
+function forumimproved_discussion_close($forum, &$discussion) {
+    global $DB;
+
+    if (!$forum->enable_close_disc) {
+        throw new coding_exception("change_state_disabled_error");
+    }
+
+    $discussion->state = FORUMIMPROVED_DISCUSSION_STATE_CLOSE;
+
+var_dump($discussion);
+
+    $DB->update_record('forumimproved_discussions', $discussion);
+}
+
+/**
+ * Open a discussion
+ * @param object $forum         the forum, containing the discussion
+ * @param object $discussion    the discussion to open
+ */
+function forumimproved_discussion_open($forum, &$discussion) {
+    global $DB;
+
+    if (!$forum->enable_close_disc) {
+        throw new coding_exception("change_state_disabled_error");
+    }
+
+    $discussion->state = FORUMIMPROVED_DISCUSSION_STATE_OPEN;
+    $DB->update_record('forumimproved_discussions', $discussion);
+}
+
+/**
+ * toggle the state (open / close) of a discussion
+ * @param object $forum         the forum, containing the discussion
+ * @param int    $discussion    the discussion
+ */
+function forumimproved_toggle_discussion_state($forum, &$discussion) {
+
+    if (forumimproved_is_discussion_closed($forum, $discussion)) {
+        forumimproved_discussion_open($forum, $discussion);
+    }
+    else {
+        forumimproved_discussion_close($forum, $discussion);
+    }
+}
+
+/**
  * Adds module specific settings to the settings block
  *
  * @param settings_navigation $settings The settings navigation object
