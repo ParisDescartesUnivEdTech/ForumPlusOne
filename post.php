@@ -362,7 +362,7 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
         redirect(forumimproved_go_back_to("discuss.php?d=$close"), null, 0);
     }
     else {
-        redirect(forumimproved_go_back_to("view.php?f=$forum->discussion"), null, 0);
+        redirect(forumimproved_go_back_to("view.php?f=$forum->id"), null, 0);
     }
 
     die;
