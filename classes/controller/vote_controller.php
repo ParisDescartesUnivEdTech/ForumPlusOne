@@ -68,13 +68,57 @@ class vote_controller extends controller_abstract {
      * @return json_response
      */
     public function vote_action() {
-        global $PAGE, $USER;
+        global $PAGE, $USER, $DB;
+
+
+        $postid = required_param('postid', PARAM_INT);
+
+
+
+        if (! $post = forumimproved_get_post_full($postid)) {
+            print_error('invalidpostid', 'forumimproved');
+        }
+        if (! $discussion = $DB->get_record("forumimproved_discussions", array("id" => $post->discussion))) {
+            print_error('notpartofdiscussion', 'forumimproved');
+        }
+        if (! $forum = $DB->get_record("forumimproved", array("id" => $discussion->forum))) {
+            print_error('invalidforumid', 'forumimproved');
+        }
+        if (! $course = $DB->get_record("course", array("id" => $discussion->course))) {
+            print_error('invalidcourseid');
+        }
+        if (! $cm = get_coursemodule_from_instance("forumimproved", $forum->id, $course->id)) {
+            print_error('invalidcoursemodule');
+        }
+
+
+
+        // Make sure user can vote here
+        if (isset($cm->groupmode) && empty($course->groupmodeforce)) {
+            $groupmode =  $cm->groupmode;
+        } else {
+            $groupmode = $course->groupmode;
+        }
+        if ($groupmode == SEPARATEGROUPS and !has_capability('moodle/site:accessallgroups', $PAGE->context)) {
+            if ($discussion->groupid == -1) {
+                print_error('nopostforum', 'forumimproved');
+            } else {
+                if (!groups_is_member($discussion->groupid)) {
+                    print_error('nopostforum', 'forumimproved');
+                }
+            }
+        }
+
+
+        if (!$cm->visible and !has_capability('moodle/course:viewhiddenactivities', $PAGE->context)) {
+            print_error("activityiscurrentlyhidden");
+        }
+
+
+
+        $forum = $PAGE->activityrecord;
 
         try {
-            $postid = required_param('postid', PARAM_INT);
-
-            $forum   = $PAGE->activityrecord;
-
             return $this->postservice->handle_vote($forum, $postid, $USER->id);
         } catch (\Exception $e) {
             return new json_response($e);
