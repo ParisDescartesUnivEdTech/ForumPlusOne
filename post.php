@@ -265,6 +265,8 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
         print_error('invalidcoursemodule');
     }
 
+    // Retrieve the context
+    $modcontext = context_module::instance($cm->id);
 
 
     // Make sure user can vote here
