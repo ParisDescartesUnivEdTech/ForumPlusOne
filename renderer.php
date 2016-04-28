@@ -345,7 +345,7 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
         $subscribe = new forumimproved_lib_discussion_subscribe($forum, context_module::instance($cm->id));
         $data->subscribe = $this->discussion_subscribe_link($cm, $discussion, $subscribe) ;
 
-        return $this->discussion_template($data, $forum);
+        return $this->discussion_template($data, $forum, $cm);
     }
 
     public function article_assets($cm) {
@@ -457,7 +457,7 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
         return $this->post_template($data);
     }
 
-    public function discussion_template($d, $forum) {
+    public function discussion_template($d, $forum, $cm) {
         $replies = '';
         if(!empty($d->replies)) {
             $xreplies = forumimproved_xreplies($d->replies);
@@ -527,6 +527,7 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
 
 
 
+        $context = \context_module::instance($cm->id);
 
         $stateLabel= '';
         $buttonToggleState = '';
@@ -550,6 +551,18 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
                     'class' => 'forumimproved-toggle-state-link btn btn-default'
                 )
             );
+            if (has_capability('mod/forumimproved:close_discussion', $context)) {
+                $buttonToggleState = html_writer::link(
+                    new moodle_url('/mod/forumimproved/post.php', array(
+                        'close' => $d->id,
+                        'fullthread' => (int) $d->fullthread
+                    )),
+                    $toggleStateButtonLabel,
+                    array(
+                        'class' => 'forumimproved-toggle-state-link btn btn-default'
+                    )
+                );
+            }
         }
 
 
