@@ -630,6 +630,14 @@ $string['hiderecentposts'] = 'Hide recent Posts';
 $string['confighiderecentposts'] = 'Set to yes to stop the display of recent forum posts on the course page.';
 
 
+// Rights labels
+$string['forumimproved:viewvotedatetime'] = 'View the date of a vote';
+$string['forumimproved:viewwhovote'] = 'View voters';
+$string['forumimproved:viewwhovote_annonymousvote'] = 'View voters with an annonmous vote';
+$string['forumimproved:close_discussion'] = 'Close a discussion';
+
+
+
 
 $string['votes_section_header'] = 'Votes';
 $string['enable_vote'] = 'Enable votes';
@@ -666,7 +674,6 @@ $string['open_thread_title'] = 'Reopen discussion';
 
 $string['state_thread_close'] = 'Closed';
 
-$string['forumimproved:close_discussion'] = 'Close a discussion';
 
 
 
