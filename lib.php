@@ -6713,8 +6713,6 @@ function forumimproved_discussion_close($forum, &$discussion) {
 
     $discussion->state = FORUMIMPROVED_DISCUSSION_STATE_CLOSE;
 
-var_dump($discussion);
-
     $DB->update_record('forumimproved_discussions', $discussion);
 }
 
