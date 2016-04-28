@@ -634,7 +634,7 @@ $string['confighiderecentposts'] = 'Set to yes to stop the display of recent for
 $string['forumimproved:viewvotedatetime'] = 'View the date of a vote';
 $string['forumimproved:viewwhovote'] = 'View voters';
 $string['forumimproved:viewwhovote_annonymousvote'] = 'View voters with an annonmous vote';
-$string['forumimproved:close_discussion'] = 'Close a discussion';
+$string['forumimproved:close_discussion'] = 'Close or open a discussion';
 
 
 
