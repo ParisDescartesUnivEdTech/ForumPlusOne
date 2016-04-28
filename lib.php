@@ -45,6 +45,10 @@ define('FORUMIMPROVED_MAILED_PENDING', 0);
 define('FORUMIMPROVED_MAILED_SUCCESS', 1);
 define('FORUMIMPROVED_MAILED_ERROR', 2);
 
+define('FORUMIMPROVED_DISCUSSION_STATE_OPEN', 0);
+define('FORUMIMPROVED_DISCUSSION_STATE_CLOSE', 1);
+
+
 if (!defined('FORUMIMPROVED_CRON_USER_CACHE')) {
     /** Defines how many full user records are cached in forum cron. */
     define('FORUMIMPROVED_CRON_USER_CACHE', 5000);
@@ -109,7 +113,7 @@ function forumimproved_add_instance($forum, $mform = null) {
         $discussion->mailnow       = false;
         $discussion->groupid       = -1;
         $discussion->reveal        =  0;
-        $discussion->state        =  0;
+        $discussion->state         =  FORUMIMPROVED_DISCUSSION_STATE_OPEN;
 
         $message = '';
 
@@ -4118,7 +4122,7 @@ function forumimproved_add_discussion($discussion, $mform=null, $unused=null, $u
     $discussion->usermodified = $post->userid;
     $discussion->userid       = $userid;
     $discussion->assessed     = 0;
-    $discussion->state        = 0;
+    $discussion->state        = FORUMIMPROVED_DISCUSSION_STATE_OPEN;
 
     $post->discussion = $DB->insert_record("forumimproved_discussions", $discussion);
 
