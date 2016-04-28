@@ -187,6 +187,14 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
         print_error('invalidcoursemodule');
     }
 
+
+
+    if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
+        print_error('discussion_closed', 'forumimproved');
+    }
+
+
+
     // Ensure lang, theme, etc. is set up properly. MDL-6926
     $PAGE->set_cm($cm, $course, $forum);
     $renderer = $PAGE->get_renderer('mod_forumimproved');

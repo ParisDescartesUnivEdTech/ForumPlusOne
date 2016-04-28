@@ -671,9 +671,9 @@ $string['enable_close_disc_help'] = 'When a discussion is closed, nobody can rep
 
 $string['close_thread_title'] = 'Close discussion';
 $string['open_thread_title'] = 'Reopen discussion';
-
 $string['state_thread_close'] = 'Closed';
 
+$string['discussion_closed'] = 'The discussion is closed';
 
 
 

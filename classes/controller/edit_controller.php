@@ -108,6 +108,12 @@ class edit_controller extends controller_abstract {
             $parent     = $DB->get_record('forumimproved_posts', array('id' => $reply), '*', MUST_EXIST);
             $discussion = $DB->get_record('forumimproved_discussions', array('id' => $parent->discussion, 'forum' => $forum->id), '*', MUST_EXIST);
 
+
+            if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
+                print_error('discussion_closed', 'forumimproved');
+            }
+
+
             // If private reply, then map it to the parent author user ID.
             if (!empty($privatereply)) {
                 $privatereply = $parent->userid;
