@@ -288,4 +288,28 @@ class discussion_service {
     public function render_full_thread($discussionid) {
         return $this->render_discussion($discussionid, true);
     }
+
+    /**
+     * Toggle the state (open / closed) of a discussion
+     *
+     * @param object $forum
+     * @param object $discussion
+     * @return json_response
+     */
+    public function handle_toggle_state($forum, $discussion) {
+        $response = array();
+
+        try {
+            forumimproved_toggle_discussion_state($forum, $discussion);
+            $response['errorCode'] = 0;
+            $response['state'] = forumimproved_is_discussion_closed($forum, $discussion) ? 'c' : 'o';
+        }
+        catch (coding_exception $e) {
+            $response['errorCode'] = $e->a;
+            $response['errorMsg'] = get_string($e->a, 'forumimproved');
+        }
+
+
+        return new json_response((object) $response);
+    }
 }

@@ -85,6 +85,10 @@ ARTICLE.ATTRS = {
     currentEditLink: null
 };
 
+// Static variables
+var closedText = '',
+    openText = '';
+
 Y.extend(ARTICLE, Y.Base,
     {
         /**
@@ -359,6 +363,57 @@ Y.extend(ARTICLE, Y.Base,
                 // window not open :3
                 location.href = link.getAttribute('href');
             }
+        },
+
+        /**
+         * toggle the state (open / closed) of a discussion
+         *
+         * @method toogleDiscussionState
+         * @param {Integer} discussionid
+         */
+        toggleDiscussionState: function(discussionid) {
+            var btnToggleState = Y.one(SELECTORS.DISCUSSION_STATE_BTN_TOGGLE_BY_DISCUSSION_ID.replace('%d', discussionid));
+            if (btnToggleState === null) {
+                return;
+            }
+
+            if (closedText == '') {
+                closedText = btnToggleState.getData('closed-text');
+            }
+            if (openText == '') {
+                openText = btnToggleState.getData('open-text');
+            }
+
+            var labelState = Y.one(SELECTORS.DISCUSSION_STATE_LABEL_BY_DISCUSSION_ID.replace('%d', discussionid));
+            if (labelState === null) {
+                return;
+            }
+
+            Y.log('Toggle state of the discussion n°' + discussionid);
+
+            this.get('io').send({
+                discussionid: discussionid,
+                action: 'togglestate'
+            }, function(data) {
+                if (typeof data.errorCode == "undefined" || data.errorCode == "0") {
+                    if (data.state == 'o') {
+                        // Open state
+                        labelState.addClass("hidden");
+                        btnToggleState.set('textContent', openText);
+                    }
+                    else {
+                        // Closed state
+                        labelState.removeClass("hidden");
+                        btnToggleState.set('textContent', closedText);
+                    }
+                }
+                else {
+                    Y.log(data.errorMsg || errorCode, "error");
+                    if (Y.Lang.isUndefined(data.errorMsg)) {
+                        alert(data.errorMsg);
+                    }
+                }
+            }, this);
         }
     }
 );

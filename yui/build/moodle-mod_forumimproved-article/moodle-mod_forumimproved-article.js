@@ -16,6 +16,8 @@ var CSS = {
         DISCUSSION_EDIT: '.' + CSS.DISCUSSION_EDIT,
         DISCUSSION_BY_ID: '.forumimproved-thread[data-discussionid="%d"]',
         DISCUSSION_COUNT: '.forumimproved-discussion-count',
+        DISCUSSION_STATE_BTN_TOGGLE_BY_DISCUSSION_ID: 'article[data-discussionid="%d"] .forumimproved-thread-title .forumimproved-toggle-state-link',
+        DISCUSSION_STATE_LABEL_BY_DISCUSSION_ID: 'article[data-discussionid="%d"] .forumimproved-thread-title h4 span.label',
         DISCUSSION_TARGET: '.forumimproved-new-discussion-target',
         DISCUSSION_TEMPLATE: '#forumimproved-discussion-template',
         DISCUSSION_VIEW: '.forumimproved-thread-view',
@@ -344,6 +346,8 @@ var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
             this.get('article').get('form').showAddDiscussionForm(req.query.forum);
         } else if (!Y.Lang.isUndefined(req.query.vote)) {
             this.get('article').toggleVote(req.query.vote);
+        } else if (!Y.Lang.isUndefined(req.query.close)) {
+            this.get('article').toggleDiscussionState(req.query.close);
         } else if (!Y.Lang.isUndefined(req.query['delete'])) {
             this.get('article').confirmDeletePost(req.query['delete']);
         } else if (!Y.Lang.isUndefined(req.query.edit)) {
@@ -996,6 +1000,10 @@ ARTICLE.ATTRS = {
     currentEditLink: null
 };
 
+// Static variables
+var closedText = '',
+    openText = '';
+
 Y.extend(ARTICLE, Y.Base,
     {
         /**
@@ -1265,6 +1273,55 @@ Y.extend(ARTICLE, Y.Base,
                 // window not open :3
                 location.href = link.getAttribute('href');
             }
+        },
+
+        /**
+         * toggle the state (open / closed) of a discussion
+         *
+         * @method toogleDiscussionState
+         * @param {Integer} discussionid
+         */
+        toggleDiscussionState: function(discussionid) {
+            var btnToggleState = Y.one(SELECTORS.DISCUSSION_STATE_BTN_TOGGLE_BY_DISCUSSION_ID.replace('%d', discussionid));
+            if (btnToggleState === null) {
+                return;
+            }
+
+            if (closedText == '') {
+                closedText = btnToggleState.getData('closed-text');
+            }
+            if (openText == '') {
+                openText = btnToggleState.getData('open-text');
+            }
+
+            var labelState = Y.one(SELECTORS.DISCUSSION_STATE_LABEL_BY_DISCUSSION_ID.replace('%d', discussionid));
+            if (labelState === null) {
+                return;
+            }
+
+
+            this.get('io').send({
+                discussionid: discussionid,
+                action: 'togglestate'
+            }, function(data) {
+                if (typeof data.errorCode == "undefined" || data.errorCode == "0") {
+                    if (data.state == 'o') {
+                        // Open state
+                        labelState.addClass("hidden");
+                        btnToggleState.set('textContent', openText);
+                    }
+                    else {
+                        // Closed state
+                        labelState.removeClass("hidden");
+                        btnToggleState.set('textContent', closedText);
+                    }
+                }
+                else {
+                    if (Y.Lang.isUndefined(data.errorMsg)) {
+                        alert(data.errorMsg);
+                    }
+                }
+            }, this);
         }
     }
 );

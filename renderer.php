@@ -529,28 +529,18 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
 
         $context = \context_module::instance($cm->id);
 
-        $stateLabel= '';
+        $stateLabelClass = 'hidden';
         $buttonToggleState = '';
         
         if ($forum->enable_close_disc) {
             if (forumimproved_is_discussion_closed($forum, $d)) {
-                $stateLabel = '<span class="label label-warning">' . get_string('state_thread_close', 'forumimproved') . '</span>';
+                $stateLabelClass = '';
                 $toggleStateButtonLabel = get_string('open_thread_title', 'forumimproved');
             }
             else {
                 $toggleStateButtonLabel = get_string('close_thread_title', 'forumimproved');
             }
             
-            $buttonToggleState = html_writer::link(
-                new moodle_url('/mod/forumimproved/post.php', array(
-                    'close' => $d->id,
-                    'fullthread' => (int) $d->fullthread
-                )),
-                $toggleStateButtonLabel,
-                array(
-                    'class' => 'forumimproved-toggle-state-link btn btn-default'
-                )
-            );
             if (has_capability('mod/forumimproved:close_discussion', $context)) {
                 $buttonToggleState = html_writer::link(
                     new moodle_url('/mod/forumimproved/post.php', array(
@@ -559,11 +549,14 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
                     )),
                     $toggleStateButtonLabel,
                     array(
-                        'class' => 'forumimproved-toggle-state-link btn btn-default'
+                        'class' => 'forumimproved-toggle-state-link btn btn-default',
+                        'data-closed-text' => get_string('open_thread_title', 'forumimproved'),
+                        'data-open-text' => get_string('close_thread_title', 'forumimproved'),
                     )
                 );
             }
         }
+        $stateLabel = '<span class="label label-warning ' . $stateLabelClass . '">' . get_string('state_thread_close', 'forumimproved') . '</span>';
 
 
 

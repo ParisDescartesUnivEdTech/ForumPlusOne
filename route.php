@@ -24,6 +24,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use mod_forumimproved\controller\discussion_controller;
 use mod_forumimproved\controller\edit_controller;
 use mod_forumimproved\controller\vote_controller;
 use mod_forumimproved\controller\export_controller;
@@ -49,6 +50,7 @@ require_once(__DIR__.'/classes/controller/posters_controller.php');
 require_once(__DIR__.'/classes/controller/flag_controller.php');
 require_once(__DIR__.'/classes/controller/posts_controller.php');
 require_once(__DIR__.'/classes/controller/edit_controller.php');
+require_once(__DIR__.'/classes/controller/discussion_controller.php');
 
 global $PAGE, $DB;
 
@@ -80,6 +82,7 @@ $router->add_controller(new posts_controller());
 $router->add_controller(new export_controller());
 $router->add_controller(new edit_controller());
 $router->add_controller(new vote_controller());
+$router->add_controller(new discussion_controller());
 
 $kernel = new kernel($router);
 $kernel->handle($action);

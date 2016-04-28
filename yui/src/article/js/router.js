@@ -43,6 +43,8 @@ var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
             this.get('article').get('form').showAddDiscussionForm(req.query.forum);
         } else if (!Y.Lang.isUndefined(req.query.vote)) {
             this.get('article').toggleVote(req.query.vote);
+        } else if (!Y.Lang.isUndefined(req.query.close)) {
+            this.get('article').toggleDiscussionState(req.query.close);
         } else if (!Y.Lang.isUndefined(req.query['delete'])) {
             this.get('article').confirmDeletePost(req.query['delete']);
         } else if (!Y.Lang.isUndefined(req.query.edit)) {
