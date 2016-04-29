@@ -274,6 +274,7 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
                 'lastuserimagealt' => $user4->imagealt,
                 'lastuserpicture' => $user4->picture,
                 'lastuseremail' => $user4->email
+                'state' => $discussion1->state,
             );
         $expecteddiscussions[$discussion2->id] = array(
                 'id' => $discussion2->id,
@@ -300,7 +301,8 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
                 'lastuserfullname' => fullname($user3),
                 'lastuserimagealt' => $user3->imagealt,
                 'lastuserpicture' => $user3->picture,
-                'lastuseremail' => $user3->email
+                'lastuseremail' => $user3->email,
+                'state' => $discussion2->state,
             );
 
         // Call the external function passing forum ids.
