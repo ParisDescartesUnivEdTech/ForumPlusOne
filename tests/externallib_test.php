@@ -273,7 +273,7 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
                 'lastuserfullname' => fullname($user4),
                 'lastuserimagealt' => $user4->imagealt,
                 'lastuserpicture' => $user4->picture,
-                'lastuseremail' => $user4->email
+                'lastuseremail' => $user4->email,
                 'state' => $discussion1->state,
             );
         $expecteddiscussions[$discussion2->id] = array(
