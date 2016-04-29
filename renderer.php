@@ -529,13 +529,13 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
 
         $context = \context_module::instance($cm->id);
 
-        $stateLabelClass = 'hidden';
+        $classClosedDiscussion = '';
         $buttonToggleState = '';
         
         if ($forum->enable_close_disc) {
             if (forumimproved_is_discussion_closed($forum, $d)) {
-                $stateLabelClass = '';
                 $toggleStateButtonLabel = get_string('open_thread_title', 'forumimproved');
+                $classClosedDiscussion = 'closed';
             }
             else {
                 $toggleStateButtonLabel = get_string('close_thread_title', 'forumimproved');
@@ -556,7 +556,7 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
                 );
             }
         }
-        $stateLabel = '<span class="label label-warning ' . $stateLabelClass . '">' . get_string('state_thread_close', 'forumimproved') . '</span>';
+        $stateLabel = '<span class="label label-warning">' . get_string('state_thread_close', 'forumimproved') . '</span>';
 
 
 
@@ -577,7 +577,7 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
 HTML;
 
         return <<<HTML
-<article id="p{$d->postid}" class="forumimproved-thread forumimproved-post-target clearfix" role="article"
+<article id="p{$d->postid}" class="forumimproved-thread forumimproved-post-target clearfix {$classClosedDiscussion}" role="article"
     data-discussionid="$d->id" data-postid="$d->postid" data-author="$author" data-isdiscussion="true" $attrs>
     <header id="h{$d->postid}" class="clearfix $unreadclass">
         <div class="forumimproved-thread-author">

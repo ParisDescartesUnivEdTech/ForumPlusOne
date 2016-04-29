@@ -411,6 +411,23 @@ ACTIONS
     fill:#f05454;
 }
 
+.forumimproved-thread.closed .forumimproved-reply-link,
+.forumimproved-thread.closed .forumimproved-form.forumimproved-reply {
+    /* hide reply buttons and reply forms */
+    display: none;
+}
+
+
+.forumimproved-thread .forumimproved-thread-title h4 span.label {
+    /* hide the "closed" label */
+    display: none;
+}
+
+.forumimproved-thread.closed .forumimproved-thread-title h4 span.label {
+    /* show the "closed" label */
+    display: inline;
+}
+
 
 
 
