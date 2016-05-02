@@ -14,6 +14,10 @@ More, we disable subscriptions, by default, and users can vote for posts, using 
 
 ![The +1 button](.readme/+1Btn.png)
 
+Moreover, teachers can close a discussion when hey thought that the question is setled.
+
+![A closed discussion](.readme/closedDiscution.png)
+
 
 Support
 -------
