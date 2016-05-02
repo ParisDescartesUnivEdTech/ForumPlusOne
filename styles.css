@@ -412,9 +412,29 @@ ACTIONS
 }
 
 .forumimproved-thread.closed .forumimproved-reply-link,
-.forumimproved-thread.closed .forumimproved-form.forumimproved-reply {
-    /* hide reply buttons and reply forms */
+.forumimproved-thread.closed .forumimproved-form.forumimproved-reply,
+.forumimproved-thread.closed .forumimproved-vote-link,
+.forumimproved-thread.closed .forumimproved-edit-link,
+.forumimproved-thread.closed .forumimproved-delete-link,
+.forumimproved-thread.closed .forumimproved-prune-link,
+.forumimproved-thread.closed .forumimproved-form.forumimproved-edit button[type="submit"],
+.forumimproved-thread.closed .forumimproved-use-advanced {
+    /* hide :
+        * reply buttons
+        * reply forms
+        * edit link
+        * delete link
+        * split link
+        * submit button in edits forms
+        * the "use advenced editor" link
+      but :
+        * edit forms
+    */
     display: none;
+}
+
+.forumimproved-thread.closed .forumimproved-form.forumimproved-edit {
+    display: block;
 }
 
 

@@ -207,6 +207,13 @@ class edit_controller extends controller_abstract {
             $post       = $DB->get_record('forumimproved_posts', array('id' => $postid), '*', MUST_EXIST);
             $discussion = $DB->get_record('forumimproved_discussions', array('id' => $post->discussion, 'forum' => $forum->id), '*', MUST_EXIST);
 
+
+            if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
+                print_error('discussion_closed', 'forumimproved');
+            }
+
+
+
             if (empty($groupid)) {
                 $groupid = -1;
             }
@@ -250,6 +257,12 @@ class edit_controller extends controller_abstract {
         );
 
         if (!empty($post->parent)) {
+
+            $forum   = $PAGE->activityrecord;
+            if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
+                print_error('discussion_closed', 'forumimproved');
+            }
+
             $html = $this->formservice->edit_post_form($PAGE->cm, $post);
         } else {
             $html = $this->formservice->edit_discussion_form($PAGE->cm, $discussion, $post);
@@ -280,8 +293,17 @@ class edit_controller extends controller_abstract {
             print_error('cannotdeletepost', 'forumimproved');
         }
 
+
+        $forum   = $PAGE->activityrecord;
+        if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
+            print_error('discussion_closed', 'forumimproved');
+        }
+
+
+
+
         $redirect = forumimproved_verify_and_delete_post($PAGE->course, $PAGE->cm,
-            $PAGE->activityrecord, $PAGE->context, $discussion, $post);
+            $forum, $PAGE->context, $discussion, $post);
 
         $html = '';
         if ($discussion->firstpost != $post->id) {

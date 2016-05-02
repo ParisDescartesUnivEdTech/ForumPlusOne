@@ -114,9 +114,12 @@ class vote_controller extends controller_abstract {
             print_error("activityiscurrentlyhidden");
         }
 
+        $forum   = $PAGE->activityrecord;
+        if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
+            print_error('discussion_closed', 'forumimproved');
+        }
 
 
-        $forum = $PAGE->activityrecord;
 
         try {
             return $this->postservice->handle_vote($forum, $postid, $USER->id);

@@ -273,6 +273,14 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
         print_error('invalidcoursemodule');
     }
 
+
+
+    if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
+        print_error('discussion_closed', 'forumimproved');
+    }
+
+
+
     // Retrieve the context
     $modcontext = context_module::instance($cm->id);
 
@@ -401,6 +409,14 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
         $modcontext = context_module::instance($cm->id);
     }
 
+
+
+    if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
+        print_error('discussion_closed', 'forumimproved');
+    }
+
+
+
     $PAGE->set_cm($cm, $course, $forum);
     $renderer = $PAGE->get_renderer('mod_forumimproved');
     $PAGE->requires->js_init_call('M.mod_forumimproved.init', null, false, $renderer->get_js_module());
@@ -445,6 +461,15 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
     if (!$course = $DB->get_record('course', array('id' => $forum->course))) {
         print_error('invalidcourseid');
     }
+
+
+
+    if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
+        print_error('discussion_closed', 'forumimproved');
+    }
+
+
+
 
     require_login($course, false, $cm);
     $modcontext = context_module::instance($cm->id);
@@ -527,6 +552,15 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
     if (!has_capability('mod/forumimproved:splitdiscussions', $modcontext)) {
         print_error('cannotsplit', 'forumimproved');
     }
+
+
+
+    if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
+        print_error('discussion_closed', 'forumimproved');
+    }
+
+
+
 
     if (!empty($name) && confirm_sesskey()) {    // User has confirmed the prune
 

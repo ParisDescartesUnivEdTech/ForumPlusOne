@@ -1484,6 +1484,11 @@ HTML;
             'subjectrequired' => $isedit,
             'advancedurl'     => new moodle_url('/mod/forumimproved/post.php', array($param => $postid)),
         );
+
+        if ($isedit) {
+            $data['class'] .= ' forumimproved-edit';
+        }
+
         return $this->simple_edit_template($data);
     }
 
@@ -1725,14 +1730,16 @@ HTML;
         if (($ownpost && $age < $CFG->maxeditingtime) || has_capability('mod/forumimproved:editanypost', context_module::instance($cm->id))) {
             $commands['edit'] = html_writer::link(
                 new moodle_url('/mod/forumimproved/post.php', array('edit' => $post->id)),
-                get_string('edit', 'forumimproved')
+                get_string('edit', 'forumimproved'),
+                array( 'class' => 'forumimproved-edit-link' )
             );
         }
 
         if (($ownpost && $age < $CFG->maxeditingtime && has_capability('mod/forumimproved:deleteownpost', context_module::instance($cm->id))) || has_capability('mod/forumimproved:deleteanypost', context_module::instance($cm->id))) {
             $commands['delete'] = html_writer::link(
                 new moodle_url('/mod/forumimproved/post.php', array('delete' => $post->id)),
-                get_string('delete', 'forumimproved')
+                get_string('delete', 'forumimproved'),
+                array( 'class' => 'forumimproved-delete-link' )
             );
         }
 
@@ -1743,7 +1750,10 @@ HTML;
             $commands['split'] = html_writer::link(
                 new moodle_url('/mod/forumimproved/post.php', array('prune' => $post->id)),
                 get_string('prune', 'forumimproved'),
-                array('title' => get_string('pruneheading', 'forumimproved'))
+                array(
+                    'title' => get_string('pruneheading', 'forumimproved'),
+                    'class' => 'forumimproved-prune-link'
+                )
             );
         }
 
