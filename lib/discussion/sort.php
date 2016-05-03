@@ -28,7 +28,12 @@ class forumimproved_lib_discussion_sort implements Serializable {
     /**
      * @var string
      */
-    protected $key = 'lastreply';
+    protected $defaultkey = 'created';
+
+    /**
+     * @var string
+     */
+    protected $key;
 
     /* TODO - why would you sort by the number of unread replies??
 
@@ -38,32 +43,26 @@ class forumimproved_lib_discussion_sort implements Serializable {
      * @var array
      */
     protected $keyopts = array(
-        'lastreply' => 'd.timemodified %dir%',
-        'replies'   => 'extra.replies %dir%, d.timemodified %dir%',
-        // 'unread'    => 'unread.unread %dir%, d.timemodified %dir%',
-        'created'   => 'p.created %dir%',
-        // 'firstname' => 'u.firstname %dir%, d.timemodified %dir%',
-        // 'lastname'  => 'u.lastname %dir%, d.timemodified %dir%',
-        'subscribe' => 'sd.id %dir%, d.timemodified %dir%',
-    );
-
-    /**
-     * @var string
-     */
-    protected $direction = 'DESC';
-
-    /**
-     * @var array
-     */
-    protected $directionopts = array(
-        'DESC' => 'DESC',
-        'ASC' => 'ASC',
+        'created'    => 'p.created DESC',
+        'lastreply'  => 'd.timemodified ASC',
+        'unread'     => 'unread.unread DESC, p.created DESC',
+        'popularity' => 'countVote DESC, p.created DESC',
+        'closed'     => 'd.state DESC, p.created DESC',
+        'open'       => 'd.state ASC, p.created DESC',
+        // 'replies'    => 'extra.replies %dir%, p.created DESC',
+        // 'firstname'  => 'u.firstname %dir%, p.created DESC',
+        // 'lastname'   => 'u.lastname %dir%, p.created DESC',
+        // 'subscribe'  => 'sd.id %dir%, p.created DESC',
     );
 
     /**
      * @var array
      */
     protected $disabled = array();
+
+    public function __construct() {
+        $this->key = $this->defaultkey;
+    }
 
     /**
      * @static
@@ -103,8 +102,8 @@ class forumimproved_lib_discussion_sort implements Serializable {
      * @return forumimproved_lib_discussion_sort
      */
     public function set_disabled(array $disabled) {
-        if (in_array('lastreply', $disabled)) {
-            throw new coding_exception('The "lastreply" key is the only key that cannot be disabled');
+        if (in_array($this->defaultkey, $disabled)) {
+            throw new coding_exception('The ' . $this->defaultkey . ' key is the only key that cannot be disabled');
         }
         $this->disabled = $disabled;
         return $this;
@@ -122,32 +121,6 @@ class forumimproved_lib_discussion_sort implements Serializable {
      */
     public function get_keyopts() {
         return $this->keyopts;
-    }
-
-    /**
-     * @return array
-     */
-    public function get_directionopts() {
-        return $this->directionopts;
-    }
-
-    /**
-     * @param string $direction
-     * @return forumimproved_lib_discussion_sort
-     */
-    public function set_direction($direction) {
-        if (!in_array($direction, $this->get_directionopts())) {
-            throw new coding_exception('Invalid sort direction: '.$direction);
-        }
-        $this->direction = $direction;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function get_direction() {
-        return $this->direction;
     }
 
     /**
@@ -186,22 +159,11 @@ class forumimproved_lib_discussion_sort implements Serializable {
     }
 
     /**
-     * @return array
-     */
-    public function get_direction_options_menu() {
-        $menu = array();
-        foreach ($this->get_directionopts() as $direction) {
-            $menu[$direction] = get_string('discussionsortdirection:'.$direction, 'forumimproved');
-        }
-        return $menu;
-    }
-
-    /**
      * @return string
      */
     public function get_sort_sql() {
         $sortopts = $this->get_keyopts();
-        return str_replace('%dir%', $this->get_direction(), $sortopts[$this->get_key()]);
+        return $sortopts[$this->get_key()];
     }
 
     /**
@@ -214,8 +176,7 @@ class forumimproved_lib_discussion_sort implements Serializable {
         $this->set_disabled($disabled);
 
         if ($this->get_key() == $key) {
-            $this->set_key('lastreply')
-                 ->set_direction('DESC');
+            $this->set_key($this->defaultkey);
         }
         return $this;
     }
@@ -228,7 +189,7 @@ class forumimproved_lib_discussion_sort implements Serializable {
      * @return string the string representation of the object or &null;
      */
     public function serialize() {
-        return serialize(array('key' => $this->get_key(), 'direction' => $this->get_direction()));
+        return serialize(array('key' => $this->get_key()));
     }
 
     /**
@@ -245,8 +206,7 @@ class forumimproved_lib_discussion_sort implements Serializable {
         $sortinfo = unserialize($serialized);
 
         try {
-            $this->set_key($sortinfo['key'])
-                 ->set_direction($sortinfo['direction']);
+            $this->set_key($sortinfo['key']);
         } catch (Exception $e) {
             // Ignore...
         }

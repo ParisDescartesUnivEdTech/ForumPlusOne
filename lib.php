@@ -2855,7 +2855,13 @@ LEFT OUTER JOIN {forumimproved_read} r ON (r.postid = p.id AND r.userid = ?)
         $allnames  = get_all_user_name_fields(true, 'u');
         $selectsql = "$postdata, d.name, d.timemodified, d.usermodified, d.groupid, d.timestart, d.timeend, d.assessed, d.state,
                            d.firstpost, extra.replies, lastpost.postid lastpostid,$trackselect$subscribeselect
-                           $allnames, u.email, u.picture, u.imagealt $umfields";
+                           $allnames, u.email, u.picture, u.imagealt $umfields,
+                            (
+                                SELECT COUNT(v.id)
+                                FROM {forumimproved_vote} v
+                                WHERE v.postid = p.id
+                            ) countVote
+                     ";
     }
 
     $sql = "SELECT $selectsql
@@ -5350,7 +5356,6 @@ function forumimproved_print_latest_discussions($course, $forum, $maxdiscussions
             require_once(__DIR__.'/lib/discussion/sort.php');
             $dsort = forumimproved_lib_discussion_sort::get_from_session($forum, $context);
             $dsort->set_key(optional_param('dsortkey', $dsort->get_key(), PARAM_ALPHA));
-            $dsort->set_direction(optional_param('dsortdirection', $dsort->get_direction(), PARAM_ALPHA));
             forumimproved_lib_discussion_sort::set_to_session($dsort);
             echo $renderer->discussion_sorting($cm, $dsort);
         }
