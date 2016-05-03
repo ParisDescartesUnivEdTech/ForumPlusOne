@@ -18,6 +18,9 @@ Moreover, teachers can close a discussion when hey thought that the question is 
 
 ![A closed discussion](.readme/closedDiscution.png)
 
+Furthermore, users can sort with some new criterias.
+
+![The sort criterias](.readme/sortCiterias.png)
 
 Support
 -------
