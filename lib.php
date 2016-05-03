@@ -48,6 +48,9 @@ define('FORUMIMPROVED_MAILED_ERROR', 2);
 define('FORUMIMPROVED_DISCUSSION_STATE_OPEN', 0);
 define('FORUMIMPROVED_DISCUSSION_STATE_CLOSE', 1);
 
+define('FORUMIMPROVED_COUNT_MODE_RECURSIVE', 0);
+define('FORUMIMPROVED_COUNT_MODE_FIRST_POST', 1);
+
 
 if (!defined('FORUMIMPROVED_CRON_USER_CACHE')) {
     /** Defines how many full user records are cached in forum cron. */

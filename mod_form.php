@@ -166,6 +166,13 @@ class mod_forumimproved_mod_form extends moodleform_mod {
         $mform->disabledIf('votetimestop', 'enable_vote', 'notchecked');
         $mform->disabledIf('votetimestop', 'votetime');
 
+        $options = array();
+        $options[FORUMIMPROVED_COUNT_MODE_RECURSIVE] = get_string('count_vote_mode_recursive','forumimproved');
+        $options[FORUMIMPROVED_COUNT_MODE_FIRST_POST] = get_string('count_vote_mode_first_post','forumimproved');
+        $mform->addElement('select', 'count_vote_mode', get_string('count_vote_mode', 'forumimproved'), $options);
+        $mform->addHelpButton('count_vote_mode', 'count_vote_mode', 'forumimproved');
+        $mform->disabledIf('count_vote_mode', 'enable_vote', 'notchecked');
+
 
 
 

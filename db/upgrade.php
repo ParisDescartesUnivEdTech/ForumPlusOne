@@ -784,6 +784,23 @@ function xmldb_forumimproved_upgrade($oldversion) {
     }
 
 
+    if ($oldversion < 2016050301) {
+        require_once($CFG->dirroot.'/mod/forumimproved/lib.php');
+
+        $tableFI = new xmldb_table('forumimproved');
+        $fieldCountMode = new xmldb_field('count_vote_mode', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, FORUMIMPROVED_COUNT_MODE_RECURSIVE);
+
+        // Conditionally launch add field.
+        if (!$dbman->field_exists($tableFI, $fieldCountMode)) {
+            $dbman->add_field($tableFI, $fieldCountMode);
+        }
+
+
+        // ForumImproved savepoint reached.
+        upgrade_mod_savepoint(true, 2016050301, 'forumimproved');
+    }
+
+
     return true;
 }
 

@@ -648,6 +648,13 @@ $string['vote_display_name_help'] = 'Allow students to access to the list of vot
 
 $string['votetime'] = 'Restrict votes with dates in this range:';
 
+$string['count_vote_mode'] = 'Popularity mode';
+$string['count_vote_mode_recursive'] = 'Recursive';
+$string['count_vote_mode_first_post'] = 'First post';
+$string['count_vote_mode_help'] = 'The popularity mode is the mode to evaluate the populaity of a discussion. <br>
+The mode "Recursive" will count all votes of the discussion. <br>
+The mode "First post" will count only the vote on the first post of he discussion.';
+
 $string['votebuttontitle'] = '+1 to this message';
 $string['vote'] = '+1';
 $string['countvote'] = 'Number of votes : {$a}';
