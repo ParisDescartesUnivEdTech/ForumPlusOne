@@ -20,7 +20,7 @@ Moreover, teachers can close a discussion when hey thought that the question is 
 
 Furthermore, users can sort with some new criterias.
 
-![The sort criterias](.readme/sortCiterias.png)
+![The sort criterias](.readme/sortCriterias.png)
 
 Support
 -------
