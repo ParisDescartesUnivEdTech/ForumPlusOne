@@ -3165,6 +3165,28 @@ function forumimproved_get_all_post_votes($postid, $sqlSort = null) {
     return $votes;
 }
 
+/**
+ * Gets all vote for a post
+ *
+ * @param int $discussionid
+ * @param int $countmode
+ * @return int count of vote in a forum, using a count mode
+ */
+function forumimproved_get_count_votes($discussionid, $countmode = FORUMIMPROVED_COUNT_MODE_RECURSIVE) {
+    global $DB;
+
+    $req = 'SELECT COUNT(v.id) count
+            FROM {forumimproved_vote} v, {forumimproved_posts} p
+            WHERE v.postid = p.id AND p.discussion = ?';
+
+    if ($countmode == FORUMIMPROVED_COUNT_MODE_FIRST_POST) {
+        $req .= " AND p.parent = 0";
+    }
+
+
+    return $DB->count_records_sql($req, array($discussionid));
+}
+
 
 
 // OTHER FUNCTIONS ///////////////////////////////////////////////////////////

@@ -438,16 +438,23 @@ ACTIONS
 }
 
 
-.forumimproved-thread .forumimproved-thread-title h4 span.label {
+.forumimproved-thread header h4 .label {
     /* hide the "closed" label */
     display: none;
 }
 
-.forumimproved-thread.closed .forumimproved-thread-title h4 span.label {
+.forumimproved-thread.closed header h4 .label {
     /* show the "closed" label */
     display: inline;
 }
 
+.forumimproved-thread .btnToogleStateLine {
+    margin-bottom: -2em;
+    margin-top: 2.5em;
+    clear: right;
+    top: -2em;
+    position: relative;
+}
 
 
 
@@ -542,7 +549,7 @@ FUN WITH FORMS
 
     .forumimproved-thread-meta{
         float:right;
-        width:23.6%;
+        width: auto;
         text-align:right;
     }
 
@@ -657,6 +664,11 @@ FUN WITH FORMS
 		width:100%;
 		float:none;
 	}
+
+    .forumimproved-thread-meta{
+        text-align:right;
+    }
+
     .forumimproved-post-figure{
         float:left;
     }

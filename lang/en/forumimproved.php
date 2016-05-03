@@ -247,7 +247,7 @@ $string['invalidforcesubscribe'] = 'Invalid force subscription mode';
 $string['invalidforumid'] = 'Forum ID was incorrect';
 $string['invalidparentpostid'] = 'Parent post ID was incorrect';
 $string['invalidpostid'] = 'Invalid post ID - {$a}';
-$string['lastposttimeago'] = 'Last {$a}';
+$string['lastposttimeago'] = 'Last reply {$a}';
 $string['learningforums'] = 'Learning forums';
 $string['longpost'] = 'Long post';
 $string['mailnow'] = 'Mail now';
@@ -681,6 +681,8 @@ $string['open_thread_title'] = 'Reopen discussion';
 $string['state_thread_close'] = 'Closed';
 
 $string['discussion_closed'] = 'The discussion is closed';
+
+$string['popularity_text'] = '{$a} votes (+1)';
 
 
 

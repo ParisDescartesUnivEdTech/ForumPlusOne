@@ -16,7 +16,7 @@ var CSS = {
         DISCUSSION_EDIT: '.' + CSS.DISCUSSION_EDIT,
         DISCUSSION_BY_ID: '.forumimproved-thread[data-discussionid="%d"]',
         DISCUSSION_COUNT: '.forumimproved-discussion-count',
-        DISCUSSION_STATE_BTN_TOGGLE_BY_DISCUSSION_ID: 'article[data-discussionid="%d"] .forumimproved-thread-title .forumimproved-toggle-state-link',
+        DISCUSSION_STATE_BTN_TOGGLE_BY_DISCUSSION_ID: 'article[data-discussionid="%d"] .forumimproved-toggle-state-link',
         DISCUSSION_WRAPPER_BY_DISCUSSION_ID: 'article[data-discussionid="%d"]',
         DISCUSSION_TARGET: '.forumimproved-new-discussion-target',
         DISCUSSION_TEMPLATE: '#forumimproved-discussion-template',

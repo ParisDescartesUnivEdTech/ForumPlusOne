@@ -458,10 +458,9 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
     }
 
     public function discussion_template($d, $forum, $cm) {
-        $replies = '';
+        $xreplies = '';
         if(!empty($d->replies)) {
             $xreplies = forumimproved_xreplies($d->replies);
-            $replies = "<span class='forumimproved-replycount'>$xreplies</span>";
         }
         if (!empty($d->userurl)) {
             $byuser = html_writer::link($d->userurl, $d->fullname);
@@ -473,7 +472,8 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
         $attrs = '';
         if ($d->unread != '-') {
             $new  = get_string('unread', 'forumimproved');
-            $unread  = "<a class='forumimproved-unreadcount disable-router' href='$d->viewurl#unread'>$new</a>";
+            $titleNewPost = get_string('unreadposts', 'forumimproved');
+            $unread  = "<span class='forumimproved-unreadcount label label-info disable-router' title='$titleNewPost'>$new</span>";
             $attrs   = 'data-isunread="true"';
             $unreadclass = 'forumimproved-post-unread';
         }
@@ -481,32 +481,37 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
         $author = s(strip_tags($d->fullname));
         $group = '';
         if (!empty($d->group)) {
-            $group = '<br>'.$d->group;
+            $group = $d->group;
         }
 
         $latestpost = '';
         if (!empty($d->modified) && !empty($d->replies)) {
-            $latestpost = '<small class="forumimproved-thread-replies-meta">'.get_string('lastposttimeago', 'forumimproved', forumimproved_relative_time($d->rawmodified)).'</small>';
+            $latestpost = get_string('lastposttimeago', 'forumimproved', forumimproved_relative_time($d->rawmodified));
         }
 
-        $participants = '<div class="forumimproved-thread-participants">'.implode(' ',$d->replyavatars).'</div>';
+
+        $popularity = forumimproved_get_count_votes($d->id, $forum->count_vote_mode);
+
+        $popularityText ='';
+        if ($popularity > 0) {
+            $popularityText = get_string('popularity_text', 'forumimproved', $popularity);
+        }
 
 
         $datecreated = forumimproved_relative_time($d->rawcreated, array('class' => 'forumimproved-thread-pubdate'));
 
         $threadtitle = $d->subject;
         if (!$d->fullthread) {
-            $threadtitle = "<a class='disable-router' href='$d->viewurl'>$d->subject</a>";
+            $threadtitle = "<a class='disable-router' href='$d->viewurl'>$threadtitle</a>";
         }
         $options = get_string('options', 'forumimproved');
         $threadmeta  =
-            '<div class="forumimproved-thread-meta">'
-                .$replies
-                .$unread
-                .$participants
-                .$latestpost
-                .'<div class="forumimproved-thread-flags">'."{$d->subscribe} $d->postflags</div>"
-            .'</div>';
+            "<div class='forumimproved-thread-meta'>
+                <div>$d->subscribe $d->postflags</div>
+                <p><small>{$xreplies}</small><br>
+                <small>$latestpost $unread</small><br>
+                <small>$popularityText</small></p>
+            </div>";
 
         if ($d->fullthread) {
             $tools = '<div role="region" class="forumimproved-tools forumimproved-thread-tools" aria-label="'.$options.'">'.$d->tools.'</div>';
@@ -542,6 +547,11 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
             }
             
             if (has_capability('mod/forumimproved:close_discussion', $context)) {
+                if ($d->fullthread)
+                    $classBtnStateFullthread= 'btn btn-default';
+                else
+                    $classBtnStateFullthread= '';
+
                 $buttonToggleState = html_writer::link(
                     new moodle_url('/mod/forumimproved/post.php', array(
                         'close' => $d->id,
@@ -549,45 +559,31 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
                     )),
                     $toggleStateButtonLabel,
                     array(
-                        'class' => 'forumimproved-toggle-state-link btn btn-default',
+                        'class' => 'forumimproved-toggle-state-link ' . $classBtnStateFullthread,
                         'data-closed-text' => get_string('open_thread_title', 'forumimproved'),
                         'data-open-text' => get_string('close_thread_title', 'forumimproved'),
                     )
                 );
             }
         }
-        $stateLabel = '<span class="label label-warning">' . get_string('state_thread_close', 'forumimproved') . '</span>';
+        $stateLabel = '<small class="label label-warning">' . get_string('state_thread_close', 'forumimproved') . '</small>';
 
 
 
 
 
-
-        $threadheader = <<<HTML
-        <div class="forumimproved-thread-header">
-            <div class="forumimproved-thread-title">
-                <h4 id='thread-title-{$d->id}' role="heading" aria-level="4">
-                    $stateLabel $threadtitle
-                </h4>
-                <p><small>$datecreated</small></p>
-                <p>$buttonToggleState</p>
-            </div>
-            $threadmeta
-        </div>
-HTML;
 
         return <<<HTML
 <article id="p{$d->postid}" class="forumimproved-thread forumimproved-post-target clearfix {$classClosedDiscussion}" role="article"
     data-discussionid="$d->id" data-postid="$d->postid" data-author="$author" data-isdiscussion="true" $attrs>
     <header id="h{$d->postid}" class="clearfix $unreadclass">
-        <div class="forumimproved-thread-author">
-            <img class="userpicture img-circle" src="{$d->imagesrc}" alt="" />
-            <p class="forumimproved-thread-byline">
-                $byuser $group $revealed
-            </p>
-        </div>
+        $threadmeta
 
-        $threadheader
+        <div>
+            <h4 id="thread-title-{$d->id}">$stateLabel $threadtitle</h4>
+            <p>by $byuser $group $revealed &mdash; $datecreated</p>
+            <p class="btnToogleStateLine">$buttonToggleState</p>
+        </div>
 
         <div class="forumimproved-thread-content" tabindex="0">
             $d->message
