@@ -519,7 +519,7 @@ $string['privatereplies'] = 'Allow private replies';
 $string['privatereplies_help'] = 'With this feature, instructors can send a private reply to a forum post. This reply is only viewable by the student that made the original post or reply and invisible to the rest of the students.
 ';
 $string['privaterepliesdisabledglobally'] = 'Private replies have been disabled globally.';
-$string['discussionsortkey:lastreply'] = 'Last reply date';
+$string['discussionsortkey:lastreply'] = 'Last publication date';
 $string['discussionsortkey:created'] = 'Creation date';
 $string['discussionsortkey:replies'] = 'Most active';
 $string['discussionsortkey:subscribe'] = 'Subscribed';
