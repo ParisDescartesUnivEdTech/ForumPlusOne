@@ -322,7 +322,8 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
         $data->fullthread = $fullthread;
         $data->revealed   = false;
         $data->rawcreated = $post->created;
-        $data->rawmodified = $post->modified;
+        if (!empty($discussion->lastpostcreationdate))
+            $data->rawlastpost = $discussion->lastpostcreationdate;
 
         if ($forum->anonymous
                 && $postuser->id === $USER->id
@@ -485,8 +486,8 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
         }
 
         $latestpost = '';
-        if (!empty($d->modified) && !empty($d->replies)) {
-            $latestpost = get_string('lastposttimeago', 'forumimproved', forumimproved_relative_time($d->rawmodified));
+        if (!empty($d->replies) && !$d->fullthread) {
+            $latestpost = get_string('lastposttimeago', 'forumimproved', forumimproved_absolute_time($d->rawlastpost));
         }
 
 
@@ -498,7 +499,7 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
         }
 
 
-        $datecreated = forumimproved_relative_time($d->rawcreated, array('class' => 'forumimproved-thread-pubdate'));
+        $datecreated = forumimproved_absolute_time($d->rawcreated, array('class' => 'forumimproved-thread-pubdate'));
 
         $threadtitle = $d->subject;
         if (!$d->fullthread) {
@@ -723,7 +724,7 @@ HTML;
             $unreadclass = "forumimproved-post-unread";
         }
         $options = get_string('options', 'forumimproved');
-        $datecreated = forumimproved_relative_time($p->rawcreated, array('class' => 'forumimproved-post-pubdate'));
+        $datecreated = forumimproved_absolute_time($p->rawcreated, array('class' => 'forumimproved-post-pubdate'));
 
 
         $postreplies = '';

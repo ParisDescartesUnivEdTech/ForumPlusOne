@@ -2861,6 +2861,11 @@ LEFT OUTER JOIN {forumimproved_read} r ON (r.postid = p.id AND r.userid = ?)
                                 FROM {forumimproved_vote} v
                                 WHERE v.postid = p.id
                             ) countVote
+                            ( -- get date of latest the discussion
+                                SELECT MAX(p2.created)
+                                FROM {forumimproved_posts} p2
+                                WHERE p2.discussion = p.discussion
+                            ) lastpostcreationdate,
                      ";
     }
 
@@ -7809,6 +7814,9 @@ function forumimproved_extract_discussion($post, $forum) {
     if (property_exists($post, 'lastpostid')) {
         $discussion->lastpostid = $post->lastpostid;
     }
+    if (property_exists($post, 'lastpostcreationdate')) {
+        $discussion->lastpostcreationdate = $post->lastpostcreationdate;
+    }
     return $discussion;
 }
 
@@ -8124,6 +8132,41 @@ function forumimproved_relative_time($timeinpast, $attributes = null) {
     // Default time tag attributes.
     $defaultatts = array(
         'is' => 'relative-time',
+        'datetime' => $datetime,
+        'title' => $precisedatetime,
+    );
+
+    // Override default attributes with those passed in (if any).
+    if (!empty($attributes)) {
+        foreach ($attributes as $key => $val) {
+            $defaultatts[$key] = $val;
+        }
+    }
+
+    return html_writer::tag('time', $displaytime, $defaultatts);
+}
+
+/**
+ * Return friendly absolute time in a <time> tag
+ *
+ * @param int $timeinpast
+ * @param null|array $attributes Tag attributes
+ * @return string
+ * @throws coding_exception
+ */
+function forumimproved_absolute_time($timeinpast, $attributes = null) {
+    if (!is_numeric($timeinpast)) {
+        throw new coding_exception('Absolute times must be calculated from the raw timestamp');
+    }
+
+    $precisedatetime = userdate($timeinpast, get_string('strftimerecentfull', 'langconfig'));
+    $datetime = date(DateTime::W3C, $timeinpast);
+
+    $displaytime = $precisedatetime;
+
+    // Default time tag attributes.
+    $defaultatts = array(
+        'is' => 'absolute-time',
         'datetime' => $datetime,
         'title' => $precisedatetime,
     );
