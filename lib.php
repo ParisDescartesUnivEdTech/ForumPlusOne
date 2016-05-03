@@ -2856,17 +2856,26 @@ LEFT OUTER JOIN {forumimproved_read} r ON (r.postid = p.id AND r.userid = ?)
         $selectsql = "$postdata, d.name, d.timemodified, d.usermodified, d.groupid, d.timestart, d.timeend, d.assessed, d.state,
                            d.firstpost, extra.replies, lastpost.postid lastpostid,$trackselect$subscribeselect
                            $allnames, u.email, u.picture, u.imagealt $umfields,
-                            (
-                                SELECT COUNT(v.id)
-                                FROM {forumimproved_vote} v
-                                WHERE v.postid = p.id
-                            ) countVote
                             ( -- get date of latest the discussion
                                 SELECT MAX(p2.created)
                                 FROM {forumimproved_posts} p2
                                 WHERE p2.discussion = p.discussion
                             ) lastpostcreationdate,
                      ";
+        if ($forum->count_vote_mode == FORUMIMPROVED_COUNT_MODE_RECURSIVE) {
+            $selectsql .= '(
+                               SELECT COUNT(v.id)
+                               FROM {forumimproved_vote} v, {forumimproved_posts} p2
+                               WHERE v.postid = p2.id AND p2.discussion = p.discussion
+                           ) countVote';
+        }
+        else {
+            $selectsql .= '(
+                               SELECT COUNT(v.id)
+                               FROM {forumimproved_vote} v
+                               WHERE v.postid = p.id
+                           ) countVote';
+        }
     }
 
     $sql = "SELECT $selectsql

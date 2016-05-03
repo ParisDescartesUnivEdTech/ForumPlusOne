@@ -44,7 +44,7 @@ class forumimproved_lib_discussion_sort implements Serializable {
      */
     protected $keyopts = array(
         'created'    => 'p.created DESC',
-        'lastreply'  => 'd.timemodified ASC',
+        'lastreply'  => 'd.timemodified DESC',
         'unread'     => 'unread.unread DESC, p.created DESC',
         'popularity' => 'countVote DESC, p.created DESC',
         'closed'     => 'd.state DESC, p.created DESC',
