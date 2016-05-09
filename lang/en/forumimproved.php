@@ -678,3 +678,17 @@ $string['popularity_text'] = '{$a} votes (+1)';
 
 
 
+// LiveReload
+$string['livereloadrate'] = 'Refresh rate (in seconds)';
+$string['configlivereloadrate'] = 'This rate will determine the interval between refresh of informations<br>
+<strong>YOU NEED TO CUSTOM THIS PARAMETER TAKING INTO ACCOUNT YOUR SERVERS</strong><br>
+<strong style="color:red">IF THIS RATE IS TOO LOW, YOU HAVE RISK OF LOAD INCREASE FOLLOWED BY <a href="https://en.wikipedia.org/w/index.php?title=Denial_of_service">DOS</a>.</strong>';
+
+
+
+
+
+
+
+
+

@@ -43,7 +43,7 @@ if ($ADMIN->fulltree) {
 
     // Number of discussions on a page
     $settings->add(new admin_setting_configtext('forumimproved/manydiscussions', get_string('manydiscussions', 'forumimproved'),
-                       get_string('configmanydiscussions', 'forumimproved'), 100, PARAM_INT));
+                       get_string('configmanydiscussions', 'forumimproved'), 10, PARAM_INT));
 
     if (isset($CFG->maxbytes)) {
         $maxbytes = 0;
@@ -106,5 +106,8 @@ if ($ADMIN->fulltree) {
 
     $settings->add(new admin_setting_configcheckbox('forumimproved/hiderecentposts', get_string('hiderecentposts', 'forumimproved'),
                        get_string('confighiderecentposts', 'forumimproved'), 0));
+
+    $settings->add(new admin_setting_configtext('forumimproved/livereloadrate', get_string('livereloadrate', 'forumimproved'),
+                       get_string('configlivereloadrate', 'forumimproved'), 30, PARAM_INT));
 }
 
