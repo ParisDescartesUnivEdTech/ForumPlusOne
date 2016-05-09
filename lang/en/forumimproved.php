@@ -642,31 +642,22 @@ $string['forumimproved:close_discussion'] = 'Close or open a discussion';
 
 
 
-
+// Vote
 $string['votes_section_header'] = 'Votes';
 $string['enable_vote'] = 'Enable votes';
 $string['enable_vote_help'] = 'Allow students to vote on posts.';
-
 $string['vote_display_name'] = 'Display voters\' name to students';
 $string['vote_display_name_help'] = 'Allow students to access to the list of voters.';
-
 $string['votetime'] = 'Restrict votes with dates in this range:';
-
 $string['count_vote_mode'] = 'Popularity mode';
 $string['count_vote_mode_recursive'] = 'Recursive';
 $string['count_vote_mode_first_post'] = 'First post';
 $string['count_vote_mode_help'] = 'The popularity mode is the mode to evaluate the populaity of a discussion. <br>
 The mode "Recursive" will count all votes of the discussion. <br>
 The mode "First post" will count only the vote on the first post of he discussion.';
-
 $string['votebuttontitle'] = '+1 to this message';
 $string['vote'] = '+1';
 $string['countvote'] = 'Number of votes : {$a}';
-
-
-
-
-
 $string['novotes'] = 'No votes submitted';
 $string['vote_disabled_error'] = 'The vote is disabled';
 $string['to_early_to_vote_error'] = 'You can\'t vote : the vote is not yet enabled.';
@@ -676,16 +667,13 @@ $string['allvoteforitem'] = 'Voters list';
 
 
 
-
+// Close / open discussion
 $string['enable_close_disc'] = 'Allow the close of discussions';
 $string['enable_close_disc_help'] = 'When a discussion is closed, nobody can reply. But votes are enabled and works.';
-
 $string['close_thread_title'] = 'Close discussion';
 $string['open_thread_title'] = 'Reopen discussion';
 $string['state_thread_close'] = 'Closed';
-
 $string['discussion_closed'] = 'The discussion is closed';
-
 $string['popularity_text'] = '{$a} votes (+1)';
 
 
