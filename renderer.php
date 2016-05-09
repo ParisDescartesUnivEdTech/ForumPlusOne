@@ -509,10 +509,10 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
         $threadmeta  =
             "<div class='forumimproved-thread-meta'>
                 <div>$d->subscribe $d->postflags</div>
-                <p><small>{$xreplies}</small><br>
-                <small>$latestpost</small><br>
-                <small>$unread</small><br>
-                <small>$popularityText</small></p>
+                <p><small>&nbsp;{$xreplies}</small><br>
+                <small>&nbsp;$latestpost</small><br>
+                <small>&nbsp;$unread</small><br>
+                <small>&nbsp;$popularityText</small></p>
             </div>";
 
         if ($d->fullthread) {
