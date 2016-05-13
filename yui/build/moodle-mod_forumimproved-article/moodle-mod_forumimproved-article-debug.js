@@ -1245,6 +1245,11 @@ Y.extend(ARTICLE, Y.Base,
                     countVotes.set("innerHTML",
                         parseInt(countVotes.get("innerHTML"), 10) + delta
                     );
+
+                    if (delta == 1)
+                        changeTooltip(btnVote, btnVote.getAttribute('data-text-has-vote'));
+                    else
+                        changeTooltip(btnVote, btnVote.getAttribute('data-text-vote'));
                 }
                 else {
                     Y.log(data.errorMsg || errorCode, "error");
@@ -1253,6 +1258,17 @@ Y.extend(ARTICLE, Y.Base,
                     }
                 }
             }, this);
+
+            function changeTooltip(elem, tooltipTitle) {
+                if ((elem.getAttribute('title') || '') == '') {
+                    // bootstrap toolip launch
+                    elem.setAttribute('data-original-title', tooltipTitle);
+                    jQuery(elem.getDOMNode()).tooltip('hide').tooltip('show');
+                }
+                else {
+                    elem.setAttribute('title', tooltipTitle);
+                }
+            }
         },
 
         /**

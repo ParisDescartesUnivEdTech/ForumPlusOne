@@ -362,6 +362,14 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
             $this->simple_edit_discussion($cm),
             array('type' => 'text/template', 'id' => 'forumimproved-discussion-template')
         );
+
+
+        $output .= html_writer::tag(
+            'script',
+            '',
+            array('type' => 'application/javascript', 'src' => 'js/bootstrap-tooltip.min.js')
+        );
+
         return $output;
     }
 
@@ -1659,64 +1667,8 @@ HTML;
                 get_string('reply', 'forumimproved'),
                 array(
                     'title' => $replytitle,
-                    'class' => 'forumimproved-reply-link btn btn-default',
+                    'class' => 'forumimproved-reply-link',
                 )
-            );
-        }
-
-        // here, the usage of $canreply is a hack  avoid to add a "$canvote" on prototype of the function
-        $canvote = $canreply && $forum->enable_vote;
-        $isInTime = (time() >= $forum->votetimestart && time() <= $forum->votetimestop) || ($forum->votetimestart == 0 && $forum->votetimestop == 0);
-
-        if ($canvote and $isInTime and !$ownpost) {
-            $votetitle = get_string('votebuttontitle', 'forumimproved', strip_tags($postuser->fullname));
-            $classes = 'forumimproved-vote-link btn btn-default';
-
-            if (forumimproved_has_vote($post->id, $USER->id))
-                $classes .= ' active';
-
-            $commands['vote'] = html_writer::link(
-                new moodle_url('/mod/forumimproved/post.php', array(
-                    'vote' => $post->id)
-                    // TODO CSRF !!!
-                ),
-                get_string('vote', 'forumimproved'),
-                array(
-                    'title' => $votetitle,
-                    'class' => $classes
-                )
-            );
-        }
-
-        $canSeeVoter = $canvote;
-        $onSchedule = true;
-
-        if ( $forum->vote_display_name && !has_capability('mod/forumimproved:viewwhovote', context_module::instance($cm->id)))
-            $onSchedule = false;
-
-        if ( !$forum->vote_display_name && !has_capability('mod/forumimproved:viewwhovote_annonymousvote', context_module::instance($cm->id)))
-            $onSchedule = false;
-        
-        
-        $spanClass = 'forumimproved-show-voters-link';
-        $spanContent = get_string('countvote', 'forumimproved', html_writer::span($post->votecount, 'forumimproved-votes-counter'));
-
-        if ($canSeeVoter && $onSchedule) {
-            $commands['countVote'] = html_writer::link(
-                new moodle_url('/mod/forumimproved/whovote.php', array(
-                    'postid' => $post->id,
-                    'contextid' => context_module::instance($cm->id)->id
-                )),
-                $spanContent,
-                array(
-                    'class' => $spanClass
-                )
-            );
-        }
-        else if ($canSeeVoter) {
-            $commands['countVote'] = html_writer::span(
-                $spanContent,
-                $spanClass
             );
         }
 
@@ -1772,9 +1724,69 @@ HTML;
             }
         }
 
-        $rating = $this->post_rating($post);
-        if (!empty($rating)) {
-            $commands['rating'] = $rating;
+        // here, the usage of $canreply is a hack  avoid to add a "$canvote" on prototype of the function
+        $canvote = $canreply && $forum->enable_vote;
+        $isInTime = (time() >= $forum->votetimestart && time() <= $forum->votetimestop) || ($forum->votetimestart == 0 && $forum->votetimestop == 0);
+
+        if ($canvote and $isInTime and !$ownpost) {
+            $votetitle = get_string('votebuttontitle', 'forumimproved', strip_tags($postuser->fullname));
+            $classes = 'forumimproved-vote-link';
+
+            if (forumimproved_has_vote($post->id, $USER->id)) {
+                $classes .= ' active';
+                $votetitle = get_string('hasVotebuttontitle', 'forumimproved', strip_tags($postuser->fullname));
+            }
+
+            $commands['vote'] = html_writer::link(
+                new moodle_url('/mod/forumimproved/post.php', array(
+                    'vote' => $post->id)
+                    // TODO CSRF !!!
+                ),
+                get_string('vote', 'forumimproved'),
+                array(
+                    'title' => $votetitle,
+                    'class' => $classes,
+                    'data-toggle' => 'tooltip',
+                    'data-placement' => 'bottom',
+                    'data-text-vote' => get_string('votebuttontitle', 'forumimproved', strip_tags($postuser->fullname)),
+                    'data-text-has-vote' => get_string('hasVotebuttontitle', 'forumimproved', strip_tags($postuser->fullname))
+                )
+            );
+        }
+
+        $canSeeVoter = $canvote;
+        $onSchedule = true;
+
+        if ( $forum->vote_display_name && !has_capability('mod/forumimproved:viewwhovote', context_module::instance($cm->id)))
+            $onSchedule = false;
+
+        if ( !$forum->vote_display_name && !has_capability('mod/forumimproved:viewwhovote_annonymousvote', context_module::instance($cm->id)))
+            $onSchedule = false;
+
+
+        $spanClass = 'forumimproved-show-voters-link';
+        $spanContent = get_string('countvote', 'forumimproved', html_writer::span($post->votecount, 'forumimproved-votes-counter'));
+
+        if ($canSeeVoter && $onSchedule) {
+            $commands['countVote'] = html_writer::link(
+                new moodle_url('/mod/forumimproved/whovote.php', array(
+                    'postid' => $post->id,
+                    'contextid' => context_module::instance($cm->id)->id
+                )),
+                $spanContent,
+                array(
+                    'class' => $spanClass,
+                    'data-toggle' => 'tooltip',
+                    'data-placement' => 'bottom',
+                    'title' => get_string('show-voters-link-title', 'forumimproved'),
+                )
+            );
+        }
+        else if ($canSeeVoter) {
+            $commands['countVote'] = html_writer::span(
+                $spanContent,
+                $spanClass
+            );
         }
 
         return $commands;

@@ -326,6 +326,35 @@ color: white !important;
 }
 
 
+.forumimproved-tools a:not(.btn) {
+    -webkit-transition: border-bottom .15s, padding-bottom .15s;
+       -moz-transition: border-bottom .15s, padding-bottom .15s;
+         -o-transition: border-bottom .15s, padding-bottom .15s;
+            transition: border-bottom .15s, padding-bottom .15s;
+
+
+    padding: 0 .5em 5px;
+    border-bottom: 0 solid tomato;
+
+    /* inline-block everywhere : https://blog.mozilla.org/webdev/2009/02/20/cross-browser-inline-block/ */
+    display: -moz-inline-stack;
+    display: inline-block;
+    zoom: 1;
+    *display: inline;
+}
+.forumimproved-tools a.active:not(.btn) {
+    /*background:  rgb(46, 204, 113);
+    background: rgba(46, 204, 113, 1);
+    color: #000;*/
+
+    border-bottom-width: 5px;
+    padding-bottom: 0px;
+    color: tomato;
+}
+
+
+
+
 
 /* unread posts flag */
 .forumimproved-unreadcount {

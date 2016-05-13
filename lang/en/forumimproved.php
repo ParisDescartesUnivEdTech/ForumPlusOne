@@ -655,9 +655,11 @@ $string['count_vote_mode_first_post'] = 'First post';
 $string['count_vote_mode_help'] = 'The popularity mode is the mode to evaluate the populaity of a discussion. <br>
 The mode "Recursive" will count all votes of the discussion. <br>
 The mode "First post" will count only the vote on the first post of he discussion.';
-$string['votebuttontitle'] = '+1 to this message';
-$string['vote'] = '+1';
+$string['votebuttontitle'] = 'Vote to this message';
+$string['hasVotebuttontitle'] = 'Undo your vote to this message';
+$string['vote'] = '<span aria-hidden="true">+1</span><span class="accesshide">Vote for this message</span>';
 $string['countvote'] = 'Number of votes : {$a}';
+$string['show-voters-link-title'] = 'Show voters';
 $string['novotes'] = 'No votes submitted';
 $string['vote_disabled_error'] = 'The vote is disabled';
 $string['to_early_to_vote_error'] = 'You can\'t vote : the vote is not yet enabled.';
