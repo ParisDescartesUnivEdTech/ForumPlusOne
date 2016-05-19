@@ -370,6 +370,22 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
             array('type' => 'application/javascript', 'src' => 'js/bootstrap-tooltip.min.js')
         );
 
+        // enable colors on likes
+        {
+            $css = <<<CSS
+.forumimproved-tools a {
+    border-bottom-color: {$config->votesColor};
+}
+.forumimproved-tools a.active {
+    color: {$config->votesColor};
+}
+CSS;
+            $output .= html_writer::tag(
+                'style',
+                $css
+            );
+        }
+
         return $output;
     }
 

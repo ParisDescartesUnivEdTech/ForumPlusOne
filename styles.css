@@ -326,7 +326,7 @@ color: white !important;
 }
 
 
-.forumimproved-tools a:not(.btn) {
+.forumimproved-tools a {
     -webkit-transition: border-bottom .15s, padding-bottom .15s;
        -moz-transition: border-bottom .15s, padding-bottom .15s;
          -o-transition: border-bottom .15s, padding-bottom .15s;
@@ -342,14 +342,11 @@ color: white !important;
     zoom: 1;
     *display: inline;
 }
-.forumimproved-tools a.active:not(.btn) {
-    /*background:  rgb(46, 204, 113);
-    background: rgba(46, 204, 113, 1);
-    color: #000;*/
-
+.forumimproved-tools a.active {
     border-bottom-width: 5px;
     padding-bottom: 0px;
     color: tomato;
+    text-decoration: none;
 }
 
 
