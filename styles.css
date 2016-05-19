@@ -523,7 +523,7 @@ FUN WITH FORMS
     min-height: 8em;
     overflow: auto;
     padding: 0.5em;
-    resize: both;
+    resize: vertical;
     margin-bottom: 10px;
     background-color:white;
 }
@@ -613,6 +613,7 @@ FUN WITH FORMS
     .forumimproved-form input[type=text],
     .forumimproved-form textarea {
         width:100%;
+        min-height: 2em;
     }
 
     .forumimproved-add-discussion,
