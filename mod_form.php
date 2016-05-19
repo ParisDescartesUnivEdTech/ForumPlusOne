@@ -56,7 +56,7 @@ class mod_forumimproved_mod_form extends moodleform_mod {
             // Display recent posts on course page?
             $mform->addElement('advcheckbox', 'showrecent', get_string('showrecent', 'forumimproved'));
             $mform->addHelpButton('showrecent', 'showrecent', 'forumimproved');
-            $mform->setDefault('showrecent', 1);
+            $mform->setDefault('showrecent', 0);
         }
 
         $forumtypes = forumimproved_get_forumimproved_types();

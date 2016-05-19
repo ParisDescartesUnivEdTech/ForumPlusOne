@@ -801,6 +801,21 @@ function xmldb_forumimproved_upgrade($oldversion) {
     }
 
 
+    if ($oldversion < 2016051900) {
+        $tableFI = new xmldb_table('forumimproved');
+        $fieldShowRecent = new xmldb_field('showrecent', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+
+        // Conditionally launch add field.
+        if (!$dbman->field_exists($tableFI, $fieldShowRecent)) {
+            $dbman->change_field_default($tableFI, $fieldShowRecent);
+        }
+
+
+        // ForumImproved savepoint reached.
+        upgrade_mod_savepoint(true, 2016051900, 'forumimproved');
+    }
+
+
     return true;
 }
 
