@@ -84,3 +84,4 @@ Credits
 -------
 
 The logo came from Google Material Icons
+This module is under [GNU GPL v2.0](LICENSE).
