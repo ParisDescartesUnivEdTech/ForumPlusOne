@@ -666,6 +666,11 @@ $string['to_early_to_vote_error'] = 'You can\'t vote : the vote is not yet enabl
 $string['to_late_to_vote_error'] = 'You can\'t vote : it\'s too late to vote.';
 $string['own_vote_error'] = 'You can\'t vote for your own vote.';
 $string['allvoteforitem'] = 'Voters list';
+$string['votecolor'] = 'Vote color';
+$string['configvotecolor'] = 'This parameter point out the color of the vote link when the user had vote. I recommand to point out a  hexadecimal color value.<br>
+Try <a href="http://rgb.to/">rgb.to</a> to know your hexadecimal value.<br>
+Try to avoid the same color than the links.<br>
+Avoid the colors too close to the background : the color blinds can have difficulties to read that. A ratio of 4.5 on <a href="http://leaverou.github.io/contrast-ratio/#%23da3d00-on-white">the Lea Verou\'s contrast ratio</a> is satisfactory.';
 
 
 
