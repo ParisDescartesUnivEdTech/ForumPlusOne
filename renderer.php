@@ -212,7 +212,7 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
         // TODO - this is confusing code
         return $this->notification_area().
             $this->output->container('', 'forumimproved-add-discussion-target').
-            html_writer::tag('section', $output, array('role' => 'region', 'aria-label' => get_string('discussions', 'forumimproved'), 'class' => 'forumimproved-threads-wrapper', 'tabindex' => '-1')).
+            html_writer::tag('section', $output, array('role' => 'region', 'aria-label' => get_string('discussions', 'forumimproved'), 'class' => 'forumimproved-threads-wrapper')).
             $this->article_assets($cm);
 
     }
@@ -611,7 +611,7 @@ CSS;
             <p class="btnToogleStateLine">$buttonToggleState</p>
         </div>
 
-        <div class="forumimproved-thread-content" tabindex="0">
+        <div class="forumimproved-thread-content">
             $d->message
         </div>
         $tools
