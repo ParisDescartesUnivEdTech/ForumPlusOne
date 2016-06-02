@@ -18,13 +18,13 @@
  * View Posters Controller
  *
  * @package    mod
- * @subpackage forumimproved
+ * @subpackage forumplusone
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_forumimproved\controller;
+namespace mod_forumplusone\controller;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -47,12 +47,12 @@ class posters_controller extends controller_abstract {
     public function viewposters_action() {
         global $PAGE, $OUTPUT;
 
-        $table = new \forumimproved_lib_table_posters('mod_forumimproved_viewposters');
+        $table = new \forumplusone_lib_table_posters('mod_forumplusone_viewposters');
         $table->define_baseurl($PAGE->url->out());
-        $table->set_attribute('class', 'generaltable generalbox forumimproved_viewposters');
+        $table->set_attribute('class', 'generaltable generalbox forumplusone_viewposters');
         $table->column_class('userpic', 'col_userpic');
 
-        echo $OUTPUT->heading(get_string('viewposters', 'forumimproved'));
+        echo $OUTPUT->heading(get_string('viewposters', 'forumplusone'));
         $table->out('25', false);
     }
 }

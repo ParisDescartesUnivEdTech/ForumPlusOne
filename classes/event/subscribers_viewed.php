@@ -15,19 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_forumimproved subscribers list viewed event.
+ * The mod_forumplusone subscribers list viewed event.
  *
- * @package    mod_forumimproved
+ * @package    mod_forumplusone
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_forumimproved\event;
+namespace mod_forumplusone\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_forumimproved subscribers list viewed event class.
+ * The mod_forumplusone subscribers list viewed event class.
  *
  * @property-read array $other {
  *      Extra information about the event.
@@ -35,7 +35,7 @@ defined('MOODLE_INTERNAL') || die();
  *      - int forumid: The id of the forum which the subscriberslist has been viewed.
  * }
  *
- * @package    mod_forumimproved
+ * @package    mod_forumplusone
  * @since      Moodle 2.7
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -68,7 +68,7 @@ class subscribers_viewed extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventsubscribersviewed', 'mod_forumimproved');
+        return get_string('eventsubscribersviewed', 'mod_forumplusone');
     }
 
     /**
@@ -77,7 +77,7 @@ class subscribers_viewed extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/forumimproved/subscribers.php', array('id' => $this->other['forumid']));
+        return new \moodle_url('/mod/forumplusone/subscribers.php', array('id' => $this->other['forumid']));
     }
 
     /**
@@ -86,7 +86,7 @@ class subscribers_viewed extends \core\event\base {
      * @return array|null
      */
     protected function get_legacy_logdata() {
-        return array($this->courseid, 'forumimproved', 'view subscribers', 'subscribers.php?id=' . $this->other['forumid'],
+        return array($this->courseid, 'forumplusone', 'view subscribers', 'subscribers.php?id=' . $this->other['forumid'],
             $this->other['forumid'], $this->contextinstanceid);
     }
 

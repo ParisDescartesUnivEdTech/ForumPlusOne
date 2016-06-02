@@ -17,18 +17,18 @@
 /**
  * Post services
  *
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_forumimproved\service;
+namespace mod_forumplusone\service;
 
-use mod_forumimproved\attachments;
-use mod_forumimproved\event\post_created;
-use mod_forumimproved\event\post_updated;
-use mod_forumimproved\response\json_response;
-use mod_forumimproved\upload_file;
+use mod_forumplusone\attachments;
+use mod_forumplusone\event\post_created;
+use mod_forumplusone\event\post_updated;
+use mod_forumplusone\response\json_response;
+use mod_forumplusone\upload_file;
 use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
@@ -38,7 +38,7 @@ require_once(dirname(__DIR__).'/upload_file.php');
 require_once(dirname(dirname(__DIR__)).'/lib.php');
 
 /**
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -78,12 +78,12 @@ class post_service {
         $response = array();
 
         try {
-            forumimproved_toggle_vote($forum, $postid, $userid);
+            forumplusone_toggle_vote($forum, $postid, $userid);
             $response['errorCode'] = 0;
         }
         catch (coding_exception $e) {
             $response['errorCode'] = $e->a;
-            $response['errorMsg'] = get_string($e->a, 'forumimproved');
+            $response['errorMsg'] = get_string($e->a, 'forumplusone');
         }
 
 
@@ -104,12 +104,12 @@ class post_service {
         $response = array();
 
         try {
-            $votes = forumimproved_get_all_post_votes($postid, $sqlsort);
+            $votes = forumplusone_get_all_post_votes($postid, $sqlsort);
 
             $response['votes'] = array();
             $response['errorCode'] = 0;
             if ($votes) {
-                $canSeeDatetime = has_capability('mod/forumimproved:viewvotedatetime', $context);
+                $canSeeDatetime = has_capability('mod/forumplusone:viewvotedatetime', $context);
                 foreach ($votes as $vote) {
                     $vote->id = $vote->userid;
                     $result = array();
@@ -133,7 +133,7 @@ class post_service {
         }
         catch (coding_exception $e) {
             $response['errorCode'] = $e->a;
-            $response['errorMsg'] = get_string($e->a, 'forumimproved');
+            $response['errorMsg'] = get_string($e->a, 'forumplusone');
         }
 
         return new json_response((object) $response);
@@ -153,7 +153,7 @@ class post_service {
      */
     public function handle_reply($course, $cm, $forum, $context, $discussion, $parent, array $options) {
         $uploader = new upload_file(
-            new attachments($forum, $context), \mod_forumimproved_post_form::attachment_options($forum)
+            new attachments($forum, $context), \mod_forumplusone_post_form::attachment_options($forum)
         );
 
         $post   = $this->create_post_object($discussion, $parent, $context, $options);
@@ -169,7 +169,7 @@ class post_service {
             'eventaction'  => 'postcreated',
             'discussionid' => (int) $discussion->id,
             'postid'       => (int) $post->id,
-            'livelog'      => get_string('postcreated', 'forumimproved'),
+            'livelog'      => get_string('postcreated', 'forumplusone'),
             'html'         => $this->discussionservice->render_full_thread($discussion->id),
         ));
     }
@@ -192,7 +192,7 @@ class post_service {
         $this->require_can_edit_post($forum, $context, $discussion, $post);
 
         $uploader = new upload_file(
-            new attachments($forum, $context, $deletefiles), \mod_forumimproved_post_form::attachment_options($forum)
+            new attachments($forum, $context, $deletefiles), \mod_forumplusone_post_form::attachment_options($forum)
         );
 
         // Apply updates to the post.
@@ -214,8 +214,8 @@ class post_service {
         $this->save_post($discussion, $post, $uploader);
 
         // If the user has access to all groups and they are changing the group, then update the post.
-        if (empty($post->parent) && has_capability('mod/forumimproved:movediscussions', $context)) {
-            $this->db->set_field('forumimproved_discussions', 'groupid', $options['groupid'], array('id' => $discussion->id));
+        if (empty($post->parent) && has_capability('mod/forumplusone:movediscussions', $context)) {
+            $this->db->set_field('forumplusone_discussions', 'groupid', $options['groupid'], array('id' => $discussion->id));
         }
 
         $this->trigger_post_updated($context, $forum, $discussion, $post);
@@ -224,7 +224,7 @@ class post_service {
             'eventaction'  => 'postupdated',
             'discussionid' => (int) $discussion->id,
             'postid'       => (int) $post->id,
-            'livelog'      => get_string('postwasupdated', 'forumimproved'),
+            'livelog'      => get_string('postwasupdated', 'forumplusone'),
             'html'         => $this->discussionservice->render_full_thread($discussion->id),
         ));
     }
@@ -243,13 +243,13 @@ class post_service {
 
         if (!($forum->type == 'news' && !$post->parent && $discussion->timestart > time())) {
             if (((time() - $post->created) > $CFG->maxeditingtime) and
-                !has_capability('mod/forumimproved:editanypost', $context)
+                !has_capability('mod/forumplusone:editanypost', $context)
             ) {
-                print_error('maxtimehaspassed', 'forumimproved', '', format_time($CFG->maxeditingtime));
+                print_error('maxtimehaspassed', 'forumplusone', '', format_time($CFG->maxeditingtime));
             }
         }
-        if (($post->userid <> $USER->id) && !has_capability('mod/forumimproved:editanypost', $context)) {
-            print_error('cannoteditposts', 'forumimproved');
+        if (($post->userid <> $USER->id) && !has_capability('mod/forumplusone:editanypost', $context)) {
+            print_error('cannoteditposts', 'forumplusone');
         }
     }
 
@@ -279,7 +279,7 @@ class post_service {
         $post->groupid       = ($discussion->groupid == -1) ? 0 : $discussion->groupid;
         $post->flags         = null;
 
-        $strre = get_string('re', 'forumimproved');
+        $strre = get_string('re', 'forumplusone');
         foreach ($options as $name => $value) {
             if (property_exists($post, $name)) {
                 $post->$name = $value;
@@ -304,35 +304,35 @@ class post_service {
         global $USER;
 
         $errors = array();
-        if (!forumimproved_user_can_post($forum, $discussion, null, $cm, $course, $context)) {
-            $errors[] = new \moodle_exception('nopostforum', 'forumimproved');
+        if (!forumplusone_user_can_post($forum, $discussion, null, $cm, $course, $context)) {
+            $errors[] = new \moodle_exception('nopostforum', 'forumplusone');
         }
         if (!empty($post->id)) {
-            if (!(($post->userid == $USER->id && (has_capability('mod/forumimproved:replypost', $context)
-                        || has_capability('mod/forumimproved:startdiscussion', $context))) ||
-                has_capability('mod/forumimproved:editanypost', $context))
+            if (!(($post->userid == $USER->id && (has_capability('mod/forumplusone:replypost', $context)
+                        || has_capability('mod/forumplusone:startdiscussion', $context))) ||
+                has_capability('mod/forumplusone:editanypost', $context))
             ) {
-                $errors[] = new \moodle_exception('cannotupdatepost', 'forumimproved');
+                $errors[] = new \moodle_exception('cannotupdatepost', 'forumplusone');
             }
         }
         if (empty($post->id)) {
-            $thresholdwarning = forumimproved_check_throttling($forum, $cm);
+            $thresholdwarning = forumplusone_check_throttling($forum, $cm);
             if ($thresholdwarning !== false && $thresholdwarning->canpost === false) {
                 $errors[] = new \moodle_exception($thresholdwarning->errorcode, $thresholdwarning->module, $thresholdwarning->additional);
             }
         }
-        if (!$post->parent && forumimproved_str_empty($post->subject)) {
-            $errors[] = new \moodle_exception('discnameisrequired', 'forumimproved');
+        if (!$post->parent && forumplusone_str_empty($post->subject)) {
+            $errors[] = new \moodle_exception('discnameisrequired', 'forumplusone');
         }
-        if (forumimproved_str_empty($post->message)) {
-            $errors[] = new \moodle_exception('messageisrequired', 'forumimproved');
+        if (forumplusone_str_empty($post->message)) {
+            $errors[] = new \moodle_exception('messageisrequired', 'forumplusone');
         }
 
         if ($post->privatereply) {
-            if (!has_capability('mod/forumimproved:allowprivate', $context)
+            if (!has_capability('mod/forumplusone:allowprivate', $context)
                 || !$forum->allowprivatereplies
             ) {
-                $errors[] = new \moodle_exception('cannotmakeprivatereplies', 'forumimproved');
+                $errors[] = new \moodle_exception('cannotmakeprivatereplies', 'forumplusone');
             }
         }
 
@@ -363,9 +363,9 @@ class post_service {
         $post->timeend   = $discussion->timeend;
 
         if (!empty($post->id)) {
-            forumimproved_update_post($post, null, $message, $uploader);
+            forumplusone_update_post($post, null, $message, $uploader);
         } else {
-            forumimproved_add_new_post($post, null, $message, $uploader);
+            forumplusone_add_new_post($post, null, $message, $uploader);
         }
     }
 
@@ -402,8 +402,8 @@ class post_service {
             )
         );
         $event = post_created::create($params);
-        $event->add_record_snapshot('forumimproved_posts', $post);
-        $event->add_record_snapshot('forumimproved_discussions', $discussion);
+        $event->add_record_snapshot('forumplusone_posts', $post);
+        $event->add_record_snapshot('forumplusone_discussions', $discussion);
         $event->trigger();
     }
 
@@ -433,7 +433,7 @@ class post_service {
         }
 
         $event = post_updated::create($params);
-        $event->add_record_snapshot('forumimproved_discussions', $discussion);
+        $event->add_record_snapshot('forumplusone_discussions', $discussion);
         $event->trigger();
     }
 
@@ -444,8 +444,8 @@ class post_service {
     public function create_error_response(array $errors) {
         global $PAGE;
 
-        /** @var \mod_forumimproved_renderer $renderer */
-        $renderer = $PAGE->get_renderer('mod_forumimproved');
+        /** @var \mod_forumplusone_renderer $renderer */
+        $renderer = $PAGE->get_renderer('mod_forumplusone');
 
         return new json_response((object) array(
             'errors' => true,

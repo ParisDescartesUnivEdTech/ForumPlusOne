@@ -18,13 +18,13 @@
  * Repository Mapper Abstract
  *
  * @package    mod
- * @subpackage forumimproved
+ * @subpackage forumplusone
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class forumimproved_repository_abstract {
+class forumplusone_repository_abstract {
     /**
      * @var moodle_database
      */
@@ -45,7 +45,7 @@ class forumimproved_repository_abstract {
 
     /**
      * @param \moodle_database $db
-     * @return forumimproved_repository_discussion
+     * @return forumplusone_repository_discussion
      */
     public function set_db($db) {
         $this->db = $db;

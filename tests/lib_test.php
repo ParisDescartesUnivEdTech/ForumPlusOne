@@ -15,33 +15,33 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The module forumimproveds tests
+ * The module forumplusones tests
  *
- * @package    mod_forumimproved
+ * @package    mod_forumplusone
  * @copyright  2013 Frédéric Massart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-class mod_forumimproved_lib_testcase extends advanced_testcase {
+class mod_forumplusone_lib_testcase extends advanced_testcase {
 
-    public function test_forumimproved_trigger_content_uploaded_event() {
+    public function test_forumplusone_trigger_content_uploaded_event() {
         $this->resetAfterTest();
 
         $user = $this->getDataGenerator()->create_user();
         $course = $this->getDataGenerator()->create_course();
-        $forum = $this->getDataGenerator()->create_module('forumimproved', array('course' => $course->id));
+        $forum = $this->getDataGenerator()->create_module('forumplusone', array('course' => $course->id));
         $context = context_module::instance($forum->cmid);
 
         $this->setUser($user->id);
         $fakepost = (object) array('id' => 123, 'message' => 'Yay!', 'discussion' => 100);
-        $cm = get_coursemodule_from_instance('forumimproved', $forum->id);
+        $cm = get_coursemodule_from_instance('forumplusone', $forum->id);
 
         $fs = get_file_storage();
         $dummy = (object) array(
             'contextid' => $context->id,
-            'component' => 'mod_forumimproved',
+            'component' => 'mod_forumplusone',
             'filearea' => 'attachment',
             'itemid' => $fakepost->id,
             'filepath' => '/',
@@ -51,12 +51,12 @@ class mod_forumimproved_lib_testcase extends advanced_testcase {
 
         $data = new stdClass();
         $sink = $this->redirectEvents();
-        forumimproved_trigger_content_uploaded_event($fakepost, $cm, 'some triggered from value');
+        forumplusone_trigger_content_uploaded_event($fakepost, $cm, 'some triggered from value');
         $events = $sink->get_events();
 
         $this->assertCount(1, $events);
         $event = reset($events);
-        $this->assertInstanceOf('\mod_forumimproved\event\assessable_uploaded', $event);
+        $this->assertInstanceOf('\mod_forumplusone\event\assessable_uploaded', $event);
         $this->assertEquals($context->id, $event->contextid);
         $this->assertEquals($fakepost->id, $event->objectid);
         $this->assertEquals($fakepost->message, $event->other['content']);
@@ -64,7 +64,7 @@ class mod_forumimproved_lib_testcase extends advanced_testcase {
         $this->assertCount(1, $event->other['pathnamehashes']);
         $this->assertEquals($fi->get_pathnamehash(), $event->other['pathnamehashes'][0]);
         $expected = new stdClass();
-        $expected->modulename = 'forumimproved';
+        $expected->modulename = 'forumplusone';
         $expected->name = 'some triggered from value';
         $expected->cmid = $forum->cmid;
         $expected->itemid = $fakepost->id;
@@ -76,7 +76,7 @@ class mod_forumimproved_lib_testcase extends advanced_testcase {
         $this->assertEventContextNotUsed($event);
     }
 
-    public function test_forumimproved_get_courses_user_posted_in() {
+    public function test_forumplusone_get_courses_user_posted_in() {
         $this->resetAfterTest();
 
         $user1 = $this->getDataGenerator()->create_user();
@@ -90,47 +90,47 @@ class mod_forumimproved_lib_testcase extends advanced_testcase {
         // Create 3 forums, one in each course.
         $record = new stdClass();
         $record->course = $course1->id;
-        $forum1 = $this->getDataGenerator()->create_module('forumimproved', $record);
+        $forum1 = $this->getDataGenerator()->create_module('forumplusone', $record);
 
         $record = new stdClass();
         $record->course = $course2->id;
-        $forum2 = $this->getDataGenerator()->create_module('forumimproved', $record);
+        $forum2 = $this->getDataGenerator()->create_module('forumplusone', $record);
 
         $record = new stdClass();
         $record->course = $course3->id;
-        $forum3 = $this->getDataGenerator()->create_module('forumimproved', $record);
+        $forum3 = $this->getDataGenerator()->create_module('forumplusone', $record);
 
         // Add a second forum in course 1.
         $record = new stdClass();
         $record->course = $course1->id;
-        $forum4 = $this->getDataGenerator()->create_module('forumimproved', $record);
+        $forum4 = $this->getDataGenerator()->create_module('forumplusone', $record);
 
         // Add discussions to course 1 started by user1.
         $record = new stdClass();
         $record->course = $course1->id;
         $record->userid = $user1->id;
         $record->forum = $forum1->id;
-        $this->getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
+        $this->getDataGenerator()->get_plugin_generator('mod_forumplusone')->create_discussion($record);
 
         $record = new stdClass();
         $record->course = $course1->id;
         $record->userid = $user1->id;
         $record->forum = $forum4->id;
-        $this->getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
+        $this->getDataGenerator()->get_plugin_generator('mod_forumplusone')->create_discussion($record);
 
         // Add discussions to course2 started by user1.
         $record = new stdClass();
         $record->course = $course2->id;
         $record->userid = $user1->id;
         $record->forum = $forum2->id;
-        $this->getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
+        $this->getDataGenerator()->get_plugin_generator('mod_forumplusone')->create_discussion($record);
 
         // Add discussions to course 3 started by user2.
         $record = new stdClass();
         $record->course = $course3->id;
         $record->userid = $user2->id;
         $record->forum = $forum3->id;
-        $discussion3 = $this->getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
+        $discussion3 = $this->getDataGenerator()->get_plugin_generator('mod_forumplusone')->create_discussion($record);
 
         // Add post to course 3 by user1.
         $record = new stdClass();
@@ -138,21 +138,21 @@ class mod_forumimproved_lib_testcase extends advanced_testcase {
         $record->userid = $user1->id;
         $record->forum = $forum3->id;
         $record->discussion = $discussion3->id;
-        $this->getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_post($record);
+        $this->getDataGenerator()->get_plugin_generator('mod_forumplusone')->create_post($record);
 
         // User 3 hasn't posted anything, so shouldn't get any results.
-        $user3courses = forumimproved_get_courses_user_posted_in($user3);
+        $user3courses = forumplusone_get_courses_user_posted_in($user3);
         $this->assertEmpty($user3courses);
 
         // User 2 has only posted in course3.
-        $user2courses = forumimproved_get_courses_user_posted_in($user2);
+        $user2courses = forumplusone_get_courses_user_posted_in($user2);
         $this->assertCount(1, $user2courses);
         $user2course = array_shift($user2courses);
         $this->assertEquals($course3->id, $user2course->id);
         $this->assertEquals($course3->shortname, $user2course->shortname);
 
         // User 1 has posted in all 3 courses.
-        $user1courses = forumimproved_get_courses_user_posted_in($user1);
+        $user1courses = forumplusone_get_courses_user_posted_in($user1);
         $this->assertCount(3, $user1courses);
         foreach ($user1courses as $course) {
             $this->assertContains($course->id, array($course1->id, $course2->id, $course3->id));
@@ -162,7 +162,7 @@ class mod_forumimproved_lib_testcase extends advanced_testcase {
         }
 
         // User 1 has only started a discussion in course 1 and 2 though.
-        $user1courses = forumimproved_get_courses_user_posted_in($user1, true);
+        $user1courses = forumplusone_get_courses_user_posted_in($user1, true);
         $this->assertCount(2, $user1courses);
         foreach ($user1courses as $course) {
             $this->assertContains($course->id, array($course1->id, $course2->id));
@@ -171,9 +171,9 @@ class mod_forumimproved_lib_testcase extends advanced_testcase {
     }
 
     /**
-     * Test the logic in the forumimproved_tp_get_course_unread_posts() function.
+     * Test the logic in the forumplusone_tp_get_course_unread_posts() function.
      */
-    public function test_forumimproved_tp_get_course_unread_posts() {
+    public function test_forumplusone_tp_get_course_unread_posts() {
         global $CFG;
 
         $this->resetAfterTest();
@@ -182,14 +182,14 @@ class mod_forumimproved_lib_testcase extends advanced_testcase {
         $course = $this->getDataGenerator()->create_course();
 
         $options = array('course' => $course->id);
-        $forumforce = $this->getDataGenerator()->create_module('forumimproved', $options);
+        $forumforce = $this->getDataGenerator()->create_module('forumplusone', $options);
 
         // Add discussions to the tracking forced forum.
         $record = new stdClass();
         $record->course = $course->id;
         $record->userid = $user->id;
         $record->forum = $forumforce->id;
-        $discussionforce = $this->getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
+        $discussionforce = $this->getDataGenerator()->get_plugin_generator('mod_forumplusone')->create_discussion($record);
 
         // Add post to the tracking forced discussion.
         $record = new stdClass();
@@ -197,7 +197,7 @@ class mod_forumimproved_lib_testcase extends advanced_testcase {
         $record->userid = $user->id;
         $record->forum = $forumforce->id;
         $record->discussion = $discussionforce->id;
-        $this->getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_post($record);
+        $this->getDataGenerator()->get_plugin_generator('mod_forumplusone')->create_post($record);
     }
 
     /**
@@ -218,13 +218,13 @@ class mod_forumimproved_lib_testcase extends advanced_testcase {
             $this->getDataGenerator()->enrol_user($user->id, $course->id);
         }
 
-        $options = array('course' => $course->id, 'forcesubscribe' => FORUMIMPROVED_INITIALSUBSCRIBE); // Automatic Subscription.
-        $forum = $this->getDataGenerator()->create_module('forumimproved', $options);
+        $options = array('course' => $course->id, 'forcesubscribe' => FORUMPLUSONE_INITIALSUBSCRIBE); // Automatic Subscription.
+        $forum = $this->getDataGenerator()->create_module('forumplusone', $options);
 
-        $result = forumimproved_subscribed_users($course, $forum);
+        $result = forumplusone_subscribed_users($course, $forum);
         $this->assertEquals($usercount, count($result));
         foreach ($users as $user) {
-            $this->assertTrue(forumimproved_is_subscribed($user->id, $forum));
+            $this->assertTrue(forumplusone_is_subscribed($user->id, $forum));
         }
     }
 
@@ -246,13 +246,13 @@ class mod_forumimproved_lib_testcase extends advanced_testcase {
             $this->getDataGenerator()->enrol_user($user->id, $course->id);
         }
 
-        $options = array('course' => $course->id, 'forcesubscribe' => FORUMIMPROVED_FORCESUBSCRIBE); // Forced subscription.
-        $forum = $this->getDataGenerator()->create_module('forumimproved', $options);
+        $options = array('course' => $course->id, 'forcesubscribe' => FORUMPLUSONE_FORCESUBSCRIBE); // Forced subscription.
+        $forum = $this->getDataGenerator()->create_module('forumplusone', $options);
 
-        $result = forumimproved_subscribed_users($course, $forum);
+        $result = forumplusone_subscribed_users($course, $forum);
         $this->assertEquals($usercount, count($result));
         foreach ($users as $user) {
-            $this->assertTrue(forumimproved_is_subscribed($user->id, $forum));
+            $this->assertTrue(forumplusone_is_subscribed($user->id, $forum));
         }
     }
 
@@ -274,14 +274,14 @@ class mod_forumimproved_lib_testcase extends advanced_testcase {
             $this->getDataGenerator()->enrol_user($user->id, $course->id);
         }
 
-        $options = array('course' => $course->id, 'forcesubscribe' => FORUMIMPROVED_CHOOSESUBSCRIBE); // Subscription optional.
-        $forum = $this->getDataGenerator()->create_module('forumimproved', $options);
+        $options = array('course' => $course->id, 'forcesubscribe' => FORUMPLUSONE_CHOOSESUBSCRIBE); // Subscription optional.
+        $forum = $this->getDataGenerator()->create_module('forumplusone', $options);
 
-        $result = forumimproved_subscribed_users($course, $forum);
+        $result = forumplusone_subscribed_users($course, $forum);
         // No subscriptions by default.
         $this->assertEquals(0, count($result));
         foreach ($users as $user) {
-            $this->assertFalse(forumimproved_is_subscribed($user->id, $forum));
+            $this->assertFalse(forumplusone_is_subscribed($user->id, $forum));
         }
     }
 
@@ -303,14 +303,14 @@ class mod_forumimproved_lib_testcase extends advanced_testcase {
             $this->getDataGenerator()->enrol_user($user->id, $course->id);
         }
 
-        $options = array('course' => $course->id, 'forcesubscribe' => FORUMIMPROVED_DISALLOWSUBSCRIBE); // Subscription prevented.
-        $forum = $this->getDataGenerator()->create_module('forumimproved', $options);
+        $options = array('course' => $course->id, 'forcesubscribe' => FORUMPLUSONE_DISALLOWSUBSCRIBE); // Subscription prevented.
+        $forum = $this->getDataGenerator()->create_module('forumplusone', $options);
 
-        $result = forumimproved_subscribed_users($course, $forum);
+        $result = forumplusone_subscribed_users($course, $forum);
         // No subscriptions by default.
         $this->assertEquals(0, count($result));
         foreach ($users as $user) {
-            $this->assertFalse(forumimproved_is_subscribed($user->id, $forum));
+            $this->assertFalse(forumplusone_is_subscribed($user->id, $forum));
         }
     }
 }

@@ -11,7 +11,7 @@
             var self = this;
             jQuery.get(
                 {
-                    url: '/mod/forumimproved/route.php',
+                    url: '/mod/forumplusone/route.php',
                     data: {
                         contextid: form.find('input[name="contextid"]').val(),
                         action: 'changestate',
@@ -22,13 +22,13 @@
                         if (data.errorCode == 0) {
                             switch (newChoise) {
                                 case "0": // open
-                                    jQuery(self).parents('.forumimproved-thread').removeClass('topic-closed topic-hidden');
+                                    jQuery(self).parents('.forumplusone-thread').removeClass('topic-closed topic-hidden');
                                     break;
                                 case "1": // close
-                                    jQuery(self).parents('.forumimproved-thread').removeClass('topic-hidden').addClass('topic-closed');
+                                    jQuery(self).parents('.forumplusone-thread').removeClass('topic-hidden').addClass('topic-closed');
                                     break;
                                 case "2": // hide
-                                    jQuery(self).parents('.forumimproved-thread').removeClass('topic-closed').addClass('topic-hidden');
+                                    jQuery(self).parents('.forumplusone-thread').removeClass('topic-closed').addClass('topic-hidden');
                                     break;
                             }
                         }

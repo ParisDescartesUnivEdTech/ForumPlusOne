@@ -1,7 +1,7 @@
 {
-    "name": "moodle-mod_forumimproved-io",
+    "name": "moodle-mod_forumplusone-io",
     "builds": {
-        "moodle-mod_forumimproved-io": {
+        "moodle-mod_forumplusone-io": {
             "jsfiles": [
                 "io.js"
             ]

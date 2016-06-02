@@ -17,19 +17,19 @@
 /**
  * File Export Adapter
  *
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_forumimproved\export;
+namespace mod_forumplusone\export;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__.'/adapter_interface.php');
 
 /**
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -93,7 +93,7 @@ class file_adapter implements adapter_interface {
         if (!empty($discussion)) {
             $filename = $this->create_file_name($discussion->name);
         } else {
-            $filename = $this->create_file_name(forumimproved_get_cm_forum($this->cm)->name);
+            $filename = $this->create_file_name(forumplusone_get_cm_forum($this->cm)->name);
         }
         $this->tempdirectory = $this->create_temp_directory();
         $this->exportfile    = $this->tempdirectory.'/'.$filename;
@@ -113,7 +113,7 @@ class file_adapter implements adapter_interface {
         $discname = format_string($discussion->name);
 
         foreach ($posts as $post) {
-            $postuser = forumimproved_extract_postuser($post, forumimproved_get_cm_forum($this->cm), \context_module::instance($this->cm->id));
+            $postuser = forumplusone_extract_postuser($post, forumplusone_get_cm_forum($this->cm), \context_module::instance($this->cm->id));
             $author   = fullname($postuser);
 
             $attachments = $this->process_attachments($post);
@@ -123,7 +123,7 @@ class file_adapter implements adapter_interface {
             $options->trusted = $post->messagetrust;
             $options->context = \context_module::instance($this->cm->id);
 
-            $message = file_rewrite_pluginfile_urls($post->message, 'pluginfile.php', \context_module::instance($this->cm->id)->id, 'mod_forumimproved', 'post', $post->id);
+            $message = file_rewrite_pluginfile_urls($post->message, 'pluginfile.php', \context_module::instance($this->cm->id)->id, 'mod_forumplusone', 'post', $post->id);
             $message = format_text($message, $post->messageformat, $options, $this->cm->course);
             $message = \core_text::specialtoascii(html_to_text($message));
 
@@ -182,7 +182,7 @@ class file_adapter implements adapter_interface {
             return $attachments;
         }
         /** @var \stored_file[] $files */
-        $files = get_file_storage()->get_area_files(\context_module::instance($this->cm->id)->id, 'mod_forumimproved', 'attachment', $post->id, 'timemodified', false);
+        $files = get_file_storage()->get_area_files(\context_module::instance($this->cm->id)->id, 'mod_forumplusone', 'attachment', $post->id, 'timemodified', false);
         foreach ($files as $file) {
             if ($this->attachments) {
                 $filename = $this->resolve_file_name($file);
@@ -220,7 +220,7 @@ class file_adapter implements adapter_interface {
      * @return string
      */
     protected function create_temp_directory() {
-        return make_temp_directory('mod_forumimproved_export_'.time());
+        return make_temp_directory('mod_forumplusone_export_'.time());
     }
 
     /**

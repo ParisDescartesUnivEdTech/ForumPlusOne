@@ -1,4 +1,4 @@
-@mod @mod_forumimproved
+@mod @mod_forumplusone
 Feature: Single simple forum discussion type
   In order to restrict the discussion topic to one
   As a teacher

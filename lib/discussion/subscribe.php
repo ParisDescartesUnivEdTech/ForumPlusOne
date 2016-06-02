@@ -18,7 +18,7 @@
  * Discussion Subscription Management
  *
  * @package    mod
- * @subpackage forumimproved
+ * @subpackage forumplusone
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,7 +26,7 @@
 
 require_once(dirname(dirname(__DIR__)).'/repository/discussion.php');
 
-class forumimproved_lib_discussion_subscribe {
+class forumplusone_lib_discussion_subscribe {
     /**
      * @var context_module
      */
@@ -43,7 +43,7 @@ class forumimproved_lib_discussion_subscribe {
     protected $userid;
 
     /**
-     * @var forumimproved_repository_discussion
+     * @var forumplusone_repository_discussion
      */
     protected $repo;
 
@@ -65,16 +65,16 @@ class forumimproved_lib_discussion_subscribe {
      * @param $forum
      * @param context_module $context
      * @param null|int $userid
-     * @param forumimproved_repository_discussion|null $repo
+     * @param forumplusone_repository_discussion|null $repo
      */
-    public function __construct($forum, context_module $context, $userid = null, forumimproved_repository_discussion $repo = null) {
+    public function __construct($forum, context_module $context, $userid = null, forumplusone_repository_discussion $repo = null) {
         global $USER;
 
         if (is_null($userid)) {
             $userid = $USER->id;
         }
         if (is_null($repo)) {
-            $repo = new forumimproved_repository_discussion();
+            $repo = new forumplusone_repository_discussion();
         }
         $this->set_forum($forum)
              ->set_context($context)
@@ -84,7 +84,7 @@ class forumimproved_lib_discussion_subscribe {
 
     /**
      * @param \stdClass $forum
-     * @return forumimproved_lib_discussion_subscribe
+     * @return forumplusone_lib_discussion_subscribe
      */
     public function set_forum($forum) {
         $this->forum = $forum;
@@ -100,7 +100,7 @@ class forumimproved_lib_discussion_subscribe {
 
     /**
      * @param \context_module $context
-     * @return forumimproved_lib_discussion_subscribe
+     * @return forumplusone_lib_discussion_subscribe
      */
     public function set_context(context_module $context) {
         $this->context = $context;
@@ -115,16 +115,16 @@ class forumimproved_lib_discussion_subscribe {
     }
 
     /**
-     * @param \forumimproved_repository_discussion $repo
-     * @return forumimproved_lib_discussion_subscribe
+     * @param \forumplusone_repository_discussion $repo
+     * @return forumplusone_lib_discussion_subscribe
      */
-    public function set_repo(forumimproved_repository_discussion $repo) {
+    public function set_repo(forumplusone_repository_discussion $repo) {
         $this->repo = $repo;
         return $this;
     }
 
     /**
-     * @return \forumimproved_repository_discussion
+     * @return \forumplusone_repository_discussion
      */
     public function get_repo() {
         return $this->repo;
@@ -132,7 +132,7 @@ class forumimproved_lib_discussion_subscribe {
 
     /**
      * @param int $userid
-     * @return forumimproved_lib_discussion_subscribe
+     * @return forumplusone_lib_discussion_subscribe
      */
     public function set_userid($userid) {
         $this->userid = $userid;
@@ -151,7 +151,7 @@ class forumimproved_lib_discussion_subscribe {
      */
     public function require_can_subscribe() {
         if (!$this->can_subscribe()) {
-            throw new moodle_exception('cansubscribediscerror', 'forumimproved');
+            throw new moodle_exception('cansubscribediscerror', 'forumplusone');
         }
     }
 
@@ -161,16 +161,16 @@ class forumimproved_lib_discussion_subscribe {
      * @return bool
      */
     protected function _can_subscribe() {
-        if ($this->get_forum()->forcesubscribe == FORUMIMPROVED_DISALLOWSUBSCRIBE) {
+        if ($this->get_forum()->forcesubscribe == FORUMPLUSONE_DISALLOWSUBSCRIBE) {
             return false;
         }
         if ($this->get_forum()->type == 'single') {
             return false;
         }
-        if (!has_capability('mod/forumimproved:viewdiscussion', $this->get_context(), $this->get_userid())) {
+        if (!has_capability('mod/forumplusone:viewdiscussion', $this->get_context(), $this->get_userid())) {
             return false;
         }
-        if (forumimproved_is_subscribed($this->get_userid(), $this->get_forum())) {
+        if (forumplusone_is_subscribed($this->get_userid(), $this->get_forum())) {
             return false;
         }
         return true;
@@ -207,7 +207,7 @@ class forumimproved_lib_discussion_subscribe {
      * Subscribe to a discussion
      *
      * @param int $discussionid
-     * @return forumimproved_lib_discussion_subscribe
+     * @return forumplusone_lib_discussion_subscribe
      */
     public function subscribe($discussionid) {
         $this->require_can_subscribe();
@@ -219,7 +219,7 @@ class forumimproved_lib_discussion_subscribe {
      * Unubscribe from a discussion
      *
      * @param int $discussionid
-     * @return forumimproved_lib_discussion_subscribe
+     * @return forumplusone_lib_discussion_subscribe
      */
     public function unsubscribe($discussionid) {
         $this->require_can_subscribe();
@@ -230,7 +230,7 @@ class forumimproved_lib_discussion_subscribe {
     /**
      * Unsubscribe from all discussions
      *
-     * @return forumimproved_lib_discussion_subscribe
+     * @return forumplusone_lib_discussion_subscribe
      */
     public function unsubscribe_all() {
         $this->require_can_subscribe();

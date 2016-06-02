@@ -1,5 +1,5 @@
 {
-    "moodle-mod_forumimproved-article": {
+    "moodle-mod_forumplusone-article": {
         "requires": [
             "base",
             "node",
@@ -7,8 +7,8 @@
             "router",
             "core_rating",
             "querystring",
-            "moodle-mod_forumimproved-io",
-            "moodle-mod_forumimproved-livelog",
+            "moodle-mod_forumplusone-io",
+            "moodle-mod_forumplusone-livelog",
             "moodle-core-formchangechecker"
         ]
     }

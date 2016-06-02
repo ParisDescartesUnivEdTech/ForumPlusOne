@@ -18,13 +18,13 @@
  * View Posters Table
  *
  * @package    mod
- * @subpackage forumimproved
+ * @subpackage forumplusone
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class forumimproved_lib_flag {
+class forumplusone_lib_flag {
     /**
      * The possible flags
      *

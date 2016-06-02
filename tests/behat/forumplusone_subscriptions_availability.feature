@@ -1,4 +1,4 @@
-@mod @mod_forumimproved
+@mod @mod_forumplusone
 Feature: As a teacher I need to see an accurate list of subscribed users
   In order to see who is subscribed to a forum
   As a teacher

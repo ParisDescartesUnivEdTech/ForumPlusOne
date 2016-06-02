@@ -17,12 +17,12 @@
 /**
  * Controller Abstract
  *
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_forumimproved\controller;
+namespace mod_forumplusone\controller;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -30,21 +30,21 @@ defined('MOODLE_INTERNAL') || die();
  * Controllers handle requests.  Any methods that end with "_action"
  * can be routed to via the URL.  See the router for how this happens.
  *
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class controller_abstract {
     /**
-     * @var \mod_forumimproved_renderer
+     * @var \mod_forumplusone_renderer
      */
     protected $renderer;
 
     /**
-     * @param \mod_forumimproved_renderer $renderer
+     * @param \mod_forumplusone_renderer $renderer
      * @return controller_abstract
      */
-    public function set_renderer(\mod_forumimproved_renderer $renderer) {
+    public function set_renderer(\mod_forumplusone_renderer $renderer) {
         $this->renderer = $renderer;
         return $this;
     }

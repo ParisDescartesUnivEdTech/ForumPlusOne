@@ -18,7 +18,7 @@
 /**
  * The module forums external functions unit tests
  *
- * @package    mod_forumimproved
+ * @package    mod_forumplusone
  * @category   external
  * @copyright  2012 Mark Nelson <markn@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -30,7 +30,7 @@ global $CFG;
 
 require_once($CFG->dirroot . '/webservice/tests/helpers.php');
 
-class mod_forumimproved_external_testcase extends externallib_advanced_testcase {
+class mod_forumplusone_external_testcase extends externallib_advanced_testcase {
 
     /**
      * Tests set up
@@ -38,14 +38,14 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
     protected function setUp() {
         global $CFG;
 
-        require_once($CFG->dirroot . '/mod/forumimproved/lib.php');
-        require_once($CFG->dirroot . '/mod/forumimproved/externallib.php');
+        require_once($CFG->dirroot . '/mod/forumplusone/lib.php');
+        require_once($CFG->dirroot . '/mod/forumplusone/externallib.php');
     }
 
     /**
      * Test get forums
      */
-    public function test_mod_forumimproved_get_forums_by_courses() {
+    public function test_mod_forumplusone_get_forums_by_courses() {
         global $USER, $CFG, $DB;
 
         $this->resetAfterTest(true);
@@ -64,16 +64,16 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
         $record = new stdClass();
         $record->introformat = FORMAT_HTML;
         $record->course = $course1->id;
-        $forum1 = self::getDataGenerator()->create_module('forumimproved', $record);
+        $forum1 = self::getDataGenerator()->create_module('forumplusone', $record);
 
         // Second forum.
         $record = new stdClass();
         $record->introformat = FORMAT_HTML;
         $record->course = $course2->id;
-        $forum2 = self::getDataGenerator()->create_module('forumimproved', $record);
+        $forum2 = self::getDataGenerator()->create_module('forumplusone', $record);
 
         // Check the forum was correctly created.
-        $this->assertEquals(2, $DB->count_records_select('forumimproved', 'id = :forum1 OR id = :forum2',
+        $this->assertEquals(2, $DB->count_records_select('forumplusone', 'id = :forum1 OR id = :forum2',
                 array('forum1' => $forum1->id, 'forum2' => $forum2->id)));
 
         // Enrol the user in two courses.
@@ -91,10 +91,10 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
         $enrol->enrol_user($instance2, $user->id);
 
         // Assign capabilities to view forums for forum 2.
-        $cm2 = get_coursemodule_from_id('forumimproved', $forum2->cmid, 0, false, MUST_EXIST);
+        $cm2 = get_coursemodule_from_id('forumplusone', $forum2->cmid, 0, false, MUST_EXIST);
         $context2 = context_module::instance($cm2->id);
         $newrole = create_role('Role 2', 'role2', 'Role 2 description');
-        $roleid2 = $this->assignUserCapability('mod/forumimproved:viewdiscussion', $context2->id, $newrole);
+        $roleid2 = $this->assignUserCapability('mod/forumplusone:viewdiscussion', $context2->id, $newrole);
 
         // Create what we expect to be returned when querying the two courses.
         $expectedforums = array();
@@ -102,13 +102,13 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
         $expectedforums[$forum2->id] = (array) $forum2;
 
         // Call the external function passing course ids.
-        $forums = mod_forumimproved_external::get_forums_by_courses(array($course1->id, $course2->id));
-        external_api::clean_returnvalue(mod_forumimproved_external::get_forums_by_courses_returns(), $forums);
+        $forums = mod_forumplusone_external::get_forums_by_courses(array($course1->id, $course2->id));
+        external_api::clean_returnvalue(mod_forumplusone_external::get_forums_by_courses_returns(), $forums);
         $this->assertEquals($expectedforums, $forums);
 
         // Call the external function without passing course id.
-        $forums = mod_forumimproved_external::get_forums_by_courses();
-        external_api::clean_returnvalue(mod_forumimproved_external::get_forums_by_courses_returns(), $forums);
+        $forums = mod_forumplusone_external::get_forums_by_courses();
+        external_api::clean_returnvalue(mod_forumplusone_external::get_forums_by_courses_returns(), $forums);
         $this->assertEquals($expectedforums, $forums);
 
         // Unenrol user from second course and alter expected forums.
@@ -116,22 +116,22 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
         unset($expectedforums[$forum2->id]);
 
         // Call the external function without passing course id.
-        $forums = mod_forumimproved_external::get_forums_by_courses();
-        external_api::clean_returnvalue(mod_forumimproved_external::get_forums_by_courses_returns(), $forums);
+        $forums = mod_forumplusone_external::get_forums_by_courses();
+        external_api::clean_returnvalue(mod_forumplusone_external::get_forums_by_courses_returns(), $forums);
         $this->assertEquals($expectedforums, $forums);
 
         // Call for the second course we unenrolled the user from, ensure exception thrown.
         try {
-            mod_forumimproved_external::get_forums_by_courses(array($course2->id));
+            mod_forumplusone_external::get_forums_by_courses(array($course2->id));
             $this->fail('Exception expected due to being unenrolled from the course.');
         } catch (moodle_exception $e) {
             $this->assertEquals('requireloginerror', $e->errorcode);
         }
 
         // Call without required capability, ensure exception thrown.
-        $this->unassignUserCapability('mod/forumimproved:viewdiscussion', null, null, $course1->id);
+        $this->unassignUserCapability('mod/forumplusone:viewdiscussion', null, null, $course1->id);
         try {
-            $forums = mod_forumimproved_external::get_forums_by_courses(array($course1->id));
+            $forums = mod_forumplusone_external::get_forums_by_courses(array($course1->id));
             $this->fail('Exception expected due to missing capability.');
         } catch (moodle_exception $e) {
             $this->assertEquals('nopermissions', $e->errorcode);
@@ -141,7 +141,7 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
     /**
      * Test get forum discussions
      */
-    public function test_mod_forumimproved_get_forum_discussions() {
+    public function test_mod_forumplusone_get_forum_discussions() {
         global $USER, $CFG, $DB;
 
         $this->resetAfterTest(true);
@@ -165,68 +165,68 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
         // First forum (tracking now enabled by default).
         $record = new stdClass();
         $record->course = $course1->id;
-        $forum1 = self::getDataGenerator()->create_module('forumimproved', $record);
+        $forum1 = self::getDataGenerator()->create_module('forumplusone', $record);
 
         // Second forum of type 'qanda' (tracking now enabled by default).
         $record = new stdClass();
         $record->course = $course2->id;
         $record->type = 'qanda';
-        $forum2 = self::getDataGenerator()->create_module('forumimproved', $record);
+        $forum2 = self::getDataGenerator()->create_module('forumplusone', $record);
 
         // Add discussions to the forums.
         $record = new stdClass();
         $record->course = $course1->id;
         $record->userid = $user1->id;
         $record->forum = $forum1->id;
-        $discussion1 = self::getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
+        $discussion1 = self::getDataGenerator()->get_plugin_generator('mod_forumplusone')->create_discussion($record);
 
         $record = new stdClass();
         $record->course = $course2->id;
         $record->userid = $user2->id;
         $record->forum = $forum2->id;
-        $discussion2 = self::getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
+        $discussion2 = self::getDataGenerator()->get_plugin_generator('mod_forumplusone')->create_discussion($record);
 
         // Add three replies to the discussion 1 from different users.
         $record = new stdClass();
         $record->discussion = $discussion1->id;
         $record->parent = $discussion1->firstpost;
         $record->userid = $user2->id;
-        $discussion1reply1 = self::getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_post($record);
+        $discussion1reply1 = self::getDataGenerator()->get_plugin_generator('mod_forumplusone')->create_post($record);
 
         $record->parent = $discussion1reply1->id;
         $record->userid = $user3->id;
-        $discussion1reply2 = self::getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_post($record);
+        $discussion1reply2 = self::getDataGenerator()->get_plugin_generator('mod_forumplusone')->create_post($record);
 
         $record->userid = $user4->id;
-        $discussion1reply3 = self::getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_post($record);
+        $discussion1reply3 = self::getDataGenerator()->get_plugin_generator('mod_forumplusone')->create_post($record);
 
         // Add two replies to discussion 2 from different users.
         $record = new stdClass();
         $record->discussion = $discussion2->id;
         $record->parent = $discussion2->firstpost;
         $record->userid = $user1->id;
-        $discussion2reply1 = self::getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_post($record);
+        $discussion2reply1 = self::getDataGenerator()->get_plugin_generator('mod_forumplusone')->create_post($record);
 
         $record->parent = $discussion2reply1->id;
         $record->userid = $user3->id;
-        $discussion2reply2 = self::getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_post($record);
+        $discussion2reply2 = self::getDataGenerator()->get_plugin_generator('mod_forumplusone')->create_post($record);
 
         // Check the forums were correctly created.
-        $this->assertEquals(2, $DB->count_records_select('forumimproved', 'id = :forum1 OR id = :forum2',
+        $this->assertEquals(2, $DB->count_records_select('forumplusone', 'id = :forum1 OR id = :forum2',
                 array('forum1' => $forum1->id, 'forum2' => $forum2->id)));
 
         // Check the discussions were correctly created.
-        $this->assertEquals(2, $DB->count_records_select('forumimproved_discussions', 'forum = :forum1 OR forum = :forum2',
+        $this->assertEquals(2, $DB->count_records_select('forumplusone_discussions', 'forum = :forum1 OR forum = :forum2',
                                                             array('forum1' => $forum1->id, 'forum2' => $forum2->id)));
 
         // Check the posts were correctly created, don't forget each discussion created also creates a post.
-        $this->assertEquals(7, $DB->count_records_select('forumimproved_posts', 'discussion = :discussion1 OR discussion = :discussion2',
+        $this->assertEquals(7, $DB->count_records_select('forumplusone_posts', 'discussion = :discussion1 OR discussion = :discussion2',
                 array('discussion1' => $discussion1->id, 'discussion2' => $discussion2->id)));
 
         // Enrol the user in the first course.
         $enrol = enrol_get_plugin('manual');
         // Following line enrol and assign default role id to the user.
-        // So the user automatically gets mod/forumimproved:viewdiscussion on all forums of the course.
+        // So the user automatically gets mod/forumplusone:viewdiscussion on all forums of the course.
         $this->getDataGenerator()->enrol_user($user1->id, $course1->id);
 
         // Now enrol into the second course.
@@ -241,10 +241,10 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
         $enrol->enrol_user($instance2, $user1->id);
 
         // Assign capabilities to view discussions for forum 2.
-        $cm = get_coursemodule_from_id('forumimproved', $forum2->cmid, 0, false, MUST_EXIST);
+        $cm = get_coursemodule_from_id('forumplusone', $forum2->cmid, 0, false, MUST_EXIST);
         $context = context_module::instance($cm->id);
         $newrole = create_role('Role 2', 'role2', 'Role 2 description');
-        $this->assignUserCapability('mod/forumimproved:viewdiscussion', $context->id, $newrole);
+        $this->assignUserCapability('mod/forumplusone:viewdiscussion', $context->id, $newrole);
 
         // Create what we expect to be returned when querying the forums.
         $expecteddiscussions = array();
@@ -306,8 +306,8 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
             );
 
         // Call the external function passing forum ids.
-        $discussions = mod_forumimproved_external::get_forum_discussions(array($forum1->id, $forum2->id));
-        external_api::clean_returnvalue(mod_forumimproved_external::get_forum_discussions_returns(), $discussions);
+        $discussions = mod_forumplusone_external::get_forum_discussions(array($forum1->id, $forum2->id));
+        external_api::clean_returnvalue(mod_forumplusone_external::get_forum_discussions_returns(), $discussions);
         $this->assertEquals($expecteddiscussions, $discussions);
         // Some debugging is going to be produced, this is because we switch PAGE contexts in the get_forum_discussions function,
         // the switch happens when the validate_context function is called inside a foreach loop.
@@ -315,15 +315,15 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
         $this->assertDebuggingCalled();
 
         // Remove the users post from the qanda forum and ensure they can not return the discussion.
-        $DB->delete_records('forumimproved_posts', array('id' => $discussion2reply1->id));
-        $discussions = mod_forumimproved_external::get_forum_discussions(array($forum2->id));
-        $discussions = external_api::clean_returnvalue(mod_forumimproved_external::get_forum_discussions_returns(), $discussions);
+        $DB->delete_records('forumplusone_posts', array('id' => $discussion2reply1->id));
+        $discussions = mod_forumplusone_external::get_forum_discussions(array($forum2->id));
+        $discussions = external_api::clean_returnvalue(mod_forumplusone_external::get_forum_discussions_returns(), $discussions);
         $this->assertEquals(0, count($discussions));
 
         // Call without required view discussion capability.
-        $this->unassignUserCapability('mod/forumimproved:viewdiscussion', null, null, $course1->id);
+        $this->unassignUserCapability('mod/forumplusone:viewdiscussion', null, null, $course1->id);
         try {
-            mod_forumimproved_external::get_forum_discussions(array($forum1->id));
+            mod_forumplusone_external::get_forum_discussions(array($forum1->id));
             $this->fail('Exception expected due to missing capability.');
         } catch (moodle_exception $e) {
             $this->assertEquals('nopermissions', $e->errorcode);
@@ -335,7 +335,7 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
 
         // Call for the second course we unenrolled the user from, make sure exception thrown.
         try {
-            mod_forumimproved_external::get_forum_discussions(array($forum2->id));
+            mod_forumplusone_external::get_forum_discussions(array($forum2->id));
             $this->fail('Exception expected due to being unenrolled from the course.');
         } catch (moodle_exception $e) {
             $this->assertEquals('requireloginerror', $e->errorcode);
@@ -346,7 +346,7 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
     /**
      * Test get forum posts
      */
-    public function test_mod_forumimproved_get_forum_discussion_posts() {
+    public function test_mod_forumplusone_get_forum_discussion_posts() {
         global $CFG;
 
         $this->resetAfterTest(true);
@@ -368,7 +368,7 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
         // Forum with tracking off.
         $record = new stdClass();
         $record->course = $course1->id;
-        $forum1 = self::getDataGenerator()->create_module('forumimproved', $record);
+        $forum1 = self::getDataGenerator()->create_module('forumplusone', $record);
         $forum1context = context_module::instance($forum1->cmid);
 
         // Add discussions to the forums.
@@ -376,29 +376,29 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
         $record->course = $course1->id;
         $record->userid = $user1->id;
         $record->forum = $forum1->id;
-        $discussion1 = self::getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
+        $discussion1 = self::getDataGenerator()->get_plugin_generator('mod_forumplusone')->create_discussion($record);
 
         $record = new stdClass();
         $record->course = $course1->id;
         $record->userid = $user2->id;
         $record->forum = $forum1->id;
-        $discussion2 = self::getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_discussion($record);
+        $discussion2 = self::getDataGenerator()->get_plugin_generator('mod_forumplusone')->create_discussion($record);
 
         // Add 2 replies to the discussion 1 from different users.
         $record = new stdClass();
         $record->discussion = $discussion1->id;
         $record->parent = $discussion1->firstpost;
         $record->userid = $user2->id;
-        $discussion1reply1 = self::getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_post($record);
+        $discussion1reply1 = self::getDataGenerator()->get_plugin_generator('mod_forumplusone')->create_post($record);
 
         $record->parent = $discussion1reply1->id;
         $record->userid = $user3->id;
-        $discussion1reply2 = self::getDataGenerator()->get_plugin_generator('mod_forumimproved')->create_post($record);
+        $discussion1reply2 = self::getDataGenerator()->get_plugin_generator('mod_forumplusone')->create_post($record);
 
         // Enrol the user in the  course.
         $enrol = enrol_get_plugin('manual');
         // Following line enrol and assign default role id to the user.
-        // So the user automatically gets mod/forumimproved:viewdiscussion on all forums of the course.
+        // So the user automatically gets mod/forumplusone:viewdiscussion on all forums of the course.
         $this->getDataGenerator()->enrol_user($user1->id, $course1->id);
         $this->getDataGenerator()->enrol_user($user2->id, $course1->id);
         $this->getDataGenerator()->enrol_user($user3->id, $course1->id);
@@ -418,7 +418,7 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
             'mailed' => $discussion1reply1->mailed,
             'subject' => $discussion1reply1->subject,
             'message' => file_rewrite_pluginfile_urls($discussion1reply1->message, 'pluginfile.php',
-                    $forum1context->id, 'mod_forumimproved', 'post', $discussion1reply1->id),
+                    $forum1context->id, 'mod_forumplusone', 'post', $discussion1reply1->id),
             'messageformat' => $discussion1reply1->messageformat,
             'messagetrust' => $discussion1reply1->messagetrust,
             'attachment' => $discussion1reply1->attachment,
@@ -439,7 +439,7 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
             'mailed' => $discussion1reply2->mailed,
             'subject' => $discussion1reply2->subject,
             'message' => file_rewrite_pluginfile_urls($discussion1reply2->message, 'pluginfile.php',
-                    $forum1context->id, 'mod_forumimproved', 'post', $discussion1reply2->id),
+                    $forum1context->id, 'mod_forumplusone', 'post', $discussion1reply2->id),
             'messageformat' => $discussion1reply2->messageformat,
             'messagetrust' => $discussion1reply2->messagetrust,
             'attachment' => $discussion1reply2->attachment,
@@ -452,8 +452,8 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
         );
 
         // Test a discussion with two additional posts (total 3 posts).
-        $posts = mod_forumimproved_external::get_forum_discussion_posts($discussion1->id);
-        $posts = external_api::clean_returnvalue(mod_forumimproved_external::get_forum_discussion_posts_returns(), $posts);
+        $posts = mod_forumplusone_external::get_forum_discussion_posts($discussion1->id);
+        $posts = external_api::clean_returnvalue(mod_forumplusone_external::get_forum_discussion_posts_returns(), $posts);
         $this->assertEquals(3, count($posts['posts']));
 
         // Unset the initial discussion post.
@@ -461,8 +461,8 @@ class mod_forumimproved_external_testcase extends externallib_advanced_testcase 
         $this->assertEquals($expectedposts, $posts);
 
         // Test discussion without additional posts. There should be only one post (the one created by the discussion).
-        $posts = mod_forumimproved_external::get_forum_discussion_posts($discussion2->id, 'modified', 'DESC');
-        $posts = external_api::clean_returnvalue(mod_forumimproved_external::get_forum_discussion_posts_returns(), $posts);
+        $posts = mod_forumplusone_external::get_forum_discussion_posts($discussion2->id, 'modified', 'DESC');
+        $posts = external_api::clean_returnvalue(mod_forumplusone_external::get_forum_discussion_posts_returns(), $posts);
         $this->assertEquals(1, count($posts['posts']));
 
     }

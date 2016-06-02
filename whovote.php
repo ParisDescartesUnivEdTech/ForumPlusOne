@@ -18,7 +18,7 @@
  * Displays all voters for a post
  * More than inspired by ratings
  *
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright 2016 Descartes University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -34,7 +34,7 @@ $popup      = optional_param('popup', 0, PARAM_INT); //==1 if in a popup window
 list($context, $course, $cm) = get_context_info_array($contextid);
 require_login($course, false, $cm);
 
-$url = new moodle_url('/mod/forumimproved/whovote.php', array('contextid' => $contextid,
+$url = new moodle_url('/mod/forumplusone/whovote.php', array('contextid' => $contextid,
                                                               'postid' => $postid));
 
 if (!empty($sort)) {
@@ -46,9 +46,9 @@ if (!empty($popup)) {
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 
-$config = get_config('forumimproved');
+$config = get_config('forumplusone');
 if (!empty($config->hideuserpicture) && $config->hideuserpicture) {
-    $PAGE->add_body_class('forumimproved-nouserpicture');
+    $PAGE->add_body_class('forumplusone-nouserpicture');
 }
 
 if ($popup) {
@@ -60,18 +60,18 @@ $params = array('contextid' => $contextid);
 $forum   = $PAGE->activityrecord;
 
 if ($forum->vote_display_name) {
-    if (!has_capability('mod/forumimproved:viewwhovote', $context)) {
-        print_error('vote_view_forbidden', 'forumimproved');
+    if (!has_capability('mod/forumplusone:viewwhovote', $context)) {
+        print_error('vote_view_forbidden', 'forumplusone');
     }
 }
 else {
-    if (!has_capability('mod/forumimproved:viewwhovote_annonymousvote', $context)) {
-        print_error('vote_view_forbidden', 'forumimproved');
+    if (!has_capability('mod/forumplusone:viewwhovote_annonymousvote', $context)) {
+        print_error('vote_view_forbidden', 'forumplusone');
     }
 }
 
 if (!$forum->enable_vote) {
-    print_error('vote_disabled_error', 'forumimproved');
+    print_error('vote_disabled_error', 'forumplusone');
 }
 
 switch ($sort) {
@@ -82,16 +82,16 @@ switch ($sort) {
 $strname    = get_string('username');
 $strtime    = get_string('date');
 
-$PAGE->set_title(get_string('allvoteforitem','forumimproved'));
+$PAGE->set_title(get_string('allvoteforitem','forumplusone'));
 echo $OUTPUT->header();
 
-$votes = forumimproved_get_all_post_votes($postid, $sqlsort);
+$votes = forumplusone_get_all_post_votes($postid, $sqlsort);
 if (!$votes) {
-    $msg = get_string('novotes','forumimproved');
+    $msg = get_string('novotes','forumplusone');
     echo html_writer::tag('div', $msg, array('class'=>'mdl-align'));
 } else {
 
-    $canSeeDatetime = has_capability('mod/forumimproved:viewvotedatetime', $context);
+    $canSeeDatetime = has_capability('mod/forumplusone:viewvotedatetime', $context);
 
 
 

@@ -18,7 +18,7 @@
 /**
  * Definition of log events
  *
- * @package    mod_forumimproved
+ * @package    mod_forumplusone
  * @category   log
  * @copyright  2010 Petr Skoda (http://skodak.org)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -31,16 +31,16 @@ defined('MOODLE_INTERNAL') || die();
 global $DB; // TODO: this is a hack, we should really do something with the SQL in SQL tables
 
 $logs = array(
-    array('module'=>'forumimproved', 'action'=>'add', 'mtable'=>'forumimproved', 'field'=>'name'),
-    array('module'=>'forumimproved', 'action'=>'update', 'mtable'=>'forumimproved', 'field'=>'name'),
-    array('module'=>'forumimproved', 'action'=>'add discussion', 'mtable'=>'forumimproved_discussions', 'field'=>'name'),
-    array('module'=>'forumimproved', 'action'=>'add post', 'mtable'=>'forumimproved_posts', 'field'=>'subject'),
-    array('module'=>'forumimproved', 'action'=>'update post', 'mtable'=>'forumimproved_posts', 'field'=>'subject'),
-    array('module'=>'forumimproved', 'action'=>'user report', 'mtable'=>'user', 'field'=>$DB->sql_concat('firstname', "' '" , 'lastname')),
-    array('module'=>'forumimproved', 'action'=>'move discussion', 'mtable'=>'forumimproved_discussions', 'field'=>'name'),
-    array('module'=>'forumimproved', 'action'=>'view subscribers', 'mtable'=>'forumimproved', 'field'=>'name'),
-    array('module'=>'forumimproved', 'action'=>'view discussion', 'mtable'=>'forumimproved_discussions', 'field'=>'name'),
-    array('module'=>'forumimproved', 'action'=>'view forum', 'mtable'=>'forumimproved', 'field'=>'name'),
-    array('module'=>'forumimproved', 'action'=>'subscribe', 'mtable'=>'forumimproved', 'field'=>'name'),
-    array('module'=>'forumimproved', 'action'=>'unsubscribe', 'mtable'=>'forumimproved', 'field'=>'name'),
+    array('module'=>'forumplusone', 'action'=>'add', 'mtable'=>'forumplusone', 'field'=>'name'),
+    array('module'=>'forumplusone', 'action'=>'update', 'mtable'=>'forumplusone', 'field'=>'name'),
+    array('module'=>'forumplusone', 'action'=>'add discussion', 'mtable'=>'forumplusone_discussions', 'field'=>'name'),
+    array('module'=>'forumplusone', 'action'=>'add post', 'mtable'=>'forumplusone_posts', 'field'=>'subject'),
+    array('module'=>'forumplusone', 'action'=>'update post', 'mtable'=>'forumplusone_posts', 'field'=>'subject'),
+    array('module'=>'forumplusone', 'action'=>'user report', 'mtable'=>'user', 'field'=>$DB->sql_concat('firstname', "' '" , 'lastname')),
+    array('module'=>'forumplusone', 'action'=>'move discussion', 'mtable'=>'forumplusone_discussions', 'field'=>'name'),
+    array('module'=>'forumplusone', 'action'=>'view subscribers', 'mtable'=>'forumplusone', 'field'=>'name'),
+    array('module'=>'forumplusone', 'action'=>'view discussion', 'mtable'=>'forumplusone_discussions', 'field'=>'name'),
+    array('module'=>'forumplusone', 'action'=>'view forum', 'mtable'=>'forumplusone', 'field'=>'name'),
+    array('module'=>'forumplusone', 'action'=>'subscribe', 'mtable'=>'forumplusone', 'field'=>'name'),
+    array('module'=>'forumplusone', 'action'=>'unsubscribe', 'mtable'=>'forumplusone', 'field'=>'name'),
 );

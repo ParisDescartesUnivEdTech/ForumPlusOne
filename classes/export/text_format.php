@@ -17,19 +17,19 @@
 /**
  * Text Export Format
  *
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_forumimproved\export;
+namespace mod_forumplusone\export;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__.'/format_abstract.php');
 
 /**
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -63,7 +63,7 @@ class text_format extends format_abstract {
      */
     public function export_discussion($id, $subject, $author, $date, $message, $attachments) {
         $this->write_separator();
-        fwrite($this->fp, get_string('discussion:x', 'forumimproved', $subject)."\n");
+        fwrite($this->fp, get_string('discussion:x', 'forumplusone', $subject)."\n");
         $this->export_post($id, $subject, $subject, $author, $date, $message, $attachments, '');
     }
 
@@ -83,16 +83,16 @@ class text_format extends format_abstract {
         $a = array('subject' => $subject, 'author' => $author, 'date' => $userdate);
 
         if (!empty($private)) {
-            $heading = get_string('subjectbyprivateuserondate', 'forumimproved', $a);
+            $heading = get_string('subjectbyprivateuserondate', 'forumplusone', $a);
         } else {
-            $heading = get_string('subjectbyuserondate', 'forumimproved', $a);
+            $heading = get_string('subjectbyuserondate', 'forumplusone', $a);
         }
         $this->write_separator();
         fwrite($this->fp, $heading."\n\n");
         fwrite($this->fp, $message."\n");
 
         if (!empty($attachments)) {
-            fwrite($this->fp, "\n".get_string('attachments:x', 'forumimproved', implode(' | ', $attachments))."\n");
+            fwrite($this->fp, "\n".get_string('attachments:x', 'forumplusone', implode(' | ', $attachments))."\n");
         }
     }
 }

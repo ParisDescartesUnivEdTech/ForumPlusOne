@@ -1,14 +1,14 @@
 /**
  * DOM Updater
  *
- * @module moodle-mod_forumimproved-dom
+ * @module moodle-mod_forumplusone-dom
  */
 
 /**
  * Handles updating forum DOM structures.
  *
  * @constructor
- * @namespace M.mod_forumimproved
+ * @namespace M.mod_forumplusone
  * @class Dom
  * @extends Y.Base
  */
@@ -16,14 +16,14 @@ function DOM() {
     DOM.superclass.constructor.apply(this, arguments);
 }
 
-DOM.NAME = 'moodle-mod_forumimproved-dom';
+DOM.NAME = 'moodle-mod_forumplusone-dom';
 
 DOM.ATTRS = {
     /**
      * Used for requests
      *
      * @attribute io
-     * @type M.mod_forumimproved.Io
+     * @type M.mod_forumplusone.Io
      * @required
      */
     io: { value: null }
@@ -145,7 +145,7 @@ Y.extend(DOM, Y.Base,
             if (countNode !== null) {
                 // Increment the count and update display.
                 countNode.setData('count', parseInt(countNode.getData('count'), 10) + increment);
-                countNode.setHTML(M.util.get_string('xdiscussions', 'mod_forumimproved', countNode.getData('count')));
+                countNode.setHTML(M.util.get_string('xdiscussions', 'mod_forumplusone', countNode.getData('count')));
             }
         },
 
@@ -241,4 +241,4 @@ Y.extend(DOM, Y.Base,
     }
 );
 
-M.mod_forumimproved.Dom = DOM;
+M.mod_forumplusone.Dom = DOM;

@@ -18,7 +18,7 @@
 /**
  * File containing the form definition to post in the forum.
  *
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Jamie Pratt <me@jamiep.org>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -32,11 +32,11 @@ require_once($CFG->dirroot . '/repository/lib.php');
 /**
  * Class to post in a forum.
  *
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Jamie Pratt <me@jamiep.org>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class mod_forumimproved_post_form extends moodleform {
+class mod_forumplusone_post_form extends moodleform {
 
     /**
      * Returns the options array to use in filemanager for forum attachments
@@ -72,7 +72,7 @@ class mod_forumimproved_post_form extends moodleform {
             'maxbytes' => $maxbytes,
             'trusttext'=> true,
             'return_types'=> FILE_INTERNAL | FILE_EXTERNAL,
-            'subdirs' => file_area_contains_subdirs($context, 'mod_forumimproved', 'post', $postid)
+            'subdirs' => file_area_contains_subdirs($context, 'mod_forumplusone', 'post', $postid)
         );
     }
 
@@ -84,7 +84,7 @@ class mod_forumimproved_post_form extends moodleform {
     function definition() {
         global $OUTPUT, $USER, $DB;
 
-        $config = get_config('forumimproved');
+        $config = get_config('forumplusone');
 
         $mform =& $this->_form;
 
@@ -108,56 +108,56 @@ class mod_forumimproved_post_form extends moodleform {
         }
 
         if (empty($post->parent)) {
-            $mform->addElement('text', 'subject', get_string('subject', 'forumimproved'), 'size="48"');
+            $mform->addElement('text', 'subject', get_string('subject', 'forumplusone'), 'size="48"');
             $mform->setType('subject', PARAM_TEXT);
             $mform->addRule('subject', get_string('required'), 'required', null, 'client');
             $mform->addRule('subject', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         }
 
-        $mform->addElement('editor', 'message', get_string('message', 'forumimproved'), null, self::editor_options($modcontext, (empty($post->id) ? null : $post->id)));
+        $mform->addElement('editor', 'message', get_string('message', 'forumplusone'), null, self::editor_options($modcontext, (empty($post->id) ? null : $post->id)));
         $mform->setType('message', PARAM_RAW);
         $mform->addRule('message', get_string('required'), 'required', null, 'client');
 
-        if (isset($forum->id) && forumimproved_is_forcesubscribed($forum)) {
+        if (isset($forum->id) && forumplusone_is_forcesubscribed($forum)) {
 
-            $mform->addElement('static', 'subscribemessage', get_string('subscription', 'forumimproved'), get_string('everyoneissubscribed', 'forumimproved'));
+            $mform->addElement('static', 'subscribemessage', get_string('subscription', 'forumplusone'), get_string('everyoneissubscribed', 'forumplusone'));
             $mform->addElement('hidden', 'subscribe');
             $mform->setType('subscribe', PARAM_INT);
-            $mform->addHelpButton('subscribemessage', 'subscription', 'forumimproved');
+            $mform->addHelpButton('subscribemessage', 'subscription', 'forumplusone');
 
-        } else if (isset($forum->forcesubscribe)&& $forum->forcesubscribe != FORUMIMPROVED_DISALLOWSUBSCRIBE ||
+        } else if (isset($forum->forcesubscribe)&& $forum->forcesubscribe != FORUMPLUSONE_DISALLOWSUBSCRIBE ||
                    has_capability('moodle/course:manageactivities', $coursecontext)) {
 
                 $options = array();
-                $options[0] = get_string('subscribestop', 'forumimproved');
-                $options[1] = get_string('subscribestart', 'forumimproved');
+                $options[0] = get_string('subscribestop', 'forumplusone');
+                $options[1] = get_string('subscribestart', 'forumplusone');
 
-                $mform->addElement('select', 'subscribe', get_string('subscription', 'forumimproved'), $options);
-                $mform->addHelpButton('subscribe', 'subscription', 'forumimproved');
-            } else if ($forum->forcesubscribe == FORUMIMPROVED_DISALLOWSUBSCRIBE) {
-                $mform->addElement('static', 'subscribemessage', get_string('subscription', 'forumimproved'), get_string('disallowsubscribe', 'forumimproved'));
+                $mform->addElement('select', 'subscribe', get_string('subscription', 'forumplusone'), $options);
+                $mform->addHelpButton('subscribe', 'subscription', 'forumplusone');
+            } else if ($forum->forcesubscribe == FORUMPLUSONE_DISALLOWSUBSCRIBE) {
+                $mform->addElement('static', 'subscribemessage', get_string('subscription', 'forumplusone'), get_string('disallowsubscribe', 'forumplusone'));
                 $mform->addElement('hidden', 'subscribe');
                 $mform->setType('subscribe', PARAM_INT);
-                $mform->addHelpButton('subscribemessage', 'subscription', 'forumimproved');
+                $mform->addHelpButton('subscribemessage', 'subscription', 'forumplusone');
             }
 
-        if (!empty($forum->maxattachments) && $forum->maxbytes != 1 && has_capability('mod/forumimproved:createattachment', $modcontext))  {  //  1 = No attachments at all
-            $mform->addElement('filemanager', 'attachments', get_string('attachment', 'forumimproved'), null, self::attachment_options($forum));
-            $mform->addHelpButton('attachments', 'attachment', 'forumimproved');
+        if (!empty($forum->maxattachments) && $forum->maxbytes != 1 && has_capability('mod/forumplusone:createattachment', $modcontext))  {  //  1 = No attachments at all
+            $mform->addElement('filemanager', 'attachments', get_string('attachment', 'forumplusone'), null, self::attachment_options($forum));
+            $mform->addHelpButton('attachments', 'attachment', 'forumplusone');
         }
 
         if (empty($post->id) && has_capability('moodle/course:manageactivities', $coursecontext)) { // hack alert
-            $mform->addElement('checkbox', 'mailnow', get_string('mailnow', 'forumimproved'));
+            $mform->addElement('checkbox', 'mailnow', get_string('mailnow', 'forumplusone'));
         }
 
-        if (!empty($config->enabletimedposts) && !$post->parent && has_capability('mod/forumimproved:viewhiddentimedposts', $coursecontext)) { // hack alert
-            $mform->addElement('header', 'displayperiod', get_string('displayperiod', 'forumimproved'));
+        if (!empty($config->enabletimedposts) && !$post->parent && has_capability('mod/forumplusone:viewhiddentimedposts', $coursecontext)) { // hack alert
+            $mform->addElement('header', 'displayperiod', get_string('displayperiod', 'forumplusone'));
 
-            $mform->addElement('date_selector', 'timestart', get_string('displaystart', 'forumimproved'), array('optional'=>true));
-            $mform->addHelpButton('timestart', 'displaystart', 'forumimproved');
+            $mform->addElement('date_selector', 'timestart', get_string('displaystart', 'forumplusone'), array('optional'=>true));
+            $mform->addHelpButton('timestart', 'displaystart', 'forumplusone');
 
-            $mform->addElement('date_selector', 'timeend', get_string('displayend', 'forumimproved'), array('optional'=>true));
-            $mform->addHelpButton('timeend', 'displayend', 'forumimproved');
+            $mform->addElement('date_selector', 'timeend', get_string('displayend', 'forumplusone'), array('optional'=>true));
+            $mform->addHelpButton('timeend', 'displayend', 'forumplusone');
 
         } else {
             $mform->addElement('hidden', 'timestart');
@@ -180,7 +180,7 @@ class mod_forumimproved_post_form extends moodleform {
                 $groupcount++;
             }
 
-            $contextcheck = has_capability('mod/forumimproved:movediscussions', $modulecontext) && empty($post->parent) && $groupcount > 1;
+            $contextcheck = has_capability('mod/forumplusone:movediscussions', $modulecontext) && empty($post->parent) && $groupcount > 1;
             if ($contextcheck) {
                 foreach ($groupdata as $grouptemp) {
                     $groupinfo[$grouptemp->id] = $grouptemp->name;
@@ -198,18 +198,18 @@ class mod_forumimproved_post_form extends moodleform {
             }
         }
 
-        if (!empty($forum->anonymous) and $post->userid == $USER->id and has_capability('mod/forumimproved:revealpost', $modcontext)) {
-            $mform->addElement('advcheckbox', 'reveal', get_string('reveal', 'forumimproved'));
-            $mform->addHelpButton('reveal', 'reveal', 'forumimproved');
+        if (!empty($forum->anonymous) and $post->userid == $USER->id and has_capability('mod/forumplusone:revealpost', $modcontext)) {
+            $mform->addElement('advcheckbox', 'reveal', get_string('reveal', 'forumplusone'));
+            $mform->addHelpButton('reveal', 'reveal', 'forumplusone');
         }
-        if (!empty($post->parent) and has_capability('mod/forumimproved:allowprivate', $modcontext)) {
+        if (!empty($post->parent) and has_capability('mod/forumplusone:allowprivate', $modcontext)) {
             if ($post->userid != $USER->id) {
                 $mform->addElement('hidden', 'privatereply', 0);
                 $mform->setType('privatereply', PARAM_INT);
             } else {
-                $parentauthorid = $DB->get_field('forumimproved_posts', 'userid', array('id' => $post->parent), MUST_EXIST);
-                $mform->addElement('advcheckbox', 'privatereply', get_string('privatereply', 'forumimproved'), null, null, array(0, $parentauthorid));
-                $mform->addHelpButton('privatereply', 'privatereply', 'forumimproved');
+                $parentauthorid = $DB->get_field('forumplusone_posts', 'userid', array('id' => $post->parent), MUST_EXIST);
+                $mform->addElement('advcheckbox', 'privatereply', get_string('privatereply', 'forumplusone'), null, null, array(0, $parentauthorid));
+                $mform->addHelpButton('privatereply', 'privatereply', 'forumplusone');
             }
         }
 
@@ -218,7 +218,7 @@ class mod_forumimproved_post_form extends moodleform {
         if (isset($post->edit)) { // hack alert
             $submit_string = get_string('savechanges');
         } else {
-            $submit_string = get_string('posttoforum', 'forumimproved');
+            $submit_string = get_string('posttoforum', 'forumplusone');
         }
         $this->add_action_buttons(false, $submit_string);
 
@@ -259,14 +259,14 @@ class mod_forumimproved_post_form extends moodleform {
     function validation($data, $files) {
         $errors = parent::validation($data, $files);
         if (($data['timeend']!=0) && ($data['timestart']!=0) && $data['timeend'] <= $data['timestart']) {
-            $errors['timeend'] = get_string('timestartenderror', 'forumimproved');
+            $errors['timeend'] = get_string('timestartenderror', 'forumplusone');
         }
         if (empty($data['message']['text'])) {
-            $errors['message'] = get_string('erroremptymessage', 'forumimproved');
+            $errors['message'] = get_string('erroremptymessage', 'forumplusone');
         }
         if (empty($this->_customdata['post']->parent)) {
             if (empty($data['subject'])) {
-                $errors['subject'] = get_string('erroremptysubject', 'forumimproved');
+                $errors['subject'] = get_string('erroremptysubject', 'forumplusone');
             }
         }
         return $errors;

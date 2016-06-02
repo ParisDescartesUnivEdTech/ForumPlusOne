@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    mod_forumimproved
+ * @package    mod_forumplusone
  * @subpackage backup-moodle2
  * @copyright  2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,35 +25,35 @@
  */
 
 /**
- * Define all the restore steps that will be used by the restore_forumimproved_activity_task
+ * Define all the restore steps that will be used by the restore_forumplusone_activity_task
  */
 
 /**
  * Structure step to restore one forum activity
  */
-class restore_forumimproved_activity_structure_step extends restore_activity_structure_step {
+class restore_forumplusone_activity_structure_step extends restore_activity_structure_step {
 
     protected function define_structure() {
         $paths = array();
         $userinfo = $this->get_setting_value('userinfo');
 
-        $paths[] = new restore_path_element('forumimproved', '/activity/forumimproved');
+        $paths[] = new restore_path_element('forumplusone', '/activity/forumplusone');
         if ($userinfo) {
-            $paths[] = new restore_path_element('forumimproved_discussion', '/activity/forumimproved/discussions/discussion');
-            $paths[] = new restore_path_element('forumimproved_discussion_subscription', '/activity/forumimproved/discussions/discussion/subscriptions_discs/subscriptions_disc');
-            $paths[] = new restore_path_element('forumimproved_post', '/activity/forumimproved/discussions/discussion/posts/post');
-            $paths[] = new restore_path_element('forumimproved_rating', '/activity/forumimproved/discussions/discussion/posts/post/ratings/rating');
-            $paths[] = new restore_path_element('forumimproved_subscription', '/activity/forumimproved/subscriptions/subscription');
-            $paths[] = new restore_path_element('forumimproved_digest', '/activity/forumimproved/digests/digest');
-            $paths[] = new restore_path_element('forumimproved_read', '/activity/forumimproved/readposts/read');
-            $paths[] = new restore_path_element('forumimproved_track', '/activity/forumimproved/trackedprefs/track');
+            $paths[] = new restore_path_element('forumplusone_discussion', '/activity/forumplusone/discussions/discussion');
+            $paths[] = new restore_path_element('forumplusone_discussion_subscription', '/activity/forumplusone/discussions/discussion/subscriptions_discs/subscriptions_disc');
+            $paths[] = new restore_path_element('forumplusone_post', '/activity/forumplusone/discussions/discussion/posts/post');
+            $paths[] = new restore_path_element('forumplusone_rating', '/activity/forumplusone/discussions/discussion/posts/post/ratings/rating');
+            $paths[] = new restore_path_element('forumplusone_subscription', '/activity/forumplusone/subscriptions/subscription');
+            $paths[] = new restore_path_element('forumplusone_digest', '/activity/forumplusone/digests/digest');
+            $paths[] = new restore_path_element('forumplusone_read', '/activity/forumplusone/readposts/read');
+            $paths[] = new restore_path_element('forumplusone_track', '/activity/forumplusone/trackedprefs/track');
         }
 
         // Return the paths wrapped into standard activity structure
         return $this->prepare_activity_structure($paths);
     }
 
-    protected function process_forumimproved($data) {
+    protected function process_forumplusone($data) {
         global $DB;
 
         $data = (object)$data;
@@ -75,18 +75,18 @@ class restore_forumimproved_activity_structure_step extends restore_activity_str
             $data->scale = -($this->get_mappingid('scale', abs($data->scale)));
         }
 
-        $newitemid = $DB->insert_record('forumimproved', $data);
+        $newitemid = $DB->insert_record('forumplusone', $data);
         $this->apply_activity_instance($newitemid);
     }
 
-    protected function process_forumimproved_discussion($data) {
+    protected function process_forumplusone_discussion($data) {
         global $DB;
 
         $data = (object)$data;
         $oldid = $data->id;
         $data->course = $this->get_courseid();
 
-        $data->forum = $this->get_new_parentid('forumimproved');
+        $data->forum = $this->get_new_parentid('forumplusone');
         $data->timemodified = $this->apply_date_offset($data->timemodified);
         $data->timestart = $this->apply_date_offset($data->timestart);
         $data->timeend = $this->apply_date_offset($data->timeend);
@@ -97,54 +97,54 @@ class restore_forumimproved_activity_structure_step extends restore_activity_str
         if (empty($data->groupid)) {
             $data->groupid = -1;
         }
-        $newitemid = $DB->insert_record('forumimproved_discussions', $data);
-        $this->set_mapping('forumimproved_discussion', $oldid, $newitemid);
+        $newitemid = $DB->insert_record('forumplusone_discussions', $data);
+        $this->set_mapping('forumplusone_discussion', $oldid, $newitemid);
     }
 
-    protected function process_forumimproved_discussion_subscription($data) {
+    protected function process_forumplusone_discussion_subscription($data) {
         global $DB;
 
         $data = (object)$data;
         unset($data->id);
 
-        $data->discussion = $this->get_new_parentid('forumimproved_discussion');
+        $data->discussion = $this->get_new_parentid('forumplusone_discussion');
         $data->userid     = $this->get_mappingid('user', $data->userid);
 
-        $DB->insert_record('forumimproved_subs_disc', $data);
+        $DB->insert_record('forumplusone_subs_disc', $data);
     }
 
-    protected function process_forumimproved_post($data) {
+    protected function process_forumplusone_post($data) {
         global $DB;
 
         $data = (object)$data;
         $oldid = $data->id;
 
-        $data->discussion = $this->get_new_parentid('forumimproved_discussion');
+        $data->discussion = $this->get_new_parentid('forumplusone_discussion');
         $data->created = $this->apply_date_offset($data->created);
         $data->modified = $this->apply_date_offset($data->modified);
         $data->userid = $this->get_mappingid('user', $data->userid);
         // If post has parent, map it (it has been already restored)
         if (!empty($data->parent)) {
-            $data->parent = $this->get_mappingid('forumimproved_post', $data->parent);
+            $data->parent = $this->get_mappingid('forumplusone_post', $data->parent);
         }
 
-        $newitemid = $DB->insert_record('forumimproved_posts', $data);
-        $this->set_mapping('forumimproved_post', $oldid, $newitemid, true);
+        $newitemid = $DB->insert_record('forumplusone_posts', $data);
+        $this->set_mapping('forumplusone_post', $oldid, $newitemid, true);
 
         // If !post->parent, it's the 1st post. Set it in discussion
         if (empty($data->parent)) {
-            $DB->set_field('forumimproved_discussions', 'firstpost', $newitemid, array('id' => $data->discussion));
+            $DB->set_field('forumplusone_discussions', 'firstpost', $newitemid, array('id' => $data->discussion));
         }
     }
 
-    protected function process_forumimproved_rating($data) {
+    protected function process_forumplusone_rating($data) {
         global $DB;
 
         $data = (object)$data;
 
         // Cannot use ratings API, cause, it's missing the ability to specify times (modified/created)
         $data->contextid = $this->task->get_contextid();
-        $data->itemid    = $this->get_new_parentid('forumimproved_post');
+        $data->itemid    = $this->get_new_parentid('forumplusone_post');
         if ($data->scaleid < 0) { // scale found, get mapping
             $data->scaleid = -($this->get_mappingid('scale', abs($data->scaleid)));
         }
@@ -155,7 +155,7 @@ class restore_forumimproved_activity_structure_step extends restore_activity_str
 
         // We need to check that component and ratingarea are both set here.
         if (empty($data->component)) {
-            $data->component = 'mod_forumimproved';
+            $data->component = 'mod_forumplusone';
         }
         if (empty($data->ratingarea)) {
             $data->ratingarea = 'post';
@@ -164,68 +164,68 @@ class restore_forumimproved_activity_structure_step extends restore_activity_str
         $newitemid = $DB->insert_record('rating', $data);
     }
 
-    protected function process_forumimproved_subscription($data) {
+    protected function process_forumplusone_subscription($data) {
         global $DB;
 
         $data = (object)$data;
         $oldid = $data->id;
 
-        $data->forum = $this->get_new_parentid('forumimproved');
+        $data->forum = $this->get_new_parentid('forumplusone');
         $data->userid = $this->get_mappingid('user', $data->userid);
 
-        $newitemid = $DB->insert_record('forumimproved_subscriptions', $data);
+        $newitemid = $DB->insert_record('forumplusone_subscriptions', $data);
     }
 
-    protected function process_forumimproved_digest($data) {
+    protected function process_forumplusone_digest($data) {
         global $DB;
 
         $data = (object)$data;
         $oldid = $data->id;
 
-        $data->forum = $this->get_new_parentid('forumimproved');
+        $data->forum = $this->get_new_parentid('forumplusone');
         $data->userid = $this->get_mappingid('user', $data->userid);
 
-        $newitemid = $DB->insert_record('forumimproved_digests', $data);
+        $newitemid = $DB->insert_record('forumplusone_digests', $data);
     }
 
-    protected function process_forumimproved_read($data) {
+    protected function process_forumplusone_read($data) {
         global $DB;
 
         $data = (object)$data;
         $oldid = $data->id;
 
-        $data->forumid = $this->get_new_parentid('forumimproved');
-        $data->discussionid = $this->get_mappingid('forumimproved_discussion', $data->discussionid);
-        $data->postid = $this->get_mappingid('forumimproved_post', $data->postid);
+        $data->forumid = $this->get_new_parentid('forumplusone');
+        $data->discussionid = $this->get_mappingid('forumplusone_discussion', $data->discussionid);
+        $data->postid = $this->get_mappingid('forumplusone_post', $data->postid);
         $data->userid = $this->get_mappingid('user', $data->userid);
 
-        $newitemid = $DB->insert_record('forumimproved_read', $data);
+        $newitemid = $DB->insert_record('forumplusone_read', $data);
     }
 
-    protected function process_forumimproved_track($data) {
+    protected function process_forumplusone_track($data) {
         global $DB;
 
         $data = (object)$data;
         $oldid = $data->id;
 
-        $data->forumid = $this->get_new_parentid('forumimproved');
+        $data->forumid = $this->get_new_parentid('forumplusone');
         $data->userid = $this->get_mappingid('user', $data->userid);
 
-        $newitemid = $DB->insert_record('forumimproved_track_prefs', $data);
+        $newitemid = $DB->insert_record('forumplusone_track_prefs', $data);
     }
 
     protected function after_execute() {
         global $DB;
 
         // Add forum related files, no need to match by itemname (just internally handled context)
-        $this->add_related_files('mod_forumimproved', 'intro', null);
+        $this->add_related_files('mod_forumplusone', 'intro', null);
 
         // If the forum is of type 'single' and no discussion has been ignited
         // (non-userinfo backup/restore) create the discussion here, using forum
         // information as base for the initial post.
         $forumid = $this->task->get_activityid();
-        $forumrec = $DB->get_record('forumimproved', array('id' => $forumid));
-        if ($forumrec->type == 'single' && !$DB->record_exists('forumimproved_discussions', array('forum' => $forumid))) {
+        $forumrec = $DB->get_record('forumplusone', array('id' => $forumid));
+        if ($forumrec->type == 'single' && !$DB->record_exists('forumplusone_discussions', array('forum' => $forumid))) {
             // Create single discussion/lead post from forum data
             $sd = new stdclass();
             $sd->course   = $forumrec->course;
@@ -237,22 +237,22 @@ class restore_forumimproved_activity_structure_step extends restore_activity_str
             $sd->messagetrust  = true;
             $sd->mailnow  = false;
             $sd->reveal = 0;
-            $sdid = forumimproved_add_discussion($sd, null, null, $this->task->get_userid());
+            $sdid = forumplusone_add_discussion($sd, null, null, $this->task->get_userid());
             // Mark the post as mailed
-            $DB->set_field ('forumimproved_posts','mailed', '1', array('discussion' => $sdid));
-            // Copy all the files from mod_foum/intro to mod_forumimproved/post
+            $DB->set_field ('forumplusone_posts','mailed', '1', array('discussion' => $sdid));
+            // Copy all the files from mod_foum/intro to mod_forumplusone/post
             $fs = get_file_storage();
-            $files = $fs->get_area_files($this->task->get_contextid(), 'mod_forumimproved', 'intro');
+            $files = $fs->get_area_files($this->task->get_contextid(), 'mod_forumplusone', 'intro');
             foreach ($files as $file) {
                 $newfilerecord = new stdclass();
                 $newfilerecord->filearea = 'post';
-                $newfilerecord->itemid   = $DB->get_field('forumimproved_discussions', 'firstpost', array('id' => $sdid));
+                $newfilerecord->itemid   = $DB->get_field('forumplusone_discussions', 'firstpost', array('id' => $sdid));
                 $fs->create_file_from_storedfile($newfilerecord, $file);
             }
         }
 
-        // Add post related files, matching by itemname = 'forumimproved_post'
-        $this->add_related_files('mod_forumimproved', 'post', 'forumimproved_post');
-        $this->add_related_files('mod_forumimproved', 'attachment', 'forumimproved_post');
+        // Add post related files, matching by itemname = 'forumplusone_post'
+        $this->add_related_files('mod_forumplusone', 'post', 'forumplusone_post');
+        $this->add_related_files('mod_forumplusone', 'attachment', 'forumplusone_post');
     }
 }

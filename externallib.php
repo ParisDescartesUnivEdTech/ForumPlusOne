@@ -18,7 +18,7 @@
 /**
  * External forum API
  *
- * @package    mod_forumimproved
+ * @package    mod_forumplusone
  * @copyright  2012 Mark Nelson <markn@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once("$CFG->libdir/externallib.php");
 
-class mod_forumimproved_external extends external_api {
+class mod_forumplusone_external extends external_api {
 
     /**
      * Describes the parameters for get_forum.
@@ -56,7 +56,7 @@ class mod_forumimproved_external extends external_api {
     public static function get_forums_by_courses($courseids = array()) {
         global $CFG, $DB, $USER;
 
-        require_once($CFG->dirroot . "/mod/forumimproved/lib.php");
+        require_once($CFG->dirroot . "/mod/forumplusone/lib.php");
 
         $params = self::validate_parameters(self::get_forums_by_courses_parameters(), array('courseids' => $courseids));
 
@@ -79,11 +79,11 @@ class mod_forumimproved_external extends external_api {
                 // Check the user can function in this context.
                 self::validate_context($context);
                 // Get the forums in this course.
-                if ($forums = $DB->get_records('forumimproved', array('course' => $cid))) {
+                if ($forums = $DB->get_records('forumplusone', array('course' => $cid))) {
                     // Get the modinfo for the course.
                     $modinfo = get_fast_modinfo($cid);
                     // Get the forum instances.
-                    $foruminstances = $modinfo->get_instances_of('forumimproved');
+                    $foruminstances = $modinfo->get_instances_of('forumplusone');
                     // Loop through the forums returned by modinfo.
                     foreach ($foruminstances as $forumid => $cm) {
                         // If it is not visible or present in the forums get_records call, continue.
@@ -95,10 +95,10 @@ class mod_forumimproved_external extends external_api {
                         // Get the module context.
                         $context = context_module::instance($cm->id);
                         // Check they have the view forum capability.
-                        require_capability('mod/forumimproved:viewdiscussion', $context);
+                        require_capability('mod/forumplusone:viewdiscussion', $context);
                         // Format the intro before being returning using the format setting.
                         list($forum->intro, $forum->introformat) = external_format_text($forum->intro, $forum->introformat,
-                            $context->id, 'mod_forumimproved', 'intro', 0);
+                            $context->id, 'mod_forumplusone', 'intro', 0);
                         // Add the course module id to the object, this information is useful.
                         $forum->cmid = $cm->id;
                         // Add the forum to the array to return.
@@ -180,7 +180,7 @@ class mod_forumimproved_external extends external_api {
     public static function get_forum_discussions($forumids, $limitfrom = 0, $limitnum = 0) {
         global $CFG, $DB, $USER;
 
-        require_once($CFG->dirroot . "/mod/forumimproved/lib.php");
+        require_once($CFG->dirroot . "/mod/forumplusone/lib.php");
 
         // Validate the parameter.
         $params = self::validate_parameters(self::get_forum_discussions_parameters(),
@@ -201,12 +201,12 @@ class mod_forumimproved_external extends external_api {
         // Loop through them.
         foreach ($forumids as $id) {
             // Get the forum object.
-            $forum = $DB->get_record('forumimproved', array('id' => $id), '*', MUST_EXIST);
+            $forum = $DB->get_record('forumplusone', array('id' => $id), '*', MUST_EXIST);
 
             $course = get_course($forum->course);
 
             $modinfo = get_fast_modinfo($course);
-            $forums  = $modinfo->get_instances_of('forumimproved');
+            $forums  = $modinfo->get_instances_of('forumplusone');
             $cm = $forums[$forum->id];
 
             // Get the module context.
@@ -215,7 +215,7 @@ class mod_forumimproved_external extends external_api {
             // Validate the context.
             self::validate_context($modcontext);
 
-            require_capability('mod/forumimproved:viewdiscussion', $modcontext);
+            require_capability('mod/forumplusone:viewdiscussion', $modcontext);
 
             // Get the discussions for this forum.
             $params = array();
@@ -233,23 +233,23 @@ class mod_forumimproved_external extends external_api {
                 array_unshift($params, $id);
                 $select = "forum = ? $groupselect";
 
-                if ($discussions = $DB->get_records_select('forumimproved_discussions', $select, $params, 'timemodified DESC', '*',
+                if ($discussions = $DB->get_records_select('forumplusone_discussions', $select, $params, 'timemodified DESC', '*',
                     $limitfrom, $limitnum)) {
 
                     // Check if they can view full names.
                     $canviewfullname = has_capability('moodle/site:viewfullnames', $modcontext);
                     // Get the unreads array, this takes a forum id and returns data for all discussions.
                     $unreads = array();
-                    if ($cantrack = forumimproved_tp_can_track_forums($forum)) {
-                        if ($forumtracked = forumimproved_tp_is_tracked($forum)) {
-                            $unreads = forumimproved_get_discussions_unread($cm);
+                    if ($cantrack = forumplusone_tp_can_track_forums($forum)) {
+                        if ($forumtracked = forumplusone_tp_is_tracked($forum)) {
+                            $unreads = forumplusone_get_discussions_unread($cm);
                         }
                     }
                     // The forum function returns the replies for all the discussions in a given forum.
-                    $replies = forumimproved_count_discussion_replies($id);
+                    $replies = forumplusone_count_discussion_replies($id);
                     foreach ($discussions as $discussion) {
                         // This function checks capabilities, timed discussions, groups and qanda forums posting.
-                        if (!forumimproved_user_can_see_discussion($forum, $discussion, $modcontext)) {
+                        if (!forumplusone_user_can_see_discussion($forum, $discussion, $modcontext)) {
                             continue;
                         }
                         $usernamefields = user_picture::fields();
@@ -288,7 +288,7 @@ class mod_forumimproved_external extends external_api {
                             $return->lastpost = (int) $discussion->firstpost;
                         }
                         // Get the last post as well as the user who made it.
-                        $lastpost = $DB->get_record('forumimproved_posts', array('id' => $return->lastpost), '*', MUST_EXIST);
+                        $lastpost = $DB->get_record('forumplusone_posts', array('id' => $return->lastpost), '*', MUST_EXIST);
                         if (empty($arrusers[$lastpost->userid])) {
                             $arrusers[$lastpost->userid] = $DB->get_record('user', array('id' => $lastpost->userid),
                                     $usernamefields, MUST_EXIST);
@@ -385,40 +385,40 @@ class mod_forumimproved_external extends external_api {
         // Compact/extract functions are not recommended.
         $discussionid   = $params['discussionid'];
 
-        $discussion = $DB->get_record('forumimproved_discussions', array('id' => $discussionid), '*', MUST_EXIST);
-        $forum = $DB->get_record('forumimproved', array('id' => $discussion->forum), '*', MUST_EXIST);
+        $discussion = $DB->get_record('forumplusone_discussions', array('id' => $discussionid), '*', MUST_EXIST);
+        $forum = $DB->get_record('forumplusone', array('id' => $discussion->forum), '*', MUST_EXIST);
         $course = $DB->get_record('course', array('id' => $forum->course), '*', MUST_EXIST);
-        $cm = get_coursemodule_from_instance('forumimproved', $forum->id, $course->id, false, MUST_EXIST);
+        $cm = get_coursemodule_from_instance('forumplusone', $forum->id, $course->id, false, MUST_EXIST);
 
         // Validate the module context. It checks everything that affects the module visibility (including groupings, etc..).
         $modcontext = context_module::instance($cm->id);
         self::validate_context($modcontext);
 
-        // This require must be here, see mod/forumimproved/discuss.php.
-        require_once($CFG->dirroot . "/mod/forumimproved/lib.php");
+        // This require must be here, see mod/forumplusone/discuss.php.
+        require_once($CFG->dirroot . "/mod/forumplusone/lib.php");
 
         // Check they have the view forum capability.
-        require_capability('mod/forumimproved:viewdiscussion', $modcontext, null, true, 'noviewdiscussionspermission', 'forum');
+        require_capability('mod/forumplusone:viewdiscussion', $modcontext, null, true, 'noviewdiscussionspermission', 'forum');
 
-        if (! $post = forumimproved_get_post_full($discussion->firstpost)) {
-            throw new moodle_exception('notexists', 'forumimproved');
+        if (! $post = forumplusone_get_post_full($discussion->firstpost)) {
+            throw new moodle_exception('notexists', 'forumplusone');
         }
 
         // This function check groups, qanda, timed discussions, etc.
-        if (!forumimproved_user_can_see_post($forum, $discussion, $post, null, $cm)) {
-            throw new moodle_exception('noviewdiscussionspermission', 'forumimproved');
+        if (!forumplusone_user_can_see_post($forum, $discussion, $post, null, $cm)) {
+            throw new moodle_exception('noviewdiscussionspermission', 'forumplusone');
         }
 
         $canviewfullname = has_capability('moodle/site:viewfullnames', $modcontext);
 
         // We will add this field in the response.
-        $canreply = forumimproved_user_can_post($forum, $discussion, $USER, $cm, $course, $modcontext);
+        $canreply = forumplusone_user_can_post($forum, $discussion, $USER, $cm, $course, $modcontext);
 
-        $posts = forumimproved_get_all_discussion_posts($discussion->id);
+        $posts = forumplusone_get_all_discussion_posts($discussion->id);
 
         foreach ($posts as $pid => $post) {
 
-            if (!forumimproved_user_can_see_post($forum, $discussion, $post, null, $cm)) {
+            if (!forumplusone_user_can_see_post($forum, $discussion, $post, null, $cm)) {
                 $warning = array();
                 $warning['item'] = 'post';
                 $warning['itemid'] = $post->id;
@@ -428,7 +428,7 @@ class mod_forumimproved_external extends external_api {
                 continue;
             }
 
-            // Function forumimproved_get_all_discussion_posts adds postread field.
+            // Function forumplusone_get_all_discussion_posts adds postread field.
             // Note that the value returned can be a boolean or an integer. The WS expects a boolean.
             if (empty($post->postread)) {
                 $posts[$pid]->postread = false;

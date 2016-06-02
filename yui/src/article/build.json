@@ -1,7 +1,7 @@
 {
-    "name": "moodle-mod_forumimproved-article",
+    "name": "moodle-mod_forumplusone-article",
     "builds": {
-        "moodle-mod_forumimproved-article": {
+        "moodle-mod_forumplusone-article": {
             "jsfiles": [
                 "common.js",
                 "dom.js",

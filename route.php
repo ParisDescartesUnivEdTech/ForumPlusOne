@@ -18,21 +18,21 @@
  * Route entry
  *
  * @package    mod
- * @subpackage forumimproved
+ * @subpackage forumplusone
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use mod_forumimproved\controller\discussion_controller;
-use mod_forumimproved\controller\edit_controller;
-use mod_forumimproved\controller\vote_controller;
-use mod_forumimproved\controller\export_controller;
-use mod_forumimproved\controller\flag_controller;
-use mod_forumimproved\controller\kernel;
-use mod_forumimproved\controller\posters_controller;
-use mod_forumimproved\controller\posts_controller;
-use mod_forumimproved\controller\router;
+use mod_forumplusone\controller\discussion_controller;
+use mod_forumplusone\controller\edit_controller;
+use mod_forumplusone\controller\vote_controller;
+use mod_forumplusone\controller\export_controller;
+use mod_forumplusone\controller\flag_controller;
+use mod_forumplusone\controller\kernel;
+use mod_forumplusone\controller\posters_controller;
+use mod_forumplusone\controller\posts_controller;
+use mod_forumplusone\controller\router;
 
 if ((!empty($_SERVER['HTTP_X_REQUESTED_WITH'])
     && strcasecmp($_SERVER['HTTP_X_REQUESTED_WITH'], 'XMLHttpRequest') === 0)
@@ -62,7 +62,7 @@ list($context, $course, $cm) = get_context_info_array($contextid);
 if (empty($cm)) {
     throw new coding_exception("Failed to find course module record with contextid of $contextid");
 }
-$instance = $DB->get_record('forumimproved', array('id' => $cm->instance), '*', MUST_EXIST);
+$instance = $DB->get_record('forumplusone', array('id' => $cm->instance), '*', MUST_EXIST);
 
 require_login($course, true, $cm);
 
@@ -70,7 +70,7 @@ $PAGE->set_title("$course->shortname: $instance->name");
 $PAGE->set_heading($course->fullname);
 $PAGE->set_activity_record($instance);
 $PAGE->set_context($context);
-$PAGE->set_url('/mod/forumimproved/route.php', array(
+$PAGE->set_url('/mod/forumplusone/route.php', array(
     'contextid' => $context->id,
     'action'    => $action,
 ));

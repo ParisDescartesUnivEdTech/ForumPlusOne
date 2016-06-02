@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'forumimproved', language 'en', branch 'MOODLE_20_STABLE'
+ * Strings for component 'forumplusone', language 'en', branch 'MOODLE_20_STABLE'
  *
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -42,9 +42,9 @@ $string['attachment_help'] = 'You can optionally attach one or more files to a f
 $string['attachmentnopost'] = 'You cannot export attachments without a post id';
 $string['attachments'] = 'Attachments';
 $string['blockafter'] = 'Post threshold for blocking';
-$string['blockafter_help'] = 'This setting specifies the maximum number of posts that a user can post in the given time period. Users with the capability mod/forumimproved:postwithoutthrottling are exempt from post limits.';
+$string['blockafter_help'] = 'This setting specifies the maximum number of posts that a user can post in the given time period. Users with the capability mod/forumplusone:postwithoutthrottling are exempt from post limits.';
 $string['blockperiod'] = 'Time period for blocking';
-$string['blockperiod_help'] = 'Students can be blocked from posting more than a given number of posts in a given time period. Users with the capability mod/forumimproved:postwithoutthrottling are exempt from post limits.';
+$string['blockperiod_help'] = 'Students can be blocked from posting more than a given number of posts in a given time period. Users with the capability mod/forumplusone:postwithoutthrottling are exempt from post limits.';
 $string['blockperioddisabled'] = 'Don\'t block';
 $string['blogforum'] = 'Standard forum displayed in a blog-like format';
 $string['bynameondate'] = 'by {$a->name} - {$a->date}';
@@ -90,7 +90,7 @@ $string['configcleanreadtime'] = 'The hour of the day to clean old posts from th
 $string['configdigestmailtime'] = 'People who choose to have emails sent to them in digest form will be emailed the digest daily. This setting controls which time of day the daily mail will be sent (the next cron that runs after this hour will send it).';
 $string['configenablerssfeeds'] = 'This switch will enable the possibility of RSS feeds for all forums.  You will still need to turn feeds on manually in the settings for each forum.';
 $string['configenabletimedposts'] = 'Set to \'yes\' if you want to allow setting of display periods when posting a new forum discussion (Experimental as not yet fully tested)';
-$string['configlongpost'] = 'Any post over this length (in characters not including HTML) is considered long. Posts displayed on the site front page, social format course pages, or user profiles are shortened to a natural break somewhere between the forumimproved_shortpost and forumimproved_longpost values.';
+$string['configlongpost'] = 'Any post over this length (in characters not including HTML) is considered long. Posts displayed on the site front page, social format course pages, or user profiles are shortened to a natural break somewhere between the forumplusone_shortpost and forumplusone_longpost values.';
 $string['configmanydiscussions'] = 'Maximum number of discussions shown in a forum per page';
 $string['configmaxattachments'] = 'Default maximum number of attachments allowed per post.';
 $string['configmaxbytes'] = 'Default maximum size for all forum attachments on the site (subject to course limits and other local settings)';
@@ -186,32 +186,32 @@ $string['existingsubscribers'] = 'Existing subscribers';
 $string['exportdiscussion'] = 'Export whole discussion';
 $string['forcessubscribe'] = 'This forum forces everyone to be subscribed';
 $string['forum'] = 'Forum';
-$string['forumimproved:addinstance'] = 'Add a new forum';
-$string['forumimproved:allowforcesubscribe'] = 'Allow force subscribe';
+$string['forumplusone:addinstance'] = 'Add a new forum';
+$string['forumplusone:allowforcesubscribe'] = 'Allow force subscribe';
 $string['forumauthorhidden'] = 'Author (hidden)';
 $string['forumblockingalmosttoomanyposts'] = 'You are approaching the posting threshold. You have posted {$a->numposts} times in the last {$a->blockperiod} and the limit is {$a->blockafter} posts.';
 $string['forumbodyhidden'] = 'This post cannot be viewed by you, probably because you have not posted in the discussion, the maximum editing time hasn\'t passed yet, the discussion has not started or the discussion has expired.';
-$string['forumimproved:createattachment'] = 'Create attachments';
-$string['forumimproved:deleteanypost'] = 'Delete any posts (anytime)';
-$string['forumimproved:deleteownpost'] = 'Delete own posts (within deadline)';
-$string['forumimproved:editanypost'] = 'Edit any post';
-$string['forumimproved:exportdiscussion'] = 'Export whole discussion';
-$string['forumimproved:exportownpost'] = 'Export own post';
-$string['forumimproved:exportpost'] = 'Export post';
+$string['forumplusone:createattachment'] = 'Create attachments';
+$string['forumplusone:deleteanypost'] = 'Delete any posts (anytime)';
+$string['forumplusone:deleteownpost'] = 'Delete own posts (within deadline)';
+$string['forumplusone:editanypost'] = 'Edit any post';
+$string['forumplusone:exportdiscussion'] = 'Export whole discussion';
+$string['forumplusone:exportownpost'] = 'Export own post';
+$string['forumplusone:exportpost'] = 'Export post';
 $string['forumintro'] = 'Description';
-$string['forumimproved:managesubscriptions'] = 'Manage subscriptions';
-$string['forumimproved:movediscussions'] = 'Move discussions';
-$string['forumimproved:postwithoutthrottling'] = 'Exempt from post threshold';
+$string['forumplusone:managesubscriptions'] = 'Manage subscriptions';
+$string['forumplusone:movediscussions'] = 'Move discussions';
+$string['forumplusone:postwithoutthrottling'] = 'Exempt from post threshold';
 $string['forumname'] = 'Forum name';
 $string['forumposts'] = 'Forum posts';
-$string['forumimproved:addnews'] = 'Add news';
-$string['forumimproved:addquestion'] = 'Add question';
-$string['forumimproved:rate'] = 'Rate posts';
-$string['forumimproved:replynews'] = 'Reply to news';
-$string['forumimproved:replypost'] = 'Reply to posts';
+$string['forumplusone:addnews'] = 'Add news';
+$string['forumplusone:addquestion'] = 'Add question';
+$string['forumplusone:rate'] = 'Rate posts';
+$string['forumplusone:replynews'] = 'Reply to news';
+$string['forumplusone:replypost'] = 'Reply to posts';
 $string['forums'] = 'Forums';
-$string['forumimproved:splitdiscussions'] = 'Split discussions';
-$string['forumimproved:startdiscussion'] = 'Start new discussions';
+$string['forumplusone:splitdiscussions'] = 'Split discussions';
+$string['forumplusone:startdiscussion'] = 'Start new discussions';
 $string['forumsubjecthidden'] = 'Subject (hidden)';
 $string['forumtracked'] = 'Unread posts are being tracked';
 $string['forumtrackednot'] = 'Unread posts are not being tracked';
@@ -223,16 +223,16 @@ $string['forumtype_help'] = 'There are 5 forum types:
 * Q and A forum - Students must first post their perspectives before viewing other students\' posts
 * Standard forum displayed in a blog-like format - An open forum where anyone can start a new discussion at any time, and in which discussion topics are displayed on one page with "Discuss this topic" links
 * Standard forum for general use - An open forum where anyone can start a new discussion at any time';
-$string['forumimproved:viewallratings'] = 'View all raw ratings given by individuals';
-$string['forumimproved:viewanyrating'] = 'View total ratings that anyone received';
-$string['forumimproved:viewdiscussion'] = 'View discussions';
-$string['forumimproved:viewhiddentimedposts'] = 'View hidden timed posts';
-$string['forumimproved:viewqandawithoutposting'] = 'Always see Q and A posts';
-$string['forumimproved:viewrating'] = 'View the total rating you received';
-$string['forumimproved:viewsubscribers'] = 'View subscribers';
-$string['forumimproved:viewposters'] = 'View forum posters';
-$string['forumimproved:allowprivate'] = 'Allow user to respond privately';
-$string['forumimproved:viewhiddendiscussion'] = 'View hidden discussions';
+$string['forumplusone:viewallratings'] = 'View all raw ratings given by individuals';
+$string['forumplusone:viewanyrating'] = 'View total ratings that anyone received';
+$string['forumplusone:viewdiscussion'] = 'View discussions';
+$string['forumplusone:viewhiddentimedposts'] = 'View hidden timed posts';
+$string['forumplusone:viewqandawithoutposting'] = 'Always see Q and A posts';
+$string['forumplusone:viewrating'] = 'View the total rating you received';
+$string['forumplusone:viewsubscribers'] = 'View subscribers';
+$string['forumplusone:viewposters'] = 'View forum posters';
+$string['forumplusone:allowprivate'] = 'Allow user to respond privately';
+$string['forumplusone:viewhiddendiscussion'] = 'View hidden discussions';
 $string['generalforum'] = 'Standard forum for general use';
 $string['generalforums'] = 'General forums';
 $string['hiddenforumpost'] = 'Hidden forum post';
@@ -265,15 +265,15 @@ $string['maxattachmentsize'] = 'Maximum attachment size';
 $string['maxattachmentsize_help'] = 'This setting specifies the largest size of file that can be attached to a forum post.';
 $string['maxtimehaspassed'] = 'Sorry, but the maximum time for editing this post ({$a}) has passed!';
 $string['message'] = 'Message';
-$string['messageprovider:digests'] = 'Subscribed forum improved digests';
-$string['messageprovider:posts'] = 'Subscribed forum improved posts';
+$string['messageprovider:digests'] = 'Subscribed forum plusone digests';
+$string['messageprovider:posts'] = 'Subscribed forum plusone posts';
 $string['missingsearchterms'] = 'The following search terms occur only in the HTML markup of this message:';
 $string['modeflatnewestfirst'] = 'Display replies flat, with newest first';
 $string['modeflatoldestfirst'] = 'Display replies flat, with oldest first';
 $string['modenested'] = 'Display replies in nested form';
 $string['modethreaded'] = 'Display replies in threaded form';
-$string['modulename'] = 'Forum Improved';
-$string['modulename_help'] = 'The Forum Improved activity module enables participants to have asynchronous discussions,
+$string['modulename'] = 'ForumPlusOne';
+$string['modulename_help'] = 'The ForumPlusOne activity module enables participants to have asynchronous discussions,
 i.e., discussions that take place over an extended period of time.
 
 There are several forum types to choose from, such as a standard forum where anyone can start a new discussion at any time; a forum where each student can post exactly one discussion; or a question and answer forum where students must first post before being able to view other students\' posts. A teacher can allow files to be attached to forum posts. Attached images are displayed in the forum post.
@@ -292,8 +292,8 @@ Forums have many uses, such as:
 * A help centre where tutors and students can give advice
 * A one-on-one support area for private student-teacher communications (using a forum with separate groups and with one student per group)
 * For extension activities, for example ‘brain teasers’ for students to ponder and suggest solutions';
-$string['modulename_link'] = 'mod/forumimproved/view';
-$string['modulenameplural'] = 'Forums Improved';
+$string['modulename_link'] = 'mod/forumplusone/view';
+$string['modulenameplural'] = 'ForumsPlusOne';
 $string['more'] = 'more';
 $string['movedmarker'] = '(Moved)';
 $string['movethisdiscussionto'] = 'Move this discussion to ...';
@@ -339,13 +339,13 @@ $string['openmode1'] = 'No discussions, but replies are allowed';
 $string['openmode2'] = 'Discussions and replies are allowed';
 $string['overviewnumpostssince'] = '{$a} posts since last login';
 $string['overviewnumunread'] = '{$a} total unread';
-$string['page-mod-forumimproved-x'] = 'Any forum module page';
-$string['page-mod-forumimproved-view'] = 'Forum module main page';
-$string['page-mod-forumimproved-discuss'] = 'Forum module discussion thread page';
+$string['page-mod-forumplusone-x'] = 'Any forum module page';
+$string['page-mod-forumplusone-view'] = 'Forum module main page';
+$string['page-mod-forumplusone-discuss'] = 'Forum module discussion thread page';
 $string['parent'] = 'Show parent';
 $string['parentofthispost'] = 'Parent of this post';
 $string['pluginadministration'] = 'Forum administration';
-$string['pluginname'] = 'Forum Improved';
+$string['pluginname'] = 'ForumPlusOne';
 $string['postadded'] = '<p>Your post was successfully added.</p> <p>You have {$a} to edit it if you want to make any changes.</p>';
 $string['postaddedsuccess'] = 'Your post was successfully added.';
 $string['postaddedtimeleft'] = 'You have {$a} to edit it if you want to make any changes.';
@@ -476,7 +476,7 @@ $string['unsubscribeshort'] = 'Unsubscribe';
 $string['usermarksread'] = 'Manual message read marking';
 $string['viewalldiscussions'] = 'View all discussions';
 $string['warnafter'] = 'Post threshold for warning';
-$string['warnafter_help'] = 'Students can be warned as they approach the maximum number of posts allowed in a given period. This setting specifies after how many posts they are warned. Users with the capability mod/forumimproved:postwithoutthrottling are exempt from post limits.';
+$string['warnafter_help'] = 'Students can be warned as they approach the maximum number of posts allowed in a given period. This setting specifies after how many posts they are warned. Users with the capability mod/forumplusone:postwithoutthrottling are exempt from post limits.';
 $string['warnformorepost'] = 'Warning! There is more than one discussion in this forum - using the most recent';
 $string['yournewquestion'] = 'Your new question';
 $string['yournewtopic'] = 'Your new discussion topic';
@@ -492,8 +492,8 @@ $string['anonymousmiddlename'] = '';
 $string['anonymousalternatename'] = 'Anonymous';
 $string['reveal'] = 'Reveal yourself in this post';
 $string['reveal_help'] = 'If checked, then your name will be shown in the post and you will no longer be anonymous.';
-$string['forumimproved:revealpost'] = 'Reveal yourself in an anonymous forum';
-$string['forumimproved:viewflags'] = 'View post flags';
+$string['forumplusone:revealpost'] = 'Reveal yourself in an anonymous forum';
+$string['forumplusone:viewflags'] = 'View post flags';
 $string['viewposters'] = 'View posters';
 $string['substantive'] = 'Substantive';
 $string['toggle:bookmark'] = 'Bookmark';
@@ -637,10 +637,10 @@ $string['confighideuserpicture'] = 'Set to yes to stop the display of user pictu
 
 
 // Rights labels
-$string['forumimproved:viewvotedatetime'] = 'View the date of a vote';
-$string['forumimproved:viewwhovote'] = 'View voters';
-$string['forumimproved:viewwhovote_annonymousvote'] = 'View voters with an annonmous vote';
-$string['forumimproved:close_discussion'] = 'Close or open a discussion';
+$string['forumplusone:viewvotedatetime'] = 'View the date of a vote';
+$string['forumplusone:viewwhovote'] = 'View voters';
+$string['forumplusone:viewwhovote_annonymousvote'] = 'View voters with an annonmous vote';
+$string['forumplusone:close_discussion'] = 'Close or open a discussion';
 
 
 
@@ -701,12 +701,11 @@ $string['title-replies-uncollapse'] = 'Uncollapse replies';
 // LiveReload
 $string['livereloadrate'] = 'Refresh rate (in seconds)';
 $string['configlivereloadrate'] = 'This rate will determine the interval between refresh of informations<br>
+Type 0 to disable the refresh<br>
 <strong>YOU NEED TO CUSTOM THIS PARAMETER TAKING INTO ACCOUNT YOUR SERVERS</strong><br>
 <strong style="color:red">IF THIS RATE IS TOO LOW, YOU HAVE RISK OF LOAD INCREASE FOLLOWED BY <a href="https://en.wikipedia.org/w/index.php?title=Denial_of_service">DOS</a>.</strong>';
-
-
-
-
+$string['enable_refresh'] = 'Live session';
+$string['enable_refresh_help'] = 'This option will enable the automatic refresh of infomations. For technical reasons, enable this opion ONLY if you need it.';
 
 
 

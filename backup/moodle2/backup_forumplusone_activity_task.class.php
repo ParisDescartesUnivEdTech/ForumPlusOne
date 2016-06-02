@@ -16,9 +16,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines backup_forumimproved_activity_task class
+ * Defines backup_forumplusone_activity_task class
  *
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @category  backup
  * @copyright 2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,13 +28,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/mod/forumimproved/backup/moodle2/backup_forumimproved_stepslib.php');
-require_once($CFG->dirroot.'/mod/forumimproved/backup/moodle2/backup_forumimproved_settingslib.php');
+require_once($CFG->dirroot.'/mod/forumplusone/backup/moodle2/backup_forumplusone_stepslib.php');
+require_once($CFG->dirroot.'/mod/forumplusone/backup/moodle2/backup_forumplusone_settingslib.php');
 
 /**
  * Provides the steps to perform one complete backup of the Forum instance
  */
-class backup_forumimproved_activity_task extends backup_activity_task {
+class backup_forumplusone_activity_task extends backup_activity_task {
 
     /**
      * No specific settings for this activity
@@ -44,10 +44,10 @@ class backup_forumimproved_activity_task extends backup_activity_task {
     }
 
     /**
-     * Defines a backup step to store the instance data in the forumimproved.xml file
+     * Defines a backup step to store the instance data in the forumplusone.xml file
      */
     protected function define_my_steps() {
-        $this->add_step(new backup_forumimproved_activity_structure_step('forumimproved_structure', 'forumimproved.xml'));
+        $this->add_step(new backup_forumplusone_activity_structure_step('forumplusone_structure', 'forumplusone.xml'));
     }
 
 
@@ -56,7 +56,7 @@ class backup_forumimproved_activity_task extends backup_activity_task {
      */
     public function get_comment_file_annotation_info() {
         return (object) array(
-            'component' => 'mod_forumimproved',
+            'component' => 'mod_forumplusone',
             'filearea' => 'comments',
         );
     }
@@ -73,28 +73,28 @@ class backup_forumimproved_activity_task extends backup_activity_task {
         $base = preg_quote($CFG->wwwroot,"/");
 
         // Link to the list of forums
-        $search="/(".$base."\/mod\/forumimproved\/index.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@FORUMIMPROVEDINDEX*$2@$', $content);
+        $search="/(".$base."\/mod\/forumplusone\/index.php\?id\=)([0-9]+)/";
+        $content= preg_replace($search, '$@FORUMPLUSONEINDEX*$2@$', $content);
 
         // Link to forum view by moduleid
-        $search="/(".$base."\/mod\/forumimproved\/view.php\?id\=)([0-9]+)/";
-        $content= preg_replace($search, '$@FORUMIMPROVEDVIEWBYID*$2@$', $content);
+        $search="/(".$base."\/mod\/forumplusone\/view.php\?id\=)([0-9]+)/";
+        $content= preg_replace($search, '$@FORUMPLUSONEVIEWBYID*$2@$', $content);
 
         // Link to forum view by forumid
-        $search="/(".$base."\/mod\/forumimproved\/view.php\?f\=)([0-9]+)/";
-        $content= preg_replace($search, '$@FORUMIMPROVEDVIEWBYF*$2@$', $content);
+        $search="/(".$base."\/mod\/forumplusone\/view.php\?f\=)([0-9]+)/";
+        $content= preg_replace($search, '$@FORUMPLUSONEVIEWBYF*$2@$', $content);
 
         // Link to forum discussion with parent syntax
-        $search="/(".$base."\/mod\/forumimproved\/discuss.php\?d\=)([0-9]+)\&parent\=([0-9]+)/";
-        $content= preg_replace($search, '$@FORUMIMPROVEDDISCUSSIONVIEWPARENT*$2*$3@$', $content);
+        $search="/(".$base."\/mod\/forumplusone\/discuss.php\?d\=)([0-9]+)\&parent\=([0-9]+)/";
+        $content= preg_replace($search, '$@FORUMPLUSONEDISCUSSIONVIEWPARENT*$2*$3@$', $content);
 
         // Link to forum discussion with relative syntax
-        $search="/(".$base."\/mod\/forumimproved\/discuss.php\?d\=)([0-9]+)\#([0-9]+)/";
-        $content= preg_replace($search, '$@FORUMIMPROVEDDISCUSSIONVIEWINSIDE*$2*$3@$', $content);
+        $search="/(".$base."\/mod\/forumplusone\/discuss.php\?d\=)([0-9]+)\#([0-9]+)/";
+        $content= preg_replace($search, '$@FORUMPLUSONEDISCUSSIONVIEWINSIDE*$2*$3@$', $content);
 
         // Link to forum discussion by discussionid
-        $search="/(".$base."\/mod\/forumimproved\/discuss.php\?d\=)([0-9]+)/";
-        $content= preg_replace($search, '$@FORUMIMPROVEDDISCUSSIONVIEW*$2@$', $content);
+        $search="/(".$base."\/mod\/forumplusone\/discuss.php\?d\=)([0-9]+)/";
+        $content= preg_replace($search, '$@FORUMPLUSONEDISCUSSIONVIEW*$2@$', $content);
 
         return $content;
     }

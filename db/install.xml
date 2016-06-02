@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/forumimproved/db" VERSION="2016052600" COMMENT="XMLDB file for Moodle mod/forumimproved"
+<XMLDB PATH="mod/forumplusone/db" VERSION="2016052600" COMMENT="XMLDB file for Moodle mod/forumplusone"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="forumimproved" COMMENT="Forums contain and structure discussion">
+    <TABLE NAME="forumplusone" COMMENT="Forums contain and structure discussion">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -50,7 +50,7 @@
         <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="forumimproved_discussions" COMMENT="Forums are composed of discussions">
+    <TABLE NAME="forumplusone_discussions" COMMENT="Forums are composed of discussions">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -74,7 +74,7 @@
         <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="forumimproved_posts" COMMENT="All posts are stored in this table">
+    <TABLE NAME="forumplusone_posts" COMMENT="All posts are stored in this table">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="discussion" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -95,8 +95,8 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="discussion" TYPE="foreign" FIELDS="discussion" REFTABLE="forumimproved_discussions" REFFIELDS="id"/>
-        <KEY NAME="parent" TYPE="foreign" FIELDS="parent" REFTABLE="forumimproved_posts" REFFIELDS="id" COMMENT="note that to make this recursive FK working someday, the parent field must be decalred NULL"/>
+        <KEY NAME="discussion" TYPE="foreign" FIELDS="discussion" REFTABLE="forumplusone_discussions" REFFIELDS="id"/>
+        <KEY NAME="parent" TYPE="foreign" FIELDS="parent" REFTABLE="forumplusone_posts" REFFIELDS="id" COMMENT="note that to make this recursive FK working someday, the parent field must be decalred NULL"/>
       </KEYS>
       <INDEXES>
         <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
@@ -105,7 +105,7 @@
         <INDEX NAME="privatereply" UNIQUE="false" FIELDS="privatereply"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="forumimproved_vote" COMMENT="Record votes">
+    <TABLE NAME="forumplusone_vote" COMMENT="Record votes">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="postid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -114,13 +114,13 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="post_fk" TYPE="foreign" FIELDS="postid" REFTABLE="forumimproved_posts" REFFIELDS="id"/>
+        <KEY NAME="post_fk" TYPE="foreign" FIELDS="postid" REFTABLE="forumplusone_posts" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
         <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="forumimproved_queue" COMMENT="For keeping track of posts that will be mailed in digest form">
+    <TABLE NAME="forumplusone_queue" COMMENT="For keeping track of posts that will be mailed in digest form">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -130,14 +130,14 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="discussionid" TYPE="foreign" FIELDS="discussionid" REFTABLE="forumimproved_discussions" REFFIELDS="id"/>
-        <KEY NAME="postid" TYPE="foreign" FIELDS="postid" REFTABLE="forumimproved_posts" REFFIELDS="id"/>
+        <KEY NAME="discussionid" TYPE="foreign" FIELDS="discussionid" REFTABLE="forumplusone_discussions" REFFIELDS="id"/>
+        <KEY NAME="postid" TYPE="foreign" FIELDS="postid" REFTABLE="forumplusone_posts" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
         <INDEX NAME="user" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="forumimproved_subscriptions" COMMENT="Keeps track of who is subscribed to what forum">
+    <TABLE NAME="forumplusone_subscriptions" COMMENT="Keeps track of who is subscribed to what forum">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -151,7 +151,7 @@
         <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="forumimproved_subs_disc" COMMENT="Contains the discussion subscriptions">
+    <TABLE NAME="forumplusone_subs_disc" COMMENT="Contains the discussion subscriptions">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -159,13 +159,13 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="discussion" TYPE="foreign" FIELDS="discussion" REFTABLE="forumimproved_discussion" REFFIELDS="id"/>
+        <KEY NAME="discussion" TYPE="foreign" FIELDS="discussion" REFTABLE="forumplusone_discussion" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
         <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="forumimproved_digests" COMMENT="Keeps track of user mail delivery preferences for each forum">
+    <TABLE NAME="forumplusone_digests" COMMENT="Keeps track of user mail delivery preferences for each forum">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -179,7 +179,7 @@
         <KEY NAME="forumdigest" TYPE="unique" FIELDS="forum, userid, maildigest"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="forumimproved_read" COMMENT="Tracks each users read posts">
+    <TABLE NAME="forumplusone_read" COMMENT="Tracks each users read posts">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -198,7 +198,7 @@
         <INDEX NAME="postid-userid" UNIQUE="false" FIELDS="postid, userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="forumimproved_track_prefs" COMMENT="Tracks each users untracked forums">
+    <TABLE NAME="forumplusone_track_prefs" COMMENT="Tracks each users untracked forums">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

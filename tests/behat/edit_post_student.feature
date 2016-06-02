@@ -1,4 +1,4 @@
-@mod @mod_forumimproved
+@mod @mod_forumplusone
 Feature: Students can edit or delete their forum posts within a set time limit
   In order to refine forum posts
   As a user

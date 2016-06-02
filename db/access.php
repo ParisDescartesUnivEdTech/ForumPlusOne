@@ -17,7 +17,7 @@
 /**
  * Plugin capabilities
  *
- * @package    mod_forumimproved
+ * @package    mod_forumplusone
  * @copyright  2006 Martin Dougiamas
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
 
-    'mod/forumimproved:addinstance' => array(
+    'mod/forumplusone:addinstance' => array(
         'riskbitmask' => RISK_XSS,
 
         'captype' => 'write',
@@ -40,7 +40,7 @@ $capabilities = array(
         'clonepermissionsfrom' => 'moodle/course:manageactivities'
     ),
 
-    'mod/forumimproved:viewdiscussion' => array(
+    'mod/forumplusone:viewdiscussion' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -54,7 +54,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:viewhiddentimedposts' => array(
+    'mod/forumplusone:viewhiddentimedposts' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -65,7 +65,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:startdiscussion' => array(
+    'mod/forumplusone:startdiscussion' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -79,7 +79,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:replypost' => array(
+    'mod/forumplusone:replypost' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -93,7 +93,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:addnews' => array(
+    'mod/forumplusone:addnews' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -106,7 +106,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:replynews' => array(
+    'mod/forumplusone:replynews' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -119,7 +119,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:viewrating' => array(
+    'mod/forumplusone:viewrating' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -131,7 +131,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:viewanyrating' => array(
+    'mod/forumplusone:viewanyrating' => array(
 
         'riskbitmask' => RISK_PERSONAL,
         'captype' => 'read',
@@ -143,7 +143,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:viewallratings' => array(
+    'mod/forumplusone:viewallratings' => array(
 
         'riskbitmask' => RISK_PERSONAL,
         'captype' => 'read',
@@ -153,10 +153,10 @@ $capabilities = array(
             'editingteacher' => CAP_ALLOW,
             'manager' => CAP_ALLOW
         ),
-        'clonepermissionsfrom' =>  'mod/forumimproved:viewanyrating'
+        'clonepermissionsfrom' =>  'mod/forumplusone:viewanyrating'
     ),
 
-    'mod/forumimproved:rate' => array(
+    'mod/forumplusone:rate' => array(
 
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
@@ -167,7 +167,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:createattachment' => array(
+    'mod/forumplusone:createattachment' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -181,7 +181,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:deleteownpost' => array(
+    'mod/forumplusone:deleteownpost' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -193,7 +193,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:deleteanypost' => array(
+    'mod/forumplusone:deleteanypost' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -204,7 +204,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:splitdiscussions' => array(
+    'mod/forumplusone:splitdiscussions' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -215,7 +215,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:movediscussions' => array(
+    'mod/forumplusone:movediscussions' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -226,7 +226,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:editanypost' => array(
+    'mod/forumplusone:editanypost' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -239,7 +239,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:revealpost' => array(
+    'mod/forumplusone:revealpost' => array(
 
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
@@ -250,7 +250,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:viewqandawithoutposting' => array(
+    'mod/forumplusone:viewqandawithoutposting' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -261,7 +261,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:viewsubscribers' => array(
+    'mod/forumplusone:viewsubscribers' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -272,7 +272,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:managesubscriptions' => array(
+    'mod/forumplusone:managesubscriptions' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -285,7 +285,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:postwithoutthrottling' => array(
+    'mod/forumplusone:postwithoutthrottling' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -298,7 +298,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:exportdiscussion' => array(
+    'mod/forumplusone:exportdiscussion' => array(
 
         'riskbitmask' => RISK_PERSONAL,
 
@@ -310,7 +310,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
-    'mod/forumimproved:exportpost' => array(
+    'mod/forumplusone:exportpost' => array(
 
         'riskbitmask' => RISK_PERSONAL,
 
@@ -322,7 +322,7 @@ $capabilities = array(
             'manager' => CAP_ALLOW
         )
     ),
-    'mod/forumimproved:exportownpost' => array(
+    'mod/forumplusone:exportownpost' => array(
 
         'riskbitmask' => RISK_PERSONAL,
 
@@ -335,7 +335,7 @@ $capabilities = array(
             'student' => CAP_ALLOW,
         )
     ),
-    'mod/forumimproved:addquestion' => array(
+    'mod/forumplusone:addquestion' => array(
 
         'riskbitmask' => RISK_SPAM,
 
@@ -348,7 +348,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:viewposters' => array(
+    'mod/forumplusone:viewposters' => array(
 
         'riskbitmask' => RISK_PERSONAL,
 
@@ -363,7 +363,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:viewflags'=> array(
+    'mod/forumplusone:viewflags'=> array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -376,7 +376,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:allowprivate' => array(
+    'mod/forumplusone:allowprivate' => array(
 
         'captype'      => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -387,7 +387,7 @@ $capabilities = array(
             'teacher'        => CAP_ALLOW
         )
     ),
-    'mod/forumimproved:allowforcesubscribe' => array(
+    'mod/forumplusone:allowforcesubscribe' => array(
 
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
@@ -401,7 +401,7 @@ $capabilities = array(
 
 
 
-    'mod/forumimproved:viewwhovote' => array(
+    'mod/forumplusone:viewwhovote' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
@@ -416,7 +416,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:viewwhovote_annonymousvote' => array(
+    'mod/forumplusone:viewwhovote_annonymousvote' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
@@ -431,7 +431,7 @@ $capabilities = array(
         )
     ),
 
-    'mod/forumimproved:viewvotedatetime' => array(
+    'mod/forumplusone:viewvotedatetime' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
@@ -447,7 +447,7 @@ $capabilities = array(
     ),
 
 
-    'mod/forumimproved:change_state_discussion' => array(
+    'mod/forumplusone:change_state_discussion' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
@@ -463,7 +463,7 @@ $capabilities = array(
     ),
 
 
-    'mod/forumimproved:live_reload' => array(
+    'mod/forumplusone:live_reload' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
@@ -479,7 +479,7 @@ $capabilities = array(
     ),
 
 
-    'mod/forumimproved:viewhiddendiscussion' => array(
+    'mod/forumplusone:viewhiddendiscussion' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(

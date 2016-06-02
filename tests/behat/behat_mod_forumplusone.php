@@ -17,7 +17,7 @@
 /**
  * Steps definitions related with the forum activity.
  *
- * @package    mod_forumimproved
+ * @package    mod_forumplusone
  * @category   test
  * @copyright  2013 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -32,39 +32,39 @@ use Behat\Behat\Context\Step\Given as Given,
 /**
  * Forum-related steps definitions.
  *
- * @package    mod_forumimproved
+ * @package    mod_forumplusone
  * @category   test
  * @copyright  2013 David Monllaó
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class behat_mod_forumimproved extends behat_base {
+class behat_mod_forumplusone extends behat_base {
 
     /**
      * Adds a topic to the forum specified by it's name. Useful for the News forum and blog-style forums.
      *
-     * @Given /^I add a new topic to "(?P<forumimproved_name_string>(?:[^"]|\\")*)" forum with:$/
+     * @Given /^I add a new topic to "(?P<forumplusone_name_string>(?:[^"]|\\")*)" forum with:$/
      * @param string $forumname
      * @param TableNode $table
      */
     public function i_add_a_new_topic_to_forum_with($forumname, TableNode $table) {
-        return $this->add_new_discussion($forumname, $table, get_string('addanewtopic', 'forumimproved'));
+        return $this->add_new_discussion($forumname, $table, get_string('addanewtopic', 'forumplusone'));
     }
 
     /**
      * Adds a discussion to the forum specified by it's name with the provided table data (usually Subject and Message). The step begins from the forum's course page.
      *
-     * @Given /^I add a new discussion to "(?P<forumimproved_name_string>(?:[^"]|\\")*)" advanced forum with:$/
+     * @Given /^I add a new discussion to "(?P<forumplusone_name_string>(?:[^"]|\\")*)" advanced forum with:$/
      * @param string $forumname
      * @param TableNode $table
      */
     public function i_add_a_forum_discussion_to_forum_with($forumname, TableNode $table) {
-        return $this->add_new_discussion($forumname, $table, get_string('addanewtopic', 'forumimproved'));
+        return $this->add_new_discussion($forumname, $table, get_string('addanewtopic', 'forumplusone'));
     }
 
     /**
      * Adds a reply to the specified post of the specified forum. The step begins from the forum's page or from the forum's course page.
      *
-     * @Given /^I reply "(?P<post_subject_string>(?:[^"]|\\")*)" post from "(?P<forumimproved_name_string>(?:[^"]|\\")*)" advanced forum with:$/
+     * @Given /^I reply "(?P<post_subject_string>(?:[^"]|\\")*)" post from "(?P<forumplusone_name_string>(?:[^"]|\\")*)" advanced forum with:$/
      * @param string $postname The subject of the post
      * @param string $forumname The forum name
      * @param TableNode $table
@@ -74,9 +74,9 @@ class behat_mod_forumimproved extends behat_base {
         return array(
             new Given('I follow "' . $this->escape($forumname) . '"'),
             new Given('I follow "' . $this->escape($postsubject) . '"'),
-            new Given('I follow "' . get_string('reply', 'forumimproved') . '"'),
+            new Given('I follow "' . get_string('reply', 'forumplusone') . '"'),
             new Given('I set the following fields to these values:', $table),
-            new Given('I press "' . get_string('posttoforum', 'forumimproved') . '"'),
+            new Given('I press "' . get_string('posttoforum', 'forumplusone') . '"'),
             new Given('I wait to be redirected')
         );
 
@@ -100,7 +100,7 @@ class behat_mod_forumimproved extends behat_base {
             new Given('I follow "' . $this->escape($forumname) . '"'),
             new Given('I press "' . $buttonstr . '"'),
             new Given('I set the following fields to these values:', $table),
-            new Given('I press "' . get_string('posttoforum', 'forumimproved') . '"'),
+            new Given('I press "' . get_string('posttoforum', 'forumplusone') . '"'),
             new Given('I wait to be redirected')
         );
 

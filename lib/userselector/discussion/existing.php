@@ -18,7 +18,7 @@
  * Discussion existing user selector
  *
  * @package    mod
- * @subpackage forumimproved
+ * @subpackage forumplusone
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,19 +26,19 @@
 
 require_once(__DIR__.'/abstract.php');
 
-class forumimproved_userselector_discussion_existing extends forumimproved_userselector_discussion_abstract {
+class forumplusone_userselector_discussion_existing extends forumplusone_userselector_discussion_abstract {
     /**
      * Get file path to this class
      *
      * @return string
      */
     public function get_filepath() {
-        return '/mod/forumimproved/lib/userselector/discussion/existing.php';
+        return '/mod/forumplusone/lib/userselector/discussion/existing.php';
     }
 
     public function find_users($search) {
         return array(
-            get_string("existingsubscribers", 'forumimproved') =>
+            get_string("existingsubscribers", 'forumplusone') =>
             $this->get_repo()->get_subscribed_users($this->forum, $this->discussion, $this->context, $this->currentgroup, $this->required_fields_sql('u'), $this->search_sql($search, 'u'))
         );
     }

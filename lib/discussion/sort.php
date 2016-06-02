@@ -18,13 +18,13 @@
  * Discussion Sorting Management
  *
  * @package    mod
- * @subpackage forumimproved
+ * @subpackage forumplusone
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class forumimproved_lib_discussion_sort implements Serializable {
+class forumplusone_lib_discussion_sort implements Serializable {
     /**
      * @var string
      */
@@ -68,20 +68,20 @@ class forumimproved_lib_discussion_sort implements Serializable {
      * @static
      * @param stdClass $forum
      * @param context_module $context
-     * @return forumimproved_lib_discussion_sort
+     * @return forumplusone_lib_discussion_sort
      */
     public static function get_from_session($forum, context_module $context) {
         global $SESSION;
 
         require_once(__DIR__.'/subscribe.php');
 
-        if (!empty($SESSION->forumimproved_lib_discussion_sort)) {
-            /** @var $instance forumimproved_lib_discussion_sort */
-            $instance = unserialize($SESSION->forumimproved_lib_discussion_sort);
+        if (!empty($SESSION->forumplusone_lib_discussion_sort)) {
+            /** @var $instance forumplusone_lib_discussion_sort */
+            $instance = unserialize($SESSION->forumplusone_lib_discussion_sort);
         } else {
             $instance = new self();
         }
-        $dsub = new forumimproved_lib_discussion_subscribe($forum, $context);
+        $dsub = new forumplusone_lib_discussion_subscribe($forum, $context);
         if (!$dsub->can_subscribe()) {
             $instance->disable('subscribe');
         }
@@ -90,16 +90,16 @@ class forumimproved_lib_discussion_sort implements Serializable {
 
     /**
      * @static
-     * @param forumimproved_lib_discussion_sort $sort
+     * @param forumplusone_lib_discussion_sort $sort
      */
-    public static function set_to_session(forumimproved_lib_discussion_sort $sort) {
+    public static function set_to_session(forumplusone_lib_discussion_sort $sort) {
         global $SESSION;
-        $SESSION->forumimproved_lib_discussion_sort = serialize($sort);
+        $SESSION->forumplusone_lib_discussion_sort = serialize($sort);
     }
 
     /**
      * @param array $disabled
-     * @return forumimproved_lib_discussion_sort
+     * @return forumplusone_lib_discussion_sort
      */
     public function set_disabled(array $disabled) {
         if (in_array($this->defaultkey, $disabled)) {
@@ -125,7 +125,7 @@ class forumimproved_lib_discussion_sort implements Serializable {
 
     /**
      * @param string $key
-     * @return forumimproved_lib_discussion_sort
+     * @return forumplusone_lib_discussion_sort
      */
     public function set_key($key) {
         if (!array_key_exists($key, $this->get_keyopts())) {
@@ -152,7 +152,7 @@ class forumimproved_lib_discussion_sort implements Serializable {
         $menu = array();
         foreach ($this->get_keyopts() as $key => $sort) {
             if (!in_array($key, $this->get_disabled())) {
-                $menu[$key] = get_string('discussionsortkey:'.$key, 'forumimproved');
+                $menu[$key] = get_string('discussionsortkey:'.$key, 'forumplusone');
             }
         }
         return $menu;
@@ -168,7 +168,7 @@ class forumimproved_lib_discussion_sort implements Serializable {
 
     /**
      * @param $key
-     * @return forumimproved_lib_discussion_sort
+     * @return forumplusone_lib_discussion_sort
      */
     public function disable($key) {
         $disabled = $this->get_disabled();

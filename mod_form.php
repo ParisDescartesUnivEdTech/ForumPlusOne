@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Jamie Pratt <me@jamiep.org>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -29,19 +29,19 @@ if (!defined('MOODLE_INTERNAL')) {
 
 require_once ($CFG->dirroot.'/course/moodleform_mod.php');
 
-class mod_forumimproved_mod_form extends moodleform_mod {
+class mod_forumplusone_mod_form extends moodleform_mod {
 
     function definition() {
         global $CFG, $COURSE, $PAGE;
 
-        $config = get_config('forumimproved');
+        $config = get_config('forumplusone');
 
         $mform    =& $this->_form;
 
 //-------------------------------------------------------------------------------
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
-        $mform->addElement('text', 'name', get_string('forumname', 'forumimproved'), array('size'=>'64'));
+        $mform->addElement('text', 'name', get_string('forumname', 'forumplusone'), array('size'=>'64'));
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
@@ -50,19 +50,19 @@ class mod_forumimproved_mod_form extends moodleform_mod {
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 
-        $this->add_intro_editor(true, get_string('forumintro', 'forumimproved'));
+        $this->add_intro_editor(true, get_string('forumintro', 'forumplusone'));
 
         if (empty($config->hiderecentposts)) {
             // Display recent posts on course page?
-            $mform->addElement('advcheckbox', 'showrecent', get_string('showrecent', 'forumimproved'));
-            $mform->addHelpButton('showrecent', 'showrecent', 'forumimproved');
+            $mform->addElement('advcheckbox', 'showrecent', get_string('showrecent', 'forumplusone'));
+            $mform->addHelpButton('showrecent', 'showrecent', 'forumplusone');
             $mform->setDefault('showrecent', 0);
         }
 
-        $forumtypes = forumimproved_get_forumimproved_types();
+        $forumtypes = forumplusone_get_forumplusone_types();
         core_collator::asort($forumtypes, core_collator::SORT_STRING);
-        $mform->addElement('select', 'type', get_string('forumtype', 'forumimproved'), $forumtypes);
-        $mform->addHelpButton('type', 'forumtype', 'forumimproved');
+        $mform->addElement('select', 'type', get_string('forumtype', 'forumplusone'), $forumtypes);
+        $mform->addHelpButton('type', 'forumtype', 'forumplusone');
         $mform->setDefault('type', 'general');
 
 
@@ -72,11 +72,17 @@ class mod_forumimproved_mod_form extends moodleform_mod {
 
 /*
         // Misc
-        $mform->addElement('header', 'mischdr', get_string('misc_section_header', 'forumimproved'));
+        $mform->addElement('header', 'mischdr', get_string('misc_section_header', 'forumplusone'));
 */
-        $mform->addElement('advcheckbox', 'enable_states_disc', get_string('enable_states_disc', 'forumimproved'));
-        $mform->addHelpButton('enable_states_disc', 'enable_states_disc', 'forumimproved');
+        $mform->addElement('advcheckbox', 'enable_states_disc', get_string('enable_states_disc', 'forumplusone'));
+        $mform->addHelpButton('enable_states_disc', 'enable_states_disc', 'forumplusone');
         $mform->setDefault('enable_states_disc', 1);
+
+        if ($config->livereloadrate > 0) {
+            $mform->addElement('advcheckbox', 'enable_refresh', get_string('enable_refresh', 'forumplusone'));
+            $mform->addHelpButton('enable_refresh', 'enable_refresh', 'forumplusone');
+            $mform->setDefault('enable_refresh', 0);
+        }
 
 
 
@@ -84,38 +90,38 @@ class mod_forumimproved_mod_form extends moodleform_mod {
 
 
         // Post options.
-        $mform->addElement('header', 'postoptshdr', get_string('postoptions', 'forumimproved'));
+        $mform->addElement('header', 'postoptshdr', get_string('postoptions', 'forumplusone'));
 
         // Substantive flag visible?
-        $mform->addElement('advcheckbox', 'showsubstantive', get_string('showsubstantive', 'forumimproved'));
-        $mform->addHelpButton('showsubstantive', 'showsubstantive', 'forumimproved');
+        $mform->addElement('advcheckbox', 'showsubstantive', get_string('showsubstantive', 'forumplusone'));
+        $mform->addHelpButton('showsubstantive', 'showsubstantive', 'forumplusone');
         $mform->setDefault('showsubstantive', 0);
 
         // Bookmarking flag visible?
-        $mform->addElement('advcheckbox', 'showbookmark', get_string('showbookmark', 'forumimproved'));
-        $mform->addHelpButton('showbookmark', 'showbookmark', 'forumimproved');
+        $mform->addElement('advcheckbox', 'showbookmark', get_string('showbookmark', 'forumplusone'));
+        $mform->addHelpButton('showbookmark', 'showbookmark', 'forumplusone');
         $mform->setDefault('showbookmark', 0);
 
         // Allow private replies if checked.
-        $mform->addElement('advcheckbox', 'allowprivatereplies', get_string('privatereplies', 'forumimproved'));
-        $mform->addHelpButton('allowprivatereplies', 'privatereplies', 'forumimproved');
+        $mform->addElement('advcheckbox', 'allowprivatereplies', get_string('privatereplies', 'forumplusone'));
+        $mform->addHelpButton('allowprivatereplies', 'privatereplies', 'forumplusone');
 
         // Allow anonymous replies?
-        $mform->addElement('advcheckbox', 'anonymous', get_string('allowanonymous', 'forumimproved'));
-        $mform->addHelpButton('anonymous', 'allowanonymous', 'forumimproved');
+        $mform->addElement('advcheckbox', 'anonymous', get_string('allowanonymous', 'forumplusone'));
+        $mform->addHelpButton('anonymous', 'allowanonymous', 'forumplusone');
 
         // Display word count?
-        $mform->addElement('advcheckbox', 'displaywordcount', get_string('displaywordcount', 'forumimproved'));
-        $mform->addHelpButton('displaywordcount', 'displaywordcount', 'forumimproved');
+        $mform->addElement('advcheckbox', 'displaywordcount', get_string('displaywordcount', 'forumplusone'));
+        $mform->addHelpButton('displaywordcount', 'displaywordcount', 'forumplusone');
         $mform->setDefault('displaywordcount', 0);
 
         // Attachments and word count.
-        $mform->addElement('header', 'attachmentshdr', get_string('attachments', 'forumimproved'));
+        $mform->addElement('header', 'attachmentshdr', get_string('attachments', 'forumplusone'));
 
         $choices = get_max_upload_sizes($CFG->maxbytes, $COURSE->maxbytes, 0, $config->maxbytes);
         $choices[1] = get_string('uploadnotallowed');
-        $mform->addElement('select', 'maxbytes', get_string('maxattachmentsize', 'forumimproved'), $choices);
-        $mform->addHelpButton('maxbytes', 'maxattachmentsize', 'forumimproved');
+        $mform->addElement('select', 'maxbytes', get_string('maxattachmentsize', 'forumplusone'), $choices);
+        $mform->addHelpButton('maxbytes', 'maxattachmentsize', 'forumplusone');
         $mform->setDefault('maxbytes', $config->maxbytes);
 
         $choices = array(
@@ -134,8 +140,8 @@ class mod_forumimproved_mod_form extends moodleform_mod {
             50 => 50,
             100 => 100
         );
-        $mform->addElement('select', 'maxattachments', get_string('maxattachments', 'forumimproved'), $choices);
-        $mform->addHelpButton('maxattachments', 'maxattachments', 'forumimproved');
+        $mform->addElement('select', 'maxattachments', get_string('maxattachments', 'forumplusone'), $choices);
+        $mform->addHelpButton('maxattachments', 'maxattachments', 'forumplusone');
         $mform->setDefault('maxattachments', $config->maxattachments);
 
 
@@ -144,18 +150,18 @@ class mod_forumimproved_mod_form extends moodleform_mod {
 
 
         // Vote.
-        $mform->addElement('header', 'voteshdr', get_string('votes_section_header', 'forumimproved'));
+        $mform->addElement('header', 'voteshdr', get_string('votes_section_header', 'forumplusone'));
 
-        $mform->addElement('checkbox', 'enable_vote', get_string('enable_vote', 'forumimproved'));
-        $mform->addHelpButton('enable_vote', 'enable_vote', 'forumimproved');
+        $mform->addElement('checkbox', 'enable_vote', get_string('enable_vote', 'forumplusone'));
+        $mform->addHelpButton('enable_vote', 'enable_vote', 'forumplusone');
         $mform->setDefault('enable_vote', 0);
 
-        $mform->addElement('advcheckbox', 'vote_display_name', get_string('vote_display_name', 'forumimproved'));
-        $mform->addHelpButton('vote_display_name', 'vote_display_name', 'forumimproved');
+        $mform->addElement('advcheckbox', 'vote_display_name', get_string('vote_display_name', 'forumplusone'));
+        $mform->addHelpButton('vote_display_name', 'vote_display_name', 'forumplusone');
         $mform->disabledIf('vote_display_name', 'enable_vote', 'notchecked');
         $mform->setDefault('vote_display_name', 1);
 
-        $mform->addElement('checkbox', 'votetime', get_string('votetime', 'forumimproved'));
+        $mform->addElement('checkbox', 'votetime', get_string('votetime', 'forumplusone'));
         $mform->disabledIf('votetime', 'enable_vote', 'notchecked');
 
         $mform->addElement('date_time_selector', 'votetimestart', get_string('from'));
@@ -167,10 +173,10 @@ class mod_forumimproved_mod_form extends moodleform_mod {
         $mform->disabledIf('votetimestop', 'votetime');
 
         $options = array();
-        $options[FORUMIMPROVED_COUNT_MODE_RECURSIVE] = get_string('count_vote_mode_recursive','forumimproved');
-        $options[FORUMIMPROVED_COUNT_MODE_FIRST_POST] = get_string('count_vote_mode_first_post','forumimproved');
-        $mform->addElement('select', 'count_vote_mode', get_string('count_vote_mode', 'forumimproved'), $options);
-        $mform->addHelpButton('count_vote_mode', 'count_vote_mode', 'forumimproved');
+        $options[FORUMPLUSONE_COUNT_MODE_RECURSIVE] = get_string('count_vote_mode_recursive','forumplusone');
+        $options[FORUMPLUSONE_COUNT_MODE_FIRST_POST] = get_string('count_vote_mode_first_post','forumplusone');
+        $mform->addElement('select', 'count_vote_mode', get_string('count_vote_mode', 'forumplusone'), $options);
+        $mform->addHelpButton('count_vote_mode', 'count_vote_mode', 'forumplusone');
         $mform->disabledIf('count_vote_mode', 'enable_vote', 'notchecked');
 
 
@@ -181,25 +187,25 @@ class mod_forumimproved_mod_form extends moodleform_mod {
 
 
         // Subscription and tracking.
-        $mform->addElement('header', 'subscriptionhdr', get_string('subscription', 'forumimproved'));
+        $mform->addElement('header', 'subscriptionhdr', get_string('subscription', 'forumplusone'));
 
         $options = array();
-        $options[FORUMIMPROVED_DISALLOWSUBSCRIBE] = get_string('subscriptiondisabled','forumimproved');
-        $options[FORUMIMPROVED_CHOOSESUBSCRIBE] = get_string('subscriptionoptional', 'forumimproved');
-        $options[FORUMIMPROVED_FORCESUBSCRIBE] = get_string('subscriptionforced', 'forumimproved');
-        $options[FORUMIMPROVED_INITIALSUBSCRIBE] = get_string('subscriptionauto', 'forumimproved');
-        $mform->addElement('select', 'forcesubscribe', get_string('subscriptionmode', 'forumimproved'), $options);
-        $mform->addHelpButton('forcesubscribe', 'subscriptionmode', 'forumimproved');
+        $options[FORUMPLUSONE_DISALLOWSUBSCRIBE] = get_string('subscriptiondisabled','forumplusone');
+        $options[FORUMPLUSONE_CHOOSESUBSCRIBE] = get_string('subscriptionoptional', 'forumplusone');
+        $options[FORUMPLUSONE_FORCESUBSCRIBE] = get_string('subscriptionforced', 'forumplusone');
+        $options[FORUMPLUSONE_INITIALSUBSCRIBE] = get_string('subscriptionauto', 'forumplusone');
+        $mform->addElement('select', 'forcesubscribe', get_string('subscriptionmode', 'forumplusone'), $options);
+        $mform->addHelpButton('forcesubscribe', 'subscriptionmode', 'forumplusone');
 
         if ($CFG->enablerssfeeds && isset($config->enablerssfeeds) && $config->enablerssfeeds) {
 //-------------------------------------------------------------------------------
             $mform->addElement('header', 'rssheader', get_string('rss'));
             $choices = array();
             $choices[0] = get_string('none');
-            $choices[1] = get_string('discussions', 'forumimproved');
-            $choices[2] = get_string('posts', 'forumimproved');
+            $choices[1] = get_string('discussions', 'forumplusone');
+            $choices[2] = get_string('posts', 'forumplusone');
             $mform->addElement('select', 'rsstype', get_string('rsstype'), $choices);
-            $mform->addHelpButton('rsstype', 'rsstype', 'forumimproved');
+            $mform->addHelpButton('rsstype', 'rsstype', 'forumplusone');
 
             $choices = array();
             $choices[0] = '0';
@@ -216,14 +222,14 @@ class mod_forumimproved_mod_form extends moodleform_mod {
             $choices[40] = '40';
             $choices[50] = '50';
             $mform->addElement('select', 'rssarticles', get_string('rssarticles'), $choices);
-            $mform->addHelpButton('rssarticles', 'rssarticles', 'forumimproved');
+            $mform->addHelpButton('rssarticles', 'rssarticles', 'forumplusone');
             $mform->disabledIf('rssarticles', 'rsstype', 'eq', '0');
         }
 
 //-------------------------------------------------------------------------------
-        $mform->addElement('header', 'blockafterheader', get_string('blockafter', 'forumimproved'));
+        $mform->addElement('header', 'blockafterheader', get_string('blockafter', 'forumplusone'));
         $options = array();
-        $options[0] = get_string('blockperioddisabled','forumimproved');
+        $options[0] = get_string('blockperioddisabled','forumplusone');
         $options[60*60*24]   = '1 '.get_string('day');
         $options[60*60*24*2] = '2 '.get_string('days');
         $options[60*60*24*3] = '3 '.get_string('days');
@@ -231,25 +237,25 @@ class mod_forumimproved_mod_form extends moodleform_mod {
         $options[60*60*24*5] = '5 '.get_string('days');
         $options[60*60*24*6] = '6 '.get_string('days');
         $options[60*60*24*7] = '1 '.get_string('week');
-        $mform->addElement('select', 'blockperiod', get_string('blockperiod', 'forumimproved'), $options);
-        $mform->addHelpButton('blockperiod', 'blockperiod', 'forumimproved');
+        $mform->addElement('select', 'blockperiod', get_string('blockperiod', 'forumplusone'), $options);
+        $mform->addHelpButton('blockperiod', 'blockperiod', 'forumplusone');
 
-        $mform->addElement('text', 'blockafter', get_string('blockafter', 'forumimproved'));
+        $mform->addElement('text', 'blockafter', get_string('blockafter', 'forumplusone'));
         $mform->setType('blockafter', PARAM_INT);
         $mform->setDefault('blockafter', '0');
         $mform->addRule('blockafter', null, 'numeric', null, 'client');
-        $mform->addHelpButton('blockafter', 'blockafter', 'forumimproved');
+        $mform->addHelpButton('blockafter', 'blockafter', 'forumplusone');
         $mform->disabledIf('blockafter', 'blockperiod', 'eq', 0);
 
-        $mform->addElement('text', 'warnafter', get_string('warnafter', 'forumimproved'));
+        $mform->addElement('text', 'warnafter', get_string('warnafter', 'forumplusone'));
         $mform->setType('warnafter', PARAM_INT);
         $mform->setDefault('warnafter', '0');
         $mform->addRule('warnafter', null, 'numeric', null, 'client');
-        $mform->addHelpButton('warnafter', 'warnafter', 'forumimproved');
+        $mform->addHelpButton('warnafter', 'warnafter', 'forumplusone');
         $mform->disabledIf('warnafter', 'blockperiod', 'eq', 0);
 
         $coursecontext = context_course::instance($COURSE->id);
-        plagiarism_get_form_elements_module($mform, $coursecontext, 'mod_forumimproved');
+        plagiarism_get_form_elements_module($mform, $coursecontext, 'mod_forumplusone');
 
 //-------------------------------------------------------------------------------
 
@@ -257,10 +263,10 @@ class mod_forumimproved_mod_form extends moodleform_mod {
 
         $this->standard_coursemodule_elements();
 
-        $mform->addElement('select', 'gradetype', get_string('gradetype', 'forumimproved'), forumimproved_get_grading_types());
-        $mform->setDefault('gradetype', FORUMIMPROVED_GRADETYPE_NONE);
+        $mform->addElement('select', 'gradetype', get_string('gradetype', 'forumplusone'), forumplusone_get_grading_types());
+        $mform->setDefault('gradetype', FORUMPLUSONE_GRADETYPE_NONE);
         $mform->setType('gradetype', PARAM_INT);
-        $mform->addHelpButton('gradetype', 'gradetype', 'forumimproved');
+        $mform->addHelpButton('gradetype', 'gradetype', 'forumplusone');
 
         $mform->insertElementBefore($mform->removeElement('gradetype'), 'grade');
         $scale = $mform->insertElementBefore($mform->removeElement('scale'), 'grade');
@@ -271,22 +277,22 @@ class mod_forumimproved_mod_form extends moodleform_mod {
 
         if ($this->_features->advancedgrading) {
             foreach ($this->current->_advancedgradingdata['areas'] as $areaname => $areadata) {
-                $mform->disabledIf('advancedgradingmethod_'.$areaname, 'gradetype', 'neq', FORUMIMPROVED_GRADETYPE_MANUAL);
+                $mform->disabledIf('advancedgradingmethod_'.$areaname, 'gradetype', 'neq', FORUMPLUSONE_GRADETYPE_MANUAL);
             }
         }
         $key = array_search('scale', $mform->_dependencies['assessed']['eq'][0]);
         if ($key !== false) {
             unset($mform->_dependencies['assessed']['eq'][0][$key]);
         }
-        $mform->disabledIf('gradecat', 'gradetype', 'eq', FORUMIMPROVED_GRADETYPE_NONE);
+        $mform->disabledIf('gradecat', 'gradetype', 'eq', FORUMPLUSONE_GRADETYPE_NONE);
 //-------------------------------------------------------------------------------
 // buttons
         $this->add_action_buttons();
 
         if (!$this->_features->advancedgrading) {
-            /** @var $renderer mod_forumimproved_renderer */
-            $renderer = $PAGE->get_renderer('mod_forumimproved');
-            $PAGE->requires->js_init_call('M.mod_forumimproved.init_modform', array(FORUMIMPROVED_GRADETYPE_MANUAL), false, $renderer->get_js_module());
+            /** @var $renderer mod_forumplusone_renderer */
+            $renderer = $PAGE->get_renderer('mod_forumplusone');
+            $PAGE->requires->js_init_call('M.mod_forumplusone.init_modform', array(FORUMPLUSONE_GRADETYPE_MANUAL), false, $renderer->get_js_module());
         }
     }
 
@@ -308,13 +314,13 @@ class mod_forumimproved_mod_form extends moodleform_mod {
         //we don't want to have these appear as possible selections in the form but
         //we want the form to display them if they are set.
         if ($typevalue[0]=='news') {
-            $type->addOption(get_string('namenews', 'forumimproved'), 'news');
-            $mform->addHelpButton('type', 'namenews', 'forumimproved');
+            $type->addOption(get_string('namenews', 'forumplusone'), 'news');
+            $mform->addHelpButton('type', 'namenews', 'forumplusone');
             $type->freeze();
             $type->setPersistantFreeze(true);
         }
         if ($typevalue[0]=='social') {
-            $type->addOption(get_string('namesocial', 'forumimproved'), 'social');
+            $type->addOption(get_string('namesocial', 'forumplusone'), 'social');
             $type->freeze();
             $type->setPersistantFreeze(true);
         }
@@ -358,24 +364,24 @@ class mod_forumimproved_mod_form extends moodleform_mod {
         $mform =& $this->_form;
 
         $group=array();
-        $group[] =& $mform->createElement('checkbox', 'completionpostsenabled', '', get_string('completionposts','forumimproved'));
+        $group[] =& $mform->createElement('checkbox', 'completionpostsenabled', '', get_string('completionposts','forumplusone'));
         $group[] =& $mform->createElement('text', 'completionposts', '', array('size'=>3));
         $mform->setType('completionposts',PARAM_INT);
-        $mform->addGroup($group, 'completionpostsgroup', get_string('completionpostsgroup','forumimproved'), array(' '), false);
+        $mform->addGroup($group, 'completionpostsgroup', get_string('completionpostsgroup','forumplusone'), array(' '), false);
         $mform->disabledIf('completionposts','completionpostsenabled','notchecked');
 
         $group=array();
-        $group[] =& $mform->createElement('checkbox', 'completiondiscussionsenabled', '', get_string('completiondiscussions','forumimproved'));
+        $group[] =& $mform->createElement('checkbox', 'completiondiscussionsenabled', '', get_string('completiondiscussions','forumplusone'));
         $group[] =& $mform->createElement('text', 'completiondiscussions', '', array('size'=>3));
         $mform->setType('completiondiscussions',PARAM_INT);
-        $mform->addGroup($group, 'completiondiscussionsgroup', get_string('completiondiscussionsgroup','forumimproved'), array(' '), false);
+        $mform->addGroup($group, 'completiondiscussionsgroup', get_string('completiondiscussionsgroup','forumplusone'), array(' '), false);
         $mform->disabledIf('completiondiscussions','completiondiscussionsenabled','notchecked');
 
         $group=array();
-        $group[] =& $mform->createElement('checkbox', 'completionrepliesenabled', '', get_string('completionreplies','forumimproved'));
+        $group[] =& $mform->createElement('checkbox', 'completionrepliesenabled', '', get_string('completionreplies','forumplusone'));
         $group[] =& $mform->createElement('text', 'completionreplies', '', array('size'=>3));
         $mform->setType('completionreplies',PARAM_INT);
-        $mform->addGroup($group, 'completionrepliesgroup', get_string('completionrepliesgroup','forumimproved'), array(' '), false);
+        $mform->addGroup($group, 'completionrepliesgroup', get_string('completionrepliesgroup','forumplusone'), array(' '), false);
         $mform->disabledIf('completionreplies','completionrepliesenabled','notchecked');
 
         return array('completiondiscussionsgroup','completionrepliesgroup','completionpostsgroup');
@@ -412,13 +418,13 @@ class mod_forumimproved_mod_form extends moodleform_mod {
         $errors = parent::validation($data, $files);
 
         if (!empty($data['completionusegrade'])) {
-            // This is the same logic as in forumimproved_grade_item_update() for determining that the gradetype is GRADE_TYPE_NONE
+            // This is the same logic as in forumplusone_grade_item_update() for determining that the gradetype is GRADE_TYPE_NONE
             // If GRADE_TYPE_NONE, then we cannot have this completion criteria because there may be no grade item!
-            if ($data['gradetype'] == FORUMIMPROVED_GRADETYPE_NONE or ($data['gradetype'] == FORUMIMPROVED_GRADETYPE_RATING and !$data['assessed']) or $data['scale'] == 0) {
-                $errors['completionusegrade'] = get_string('completionusegradeerror', 'forumimproved');
+            if ($data['gradetype'] == FORUMPLUSONE_GRADETYPE_NONE or ($data['gradetype'] == FORUMPLUSONE_GRADETYPE_RATING and !$data['assessed']) or $data['scale'] == 0) {
+                $errors['completionusegrade'] = get_string('completionusegradeerror', 'forumplusone');
             }
         }
-        if ($data['gradetype'] == FORUMIMPROVED_GRADETYPE_MANUAL
+        if ($data['gradetype'] == FORUMPLUSONE_GRADETYPE_MANUAL
                 && $data['scale'] == 0) {
             $errors['scale'] = get_string('modgradeerrorbadpoint', 'grades', get_config('core', 'gradepointmax'));
         }

@@ -18,7 +18,7 @@
 /**
  * Edit and save a new post to a discussion
  *
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -42,7 +42,7 @@ $groupid    = optional_param('groupid', null, PARAM_INT);
 $d          = optional_param('d', 0, PARAM_INT);
 $state      = optional_param('state', -1, PARAM_INT);
 
-$PAGE->set_url('/mod/forumimproved/post.php', array(
+$PAGE->set_url('/mod/forumplusone/post.php', array(
         'reply' => $reply,
         'vote'  => $vote,
         'fullthread'=>$fullthread,
@@ -69,27 +69,27 @@ if (!isloggedin() or isguestuser()) {
     }
 
     if (!empty($forum)) {      // User is starting a new discussion in a forum
-        if (! $forum = $DB->get_record('forumimproved', array('id' => $forum))) {
-            print_error('invalidforumid', 'forumimproved');
+        if (! $forum = $DB->get_record('forumplusone', array('id' => $forum))) {
+            print_error('invalidforumid', 'forumplusone');
         }
     } else if (!empty($reply)) {      // User is writing a new reply
-        if (! $parent = forumimproved_get_post_full($reply)) {
-            print_error('invalidparentpostid', 'forumimproved');
+        if (! $parent = forumplusone_get_post_full($reply)) {
+            print_error('invalidparentpostid', 'forumplusone');
         }
-        if (! $discussion = $DB->get_record('forumimproved_discussions', array('id' => $parent->discussion))) {
-            print_error('notpartofdiscussion', 'forumimproved');
+        if (! $discussion = $DB->get_record('forumplusone_discussions', array('id' => $parent->discussion))) {
+            print_error('notpartofdiscussion', 'forumplusone');
         }
-        if (! $forum = $DB->get_record('forumimproved', array('id' => $discussion->forum))) {
+        if (! $forum = $DB->get_record('forumplusone', array('id' => $discussion->forum))) {
             print_error('invalidforumid');
         }
     } else if (!empty($vote)) {      // User is voting
-        if (! $post = forumimproved_get_post_full($vote)) {
-            print_error('invalidpostid', 'forumimproved');
+        if (! $post = forumplusone_get_post_full($vote)) {
+            print_error('invalidpostid', 'forumplusone');
         }
-        if (! $discussion = $DB->get_record('forumimproved_discussions', array('id' => $post->discussion))) {
-            print_error('notpartofdiscussion', 'forumimproved');
+        if (! $discussion = $DB->get_record('forumplusone_discussions', array('id' => $post->discussion))) {
+            print_error('notpartofdiscussion', 'forumplusone');
         }
-        if (! $forum = $DB->get_record('forumimproved', array('id' => $discussion->forum))) {
+        if (! $forum = $DB->get_record('forumplusone', array('id' => $discussion->forum))) {
             print_error('invalidforumid');
         }
     }
@@ -97,7 +97,7 @@ if (!isloggedin() or isguestuser()) {
         print_error('invalidcourseid');
     }
 
-    if (!$cm = get_coursemodule_from_instance('forumimproved', $forum->id, $course->id)) { // For the logs
+    if (!$cm = get_coursemodule_from_instance('forumplusone', $forum->id, $course->id)) { // For the logs
         print_error('invalidcoursemodule');
     } else {
         $modcontext = context_module::instance($cm->id);
@@ -109,7 +109,7 @@ if (!isloggedin() or isguestuser()) {
     $PAGE->set_heading($course->fullname);
 
     echo $OUTPUT->header();
-    echo $OUTPUT->confirm(get_string('noguestpost', 'forumimproved').'<br /><br />'.get_string('liketologin'), get_login_url(), get_referer(false));
+    echo $OUTPUT->confirm(get_string('noguestpost', 'forumplusone').'<br /><br />'.get_string('liketologin'), get_login_url(), get_referer(false));
     echo $OUTPUT->footer();
     exit;
 }
@@ -117,13 +117,13 @@ if (!isloggedin() or isguestuser()) {
 require_login(0, false);   // Script is useless unless they're logged in
 
 if (!empty($forum)) {      // User is starting a new discussion in a forum
-    if (! $forum = $DB->get_record("forumimproved", array("id" => $forum))) {
-        print_error('invalidforumid', 'forumimproved');
+    if (! $forum = $DB->get_record("forumplusone", array("id" => $forum))) {
+        print_error('invalidforumid', 'forumplusone');
     }
     if (! $course = $DB->get_record("course", array("id" => $forum->course))) {
         print_error('invalidcourseid');
     }
-    if (! $cm = get_coursemodule_from_instance("forumimproved", $forum->id, $course->id)) {
+    if (! $cm = get_coursemodule_from_instance("forumplusone", $forum->id, $course->id)) {
         print_error("invalidcoursemodule");
     }
 
@@ -131,7 +131,7 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
     $modcontext    = context_module::instance($cm->id);
     $coursecontext = context_course::instance($course->id);
 
-    if (! forumimproved_user_can_post_discussion($forum, $groupid, -1, $cm)) {
+    if (! forumplusone_user_can_post_discussion($forum, $groupid, -1, $cm)) {
         if (!is_enrolled($coursecontext)) {
             if (enrol_selfenrol_available($course->id)) {
                 $SESSION->wantsurl = qualified_me();
@@ -139,7 +139,7 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
                 redirect($CFG->wwwroot.'/enrol/index.php?id='.$course->id, get_string('youneedtoenrol'));
             }
         }
-        print_error('nopostforum', 'forumimproved');
+        print_error('nopostforum', 'forumplusone');
     }
 
     if (!$cm->visible and !has_capability('moodle/course:viewhiddenactivities', $modcontext)) {
@@ -168,50 +168,50 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
         $post->groupid = groups_get_activity_group($cm);
     }
 
-    forumimproved_set_return();
+    forumplusone_set_return();
 
 } else if (!empty($reply)) {      // User is writing a new reply
 
-    if (! $parent = forumimproved_get_post_full($reply)) {
-        print_error('invalidparentpostid', 'forumimproved');
+    if (! $parent = forumplusone_get_post_full($reply)) {
+        print_error('invalidparentpostid', 'forumplusone');
     }
-    if (! $discussion = $DB->get_record("forumimproved_discussions", array("id" => $parent->discussion))) {
-        print_error('notpartofdiscussion', 'forumimproved');
+    if (! $discussion = $DB->get_record("forumplusone_discussions", array("id" => $parent->discussion))) {
+        print_error('notpartofdiscussion', 'forumplusone');
     }
-    if (! $forum = $DB->get_record("forumimproved", array("id" => $discussion->forum))) {
-        print_error('invalidforumid', 'forumimproved');
+    if (! $forum = $DB->get_record("forumplusone", array("id" => $discussion->forum))) {
+        print_error('invalidforumid', 'forumplusone');
     }
     if (! $course = $DB->get_record("course", array("id" => $discussion->course))) {
         print_error('invalidcourseid');
     }
-    if (! $cm = get_coursemodule_from_instance("forumimproved", $forum->id, $course->id)) {
+    if (! $cm = get_coursemodule_from_instance("forumplusone", $forum->id, $course->id)) {
         print_error('invalidcoursemodule');
     }
 
 
 
-    if (!forumimproved_is_discussion_open($forum, $discussion)) {
-        print_error('discussion_closed_or_hidden', 'forumimproved');
+    if (!forumplusone_is_discussion_open($forum, $discussion)) {
+        print_error('discussion_closed_or_hidden', 'forumplusone');
     }
 
 
 
     // Ensure lang, theme, etc. is set up properly. MDL-6926
     $PAGE->set_cm($cm, $course, $forum);
-    $renderer = $PAGE->get_renderer('mod_forumimproved');
-    $PAGE->requires->js_init_call('M.mod_forumimproved.init', null, false, $renderer->get_js_module());
+    $renderer = $PAGE->get_renderer('mod_forumplusone');
+    $PAGE->requires->js_init_call('M.mod_forumplusone.init', null, false, $renderer->get_js_module());
 
     // Retrieve the contexts.
     $modcontext    = context_module::instance($cm->id);
     $coursecontext = context_course::instance($course->id);
 
-    if (! forumimproved_user_can_post($forum, $discussion, $USER, $cm, $course, $modcontext)) {
+    if (! forumplusone_user_can_post($forum, $discussion, $USER, $cm, $course, $modcontext)) {
         if (!is_enrolled($coursecontext)) {  // User is a guest here!
             $SESSION->wantsurl = qualified_me();
             $SESSION->enrolcancel = get_referer(false);
             redirect($CFG->wwwroot.'/enrol/index.php?id='.$course->id, get_string('youneedtoenrol'));
         }
-        print_error('nopostforum', 'forumimproved');
+        print_error('nopostforum', 'forumplusone');
     }
 
     // Make sure user can post here
@@ -222,10 +222,10 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
     }
     if ($groupmode == SEPARATEGROUPS and !has_capability('moodle/site:accessallgroups', $modcontext)) {
         if ($discussion->groupid == -1) {
-            print_error('nopostforum', 'forumimproved');
+            print_error('nopostforum', 'forumplusone');
         } else {
             if (!groups_is_member($discussion->groupid)) {
-                print_error('nopostforum', 'forumimproved');
+                print_error('nopostforum', 'forumplusone');
             }
         }
     }
@@ -252,26 +252,26 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
 
 } else if (!empty($vote)) {      // User is voting
 
-    if (! $post = forumimproved_get_post_full($vote)) {
-        print_error('invalidpostid', 'forumimproved');
+    if (! $post = forumplusone_get_post_full($vote)) {
+        print_error('invalidpostid', 'forumplusone');
     }
-    if (! $discussion = $DB->get_record("forumimproved_discussions", array("id" => $post->discussion))) {
-        print_error('notpartofdiscussion', 'forumimproved');
+    if (! $discussion = $DB->get_record("forumplusone_discussions", array("id" => $post->discussion))) {
+        print_error('notpartofdiscussion', 'forumplusone');
     }
-    if (! $forum = $DB->get_record("forumimproved", array("id" => $discussion->forum))) {
-        print_error('invalidforumid', 'forumimproved');
+    if (! $forum = $DB->get_record("forumplusone", array("id" => $discussion->forum))) {
+        print_error('invalidforumid', 'forumplusone');
     }
     if (! $course = $DB->get_record("course", array("id" => $discussion->course))) {
         print_error('invalidcourseid');
     }
-    if (! $cm = get_coursemodule_from_instance("forumimproved", $forum->id, $course->id)) {
+    if (! $cm = get_coursemodule_from_instance("forumplusone", $forum->id, $course->id)) {
         print_error('invalidcoursemodule');
     }
 
 
 
-    if (!forumimproved_is_discussion_open($forum, $discussion)) {
-        print_error('discussion_closed_or_hidden', 'forumimproved');
+    if (!forumplusone_is_discussion_open($forum, $discussion)) {
+        print_error('discussion_closed_or_hidden', 'forumplusone');
     }
 
 
@@ -288,10 +288,10 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
     }
     if ($groupmode == SEPARATEGROUPS and !has_capability('moodle/site:accessallgroups', $modcontext)) {
         if ($discussion->groupid == -1) {
-            print_error('nopostforum', 'forumimproved');
+            print_error('nopostforum', 'forumplusone');
         } else {
             if (!groups_is_member($discussion->groupid)) {
-                print_error('nopostforum', 'forumimproved');
+                print_error('nopostforum', 'forumplusone');
             }
         }
     }
@@ -302,7 +302,7 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
 
 
     try {
-        forumimproved_toggle_vote($forum, $vote, $USER->id);
+        forumplusone_toggle_vote($forum, $vote, $USER->id);
     }
     catch (coding_exception $e) {
         if (in_array($e->a, array(
@@ -310,30 +310,30 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
                 "to_early_to_vote_error",
                 "to_late_to_vote_error"
             ))) {
-                print_error($e->a, 'forumimproved');
+                print_error($e->a, 'forumplusone');
         }
         else
             throw $e;
     }
 
 
-    redirect(forumimproved_go_back_to("discuss.php?d=$post->discussion"), null, 0);
+    redirect(forumplusone_go_back_to("discuss.php?d=$post->discussion"), null, 0);
 
     die;
 
 
 } else if ($state > -1) {      // User is changing the state of the discussion
 
-    if (! $discussion = $DB->get_record("forumimproved_discussions", array("id" => $d))) {
-        print_error('invaliddiscussionid', 'forumimproved');
+    if (! $discussion = $DB->get_record("forumplusone_discussions", array("id" => $d))) {
+        print_error('invaliddiscussionid', 'forumplusone');
     }
-    if (! $forum = $DB->get_record("forumimproved", array("id" => $discussion->forum))) {
-        print_error('invalidforumid', 'forumimproved');
+    if (! $forum = $DB->get_record("forumplusone", array("id" => $discussion->forum))) {
+        print_error('invalidforumid', 'forumplusone');
     }
     if (! $course = $DB->get_record("course", array("id" => $discussion->course))) {
         print_error('invalidcourseid');
     }
-    if (! $cm = get_coursemodule_from_instance("forumimproved", $forum->id, $course->id)) {
+    if (! $cm = get_coursemodule_from_instance("forumplusone", $forum->id, $course->id)) {
         print_error('invalidcoursemodule');
     }
 
@@ -350,10 +350,10 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
     }
     if ($groupmode == SEPARATEGROUPS and !has_capability('moodle/site:accessallgroups', $modcontext)) {
         if ($discussion->groupid == -1) {
-            print_error('nopostforum', 'forumimproved');
+            print_error('nopostforum', 'forumplusone');
         } else {
             if (!groups_is_member($discussion->groupid)) {
-                print_error('nopostforum', 'forumimproved');
+                print_error('nopostforum', 'forumplusone');
             }
         }
     }
@@ -363,47 +363,47 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
     }
 
 
-    require_capability('mod/forumimproved:change_state_discussion', $modcontext);
+    require_capability('mod/forumplusone:change_state_discussion', $modcontext);
 
 
-    if ($state == FORUMIMPROVED_DISCUSSION_STATE_OPEN)
-        forumimproved_discussion_open($forum, $discussion);
-    if ($state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE)
-        forumimproved_discussion_close($forum, $discussion);
-    if ($state == FORUMIMPROVED_DISCUSSION_STATE_HIDDEN)
-        forumimproved_discussion_hide($forum, $discussion);
+    if ($state == FORUMPLUSONE_DISCUSSION_STATE_OPEN)
+        forumplusone_discussion_open($forum, $discussion);
+    if ($state == FORUMPLUSONE_DISCUSSION_STATE_CLOSE)
+        forumplusone_discussion_close($forum, $discussion);
+    if ($state == FORUMPLUSONE_DISCUSSION_STATE_HIDDEN)
+        forumplusone_discussion_hide($forum, $discussion);
 
 
     if ($fullthread) {
-        redirect(forumimproved_go_back_to("discuss.php?d=$d"), null, 0);
+        redirect(forumplusone_go_back_to("discuss.php?d=$d"), null, 0);
     }
     else {
-        redirect(forumimproved_go_back_to("view.php?f=$forum->id"), null, 0);
+        redirect(forumplusone_go_back_to("view.php?f=$forum->id"), null, 0);
     }
 
     die;
 
 } else if (!empty($edit)) {  // User is editing their own post
 
-    if (! $post = forumimproved_get_post_full($edit)) {
-        print_error('invalidpostid', 'forumimproved');
+    if (! $post = forumplusone_get_post_full($edit)) {
+        print_error('invalidpostid', 'forumplusone');
     }
     if ($post->parent) {
-        if (! $parent = forumimproved_get_post_full($post->parent)) {
-            print_error('invalidparentpostid', 'forumimproved');
+        if (! $parent = forumplusone_get_post_full($post->parent)) {
+            print_error('invalidparentpostid', 'forumplusone');
         }
     }
 
-    if (! $discussion = $DB->get_record("forumimproved_discussions", array("id" => $post->discussion))) {
-        print_error('notpartofdiscussion', 'forumimproved');
+    if (! $discussion = $DB->get_record("forumplusone_discussions", array("id" => $post->discussion))) {
+        print_error('notpartofdiscussion', 'forumplusone');
     }
-    if (! $forum = $DB->get_record("forumimproved", array("id" => $discussion->forum))) {
-        print_error('invalidforumid', 'forumimproved');
+    if (! $forum = $DB->get_record("forumplusone", array("id" => $discussion->forum))) {
+        print_error('invalidforumid', 'forumplusone');
     }
     if (! $course = $DB->get_record("course", array("id" => $discussion->course))) {
         print_error('invalidcourseid');
     }
-    if (!$cm = get_coursemodule_from_instance("forumimproved", $forum->id, $course->id)) {
+    if (!$cm = get_coursemodule_from_instance("forumplusone", $forum->id, $course->id)) {
         print_error('invalidcoursemodule');
     } else {
         $modcontext = context_module::instance($cm->id);
@@ -411,25 +411,25 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
 
 
 
-    if (!forumimproved_is_discussion_open($forum, $discussion)) {
-        print_error('discussion_closed_or_hidden', 'forumimproved');
+    if (!forumplusone_is_discussion_open($forum, $discussion)) {
+        print_error('discussion_closed_or_hidden', 'forumplusone');
     }
 
 
 
     $PAGE->set_cm($cm, $course, $forum);
-    $renderer = $PAGE->get_renderer('mod_forumimproved');
-    $PAGE->requires->js_init_call('M.mod_forumimproved.init', null, false, $renderer->get_js_module());
+    $renderer = $PAGE->get_renderer('mod_forumplusone');
+    $PAGE->requires->js_init_call('M.mod_forumplusone.init', null, false, $renderer->get_js_module());
 
     if (!($forum->type == 'news' && !$post->parent && $discussion->timestart > time())) {
         if (((time() - $post->created) > $CFG->maxeditingtime) and
-                    !has_capability('mod/forumimproved:editanypost', $modcontext)) {
-            print_error('maxtimehaspassed', 'forumimproved', '', format_time($CFG->maxeditingtime));
+                    !has_capability('mod/forumplusone:editanypost', $modcontext)) {
+            print_error('maxtimehaspassed', 'forumplusone', '', format_time($CFG->maxeditingtime));
         }
     }
     if (($post->userid <> $USER->id) and
-                !has_capability('mod/forumimproved:editanypost', $modcontext)) {
-        print_error('cannoteditposts', 'forumimproved');
+                !has_capability('mod/forumplusone:editanypost', $modcontext)) {
+        print_error('cannoteditposts', 'forumplusone');
     }
 
 
@@ -446,16 +446,16 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
 
 }else if (!empty($delete)) {  // User is deleting a post
 
-    if (! $post = forumimproved_get_post_full($delete)) {
-        print_error('invalidpostid', 'forumimproved');
+    if (! $post = forumplusone_get_post_full($delete)) {
+        print_error('invalidpostid', 'forumplusone');
     }
-    if (! $discussion = $DB->get_record("forumimproved_discussions", array("id" => $post->discussion))) {
-        print_error('notpartofdiscussion', 'forumimproved');
+    if (! $discussion = $DB->get_record("forumplusone_discussions", array("id" => $post->discussion))) {
+        print_error('notpartofdiscussion', 'forumplusone');
     }
-    if (! $forum = $DB->get_record("forumimproved", array("id" => $discussion->forum))) {
-        print_error('invalidforumid', 'forumimproved');
+    if (! $forum = $DB->get_record("forumplusone", array("id" => $discussion->forum))) {
+        print_error('invalidforumid', 'forumplusone');
     }
-    if (!$cm = get_coursemodule_from_instance("forumimproved", $forum->id, $forum->course)) {
+    if (!$cm = get_coursemodule_from_instance("forumplusone", $forum->id, $forum->course)) {
         print_error('invalidcoursemodule');
     }
     if (!$course = $DB->get_record('course', array('id' => $forum->course))) {
@@ -464,8 +464,8 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
 
 
 
-    if (!forumimproved_is_discussion_open($forum, $discussion)) {
-        print_error('discussion_closed_or_hidden', 'forumimproved');
+    if (!forumplusone_is_discussion_open($forum, $discussion)) {
+        print_error('discussion_closed_or_hidden', 'forumplusone');
     }
 
 
@@ -474,45 +474,45 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
     require_login($course, false, $cm);
     $modcontext = context_module::instance($cm->id);
 
-    if ( !(($post->userid == $USER->id && has_capability('mod/forumimproved:deleteownpost', $modcontext))
-                || has_capability('mod/forumimproved:deleteanypost', $modcontext)) ) {
-        print_error('cannotdeletepost', 'forumimproved');
+    if ( !(($post->userid == $USER->id && has_capability('mod/forumplusone:deleteownpost', $modcontext))
+                || has_capability('mod/forumplusone:deleteanypost', $modcontext)) ) {
+        print_error('cannotdeletepost', 'forumplusone');
     }
 
 
-    $replycount = forumimproved_count_replies($post);
+    $replycount = forumplusone_count_replies($post);
 
     if (!empty($confirm) && confirm_sesskey()) {    // User has confirmed the delete
         redirect(
-            forumimproved_verify_and_delete_post($course, $cm, $forum, $modcontext, $discussion, $post)
+            forumplusone_verify_and_delete_post($course, $cm, $forum, $modcontext, $discussion, $post)
         );
     } else { // User just asked to delete something
 
-        forumimproved_set_return();
-        $PAGE->navbar->add(get_string('delete', 'forumimproved'));
+        forumplusone_set_return();
+        $PAGE->navbar->add(get_string('delete', 'forumplusone'));
         $PAGE->set_title($course->shortname);
         $PAGE->set_heading($course->fullname);
-        $renderer = $PAGE->get_renderer('mod_forumimproved');
-        $PAGE->requires->js_init_call('M.mod_forumimproved.init', null, false, $renderer->get_js_module());
+        $renderer = $PAGE->get_renderer('mod_forumplusone');
+        $PAGE->requires->js_init_call('M.mod_forumplusone.init', null, false, $renderer->get_js_module());
 
         if ($replycount) {
-            if (!has_capability('mod/forumimproved:deleteanypost', $modcontext)) {
-                print_error("couldnotdeletereplies", "forumimproved",
-                      forumimproved_go_back_to("discuss.php?d=$post->discussion"));
+            if (!has_capability('mod/forumplusone:deleteanypost', $modcontext)) {
+                print_error("couldnotdeletereplies", "forumplusone",
+                      forumplusone_go_back_to("discuss.php?d=$post->discussion"));
             }
             echo $OUTPUT->header();
             echo $OUTPUT->heading(format_string($forum->name), 2);
-            echo $OUTPUT->confirm(get_string("deletesureplural", "forumimproved", $replycount+1),
+            echo $OUTPUT->confirm(get_string("deletesureplural", "forumplusone", $replycount+1),
                          "post.php?delete=$delete&confirm=$delete",
-                         $CFG->wwwroot.'/mod/forumimproved/discuss.php?d='.$post->discussion.'#p'.$post->id);
+                         $CFG->wwwroot.'/mod/forumplusone/discuss.php?d='.$post->discussion.'#p'.$post->id);
 
             echo $renderer->post($cm, $discussion, $post, false, null, false);
         } else {
             echo $OUTPUT->header();
             echo $OUTPUT->heading(format_string($forum->name), 2);
-            echo $OUTPUT->confirm(get_string("deletesure", "forumimproved", $replycount),
+            echo $OUTPUT->confirm(get_string("deletesure", "forumplusone", $replycount),
                          "post.php?delete=$delete&confirm=$delete",
-                         $CFG->wwwroot.'/mod/forumimproved/discuss.php?d='.$post->discussion.'#p'.$post->id);
+                         $CFG->wwwroot.'/mod/forumplusone/discuss.php?d='.$post->discussion.'#p'.$post->id);
 
             echo $renderer->post($cm, $discussion, $post, false, null, false);
         }
@@ -524,34 +524,34 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
 
 } else if (!empty($prune)) {  // Pruning
 
-    if (!$post = forumimproved_get_post_full($prune)) {
-        print_error('invalidpostid', 'forumimproved');
+    if (!$post = forumplusone_get_post_full($prune)) {
+        print_error('invalidpostid', 'forumplusone');
     }
-    if (!$discussion = $DB->get_record("forumimproved_discussions", array("id" => $post->discussion))) {
-        print_error('notpartofdiscussion', 'forumimproved');
+    if (!$discussion = $DB->get_record("forumplusone_discussions", array("id" => $post->discussion))) {
+        print_error('notpartofdiscussion', 'forumplusone');
     }
-    if (!$forum = $DB->get_record("forumimproved", array("id" => $discussion->forum))) {
-        print_error('invalidforumid', 'forumimproved');
+    if (!$forum = $DB->get_record("forumplusone", array("id" => $discussion->forum))) {
+        print_error('invalidforumid', 'forumplusone');
     }
     if ($forum->type == 'single') {
-        print_error('cannotsplit', 'forumimproved');
+        print_error('cannotsplit', 'forumplusone');
     }
     if (!$post->parent) {
-        print_error('alreadyfirstpost', 'forumimproved');
+        print_error('alreadyfirstpost', 'forumplusone');
     }
-    if (!$cm = get_coursemodule_from_instance("forumimproved", $forum->id, $forum->course)) { // For the logs
+    if (!$cm = get_coursemodule_from_instance("forumplusone", $forum->id, $forum->course)) { // For the logs
         print_error('invalidcoursemodule');
     } else {
         $modcontext = context_module::instance($cm->id);
     }
-    if (!has_capability('mod/forumimproved:splitdiscussions', $modcontext)) {
-        print_error('cannotsplit', 'forumimproved');
+    if (!has_capability('mod/forumplusone:splitdiscussions', $modcontext)) {
+        print_error('cannotsplit', 'forumplusone');
     }
 
 
 
-    if (!forumimproved_is_discussion_open($forum, $discussion)) {
-        print_error('discussion_closed_or_hidden', 'forumimproved');
+    if (!forumplusone_is_discussion_open($forum, $discussion)) {
+        print_error('discussion_closed_or_hidden', 'forumplusone');
     }
 
 
@@ -571,20 +571,20 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
         $newdiscussion->timestart    = $discussion->timestart;
         $newdiscussion->timeend      = $discussion->timeend;
 
-        $newid = $DB->insert_record('forumimproved_discussions', $newdiscussion);
+        $newid = $DB->insert_record('forumplusone_discussions', $newdiscussion);
 
         $newpost = new stdClass();
         $newpost->id      = $post->id;
         $newpost->parent  = 0;
         $newpost->privatereply = 0;
 
-        $DB->update_record("forumimproved_posts", $newpost);
+        $DB->update_record("forumplusone_posts", $newpost);
 
-        forumimproved_change_discussionid($post->id, $newid);
+        forumplusone_change_discussionid($post->id, $newid);
 
         // update last post in each discussion
-        forumimproved_discussion_update_last_post($discussion->id);
-        forumimproved_discussion_update_last_post($newid);
+        forumplusone_discussion_update_last_post($discussion->id);
+        forumplusone_discussion_update_last_post($newid);
 
         // Fire events to reflect the split..
         $params = array(
@@ -594,7 +594,7 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
                 'forumid' => $forum->id,
             )
         );
-        $event = \mod_forumimproved\event\discussion_updated::create($params);
+        $event = \mod_forumplusone\event\discussion_updated::create($params);
         $event->trigger();
 
         $params = array(
@@ -604,7 +604,7 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
                 'forumid' => $forum->id,
             )
         );
-        $event = \mod_forumimproved\event\discussion_created::create($params);
+        $event = \mod_forumplusone\event\discussion_created::create($params);
         $event->trigger();
 
         $params = array(
@@ -616,22 +616,22 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
                 'forumtype' => $forum->type,
             )
         );
-        $event = \mod_forumimproved\event\post_updated::create($params);
-        $event->add_record_snapshot('forumimproved_discussions', $discussion);
+        $event = \mod_forumplusone\event\post_updated::create($params);
+        $event->add_record_snapshot('forumplusone_discussions', $discussion);
         $event->trigger();
 
-        redirect(forumimproved_go_back_to("discuss.php?d=$newid"));
+        redirect(forumplusone_go_back_to("discuss.php?d=$newid"));
 
     } else { // User just asked to prune something
 
         $course = $DB->get_record('course', array('id' => $forum->course));
 
         $PAGE->set_cm($cm);
-        $renderer = $PAGE->get_renderer('mod_forumimproved');
-        $PAGE->requires->js_init_call('M.mod_forumimproved.init', null, false, $renderer->get_js_module());
+        $renderer = $PAGE->get_renderer('mod_forumplusone');
+        $PAGE->requires->js_init_call('M.mod_forumplusone.init', null, false, $renderer->get_js_module());
         $PAGE->set_context($modcontext);
-        $PAGE->navbar->add(format_string($discussion->name, true), new moodle_url('/mod/forumimproved/discuss.php', array('d'=>$discussion->id)));
-        $PAGE->navbar->add(get_string("prune", "forumimproved"));
+        $PAGE->navbar->add(format_string($discussion->name, true), new moodle_url('/mod/forumplusone/discuss.php', array('d'=>$discussion->id)));
+        $PAGE->navbar->add(get_string("prune", "forumplusone"));
         $PAGE->set_title("$discussion->name");
         $PAGE->set_heading($course->fullname);
         echo $OUTPUT->header();
@@ -639,7 +639,7 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
         echo $OUTPUT->heading(get_string('pruneheading', 'forum'), 3);
         echo $renderer->svg_sprite();
         if (!empty($post->privatereply)) {
-            echo $OUTPUT->notification(get_string('splitprivatewarning', 'forumimproved'));
+            echo $OUTPUT->notification(get_string('splitprivatewarning', 'forumplusone'));
         }
         echo '<center>';
 
@@ -667,7 +667,7 @@ if (!isset($coursecontext)) {
 
 // from now on user must be logged on properly
 
-if (!$cm = get_coursemodule_from_instance('forumimproved', $forum->id, $course->id)) { // For the logs
+if (!$cm = get_coursemodule_from_instance('forumplusone', $forum->id, $course->id)) { // For the logs
     print_error('invalidcoursemodule');
 }
 $modcontext = context_module::instance($cm->id);
@@ -677,18 +677,18 @@ if (!isset($forum->maxattachments)) {  // TODO - delete this once we add a field
     $forum->maxattachments = 3;
 }
 
-$thresholdwarning = forumimproved_check_throttling($forum, $cm);
-$mform_post = new mod_forumimproved_post_form('post.php', array('course' => $course,
+$thresholdwarning = forumplusone_check_throttling($forum, $cm);
+$mform_post = new mod_forumplusone_post_form('post.php', array('course' => $course,
                                                         'cm' => $cm,
                                                         'coursecontext' => $coursecontext,
                                                         'modcontext' => $modcontext,
                                                         'forum' => $forum,
                                                         'post' => $post,
                                                         'thresholdwarning' => $thresholdwarning,
-                                                        'edit' => $edit), 'post', '', array('id' => 'mformforumimproved'));
+                                                        'edit' => $edit), 'post', '', array('id' => 'mformforumplusone'));
 
 $draftitemid = file_get_submitted_draft_itemid('attachments');
-file_prepare_draft_area($draftitemid, $modcontext->id, 'mod_forumimproved', 'attachment', empty($post->id)?null:$post->id, mod_forumimproved_post_form::attachment_options($forum));
+file_prepare_draft_area($draftitemid, $modcontext->id, 'mod_forumplusone', 'attachment', empty($post->id)?null:$post->id, mod_forumplusone_post_form::attachment_options($forum));
 
 //load data into form NOW!
 
@@ -698,29 +698,29 @@ if ($USER->id != $post->userid) {   // Not the original author, so add a message
     if ($post->messageformat == FORMAT_HTML) {
         $data->name = '<a href="'.$CFG->wwwroot.'/user/view.php?id='.$USER->id.'&course='.$post->course.'">'.
                        fullname($USER).'</a>';
-        $post->message .= '<p class="edited">('.get_string('editedby', 'forumimproved', $data).')</p>';
+        $post->message .= '<p class="edited">('.get_string('editedby', 'forumplusone', $data).')</p>';
     } else {
         $data->name = fullname($USER);
-        $post->message .= "\n\n(".get_string('editedby', 'forumimproved', $data).')';
+        $post->message .= "\n\n(".get_string('editedby', 'forumplusone', $data).')';
     }
     unset($data);
 }
 
 $formheading = '';
 if (!empty($parent)) {
-    $formheading = get_string("yourreply", "forumimproved");
+    $formheading = get_string("yourreply", "forumplusone");
 } else {
     if ($forum->type == 'qanda') {
-        $formheading = get_string('yournewquestion', 'forumimproved');
+        $formheading = get_string('yournewquestion', 'forumplusone');
     } else {
-        $formheading = get_string('yournewtopic', 'forumimproved');
+        $formheading = get_string('yournewtopic', 'forumplusone');
     }
 }
 
-if (forumimproved_is_subscribed($USER->id, $forum->id)) {
+if (forumplusone_is_subscribed($USER->id, $forum->id)) {
     $subscribe = true;
 
-} else if (forumimproved_user_has_posted($forum->id, 0, $USER->id)) {
+} else if (forumplusone_user_has_posted($forum->id, 0, $USER->id)) {
     $subscribe = false;
 
 } else {
@@ -730,7 +730,7 @@ if (forumimproved_is_subscribed($USER->id, $forum->id)) {
 
 $postid = empty($post->id) ? null : $post->id;
 $draftid_editor = file_get_submitted_draft_itemid('message');
-$currenttext = file_prepare_draft_area($draftid_editor, $modcontext->id, 'mod_forumimproved', 'post', $postid, mod_forumimproved_post_form::editor_options($modcontext, $postid), $post->message);
+$currenttext = file_prepare_draft_area($draftid_editor, $modcontext->id, 'mod_forumplusone', 'post', $postid, mod_forumplusone_post_form::editor_options($modcontext, $postid), $post->message);
 $mform_post->set_data(array(        'attachments'=>$draftitemid,
                                     'subject' => empty($discussion->name) ? '' : $discussion->name,
                                     'message'=>array(
@@ -771,7 +771,7 @@ $mform_post->set_data(array(        'attachments'=>$draftitemid,
 if ($fromform = $mform_post->get_data()) {
 
     if (empty($SESSION->fromurl)) {
-        $errordestination = "$CFG->wwwroot/mod/forumimproved/view.php?f=$forum->id";
+        $errordestination = "$CFG->wwwroot/mod/forumplusone/view.php?f=$forum->id";
     } else {
         $errordestination = $SESSION->fromurl;
     }
@@ -782,7 +782,7 @@ if ($fromform = $mform_post->get_data()) {
     // WARNING: the $fromform->message array has been overwritten, do not use it anymore!
     $fromform->messagetrust  = trusttext_trusted($modcontext);
 
-    $contextcheck = isset($fromform->groupinfo) && has_capability('mod/forumimproved:movediscussions', $modcontext);
+    $contextcheck = isset($fromform->groupinfo) && has_capability('mod/forumplusone:movediscussions', $modcontext);
 
     if ($fromform->edit) {           // Updating a post
         unset($fromform->groupid);
@@ -790,7 +790,7 @@ if ($fromform = $mform_post->get_data()) {
         $message = '';
 
         //fix for bug #4314
-        if (!$realpost = $DB->get_record('forumimproved_posts', array('id' => $fromform->id))) {
+        if (!$realpost = $DB->get_record('forumplusone_posts', array('id' => $fromform->id))) {
             $realpost = new stdClass();
             $realpost->userid = -1;
         }
@@ -800,10 +800,10 @@ if ($fromform = $mform_post->get_data()) {
         // or has either startnewdiscussion or reply capability and is editting own post
         // then he can proceed
         // MDL-7066
-        if ( !(($realpost->userid == $USER->id && (has_capability('mod/forumimproved:replypost', $modcontext)
-                            || has_capability('mod/forumimproved:startdiscussion', $modcontext))) ||
-                            has_capability('mod/forumimproved:editanypost', $modcontext)) ) {
-            print_error('cannotupdatepost', 'forumimproved');
+        if ( !(($realpost->userid == $USER->id && (has_capability('mod/forumplusone:replypost', $modcontext)
+                            || has_capability('mod/forumplusone:startdiscussion', $modcontext))) ||
+                            has_capability('mod/forumplusone:editanypost', $modcontext)) ) {
+            print_error('cannotupdatepost', 'forumplusone');
         }
 
         // If the user has access to all groups and they are changing the group, then update the post.
@@ -811,20 +811,20 @@ if ($fromform = $mform_post->get_data()) {
             if (empty($fromform->groupinfo)) {
                 $fromform->groupinfo = -1;
             }
-            $DB->set_field('forumimproved_discussions' ,'groupid' , $fromform->groupinfo, array('firstpost' => $fromform->id));
+            $DB->set_field('forumplusone_discussions' ,'groupid' , $fromform->groupinfo, array('firstpost' => $fromform->id));
         }
 
         $updatepost = $fromform; //realpost
         $updatepost->forum = $forum->id;
-        if (!forumimproved_update_post($updatepost, $mform_post, $message)) {
-            print_error("couldnotupdate", "forumimproved", $errordestination);
+        if (!forumplusone_update_post($updatepost, $mform_post, $message)) {
+            print_error("couldnotupdate", "forumplusone", $errordestination);
         }
 
         // MDL-11818
         if (($forum->type == 'single') && ($updatepost->parent == '0')){ // updating first post of single discussion type -> updating forum intro
             $forum->intro = $updatepost->message;
             $forum->timemodified = time();
-            $DB->update_record("forumimproved", $forum);
+            $DB->update_record("forumplusone", $forum);
         }
 
         $timemessage = 2;
@@ -833,20 +833,20 @@ if ($fromform = $mform_post->get_data()) {
         }
 
         if ($realpost->userid == $USER->id) {
-            $message .= '<br />'.get_string("postupdated", "forumimproved");
+            $message .= '<br />'.get_string("postupdated", "forumplusone");
         } else {
             $realuser = $DB->get_record('user', array('id' => $realpost->userid));
-            $freshpost = $DB->get_record('forumimproved_posts', array('id' => $fromform->id));
+            $freshpost = $DB->get_record('forumplusone_posts', array('id' => $fromform->id));
 
             if ($realuser && $freshpost) {
-                $postuser = forumimproved_get_postuser($realuser, $freshpost, $forum, $modcontext);
-                $message .= '<br />'.get_string('editedpostupdated', 'forumimproved', $postuser->fullname);
+                $postuser = forumplusone_get_postuser($realuser, $freshpost, $forum, $modcontext);
+                $message .= '<br />'.get_string('editedpostupdated', 'forumplusone', $postuser->fullname);
             } else {
-                $message .= '<br />'.get_string('postupdated', 'forumimproved');
+                $message .= '<br />'.get_string('postupdated', 'forumplusone');
             }
         }
 
-        if ($subscribemessage = forumimproved_post_subscription($fromform, $forum)) {
+        if ($subscribemessage = forumplusone_post_subscription($fromform, $forum)) {
             $timemessage = 4;
         }
         if ($forum->type == 'single') {
@@ -872,40 +872,40 @@ if ($fromform = $mform_post->get_data()) {
             $params['relateduserid'] = $realpost->userid;
         }
 
-        $event = \mod_forumimproved\event\post_updated::create($params);
-        $event->add_record_snapshot('forumimproved_discussions', $discussion);
+        $event = \mod_forumplusone\event\post_updated::create($params);
+        $event->add_record_snapshot('forumplusone_discussions', $discussion);
         $event->trigger();
 
-        redirect(forumimproved_go_back_to("$discussionurl"), $message.$subscribemessage, $timemessage);
+        redirect(forumplusone_go_back_to("$discussionurl"), $message.$subscribemessage, $timemessage);
 
         exit;
 
 
     } else if ($fromform->discussion) { // Adding a new post to an existing discussion
         // Before we add this we must check that the user will not exceed the blocking threshold.
-        forumimproved_check_blocking_threshold($thresholdwarning);
+        forumplusone_check_blocking_threshold($thresholdwarning);
 
         unset($fromform->groupid);
         $message = '';
         $addpost = $fromform;
         $addpost->forum=$forum->id;
-        if ($fromform->id = forumimproved_add_new_post($addpost, $mform_post, $message)) {
+        if ($fromform->id = forumplusone_add_new_post($addpost, $mform_post, $message)) {
 
             $timemessage = 2;
             if (!empty($message)) { // if we're printing stuff about the file upload
                 $timemessage = 4;
             }
 
-            if ($subscribemessage = forumimproved_post_subscription($fromform, $forum)) {
+            if ($subscribemessage = forumplusone_post_subscription($fromform, $forum)) {
                 $timemessage = 4;
             }
 
             if (!empty($fromform->mailnow)) {
-                $message .= get_string("postmailnow", "forumimproved");
+                $message .= get_string("postmailnow", "forumplusone");
                 $timemessage = 4;
             } else {
-                $message .= '<p>'.get_string("postaddedsuccess", "forumimproved") . '</p>';
-                $message .= '<p>'.get_string("postaddedtimeleft", "forumimproved", format_time($CFG->maxeditingtime)) . '</p>';
+                $message .= '<p>'.get_string("postaddedsuccess", "forumplusone") . '</p>';
+                $message .= '<p>'.get_string("postaddedtimeleft", "forumplusone", format_time($CFG->maxeditingtime)) . '</p>';
             }
 
             if ($forum->type == 'single') {
@@ -916,7 +916,7 @@ if ($fromform = $mform_post->get_data()) {
             } else {
                 $discussionurl = "discuss.php?d=$discussion->id";
             }
-            $post   = $DB->get_record('forumimproved_posts', array('id' => $fromform->id), '*', MUST_EXIST);
+            $post   = $DB->get_record('forumplusone_posts', array('id' => $fromform->id), '*', MUST_EXIST);
             $params = array(
                 'context' => $modcontext,
                 'objectid' => $fromform->id,
@@ -926,9 +926,9 @@ if ($fromform = $mform_post->get_data()) {
                     'forumtype' => $forum->type,
                 )
             );
-            $event = \mod_forumimproved\event\post_created::create($params);
-            $event->add_record_snapshot('forumimproved_posts', $post);
-            $event->add_record_snapshot('forumimproved_discussions', $discussion);
+            $event = \mod_forumplusone\event\post_created::create($params);
+            $event->add_record_snapshot('forumplusone_posts', $post);
+            $event->add_record_snapshot('forumplusone_discussions', $discussion);
             $event->trigger();
 
             // Update completion state
@@ -938,19 +938,19 @@ if ($fromform = $mform_post->get_data()) {
                 $completion->update_state($cm,COMPLETION_COMPLETE);
             }
 
-            redirect(forumimproved_go_back_to("$discussionurl#p$fromform->id"), $message.$subscribemessage, $timemessage);
+            redirect(forumplusone_go_back_to("$discussionurl#p$fromform->id"), $message.$subscribemessage, $timemessage);
 
         } else {
-            print_error("couldnotadd", "forumimproved", $errordestination);
+            print_error("couldnotadd", "forumplusone", $errordestination);
         }
         exit;
 
     } else { // Adding a new discussion.
         // Before we add this we must check that the user will not exceed the blocking threshold.
-        forumimproved_check_blocking_threshold($thresholdwarning);
+        forumplusone_check_blocking_threshold($thresholdwarning);
 
-        if (!forumimproved_user_can_post_discussion($forum, $fromform->groupid, -1, $cm, $modcontext)) {
-            print_error('cannotcreatediscussion', 'forumimproved');
+        if (!forumplusone_user_can_post_discussion($forum, $fromform->groupid, -1, $cm, $modcontext)) {
+            print_error('cannotcreatediscussion', 'forumplusone');
         }
         // If the user has access all groups capability let them choose the group.
         if ($contextcheck) {
@@ -974,7 +974,7 @@ if ($fromform = $mform_post->get_data()) {
         $discussion->timeend = $fromform->timeend;
 
         $message = '';
-        if ($discussion->id = forumimproved_add_discussion($discussion, $mform_post, $message)) {
+        if ($discussion->id = forumplusone_add_discussion($discussion, $mform_post, $message)) {
 
             $params = array(
                 'context' => $modcontext,
@@ -983,8 +983,8 @@ if ($fromform = $mform_post->get_data()) {
                     'forumid' => $forum->id,
                 )
             );
-            $event = \mod_forumimproved\event\discussion_created::create($params);
-            $event->add_record_snapshot('forumimproved_discussions', $discussion);
+            $event = \mod_forumplusone\event\discussion_created::create($params);
+            $event->add_record_snapshot('forumplusone_discussions', $discussion);
             $event->trigger();
 
             $timemessage = 2;
@@ -993,14 +993,14 @@ if ($fromform = $mform_post->get_data()) {
             }
 
             if ($fromform->mailnow) {
-                $message .= get_string("postmailnow", "forumimproved");
+                $message .= get_string("postmailnow", "forumplusone");
                 $timemessage = 4;
             } else {
-                $message .= '<p>'.get_string("postaddedsuccess", "forumimproved") . '</p>';
-                $message .= '<p>'.get_string("postaddedtimeleft", "forumimproved", format_time($CFG->maxeditingtime)) . '</p>';
+                $message .= '<p>'.get_string("postaddedsuccess", "forumplusone") . '</p>';
+                $message .= '<p>'.get_string("postaddedtimeleft", "forumplusone", format_time($CFG->maxeditingtime)) . '</p>';
             }
 
-            if ($subscribemessage = forumimproved_post_subscription($discussion, $forum)) {
+            if ($subscribemessage = forumplusone_post_subscription($discussion, $forum)) {
                 $timemessage = 6;
             }
 
@@ -1011,10 +1011,10 @@ if ($fromform = $mform_post->get_data()) {
                 $completion->update_state($cm,COMPLETION_COMPLETE);
             }
 
-            redirect(forumimproved_go_back_to("view.php?f=$fromform->forum"), $message.$subscribemessage, $timemessage);
+            redirect(forumplusone_go_back_to("view.php?f=$fromform->forum"), $message.$subscribemessage, $timemessage);
 
         } else {
-            print_error("couldnotadd", "forumimproved", $errordestination);
+            print_error("couldnotadd", "forumplusone", $errordestination);
         }
 
         exit;
@@ -1030,8 +1030,8 @@ if ($fromform = $mform_post->get_data()) {
 // $course, $forum are defined.  $discussion is for edit and reply only.
 
 if ($post->discussion) {
-    if (! $toppost = $DB->get_record("forumimproved_posts", array("discussion" => $post->discussion, "parent" => 0))) {
-        print_error('cannotfindparentpost', 'forumimproved', '', $post->id);
+    if (! $toppost = $DB->get_record("forumplusone_posts", array("discussion" => $post->discussion, "parent" => 0))) {
+        print_error('cannotfindparentpost', 'forumplusone', '', $post->id);
     }
 } else {
     $toppost = new stdClass();
@@ -1064,45 +1064,45 @@ if (!empty($discussion->id)) {
 }
 
 if ($post->parent) {
-    $PAGE->navbar->add(get_string('reply', 'forumimproved'));
+    $PAGE->navbar->add(get_string('reply', 'forumplusone'));
 }
 
 if ($edit) {
-    $PAGE->navbar->add(get_string('edit', 'forumimproved'));
+    $PAGE->navbar->add(get_string('edit', 'forumplusone'));
 }
 
 $PAGE->set_title("$course->shortname: $strdiscussionname $discussion->name");
 $PAGE->set_heading($course->fullname);
-$renderer = $PAGE->get_renderer('mod_forumimproved');
-$PAGE->requires->js_init_call('M.mod_forumimproved.init', null, false, $renderer->get_js_module());
+$renderer = $PAGE->get_renderer('mod_forumplusone');
+$PAGE->requires->js_init_call('M.mod_forumplusone.init', null, false, $renderer->get_js_module());
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($forum->name), 2);
 
 // checkup
-if (!empty($parent) && !forumimproved_user_can_see_post($forum, $discussion, $post, null, $cm)) {
-    print_error('cannotreply', 'forumimproved');
+if (!empty($parent) && !forumplusone_user_can_see_post($forum, $discussion, $post, null, $cm)) {
+    print_error('cannotreply', 'forumplusone');
 }
-if (empty($parent) && empty($edit) && !forumimproved_user_can_post_discussion($forum, $groupid, -1, $cm, $modcontext)) {
-    print_error('cannotcreatediscussion', 'forumimproved');
+if (empty($parent) && empty($edit) && !forumplusone_user_can_post_discussion($forum, $groupid, -1, $cm, $modcontext)) {
+    print_error('cannotcreatediscussion', 'forumplusone');
 }
 
 if ($forum->type == 'qanda'
-            && !has_capability('mod/forumimproved:viewqandawithoutposting', $modcontext)
+            && !has_capability('mod/forumplusone:viewqandawithoutposting', $modcontext)
             && !empty($discussion->id)
-            && !forumimproved_user_has_posted($forum->id, $discussion->id, $USER->id)) {
-    echo $OUTPUT->notification(get_string('qandanotify','forumimproved'));
+            && !forumplusone_user_has_posted($forum->id, $discussion->id, $USER->id)) {
+    echo $OUTPUT->notification(get_string('qandanotify','forumplusone'));
 }
 
 // If there is a warning message and we are not editing a post we need to handle the warning.
 if (!empty($thresholdwarning) && !$edit) {
     // Here we want to throw an exception if they are no longer allowed to post.
-    forumimproved_check_blocking_threshold($thresholdwarning);
+    forumplusone_check_blocking_threshold($thresholdwarning);
 }
 
 if (!empty($parent)) {
-    if (!$discussion = $DB->get_record('forumimproved_discussions', array('id' => $parent->discussion))) {
-        print_error('notpartofdiscussion', 'forumimproved');
+    if (!$discussion = $DB->get_record('forumplusone_discussions', array('id' => $parent->discussion))) {
+        print_error('notpartofdiscussion', 'forumplusone');
     }
 
     echo $renderer->svg_sprite();
@@ -1111,13 +1111,13 @@ if (!empty($parent)) {
     $parent->postread = true;
     echo $renderer->post($cm, $discussion, $parent);
     if (empty($post->edit)) {
-        if ($forum->type != 'qanda' || forumimproved_user_can_see_discussion($forum, $discussion, $modcontext)) {
-            $posts = forumimproved_get_all_discussion_posts($discussion->id);
+        if ($forum->type != 'qanda' || forumplusone_user_can_see_discussion($forum, $discussion, $modcontext)) {
+            $posts = forumplusone_get_all_discussion_posts($discussion->id);
         }
     }
 } else {
     if (!empty($forum->intro)) {
-        echo $OUTPUT->box(format_module_intro('forumimproved', $forum, $cm->id), 'generalbox', 'intro');
+        echo $OUTPUT->box(format_module_intro('forumplusone', $forum, $cm->id), 'generalbox', 'intro');
 
         if (!empty($CFG->enableplagiarism)) {
             require_once($CFG->libdir.'/plagiarismlib.php');

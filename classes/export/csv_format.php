@@ -17,19 +17,19 @@
 /**
  * CSV Export Format
  *
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_forumimproved\export;
+namespace mod_forumplusone\export;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__.'/format_abstract.php');
 
 /**
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -40,14 +40,14 @@ class csv_format extends format_abstract {
 
         // Write out CSV headers.
         fputcsv($this->fp, array(
-            get_string('id', 'forumimproved'),
-            get_string('discussion', 'forumimproved'),
-            get_string('subject', 'forumimproved'),
-            get_string('author', 'forumimproved'),
-            get_string('date', 'forumimproved'),
-            get_string('message', 'forumimproved'),
-            get_string('attachments', 'forumimproved'),
-            get_string('privatereply', 'forumimproved'),
+            get_string('id', 'forumplusone'),
+            get_string('discussion', 'forumplusone'),
+            get_string('subject', 'forumplusone'),
+            get_string('author', 'forumplusone'),
+            get_string('date', 'forumplusone'),
+            get_string('message', 'forumplusone'),
+            get_string('attachments', 'forumplusone'),
+            get_string('privatereply', 'forumplusone'),
         ));
     }
 

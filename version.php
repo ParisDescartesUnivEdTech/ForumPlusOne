@@ -18,7 +18,7 @@
  * Version information
  *
  * @package    mod
- * @subpackage forumimproved
+ * @subpackage forumplusone
  * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2016052600;       // The current module version (Date: YYYYMMDDXX)
 $plugin->requires  = 2014051203;       // Requires this Moodle version
-$plugin->component = 'mod_forumimproved';   // Full name of the plugin (used for diagnostics)
+$plugin->component = 'mod_forumplusone';   // Full name of the plugin (used for diagnostics)
 $plugin->release   = '1.0.0a2 (Build: 20160427)';
 $plugin->maturity  = MATURITY_ALPHA;
 $plugin->cron      = 60;

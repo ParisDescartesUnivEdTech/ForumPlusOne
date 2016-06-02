@@ -32,7 +32,7 @@
         function collapse(post) {
             if (post.hasClass('firstpost')) {
                 // first post
-                jQuery('.forumimproved-thread-body').hide(150);
+                jQuery('.forumplusone-thread-body').hide(150);
             }
             else {
                 post.next().hide(150);
@@ -50,7 +50,7 @@
         function uncollapse(post) {
             if (post.hasClass('firstpost')) {
                 // first post
-                jQuery('.forumimproved-thread-body').show(150);
+                jQuery('.forumplusone-thread-body').show(150);
             }
             else {
                 post.next().show(150);
@@ -65,25 +65,25 @@
         }
 
 
-        jQuery('.forumimproved-post-wrapper').collapseReplies();
+        jQuery('.forumplusone-post-wrapper').collapseReplies();
 
         jQuery(document.body).on('discussion:created', function() {
-            jQuery('.forumimproved-post-wrapper').collapseReplies();
+            jQuery('.forumplusone-post-wrapper').collapseReplies();
         });
         jQuery(document.body).on('discussion:deleted', function() {
-            jQuery('.forumimproved-post-wrapper').collapseReplies();
+            jQuery('.forumplusone-post-wrapper').collapseReplies();
         });
         jQuery(document.body).on('form:canceled', function() {
-            jQuery('.forumimproved-post-wrapper').collapseReplies();
+            jQuery('.forumplusone-post-wrapper').collapseReplies();
         });
         jQuery(document.body).on('post:created', function() {
-            jQuery('.forumimproved-post-wrapper').collapseReplies();
+            jQuery('.forumplusone-post-wrapper').collapseReplies();
         });
         jQuery(document.body).on('post:deleted', function() {
-            jQuery('.forumimproved-post-wrapper').collapseReplies();
+            jQuery('.forumplusone-post-wrapper').collapseReplies();
         });
         jQuery(document.body).on('post:updated', function() {
-            jQuery('.forumimproved-post-wrapper').collapseReplies();
+            jQuery('.forumplusone-post-wrapper').collapseReplies();
         });
     }
 

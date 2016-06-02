@@ -18,18 +18,18 @@
  * Edit Discussion or Post Controller
  *
  * @package    mod
- * @subpackage forumimproved
+ * @subpackage forumplusone
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_forumimproved\controller;
+namespace mod_forumplusone\controller;
 
 use coding_exception;
-use mod_forumimproved\response\json_response;
-use mod_forumimproved\service\discussion_service;
-use mod_forumimproved\service\post_service;
+use mod_forumplusone\response\json_response;
+use mod_forumplusone\service\discussion_service;
+use mod_forumplusone\service\post_service;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -75,19 +75,19 @@ class vote_controller extends controller_abstract {
 
 
 
-        if (! $post = forumimproved_get_post_full($postid)) {
-            print_error('invalidpostid', 'forumimproved');
+        if (! $post = forumplusone_get_post_full($postid)) {
+            print_error('invalidpostid', 'forumplusone');
         }
-        if (! $discussion = $DB->get_record("forumimproved_discussions", array("id" => $post->discussion))) {
-            print_error('notpartofdiscussion', 'forumimproved');
+        if (! $discussion = $DB->get_record("forumplusone_discussions", array("id" => $post->discussion))) {
+            print_error('notpartofdiscussion', 'forumplusone');
         }
-        if (! $forum = $DB->get_record("forumimproved", array("id" => $discussion->forum))) {
-            print_error('invalidforumid', 'forumimproved');
+        if (! $forum = $DB->get_record("forumplusone", array("id" => $discussion->forum))) {
+            print_error('invalidforumid', 'forumplusone');
         }
         if (! $course = $DB->get_record("course", array("id" => $discussion->course))) {
             print_error('invalidcourseid');
         }
-        if (! $cm = get_coursemodule_from_instance("forumimproved", $forum->id, $course->id)) {
+        if (! $cm = get_coursemodule_from_instance("forumplusone", $forum->id, $course->id)) {
             print_error('invalidcoursemodule');
         }
 
@@ -101,10 +101,10 @@ class vote_controller extends controller_abstract {
         }
         if ($groupmode == SEPARATEGROUPS and !has_capability('moodle/site:accessallgroups', $PAGE->context)) {
             if ($discussion->groupid == -1) {
-                print_error('nopostforum', 'forumimproved');
+                print_error('nopostforum', 'forumplusone');
             } else {
                 if (!groups_is_member($discussion->groupid)) {
-                    print_error('nopostforum', 'forumimproved');
+                    print_error('nopostforum', 'forumplusone');
                 }
             }
         }
@@ -115,8 +115,8 @@ class vote_controller extends controller_abstract {
         }
 
         $forum   = $PAGE->activityrecord;
-        if (!forumimproved_is_discussion_open($forum, $discussion)) {
-            print_error('discussion_closed', 'forumimproved');
+        if (!forumplusone_is_discussion_open($forum, $discussion)) {
+            print_error('discussion_closed', 'forumplusone');
         }
 
 
@@ -142,19 +142,19 @@ class vote_controller extends controller_abstract {
 
 
 
-        if (! $post = forumimproved_get_post_full($postid)) {
-            print_error('invalidpostid', 'forumimproved');
+        if (! $post = forumplusone_get_post_full($postid)) {
+            print_error('invalidpostid', 'forumplusone');
         }
-        if (! $discussion = $DB->get_record("forumimproved_discussions", array("id" => $post->discussion))) {
-            print_error('notpartofdiscussion', 'forumimproved');
+        if (! $discussion = $DB->get_record("forumplusone_discussions", array("id" => $post->discussion))) {
+            print_error('notpartofdiscussion', 'forumplusone');
         }
-        if (! $forum = $DB->get_record("forumimproved", array("id" => $discussion->forum))) {
-            print_error('invalidforumid', 'forumimproved');
+        if (! $forum = $DB->get_record("forumplusone", array("id" => $discussion->forum))) {
+            print_error('invalidforumid', 'forumplusone');
         }
         if (! $course = $DB->get_record("course", array("id" => $discussion->course))) {
             print_error('invalidcourseid');
         }
-        if (! $cm = get_coursemodule_from_instance("forumimproved", $forum->id, $course->id)) {
+        if (! $cm = get_coursemodule_from_instance("forumplusone", $forum->id, $course->id)) {
             print_error('invalidcoursemodule');
         }
 
@@ -168,10 +168,10 @@ class vote_controller extends controller_abstract {
         }
         if ($groupmode == SEPARATEGROUPS and !has_capability('moodle/site:accessallgroups', $PAGE->context)) {
             if ($discussion->groupid == -1) {
-                print_error('nopostforum', 'forumimproved');
+                print_error('nopostforum', 'forumplusone');
             } else {
                 if (!groups_is_member($discussion->groupid)) {
-                    print_error('nopostforum', 'forumimproved');
+                    print_error('nopostforum', 'forumplusone');
                 }
             }
         }
@@ -182,23 +182,23 @@ class vote_controller extends controller_abstract {
         }
 
         $forum   = $PAGE->activityrecord;
-        if (forumimproved_is_discussion_hidden($forum, $discussion)) {
-            print_error('discussion_hidden', 'forumimproved');
+        if (forumplusone_is_discussion_hidden($forum, $discussion)) {
+            print_error('discussion_hidden', 'forumplusone');
         }
 
         if ($forum->vote_display_name) {
-            if (!has_capability('mod/forumimproved:viewwhovote', $PAGE->context)) {
-                print_error('vote_view_forbidden', 'forumimproved');
+            if (!has_capability('mod/forumplusone:viewwhovote', $PAGE->context)) {
+                print_error('vote_view_forbidden', 'forumplusone');
             }
         }
         else {
-            if (!has_capability('mod/forumimproved:viewwhovote_annonymousvote', $PAGE->context)) {
-                print_error('vote_view_forbidden', 'forumimproved');
+            if (!has_capability('mod/forumplusone:viewwhovote_annonymousvote', $PAGE->context)) {
+                print_error('vote_view_forbidden', 'forumplusone');
             }
         }
 
         if (!$forum->enable_vote) {
-            print_error('vote_disabled_error', 'forumimproved');
+            print_error('vote_disabled_error', 'forumplusone');
         }
 
         $sqlsort = '';

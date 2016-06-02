@@ -18,7 +18,7 @@
  * View Posters Table
  *
  * @package    mod
- * @subpackage forumimproved
+ * @subpackage forumplusone
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,7 +26,7 @@
 
 require_once($CFG->libdir.'/tablelib.php');
 
-class forumimproved_lib_table_posters extends table_sql {
+class forumplusone_lib_table_posters extends table_sql {
     public function __construct($uniqueid) {
         global $PAGE, $USER;
 
@@ -36,16 +36,16 @@ class forumimproved_lib_table_posters extends table_sql {
         $this->define_headers(array(
             '',
             get_string('fullnameuser'),
-            get_string('totalposts', 'forumimproved'),
-            get_string('posts', 'forumimproved'),
-            get_string('replies', 'forumimproved'),
-            get_string('substantive', 'forumimproved'))
+            get_string('totalposts', 'forumplusone'),
+            get_string('posts', 'forumplusone'),
+            get_string('replies', 'forumplusone'),
+            get_string('substantive', 'forumplusone'))
         );
 
         $fields = user_picture::fields('u', null, 'id');
         $params = array('forumid' => $PAGE->activityrecord->id);
 
-        if (!has_capability('mod/forumimproved:viewposters', $PAGE->context)) {
+        if (!has_capability('mod/forumplusone:viewposters', $PAGE->context)) {
             $params['userid'] = $USER->id;
             $usersql = ' AND u.id = :userid ';
         } else {
@@ -57,16 +57,16 @@ class forumimproved_lib_table_posters extends table_sql {
              SUM(CASE WHEN p.parent = 0 THEN 1 ELSE 0 END) AS posts,
              SUM(CASE WHEN p.parent != 0 THEN 1 ELSE 0 END) AS replies,
              SUM(CASE WHEN p.flags LIKE '%substantive%' THEN 1 ELSE 0 END) AS substantive",
-            '{forumimproved_posts} p, {forumimproved_discussions} d, {forumimproved} f, {user} u',
+            '{forumplusone_posts} p, {forumplusone_discussions} d, {forumplusone} f, {user} u',
             "u.id = p.userid AND p.discussion = d.id AND d.forum = f.id AND f.id = :forumid$usersql GROUP BY p.userid",
             $params
         );
         $this->set_count_sql("
             SELECT COUNT(DISTINCT p.userid)
-              FROM {forumimproved_posts} p
+              FROM {forumplusone_posts} p
               JOIN {user} u ON u.id = p.userid
-              JOIN {forumimproved_discussions} d ON d.id = p.discussion
-              JOIN {forumimproved} f ON f.id = d.forum
+              JOIN {forumplusone_discussions} d ON d.id = p.discussion
+              JOIN {forumplusone} f ON f.id = d.forum
               WHERE f.id = :forumid$usersql
         ", $params);
     }

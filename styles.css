@@ -1,3 +1,7 @@
+body.path-mod-forumplusone{background:tomato !important}.path-mod-forumplusone #region-main{background: #fff;margin: 0.5em 0;padding: .5em 2.36%}
+
+
+
 
 .blockJs, .inlineJs {
     display: none;
@@ -37,66 +41,66 @@ svg:not(:root) {
     border-bottom:1px solid #ccc;
 }
 
-#page-local-joulegrader-view .forumimproved-post-pubdate:after {
+#page-local-joulegrader-view .forumplusone-post-pubdate:after {
     content: attr(title);
     padding-left: 1em;
 }
 
-#local-joulegrader .content .mod-forumimproved-posts-container,
-#local-joulegrader .content .mod-forumimproved-posts-container .content {
+#local-joulegrader .content .mod-forumplusone-posts-container,
+#local-joulegrader .content .mod-forumplusone-posts-container .content {
     text-align: left;
     margin-right: 0;
     overflow: hidden;
 }
-#local-joulegrader .content .mod-forumimproved-posts-container {
+#local-joulegrader .content .mod-forumplusone-posts-container {
     margin: 0 4%;
 }
 
 /* export page print styles */
-#page-mod-forumimproved-route.pagelayout-embedded a[aria-pressed="false"]{
+#page-mod-forumplusone-route.pagelayout-embedded a[aria-pressed="false"]{
     display:none;
 }
 
 
-.forumimproved_postincontext_dialog .yui3-widget-hd { cursor: move; }
+.forumplusone_postincontext_dialog .yui3-widget-hd { cursor: move; }
 
 /* Activity instance has a height set to 2em. This is madness, and we need to reset it or it causes lots of issues. */
-.activity.modtype_forumimproved .activityinstance {
+.activity.modtype_forumplusone .activityinstance {
     height:auto !important;
 }
 
 
-.path-mod-forumimproved #gradetype_warning.hidden { display: none; }
-.path-mod-forumimproved #gradetype_warning { color: #660000; padding-left: 5px; }
+.path-mod-forumplusone #gradetype_warning.hidden { display: none; }
+.path-mod-forumplusone #gradetype_warning { color: #660000; padding-left: 5px; }
 
 
 
 /* Hide things in the main view */
-.forumimproved-thread .forumimproved-footer-reply,
-.forumimproved-thread .forumimproved-thread-body,
-.forumimproved-thread .forumimproved-thread-content,
-.forumimproved-thread .forumimproved-replycount-link,
-.forumimproved-reply-wrapper + header {
+.forumplusone-thread .forumplusone-footer-reply,
+.forumplusone-thread .forumplusone-thread-body,
+.forumplusone-thread .forumplusone-thread-content,
+.forumplusone-thread .forumplusone-replycount-link,
+.forumplusone-reply-wrapper + header {
     display: none;
 }
 /* Show things if thread is expaned or on single discussion page */
-#page-mod-forumimproved-discuss .forumimproved-thread-body,
-#page-mod-forumimproved-discuss .forumimproved-thread-content,
-.forumimproved-thread-article-expanded .forumimproved-thread-body,
-.forumtype-blog .forumimproved-thread-body,
-.forumtype-blog .forumimproved-thread-content,
-.forumtype-blog .forumimproved-replycount-link{
+#page-mod-forumplusone-discuss .forumplusone-thread-body,
+#page-mod-forumplusone-discuss .forumplusone-thread-content,
+.forumplusone-thread-article-expanded .forumplusone-thread-body,
+.forumtype-blog .forumplusone-thread-body,
+.forumtype-blog .forumplusone-thread-content,
+.forumtype-blog .forumplusone-replycount-link{
     display: block;
 }
 
-.forumtype-blog .forumimproved-replycount,
-.forumtype-blog .forumimproved-unreadcount,
-.forumtype-blog .forumimproved-thread-title + .forumimproved-thread-flags {
+.forumtype-blog .forumplusone-replycount,
+.forumtype-blog .forumplusone-unreadcount,
+.forumtype-blog .forumplusone-thread-title + .forumplusone-thread-flags {
     display: none;
 }
 
-.forumtype-blog  .forumimproved-thread-title,
-.forumtype-blog  .forumimproved-thread-flags {
+.forumtype-blog  .forumplusone-thread-title,
+.forumtype-blog  .forumplusone-thread-flags {
     clear:both;
     display:block;
     width:100%;
@@ -105,27 +109,27 @@ svg:not(:root) {
 }
 
 /* Hide form. Will be shown with JS */
-.forumimproved-footer-reply {
+.forumplusone-footer-reply {
     display: none;
 }
 
 /* Hidden advanced editor */
-.path-mod-forumimproved #hiddenadvancededitorcont div {
+.path-mod-forumplusone #hiddenadvancededitorcont div {
     display:none;
 }
 
 /* Hide post itself when doing inline editing */
-.forumimproved-thread-edit .forumimproved-thread-header,
-.forumimproved-thread-edit .forumimproved-thread-tools,
-.forumimproved-thread-edit .forumimproved-thread-content,
-.forumimproved-post-edit > .forumimproved-post-figure,
-.forumimproved-post-edit > .forumimproved-post-body,
-.forumimproved-post-edit > .userpicture,
-.forumimproved-post-edit .forumimproved-thread-flags {
+.forumplusone-thread-edit .forumplusone-thread-header,
+.forumplusone-thread-edit .forumplusone-thread-tools,
+.forumplusone-thread-edit .forumplusone-thread-content,
+.forumplusone-post-edit > .forumplusone-post-figure,
+.forumplusone-post-edit > .forumplusone-post-body,
+.forumplusone-post-edit > .userpicture,
+.forumplusone-post-edit .forumplusone-thread-flags {
     display: none;
 }
 
-#page-mod-forumimproved-view #intro.generalbox {
+#page-mod-forumplusone-view #intro.generalbox {
     border:0;
     -webkit-box-shadow:none;
     box-shadow:none;
@@ -138,9 +142,9 @@ svg:not(:root) {
 -------------------------*/
 
 /* borderbox reset */
-.mod-forumimproved-posts-container.article *,
-.mod-forumimproved-posts-container.article *:before,
-.mod-forumimproved-posts-container.article *:after {
+.mod-forumplusone-posts-container.article *,
+.mod-forumplusone-posts-container.article *:before,
+.mod-forumplusone-posts-container.article *:after {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -148,71 +152,71 @@ svg:not(:root) {
 
 
 /* consistent padding */
-.forumimproved-thread-figure,
-.forumimproved-thread-content,
-.forumimproved-thread-tools,
-.forumimproved-post-figure {
+.forumplusone-thread-figure,
+.forumplusone-thread-content,
+.forumplusone-thread-tools,
+.forumplusone-post-figure {
     padding:0.33em 2.36%;
 }
 
 /* bold text to be bold */
-#page-mod-forumimproved-discuss strong,
-#page-mod-forumimproved-view strong {
+#page-mod-forumplusone-discuss strong,
+#page-mod-forumplusone-view strong {
     font-weight:700;
 }
 
 /* header issue in express */
-.forumimproved-thread-title h4{
+.forumplusone-thread-title h4{
     text-align:left;
 }
 
 /* header issue in express */
-.forumimproved-thread-title h4 .label {
+.forumplusone-thread-title h4 .label {
     font-size: .9em;
     line-height: 1.1em;
 }
 
 
 /* all imgs responsive */
-.forumimproved-thread img {
+.forumplusone-thread img {
     max-width:100%;
     height:auto;
 }
 
 
-.forumimproved-thread-article,
-.forumimproved-reply {
+.forumplusone-thread-article,
+.forumplusone-reply {
     padding:0.5em 2.36%;
 }
-.forumimproved-post-content .posting{
+.forumplusone-post-content .posting{
     padding:1em 0;
 }
-.forumimproved-post-content-hidden {
+.forumplusone-post-content-hidden {
     padding:1em 2.36%;
 }
 
-#page-mod-forumimproved-search #searchform {
+#page-mod-forumplusone-search #searchform {
     max-width: 35em;
 }
 
-#page-mod-forumimproved-search #searchform label {
+#page-mod-forumplusone-search #searchform label {
     display: block;
 }
-#page-mod-forumimproved-search .forumimproved-post:before {
+#page-mod-forumplusone-search .forumplusone-post:before {
     display:none;
 }
 
 /* FORUM HEADER */
-.forumimproved-search .helptooltip {
+.forumplusone-search .helptooltip {
     display: none;
 }
 
-#page-mod-forumimproved-search .forumimproved-search #searchforums {
+#page-mod-forumplusone-search .forumplusone-search #searchforums {
     left: 0;
     position: relative;
 }
 
-#page-mod-forumimproved-view #selectgroup label {
+#page-mod-forumplusone-view #selectgroup label {
     display:none;
 }
 #newdiscussionform div,
@@ -221,7 +225,7 @@ svg:not(:root) {
 }
 
 /* THREAD AND POSTS */
-.forumimproved-thread {
+.forumplusone-thread {
     border-bottom:1px solid #ddd;
     word-wrap: break-word;
     -webkit-hyphens: auto;
@@ -229,11 +233,11 @@ svg:not(:root) {
         hyphens: auto;
 }
 
-#page-mod-forumimproved-discuss .forumimproved-thread{
+#page-mod-forumplusone-discuss .forumplusone-thread{
     border-color:transparent;
 }
-#page-mod-forumimproved-discuss .forumimproved-thread-author,
-#page-mod-forumimproved-discuss .forumimproved-thread-header {
+#page-mod-forumplusone-discuss .forumplusone-thread-author,
+#page-mod-forumplusone-discuss .forumplusone-thread-header {
     width:100%;
     padding:0.33em 2.34%;
 }
@@ -243,16 +247,16 @@ svg:not(:root) {
 /* THREAD AND POST TITLES */
 
 
-.forumimproved-thread-title >h4 {
+.forumplusone-thread-title >h4 {
     margin:0;
     padding-right:2.34%;
 }
 
-#page-mod-forumimproved-view:not(.forumtype-blog) .forumimproved-thread-title > h4{
+#page-mod-forumplusone-view:not(.forumtype-blog) .forumplusone-thread-title > h4{
     font-size:1.3em;
 }
 
-.forumimproved-post-byline{
+.forumplusone-post-byline{
     font-size:1em;
     font-weight:normal;
     line-height:1.5;
@@ -260,35 +264,35 @@ svg:not(:root) {
     margin-bottom:0;
 }
 
-.forumimproved-post-title{
+.forumplusone-post-title{
     font-size:0.85em;
     font-style:oblique;
     -webkit-transition: opacity .3s;
     transition: opacity .3s;
     opacity:0.3;
 }
-.forumimproved-post:hover .forumimproved-post-title{
+.forumplusone-post:hover .forumplusone-post-title{
     opacity:0.85;
 }
-.forumimproved-thread-content {
+.forumplusone-thread-content {
     clear:both;
 }
 
 
-.forumimproved-thread-flags {
+.forumplusone-thread-flags {
     text-align:right;
 }
 
-.forumimproved-thread-replies-list {
+.forumplusone-thread-replies-list {
     list-style:none;
     margin:0;
 }
-.forumimproved-replycount{
+.forumplusone-replycount{
     font-size:small;
 }
 
 .topic-header .stateChanger + h3,
-.forumimproved-threads-wrapper .forumimproved-thread .stateChanger + h4 {
+.forumplusone-threads-wrapper .forumplusone-thread .stateChanger + h4 {
     margin: 0;
     margin-left: .5em;
     line-height: 1em;
@@ -316,7 +320,7 @@ svg:not(:root) {
 }
 
 .topic-header .stateChanger + h3,
-.forumimproved-threads-wrapper .forumimproved-thread .stateChanger + h4 {
+.forumplusone-threads-wrapper .forumplusone-thread .stateChanger + h4 {
     margin-left: .5em;
     margin-top: 0;
 }
@@ -325,7 +329,7 @@ svg:not(:root) {
 .stateChanger [type="submit"],
 .stateChanger,
 .topic-header .stateChanger + h3,
-.forumimproved-threads-wrapper .forumimproved-thread .stateChanger + h4 {
+.forumplusone-threads-wrapper .forumplusone-thread .stateChanger + h4 {
     float: left;
 }
 
@@ -449,13 +453,13 @@ svg:not(:root) {
 
 
 /* POST LIST STYLES */
-.forumimproved-post{
+.forumplusone-post{
     position:relative;
     clear:both;
 }
 
 
-.forumimproved-parent-post-link {
+.forumplusone-parent-post-link {
     border-radius: 50%;
     background-color: orange;
     display: inline-block;
@@ -467,12 +471,12 @@ svg:not(:root) {
 }
 
 /* user image secions */
-.forumimproved-thread-author,
-.forumimproved-post-figure{
+.forumplusone-thread-author,
+.forumplusone-post-figure{
     text-align:center;
 }
-.forumimproved-thread-author .userpicture,
-.forumimproved-post-figure .userpicture{
+.forumplusone-thread-author .userpicture,
+.forumplusone-post-figure .userpicture{
     width:75px;
     max-width:100%;
     height:auto;
@@ -480,7 +484,7 @@ svg:not(:root) {
     margin:0 auto;
     display:block;
 }
-.forumimproved-post-byline .userpicture{
+.forumplusone-post-byline .userpicture{
     display: inline-block;
     width: 32px;
     max-width: 32px;
@@ -491,12 +495,12 @@ svg:not(:root) {
 }
 
 
-.forumimproved-post-target .userpicture{
+.forumplusone-post-target .userpicture{
     float: left;
     width: 100px;
 }
 
-.forumimproved-post-target p {
+.forumplusone-post-target p {
     margin: 10px 0;
 }
 
@@ -506,7 +510,7 @@ svg:not(:root) {
 
 
 
-.forumimproved-post-wrapper {
+.forumplusone-post-wrapper {
     padding: 1em 1em 0;
     border: 1px solid rgb(239, 239, 239);
     background: rgba(239, 239, 239, 0);
@@ -520,34 +524,34 @@ svg:not(:root) {
        -moz-border-radius: 4px;
             border-radius: 4px;
 }
-.forumimproved-post-wrapper:hover {
+.forumplusone-post-wrapper:hover {
     background:  rgb(239, 239, 239);
     background:  rgba(239, 239, 239, 1);
 }
 
-.forumimproved-thread-replies .forumimproved-post-wrapper {
+.forumplusone-thread-replies .forumplusone-post-wrapper {
     margin: 1em 0 0;
 }
 
-.forumimproved-post-wrapper .forumimproved-thread-flags {
+.forumplusone-post-wrapper .forumplusone-thread-flags {
     margin-top: 0;
 }
 
-.forumimproved-post-target .forumimproved-post-body {
+.forumplusone-post-target .forumplusone-post-body {
     margin-left: 120px;
 }
 
-.forumimproved-form.forumimproved-reply,
-.forumimproved-thread-replies {
+.forumplusone-form.forumplusone-reply,
+.forumplusone-thread-replies {
     margin-top: 1em;
     border-top: 1px solid #bbb;
 }
 
-.forumimproved-post .forumimproved-thread-replies-list .forumimproved-post .forumimproved-post-wrapper {
+.forumplusone-post .forumplusone-thread-replies-list .forumplusone-post .forumplusone-post-wrapper {
     margin-top: -1px;
 }
 
-.forumimproved-post-body .forumimproved-post-time {
+.forumplusone-post-body .forumplusone-post-time {
     font-size: .8em;
 }
 
@@ -557,23 +561,23 @@ svg:not(:root) {
 
 
 
-.forumimproved-nouserpicture .userpicture {
+.forumplusone-nouserpicture .userpicture {
     display: none;
 }
-.forumimproved-nouserpicture .forumimproved-post-body {
+.forumplusone-nouserpicture .forumplusone-post-body {
     margin-left: 0;
 }
-.forumimproved-nouserpicture .forumimproved-form .forumimproved-post-figure {
+.forumplusone-nouserpicture .forumplusone-form .forumplusone-post-figure {
     display: none;
 }
-.forumimproved-nouserpicture .forumimproved-form .forumimproved-post-body {
+.forumplusone-nouserpicture .forumplusone-form .forumplusone-post-body {
     width: 100%;
 }
 
 
 
 
-.forumimproved-tools a {
+.forumplusone-tools a {
     -webkit-transition: border-bottom .15s, padding-bottom .15s;
        -moz-transition: border-bottom .15s, padding-bottom .15s;
          -o-transition: border-bottom .15s, padding-bottom .15s;
@@ -589,7 +593,7 @@ svg:not(:root) {
     zoom: 1;
     *display: inline;
 }
-.forumimproved-tools a.active {
+.forumplusone-tools a.active {
     border-bottom-width: 5px;
     padding-bottom: 0px;
     color: tomato;
@@ -601,7 +605,7 @@ svg:not(:root) {
 
 
 /* unread posts flag */
-.forumimproved-unreadcount {
+.forumplusone-unreadcount {
     background-color: #FFA500;
     color: #FFF !important;
     display:inline-block;
@@ -612,7 +616,7 @@ svg:not(:root) {
     line-height:2;
     border-radius:3px;
 }
-.forumimproved-post .forumimproved-unreadcount {
+.forumplusone-post .forumplusone-unreadcount {
     display:inline-block;
 
 }
@@ -624,23 +628,23 @@ svg:not(:root) {
 }
 
 
-.forumimproved-thread-content .attachments {
+.forumplusone-thread-content .attachments {
     margin-top: 1em;
 }
 
-.forumimproved-tools {
+.forumplusone-tools {
     font-family:'Roboto','Open sans','Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight:normal;
     clear: both;
     float: left;
     padding-top: 1em;
 }
-.forumimproved-post-body .forumimproved-count-replies {
+.forumplusone-post-body .forumplusone-count-replies {
     float: right;
     margin: 0px;
     padding-top: 1em;
 }
-.forumimproved-tools .forumimproved-reply-link {
+.forumplusone-tools .forumplusone-reply-link {
     margin-left:0;
 }
 
@@ -649,7 +653,7 @@ svg:not(:root) {
 /* ------------------------
 
 ------------------------ */
-.forumimproved-threads-wrapper .forumimproved-thread-meta {
+.forumplusone-threads-wrapper .forumplusone-thread-meta {
     float: right;
     text-align: right;
     margin-top: 10px;
@@ -660,14 +664,14 @@ svg:not(:root) {
 /* -------------------------
 ACTIONS
 -------------------------*/
-.forumimproved-toggle {
+.forumplusone-toggle {
     display:inline-block;
     border-radius:0;
     padding:0 0.2em;
     color:white !important;
     font-family:"Roboto",'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
-.forumimproved-toggle .svg-icon {
+.forumplusone-toggle .svg-icon {
     stroke: #505050;
     stroke-width: 5px;
     fill: #505050;
@@ -680,7 +684,7 @@ ACTIONS
     display:inline-block;
 }
 
-.forumimproved-toggle:hover {
+.forumplusone-toggle:hover {
     -webkit-transform: scale(1.06);
     -ms-transform: scale(1.06);
     transform: scale(1.06);
@@ -689,43 +693,43 @@ ACTIONS
     background-color:#eee;
 }
 
-.forumimproved-toggle-subscribe.forumimproved-toggled .svg-icon,
-.forumimproved-toggle-subscribe:hover .svg-icon{
+.forumplusone-toggle-subscribe.forumplusone-toggled .svg-icon,
+.forumplusone-toggle-subscribe:hover .svg-icon{
     fill:#ffac0d;
     fill-opacity: 1;
     stroke-opacity: 0;
 }
 
-.forumimproved-toggle-substantive.forumimproved-toggled .svg-icon,
-.forumimproved-toggle-substantive:hover .svg-icon{
+.forumplusone-toggle-substantive.forumplusone-toggled .svg-icon,
+.forumplusone-toggle-substantive:hover .svg-icon{
     fill:#5fa9dd;
     fill-opacity: 1;
     stroke-opacity: 0;
 }
-.forumimproved-toggle-bookmark.forumimproved-toggled .svg-icon,
-.forumimproved-toggle-bookmark:hover .svg-icon{
+.forumplusone-toggle-bookmark.forumplusone-toggled .svg-icon,
+.forumplusone-toggle-bookmark:hover .svg-icon{
     fill:#f05454;
     fill-opacity: 1;
     stroke-opacity: 0;
 }
 
-.forumimproved-thread.topic-hidden .forumimproved-reply-link,
-.forumimproved-thread.topic-hidden .forumimproved-form.forumimproved-reply,
-.forumimproved-thread.topic-hidden .forumimproved-vote-link,
-.forumimproved-thread.topic-hidden .forumimproved-edit-link,
-.forumimproved-thread.topic-hidden .forumimproved-delete-link,
-.forumimproved-thread.topic-hidden .forumimproved-prune-link,
-.forumimproved-thread.topic-hidden .forumimproved-form.forumimproved-edit button[type="submit"],
-.forumimproved-thread.topic-hidden .forumimproved-use-advanced,
+.forumplusone-thread.topic-hidden .forumplusone-reply-link,
+.forumplusone-thread.topic-hidden .forumplusone-form.forumplusone-reply,
+.forumplusone-thread.topic-hidden .forumplusone-vote-link,
+.forumplusone-thread.topic-hidden .forumplusone-edit-link,
+.forumplusone-thread.topic-hidden .forumplusone-delete-link,
+.forumplusone-thread.topic-hidden .forumplusone-prune-link,
+.forumplusone-thread.topic-hidden .forumplusone-form.forumplusone-edit button[type="submit"],
+.forumplusone-thread.topic-hidden .forumplusone-use-advanced,
 
-.forumimproved-thread.topic-closed .forumimproved-reply-link,
-.forumimproved-thread.topic-closed .forumimproved-form.forumimproved-reply,
-.forumimproved-thread.topic-closed .forumimproved-vote-link,
-.forumimproved-thread.topic-closed .forumimproved-edit-link,
-.forumimproved-thread.topic-closed .forumimproved-delete-link,
-.forumimproved-thread.topic-closed .forumimproved-prune-link,
-.forumimproved-thread.topic-closed .forumimproved-form.forumimproved-edit button[type="submit"],
-.forumimproved-thread.topic-closed .forumimproved-use-advanced {
+.forumplusone-thread.topic-closed .forumplusone-reply-link,
+.forumplusone-thread.topic-closed .forumplusone-form.forumplusone-reply,
+.forumplusone-thread.topic-closed .forumplusone-vote-link,
+.forumplusone-thread.topic-closed .forumplusone-edit-link,
+.forumplusone-thread.topic-closed .forumplusone-delete-link,
+.forumplusone-thread.topic-closed .forumplusone-prune-link,
+.forumplusone-thread.topic-closed .forumplusone-form.forumplusone-edit button[type="submit"],
+.forumplusone-thread.topic-closed .forumplusone-use-advanced {
     /* hide :
         * reply buttons
         * reply forms
@@ -740,13 +744,13 @@ ACTIONS
     display: none;
 }
 
-.forumimproved-thread.topic-hidden .forumimproved-form.forumimproved-edit,
-.forumimproved-thread.topic-closed .forumimproved-form.forumimproved-edit {
+.forumplusone-thread.topic-hidden .forumplusone-form.forumplusone-edit,
+.forumplusone-thread.topic-closed .forumplusone-form.forumplusone-edit {
     display: block;
 }
 
 
-.forumimproved-threads-wrapper .forumimproved-thread .btnToogleStateLine {
+.forumplusone-threads-wrapper .forumplusone-thread .btnToogleStateLine {
     margin-bottom: -2em;
     margin-top: 2.5em;
     clear: right;
@@ -762,27 +766,27 @@ ACTIONS
 FUN WITH FORMS
 -------------------------*/
 
-.forumimproved-reply-wrapper {
+.forumplusone-reply-wrapper {
     clear: both;
 }
 
 
-.forumimproved-form fieldset{
+.forumplusone-form fieldset{
     margin:0 auto;
 }
 
-.forumimproved-form legend {
+.forumplusone-form legend {
     margin:1em 0;
     font-size:1.25em;
 }
 
-.forumimproved-form label {
+.forumplusone-form label {
     display:block;
     margin-bottom:0.5em;
 }
 
 
-.forumimproved-form .forumimproved-textarea {
+.forumplusone-form .forumplusone-textarea {
     cursor: text;
     -moz-appearance: textfield-multiline;
     -webkit-appearance: textarea;
@@ -798,29 +802,29 @@ FUN WITH FORMS
 }
 
 
-.forumimproved-form .hidden {
+.forumplusone-form .hidden {
     display: none;
 }
 
-.forumimproved-form div[contenteditable=true]:empty:not(:focus):before {
+.forumplusone-form div[contenteditable=true]:empty:not(:focus):before {
     content: attr(data-placeholder);
     color: #999;
 }
 
 
-.forumimproved-form button {
+.forumplusone-form button {
     clear:both;
 }
 
-.forumimproved-use-advanced {
+.forumplusone-use-advanced {
     clear:both;
     float:right;
 }
 
-.forumimproved-validation-errors.notifyproblem {
+.forumplusone-validation-errors.notifyproblem {
     text-align: left;
 }
-.path-mod-forumimproved .discussioncontrols {
+.path-mod-forumplusone .discussioncontrols {
     text-align:center;
     margin: 1em 0;
 }
@@ -907,127 +911,127 @@ FUN WITH FORMS
     /* -------------------------  MEDIA Qs  -------------------------*/
 
     @media all and (min-width: 35em) {
-        #page-mod-forumimproved-view .groupselector{
+        #page-mod-forumplusone-view .groupselector{
             text-align:right;
         }
 
         /* GRID ME UP */
-        .forumimproved-thread-author{
+        .forumplusone-thread-author{
             width:18%;
             margin-right:5.6%;
             float:left;
         }
 
 
-        .forumimproved-thread-header,
-        .forumimproved-thread-title{
+        .forumplusone-thread-header,
+        .forumplusone-thread-title{
             float:left;
             width:76.4%;
         }
 
-        .forumimproved-thread-flags{
+        .forumplusone-thread-flags{
             float:right;
             width: auto;
             text-align:right;
         }
 
-        .forumimproved-post-figure {
+        .forumplusone-post-figure {
             float:left;
             width:15.73%;
 
         }
-        form .forumimproved-post-body{
+        form .forumplusone-post-body{
             float:left;
             width:84.27%;
         }
-        form.forumimproved-form .forumimproved-post-body {
+        form.forumplusone-form .forumplusone-post-body {
             margin-left: 0;
         }
 
-        .depth0 .forumimproved-reply-wrapper{
+        .depth0 .forumplusone-reply-wrapper{
             margin-left:15.73%;
         }
-        .improvedform-post-date{
+        .plusoneform-post-date{
             float:right;
             line-height:3;
         }
 
-        .forumimproved-post-byline{
+        .forumplusone-post-byline{
             display:inline;
         }
 
-        .forumimproved-postflagging{
+        .forumplusone-postflagging{
             float:right;
         }
 
         /* increase form with */
-        .forumimproved-form input[type=text],
-        .forumimproved-form textarea {
+        .forumplusone-form input[type=text],
+        .forumplusone-form textarea {
             width:100%;
             min-height: 2em;
         }
 
-        .forumimproved-add-discussion,
-        .forumimproved-search {
+        .forumplusone-add-discussion,
+        .forumplusone-search {
             width:50%;
             display:inline-block;
             text-align:left;
         }
-        .forumimproved-search {
+        .forumplusone-search {
             text-align:right;
         }
         /* search on discuss page only for single simple discussion */
-        #page-mod-forumimproved-discuss .forumimproved-search {
+        #page-mod-forumplusone-discuss .forumplusone-search {
             width: 100%;
         }
-        #forumimproved-filter-options {
+        #forumplusone-filter-options {
             text-align:right;
         }
-        .forumimproved-discussion-sort {
+        .forumplusone-discussion-sort {
             display:inline-block;
         }
 
         #menudsortdirection + input {
             display:inline;
         }
-        .forumimproved-parent-post-link{
+        .forumplusone-parent-post-link{
             float:left;
         }
 
 
 
 
-        .forumimproved-post[data-depth] .forumimproved-post-wrapper{margin-left:32%;} /* max depth catch all */
+        .forumplusone-post[data-depth] .forumplusone-post-wrapper{margin-left:32%;} /* max depth catch all */
         /* 5.24 */
-        .forumimproved-post[data-depth="0"] .forumimproved-post-wrapper{margin-left:0%;}
-        .forumimproved-post[data-depth="1"] .forumimproved-post-wrapper{margin-left:8%;}
-        .forumimproved-post[data-depth="2"] .forumimproved-post-wrapper{margin-left:16%;}
-        .forumimproved-post[data-depth="3"] .forumimproved-post-wrapper{margin-left:24%;}
-        .forumimproved-post[data-depth="4"] .forumimproved-post-wrapper{margin-left:32%;}
-        /* .forumimproved-post[data-depth="5"] .forumimproved-post-wrapper{margin-left:36.69%;} */
+        .forumplusone-post[data-depth="0"] .forumplusone-post-wrapper{margin-left:0%;}
+        .forumplusone-post[data-depth="1"] .forumplusone-post-wrapper{margin-left:8%;}
+        .forumplusone-post[data-depth="2"] .forumplusone-post-wrapper{margin-left:16%;}
+        .forumplusone-post[data-depth="3"] .forumplusone-post-wrapper{margin-left:24%;}
+        .forumplusone-post[data-depth="4"] .forumplusone-post-wrapper{margin-left:32%;}
+        /* .forumplusone-post[data-depth="5"] .forumplusone-post-wrapper{margin-left:36.69%;} */
     }
 
     @media all and (min-width: 62em) {
         /* REALLY BIG SCREENS */
-        #page-mod-forumimproved-view #region-main{
+        #page-mod-forumplusone-view #region-main{
             padding:1em 2%;
         }
-        #page-mod-forumimproved-view #region-main #discussionsview {
+        #page-mod-forumplusone-view #region-main #discussionsview {
             max-width:60.5em;
             margin: auto;
         }
 
-        .forumtype-single .forumimproved-thread-header,
-        .forumtype-single .forumimproved-thread-title,
-        .forumtype-single .forumimproved-thread-flags {
+        .forumtype-single .forumplusone-thread-header,
+        .forumtype-single .forumplusone-thread-title,
+        .forumtype-single .forumplusone-thread-flags {
             display:block;
             width:100%;
             float:none;
         }
-        .forumtype-single .forumimproved-thread-flags {
+        .forumtype-single .forumplusone-thread-flags {
             text-align:left;
         }
-        .forumtype-single .forumimproved-thread-participants {
+        .forumtype-single .forumplusone-thread-participants {
             display:inline-block;
             margin-left:3%;
             min-width:80%;
@@ -1038,37 +1042,37 @@ FUN WITH FORMS
 
     /* small screen */
     @media (max-width: 35em) {
-        .forumimproved-thread-flags,
-        .forumimproved-thread-replies-meta,
-        .forumimproved-thread-figure,
-        .improvedform-post-date,
-        .forumimproved-postflagging {
+        .forumplusone-thread-flags,
+        .forumplusone-thread-replies-meta,
+        .forumplusone-thread-figure,
+        .plusoneform-post-date,
+        .forumplusone-postflagging {
             clear:both;
             display:block;
             width:100%;
             float:none;
         }
 
-        .forumimproved-thread-flags{
+        .forumplusone-thread-flags{
             text-align:right;
         }
 
-        .forumimproved-post-figure{
+        .forumplusone-post-figure{
             float:left;
         }
-        .forumimproved-post-figure .userpicture {
+        .forumplusone-post-figure .userpicture {
             max-width:50px;
         }
-        .improvedform-post-date,
-        .forumimproved-postflagging {
+        .plusoneform-post-date,
+        .forumplusone-postflagging {
             text-align:right;
         }
 
-        .forumimproved-thread{
+        .forumplusone-thread{
             padding:1em 1.18%;
             margin:0 2.36%;
         }
-        .forumimproved-post-byline{
+        .forumplusone-post-byline{
             font-size:0.9em;
             line-height:1;
         }
@@ -1079,39 +1083,39 @@ FUN WITH FORMS
 
     /* recent activity, recent posts output in non-Snap themes */
 
-    .section .activity.modtype_forumimproved .activityinstance div {
+    .section .activity.modtype_forumplusone .activityinstance div {
         display:block; /* overwrite core shame */
     }
 
-    .block_flexpagemod_forumimproved .forumimproved-recent-heading,
-    .forumimproved.modtype_forumimproved .forumimproved-recent-heading,
-    .section .activity.modtype_forumimproved .availabilityinfo {
+    .block_flexpagemod_forumplusone .forumplusone-recent-heading,
+    .forumplusone.modtype_forumplusone .forumplusone-recent-heading,
+    .section .activity.modtype_forumplusone .availabilityinfo {
         font-size:1em;
         clear:both;
     }
-    .block_flexpagemod_forumimproved .snap-media-object,
-    .forumimproved.modtype_forumimproved .snap-media-object,
+    .block_flexpagemod_forumplusone .snap-media-object,
+    .forumplusone.modtype_forumplusone .snap-media-object,
     .block_recent_activity .snap-media-object {
         margin-bottom: 0.3em;
         font-size:small;
     }
-    .block_flexpagemod_forumimproved .snap-media-object,
-    .forumimproved.modtype_forumimproved .snap-media-object {
+    .block_flexpagemod_forumplusone .snap-media-object,
+    .forumplusone.modtype_forumplusone .snap-media-object {
         width:50%;
         float:left;
         min-width: 200px;
     }
 
-    .block_flexpagemod_forumimproved .snap-media-object > a,
-.modtype_forumimproved .snap-media-object > a,
+    .block_flexpagemod_forumplusone .snap-media-object > a,
+.modtype_forumplusone .snap-media-object > a,
 .block_recent_activity .snap-media-object > a {
     text-decoration: none;
 }
 
-.format-flexpage .block_flexpagemod_forumimproved .snap-media-object > a > img,
-.block_flexpagemod_forumimproved .snap-media-object > img,
-.modtype_forumimproved .snap-media-object > a > img,
-.modtype_forumimproved .snap-media-object > img,
+.format-flexpage .block_flexpagemod_forumplusone .snap-media-object > a > img,
+.block_flexpagemod_forumplusone .snap-media-object > img,
+.modtype_forumplusone .snap-media-object > a > img,
+.modtype_forumplusone .snap-media-object > img,
 .block_recent_activity .snap-media-object > a > img,
 .block_recent_activity .snap-media-object > img {
     float: left;
@@ -1122,25 +1126,25 @@ FUN WITH FORMS
     vertical-align: baseline;
 }
 
-.block_flexpagemod_forumimproved .snap-media-body,
-.activity.modtype_forumimproved .snap-media-body,
+.block_flexpagemod_forumplusone .snap-media-body,
+.activity.modtype_forumplusone .snap-media-body,
 .block_recent_activity .snap-media-body {
     overflow: hidden;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.block_flexpagemod_forumimproved .snap-media-body p,
-.modtype_forumimproved .snap-media-body p,
+.block_flexpagemod_forumplusone .snap-media-body p,
+.modtype_forumplusone .snap-media-body p,
 .block_recent_activity .snap-media-body p {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.format-flexpage .block_flexpagemod_forumimproved .snap-media-body  h3,
-.block_flexpagemod_forumimproved .snap-media-body  h3 small,
-.modtype_forumimproved .snap-media-body  h3,
-.modtype_forumimproved .snap-media-body  h3 small,
+.format-flexpage .block_flexpagemod_forumplusone .snap-media-body  h3,
+.block_flexpagemod_forumplusone .snap-media-body  h3 small,
+.modtype_forumplusone .snap-media-body  h3,
+.modtype_forumplusone .snap-media-body  h3 small,
 .block_recent_activity .snap-media-body  h3,
 .block_recent_activity .snap-media-body  h3 small {
     color: inherit;
@@ -1149,47 +1153,47 @@ FUN WITH FORMS
     margin: 0;
 }
 
-.block_flexpagemod_forumimproved .snap-media-body  h3 small,
-.modtype_forumimproved .snap-media-body  h3 small,
+.block_flexpagemod_forumplusone .snap-media-body  h3 small,
+.modtype_forumplusone .snap-media-body  h3 small,
 .block_recent_activity .snap-media-body  h3 small {
         opacity: 0.75;
 }
 
-.block_flexpagemod_forumimproved .snap-media-meta,
-.modtype_forumimproved .snap-media-meta,
+.block_flexpagemod_forumplusone .snap-media-meta,
+.modtype_forumplusone .snap-media-meta,
 .block_recent_activity .snap-media-meta {
     display: block;
     font-size: small;
     opacity: 0.75;
 }
 
-.block_flexpagemod_forumimproved .snap-media-meta  time,
-.modtype_forumimproved .snap-media-meta  time,
+.block_flexpagemod_forumplusone .snap-media-meta  time,
+.modtype_forumplusone .snap-media-meta  time,
 .block_recent_activity .snap-media-meta  time {
     margin-right: 1em;
 }
 
-.format-flexpage .block_flexpagemod_forumimproved .snap-media-object h3 {
+.format-flexpage .block_flexpagemod_forumplusone .snap-media-object h3 {
     padding: 0;
 }
 
-.format-flexpage  .block_flexpagemod_forumimproved .activityinstance,
-.modtype_forumimproved .activityinstance{
+.format-flexpage  .block_flexpagemod_forumplusone .activityinstance,
+.modtype_forumplusone .activityinstance{
     display: block !important;
 }
 
-.modtype_forumimproved.activity:before,
-.modtype_forumimproved.activity:after,
-.format-flexpage  .block_flexpagemod_forumimproved li.activity:before,
-.format-flexpage  .block_flexpagemod_forumimproved li.activity:after,
-.activity.modtype_forumimproved .unread:before {
+.modtype_forumplusone.activity:before,
+.modtype_forumplusone.activity:after,
+.format-flexpage  .block_flexpagemod_forumplusone li.activity:before,
+.format-flexpage  .block_flexpagemod_forumplusone li.activity:after,
+.activity.modtype_forumplusone .unread:before {
     content: "";
     display: table;
 }
 
-.modtype_forumimproved .no-overflow,
-.modtype_forumimproved.activity:after,
-.format-flexpage  .block_flexpagemod_forumimproved li.activity:after {
+.modtype_forumplusone .no-overflow,
+.modtype_forumplusone.activity:after,
+.format-flexpage  .block_flexpagemod_forumplusone li.activity:after {
     clear: both;
 }
 
@@ -1221,16 +1225,16 @@ FUN WITH FORMS
     float:right;
 }
 
-.forumimproved-threshold-blocked .forumimproved-post-figure,
-.forumimproved-threshold-blocked .forumimproved-post-body {
+.forumplusone-threshold-blocked .forumplusone-post-figure,
+.forumplusone-threshold-blocked .forumplusone-post-body {
     display: none;
 }
 
-.format-flexpage .block_flexpagemod_forumimproved li.activity:before,
-.format-flexpage .block_flexpagemod_forumimproved li.activity:after,
-.modtype_forumimproved.activity:before,
-.modtype_forumimproved.activity:after,
-.modtype_forumimproved.activity .unread:before {
+.format-flexpage .block_flexpagemod_forumplusone li.activity:before,
+.format-flexpage .block_flexpagemod_forumplusone li.activity:after,
+.modtype_forumplusone.activity:before,
+.modtype_forumplusone.activity:after,
+.modtype_forumplusone.activity .unread:before {
     content: "";
     display: table;
     clear: both;

@@ -26,7 +26,7 @@
  * through a confirmation page that redirects the user back with the
  * sesskey.
  *
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -34,14 +34,14 @@
  */
 
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once($CFG->dirroot.'/mod/forumimproved/lib.php');
+require_once($CFG->dirroot.'/mod/forumplusone/lib.php');
 
 $id      = required_param('id', PARAM_INT);             // the forum to subscribe or unsubscribe to
 $mode    = optional_param('mode', null, PARAM_INT);     // the forum's subscription mode
 $user    = optional_param('user', 0, PARAM_INT);        // userid of the user to subscribe, defaults to $USER
 $sesskey = optional_param('sesskey', null, PARAM_RAW);  // sesskey
 
-$url = new moodle_url('/mod/forumimproved/subscribe.php', array('id'=>$id));
+$url = new moodle_url('/mod/forumplusone/subscribe.php', array('id'=>$id));
 if (!is_null($mode)) {
     $url->param('mode', $mode);
 }
@@ -53,15 +53,15 @@ if (!is_null($sesskey)) {
 }
 $PAGE->set_url($url);
 
-$forum   = $DB->get_record('forumimproved', array('id' => $id), '*', MUST_EXIST);
+$forum   = $DB->get_record('forumplusone', array('id' => $id), '*', MUST_EXIST);
 $course  = $DB->get_record('course', array('id' => $forum->course), '*', MUST_EXIST);
-$cm      = get_coursemodule_from_instance('forumimproved', $forum->id, $course->id, false, MUST_EXIST);
+$cm      = get_coursemodule_from_instance('forumplusone', $forum->id, $course->id, false, MUST_EXIST);
 $context = context_module::instance($cm->id);
 
 if ($user) {
     require_sesskey();
-    if (!has_capability('mod/forumimproved:managesubscriptions', $context)) {
-        print_error('nopermissiontosubscribe', 'forumimproved');
+    if (!has_capability('mod/forumplusone:managesubscriptions', $context)) {
+        print_error('nopermissiontosubscribe', 'forumplusone');
     }
     $user = $DB->get_record('user', array('id' => $user), '*', MUST_EXIST);
 } else {
@@ -73,9 +73,9 @@ if (isset($cm->groupmode) && empty($course->groupmodeforce)) {
 } else {
     $groupmode = $course->groupmode;
 }
-if ($groupmode && !forumimproved_is_subscribed($user->id, $forum) && !has_capability('moodle/site:accessallgroups', $context)) {
+if ($groupmode && !forumplusone_is_subscribed($user->id, $forum) && !has_capability('moodle/site:accessallgroups', $context)) {
     if (!groups_get_all_groups($course->id, $USER->id)) {
-        print_error('cannotsubscribe', 'forumimproved');
+        print_error('cannotsubscribe', 'forumplusone');
     }
 }
 
@@ -86,13 +86,13 @@ if (is_null($mode) and !is_enrolled($context, $USER, '', true)) {   // Guests an
     $PAGE->set_heading($course->fullname);
     if (isguestuser()) {
         echo $OUTPUT->header();
-        echo $OUTPUT->confirm(get_string('subscribeenrolledonly', 'forumimproved').'<br /><br />'.get_string('liketologin'),
-                     get_login_url(), new moodle_url('/mod/forumimproved/view.php', array('f'=>$id)));
+        echo $OUTPUT->confirm(get_string('subscribeenrolledonly', 'forumplusone').'<br /><br />'.get_string('liketologin'),
+                     get_login_url(), new moodle_url('/mod/forumplusone/view.php', array('f'=>$id)));
         echo $OUTPUT->footer();
         exit;
     } else {
         // there should not be any links leading to this place, just redirect
-        redirect(new moodle_url('/mod/forumimproved/view.php', array('f'=>$id)), get_string('subscribeenrolledonly', 'forumimproved'));
+        redirect(new moodle_url('/mod/forumplusone/view.php', array('f'=>$id)), get_string('subscribeenrolledonly', 'forumplusone'));
     }
 }
 
@@ -100,79 +100,79 @@ $returnto = optional_param('backtoindex',0,PARAM_INT)
     ? "index.php?id=".$course->id
     : "view.php?f=$id";
 
-if (!is_null($mode) and has_capability('mod/forumimproved:managesubscriptions', $context)) {
+if (!is_null($mode) and has_capability('mod/forumplusone:managesubscriptions', $context)) {
     require_sesskey();
     switch ($mode) {
-        case FORUMIMPROVED_CHOOSESUBSCRIBE : // 0
-            forumimproved_forcesubscribe($forum->id, FORUMIMPROVED_CHOOSESUBSCRIBE);
-            redirect($returnto, get_string("everyonecannowchoose", "forumimproved"), 1);
+        case FORUMPLUSONE_CHOOSESUBSCRIBE : // 0
+            forumplusone_forcesubscribe($forum->id, FORUMPLUSONE_CHOOSESUBSCRIBE);
+            redirect($returnto, get_string("everyonecannowchoose", "forumplusone"), 1);
             break;
-        case FORUMIMPROVED_FORCESUBSCRIBE : // 1
-            forumimproved_forcesubscribe($forum->id, FORUMIMPROVED_FORCESUBSCRIBE);
-            redirect($returnto, get_string("everyoneisnowsubscribed", "forumimproved"), 1);
+        case FORUMPLUSONE_FORCESUBSCRIBE : // 1
+            forumplusone_forcesubscribe($forum->id, FORUMPLUSONE_FORCESUBSCRIBE);
+            redirect($returnto, get_string("everyoneisnowsubscribed", "forumplusone"), 1);
             break;
-        case FORUMIMPROVED_INITIALSUBSCRIBE : // 2
-            if ($forum->forcesubscribe <> FORUMIMPROVED_INITIALSUBSCRIBE) {
-                $users = forumimproved_get_potential_subscribers($context, 0, 'u.id, u.email', '');
+        case FORUMPLUSONE_INITIALSUBSCRIBE : // 2
+            if ($forum->forcesubscribe <> FORUMPLUSONE_INITIALSUBSCRIBE) {
+                $users = forumplusone_get_potential_subscribers($context, 0, 'u.id, u.email', '');
                 foreach ($users as $user) {
-                    forumimproved_subscribe($user->id, $forum->id);
+                    forumplusone_subscribe($user->id, $forum->id);
                 }
             }
-            forumimproved_forcesubscribe($forum->id, FORUMIMPROVED_INITIALSUBSCRIBE);
-            redirect($returnto, get_string("everyoneisnowsubscribed", "forumimproved"), 1);
+            forumplusone_forcesubscribe($forum->id, FORUMPLUSONE_INITIALSUBSCRIBE);
+            redirect($returnto, get_string("everyoneisnowsubscribed", "forumplusone"), 1);
             break;
-        case FORUMIMPROVED_DISALLOWSUBSCRIBE : // 3
-            forumimproved_forcesubscribe($forum->id, FORUMIMPROVED_DISALLOWSUBSCRIBE);
-            redirect($returnto, get_string("noonecansubscribenow", "forumimproved"), 1);
+        case FORUMPLUSONE_DISALLOWSUBSCRIBE : // 3
+            forumplusone_forcesubscribe($forum->id, FORUMPLUSONE_DISALLOWSUBSCRIBE);
+            redirect($returnto, get_string("noonecansubscribenow", "forumplusone"), 1);
             break;
         default:
-            print_error(get_string('invalidforcesubscribe', 'forumimproved'));
+            print_error(get_string('invalidforcesubscribe', 'forumplusone'));
     }
 }
 
-if (forumimproved_is_forcesubscribed($forum)) {
-    redirect($returnto, get_string("everyoneisnowsubscribed", "forumimproved"), 1);
+if (forumplusone_is_forcesubscribed($forum)) {
+    redirect($returnto, get_string("everyoneisnowsubscribed", "forumplusone"), 1);
 }
 
 $info = new stdClass();
 $info->name  = fullname($user);
 $info->forum = format_string($forum->name);
 
-if (forumimproved_is_subscribed($user->id, $forum->id)) {
+if (forumplusone_is_subscribed($user->id, $forum->id)) {
     if (is_null($sesskey)) {    // we came here via link in email
         $PAGE->set_title($course->shortname);
         $PAGE->set_heading($course->fullname);
         echo $OUTPUT->header();
-        echo $OUTPUT->confirm(get_string('confirmunsubscribe', 'forumimproved', format_string($forum->name)),
-                new moodle_url($PAGE->url, array('sesskey' => sesskey())), new moodle_url('/mod/forumimproved/view.php', array('f' => $id)));
+        echo $OUTPUT->confirm(get_string('confirmunsubscribe', 'forumplusone', format_string($forum->name)),
+                new moodle_url($PAGE->url, array('sesskey' => sesskey())), new moodle_url('/mod/forumplusone/view.php', array('f' => $id)));
         echo $OUTPUT->footer();
         exit;
     }
     require_sesskey();
-    if (forumimproved_unsubscribe($user->id, $forum->id)) {
-        redirect($returnto, get_string("nownotsubscribed", "forumimproved", $info), 1);
+    if (forumplusone_unsubscribe($user->id, $forum->id)) {
+        redirect($returnto, get_string("nownotsubscribed", "forumplusone", $info), 1);
     } else {
-        print_error('cannotunsubscribe', 'forumimproved', $_SERVER["HTTP_REFERER"]);
+        print_error('cannotunsubscribe', 'forumplusone', $_SERVER["HTTP_REFERER"]);
     }
 
 } else {  // subscribe
-    if ($forum->forcesubscribe == FORUMIMPROVED_DISALLOWSUBSCRIBE &&
-                !has_capability('mod/forumimproved:managesubscriptions', $context)) {
-        print_error('disallowsubscribe', 'forumimproved', $_SERVER["HTTP_REFERER"]);
+    if ($forum->forcesubscribe == FORUMPLUSONE_DISALLOWSUBSCRIBE &&
+                !has_capability('mod/forumplusone:managesubscriptions', $context)) {
+        print_error('disallowsubscribe', 'forumplusone', $_SERVER["HTTP_REFERER"]);
     }
-    if (!has_capability('mod/forumimproved:viewdiscussion', $context)) {
-        print_error('noviewdiscussionspermission', 'forumimproved', $_SERVER["HTTP_REFERER"]);
+    if (!has_capability('mod/forumplusone:viewdiscussion', $context)) {
+        print_error('noviewdiscussionspermission', 'forumplusone', $_SERVER["HTTP_REFERER"]);
     }
     if (is_null($sesskey)) {    // we came here via link in email
         $PAGE->set_title($course->shortname);
         $PAGE->set_heading($course->fullname);
         echo $OUTPUT->header();
-        echo $OUTPUT->confirm(get_string('confirmsubscribe', 'forumimproved', format_string($forum->name)),
-                new moodle_url($PAGE->url, array('sesskey' => sesskey())), new moodle_url('/mod/forumimproved/view.php', array('f' => $id)));
+        echo $OUTPUT->confirm(get_string('confirmsubscribe', 'forumplusone', format_string($forum->name)),
+                new moodle_url($PAGE->url, array('sesskey' => sesskey())), new moodle_url('/mod/forumplusone/view.php', array('f' => $id)));
         echo $OUTPUT->footer();
         exit;
     }
     require_sesskey();
-    forumimproved_subscribe($user->id, $forum->id);
-    redirect($returnto, get_string("nowsubscribed", "forumimproved", $info), 1);
+    forumplusone_subscribe($user->id, $forum->id);
+    redirect($returnto, get_string("nowsubscribed", "forumplusone", $info), 1);
 }

@@ -18,19 +18,19 @@
  * Edit Discussion or Post Controller
  *
  * @package    mod
- * @subpackage forumimproved
+ * @subpackage forumplusone
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_forumimproved\controller;
+namespace mod_forumplusone\controller;
 
 use coding_exception;
-use mod_forumimproved\response\json_response;
-use mod_forumimproved\service\discussion_service;
-use mod_forumimproved\service\form_service;
-use mod_forumimproved\service\post_service;
+use mod_forumplusone\response\json_response;
+use mod_forumplusone\service\discussion_service;
+use mod_forumplusone\service\form_service;
+use mod_forumplusone\service\post_service;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -104,12 +104,12 @@ class edit_controller extends controller_abstract {
             $context = $PAGE->context;
             $course  = $PAGE->course;
 
-            $parent     = $DB->get_record('forumimproved_posts', array('id' => $reply), '*', MUST_EXIST);
-            $discussion = $DB->get_record('forumimproved_discussions', array('id' => $parent->discussion, 'forum' => $forum->id), '*', MUST_EXIST);
+            $parent     = $DB->get_record('forumplusone_posts', array('id' => $reply), '*', MUST_EXIST);
+            $discussion = $DB->get_record('forumplusone_discussions', array('id' => $parent->discussion, 'forum' => $forum->id), '*', MUST_EXIST);
 
 
-            if (!forumimproved_is_discussion_open($forum, $discussion)) {
-                print_error('discussion_closed', 'forumimproved');
+            if (!forumplusone_is_discussion_open($forum, $discussion)) {
+                print_error('discussion_closed', 'forumplusone');
             }
 
 
@@ -199,12 +199,12 @@ class edit_controller extends controller_abstract {
             $context = $PAGE->context;
             $course  = $PAGE->course;
 
-            $post       = $DB->get_record('forumimproved_posts', array('id' => $postid), '*', MUST_EXIST);
-            $discussion = $DB->get_record('forumimproved_discussions', array('id' => $post->discussion, 'forum' => $forum->id), '*', MUST_EXIST);
+            $post       = $DB->get_record('forumplusone_posts', array('id' => $postid), '*', MUST_EXIST);
+            $discussion = $DB->get_record('forumplusone_discussions', array('id' => $post->discussion, 'forum' => $forum->id), '*', MUST_EXIST);
 
 
-            if (!forumimproved_is_discussion_open($forum, $discussion)) {
-                print_error('discussion_closed', 'forumimproved');
+            if (!forumplusone_is_discussion_open($forum, $discussion)) {
+                print_error('discussion_closed', 'forumplusone');
             }
 
 
@@ -214,7 +214,7 @@ class edit_controller extends controller_abstract {
             }
             // If private reply, then map it to the parent author user ID.
             if (!empty($privatereply)) {
-                $parent     = $DB->get_record('forumimproved_posts', array('id' => $post->parent), '*', MUST_EXIST);
+                $parent     = $DB->get_record('forumplusone_posts', array('id' => $post->parent), '*', MUST_EXIST);
                 $privatereply = $parent->userid;
             }
             return $this->postservice->handle_update_post($course, $cm, $forum, $context, $discussion, $post, $files,  array(
@@ -241,10 +241,10 @@ class edit_controller extends controller_abstract {
 
         $postid = required_param('postid', PARAM_INT);
 
-        if (!$post = forumimproved_get_post_full($postid)) {
-            print_error('invalidpostid', 'forumimproved');
+        if (!$post = forumplusone_get_post_full($postid)) {
+            print_error('invalidpostid', 'forumplusone');
         }
-        $discussion = $DB->get_record('forumimproved_discussions', array('id' => $post->discussion), '*', MUST_EXIST);
+        $discussion = $DB->get_record('forumplusone_discussions', array('id' => $post->discussion), '*', MUST_EXIST);
 
         $this->postservice->require_can_edit_post(
             $PAGE->activityrecord, $PAGE->context, $discussion, $post
@@ -253,8 +253,8 @@ class edit_controller extends controller_abstract {
         if (!empty($post->parent)) {
 
             $forum   = $PAGE->activityrecord;
-            if (!forumimproved_is_discussion_open($forum, $discussion)) {
-                print_error('discussion_closed', 'forumimproved');
+            if (!forumplusone_is_discussion_open($forum, $discussion)) {
+                print_error('discussion_closed', 'forumplusone');
             }
 
             $html = $this->formservice->edit_post_form($PAGE->cm, $post);
@@ -278,33 +278,33 @@ class edit_controller extends controller_abstract {
 
         $postid = required_param('postid', PARAM_INT);
 
-        $post       = $DB->get_record('forumimproved_posts', array('id' => $postid), '*', MUST_EXIST);
-        $discussion = $DB->get_record('forumimproved_discussions', array('id' => $post->discussion), '*', MUST_EXIST);
+        $post       = $DB->get_record('forumplusone_posts', array('id' => $postid), '*', MUST_EXIST);
+        $discussion = $DB->get_record('forumplusone_discussions', array('id' => $post->discussion), '*', MUST_EXIST);
 
-        $candeleteown = ($post->userid == $USER->id && has_capability('mod/forumimproved:deleteownpost', $PAGE->context));
+        $candeleteown = ($post->userid == $USER->id && has_capability('mod/forumplusone:deleteownpost', $PAGE->context));
 
-        if (!($candeleteown || has_capability('mod/forumimproved:deleteanypost', $PAGE->context))) {
-            print_error('cannotdeletepost', 'forumimproved');
+        if (!($candeleteown || has_capability('mod/forumplusone:deleteanypost', $PAGE->context))) {
+            print_error('cannotdeletepost', 'forumplusone');
         }
 
 
         $forum   = $PAGE->activityrecord;
-        if (!forumimproved_is_discussion_open($forum, $discussion)) {
-            print_error('discussion_closed', 'forumimproved');
+        if (!forumplusone_is_discussion_open($forum, $discussion)) {
+            print_error('discussion_closed', 'forumplusone');
         }
 
 
 
 
-        $redirect = forumimproved_verify_and_delete_post($PAGE->course, $PAGE->cm,
+        $redirect = forumplusone_verify_and_delete_post($PAGE->course, $PAGE->cm,
             $forum, $PAGE->context, $discussion, $post);
 
         $html = '';
         if ($discussion->firstpost != $post->id) {
             $html    = $this->discussionservice->render_full_thread($discussion->id);
-            $message = get_string('postdeleted', 'forumimproved');
+            $message = get_string('postdeleted', 'forumplusone');
         } else {
-            $message = get_string('deleteddiscussion', 'forumimproved');
+            $message = get_string('deleteddiscussion', 'forumplusone');
         }
         /** @var \core_renderer $renderer */
         $renderer = $PAGE->get_renderer('core', null, RENDERER_TARGET_GENERAL);

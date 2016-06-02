@@ -1,8 +1,8 @@
 /**
- * @namespace M.mod_forumimproved
+ * @namespace M.mod_forumplusone
  * @author Mark Nielsen
  */
-M.mod_forumimproved = M.mod_forumimproved || {};
+M.mod_forumplusone = M.mod_forumplusone || {};
 
 /**
  * Set toggle link label and accessibility stuff on ajax reponse.
@@ -10,13 +10,13 @@ M.mod_forumimproved = M.mod_forumimproved || {};
  * @param link
  * @author Guy Thomas
  */
-M.mod_forumimproved.onToggleResponse = function(link) {
+M.mod_forumplusone.onToggleResponse = function(link) {
     var active,
         status,
         title,
         svgTitle;
 
-    link.toggleClass('forumimproved-toggled');
+    link.toggleClass('forumplusone-toggled');
 
     if (link.getAttribute('aria-pressed') == 'true') {
         link.setAttribute('aria-pressed', false);
@@ -28,19 +28,19 @@ M.mod_forumimproved.onToggleResponse = function(link) {
 
     // Set new link title;
     status = active ? 'toggled' : 'toggle';
-    title = M.util.get_string(status+':'+link.getData('toggletype'),'forumimproved');
+    title = M.util.get_string(status+':'+link.getData('toggletype'),'forumplusone');
     svgTitle = link.one('svg title');
     svgTitle.set('text', title);
 }
 
-M.mod_forumimproved.toggleStatesApplied = false;
+M.mod_forumplusone.toggleStatesApplied = false;
 
 /**
  * Initialise advanced forum javascript.
  * @param Y
  */
-M.mod_forumimproved.init = function(Y) {
-    M.mod_forumimproved.applyToggleState(Y);
+M.mod_forumplusone.init = function(Y) {
+    M.mod_forumplusone.applyToggleState(Y);
 }
 
 /**
@@ -49,13 +49,13 @@ M.mod_forumimproved.init = function(Y) {
  *
  * @author Mark Neilsen / Guy Thomas
  */
-M.mod_forumimproved.applyToggleState = function(Y) {
+M.mod_forumplusone.applyToggleState = function(Y) {
     // @todo - Get rid of this check by making sure that lib.php and renderer.php only call this once.
-    if (M.mod_forumimproved.toggleStatesApplied) {
+    if (M.mod_forumplusone.toggleStatesApplied) {
         return;
     }
-    M.mod_forumimproved.toggleStatesApplied = true;
-    if (Y.all('.mod-forumimproved-posts-container').isEmpty()) {
+    M.mod_forumplusone.toggleStatesApplied = true;
+    if (Y.all('.mod-forumplusone-posts-container').isEmpty()) {
         return;
     }
     // We bind to document otherwise screen readers read everything as clickable.
@@ -64,16 +64,16 @@ M.mod_forumimproved.applyToggleState = function(Y) {
         e.preventDefault();
         e.stopPropagation();
 
-        M.mod_forumimproved.io(Y, link.get('href'), function() {
-            M.mod_forumimproved.onToggleResponse(link);
+        M.mod_forumplusone.io(Y, link.get('href'), function() {
+            M.mod_forumplusone.onToggleResponse(link);
         });
-    }, document, 'a.forumimproved_flag, a.forumimproved_discussion_subscribe');
+    }, document, 'a.forumplusone_flag, a.forumplusone_discussion_subscribe');
 
     // IE fix - When clicking on an SVG, the Y.delegate function above fails, the click function is never triggered
     // and the user ends up with a page refresh instead of an AJAX update. This code fixes the issue by making the svg
     // absolutely positioned and with a relatively positioned span taking its place.
     if (navigator.userAgent.match(/Trident|MSIE/)){
-        Y.all('a.forumimproved_flag, a.forumimproved_discussion_subscribe').each(function (targNode) {
+        Y.all('a.forumplusone_flag, a.forumplusone_discussion_subscribe').each(function (targNode) {
            var svgwidth = targNode.one('svg').getStyle('width');
            var item = Y.Node.create('<span style="display:inline-block;width:'+svgwidth+';min-width:'+svgwidth+';">&nbsp;</span>');
            targNode.append(item);
@@ -86,14 +86,14 @@ M.mod_forumimproved.applyToggleState = function(Y) {
 /**
  * @author Mark Nielsen
  */
-M.mod_forumimproved.io = function(Y, url, successCallback, failureCallback) {
+M.mod_forumplusone.io = function(Y, url, successCallback, failureCallback) {
     Y.io(url, {
         on: {
             success: function(id, o) {
-                M.mod_forumimproved.io_success_handler(Y, o, successCallback);
+                M.mod_forumplusone.io_success_handler(Y, o, successCallback);
             },
             failure: function() {
-                M.mod_forumimproved.io_failure_handler(Y, failureCallback);
+                M.mod_forumplusone.io_failure_handler(Y, failureCallback);
             }
         }
     });
@@ -102,7 +102,7 @@ M.mod_forumimproved.io = function(Y, url, successCallback, failureCallback) {
 /**
  * @author Mark Nielsen
  */
-M.mod_forumimproved.io_success_handler = function(Y, response, callback) {
+M.mod_forumplusone.io_success_handler = function(Y, response, callback) {
     var data = {};
     if (response.responseText) {
         try {
@@ -117,7 +117,7 @@ M.mod_forumimproved.io_success_handler = function(Y, response, callback) {
                 return;
             }
         } catch (ex) {
-            alert(M.str.forumimproved.jsondecodeerror);
+            alert(M.str.forumplusone.jsondecodeerror);
             return;
         }
     }
@@ -129,8 +129,8 @@ M.mod_forumimproved.io_success_handler = function(Y, response, callback) {
 /**
  * @author Mark Nielsen
  */
-M.mod_forumimproved.io_failure_handler = function(Y, callback) {
-    alert(M.str.forumimproved.ajaxrequesterror);
+M.mod_forumplusone.io_failure_handler = function(Y, callback) {
+    alert(M.str.forumplusone.ajaxrequesterror);
 
     if (callback) {
         callback();
@@ -140,15 +140,15 @@ M.mod_forumimproved.io_failure_handler = function(Y, callback) {
 /**
  * @author Mark Nielsen
  */
-M.mod_forumimproved.init_modform = function(Y, FORUMIMPROVED_GRADETYPE_MANUAL) {
-    var gradetype = Y.one('.path-mod-forumimproved select[name="gradetype"]');
+M.mod_forumplusone.init_modform = function(Y, FORUMPLUSONE_GRADETYPE_MANUAL) {
+    var gradetype = Y.one('.path-mod-forumplusone select[name="gradetype"]');
 
     if (gradetype) {
-        var warning = Y.Node.create('<span id="gradetype_warning" class="hidden">' + M.str.forumimproved.manualwarning + '</span>');
+        var warning = Y.Node.create('<span id="gradetype_warning" class="hidden">' + M.str.forumplusone.manualwarning + '</span>');
         gradetype.get('parentNode').appendChild(warning);
 
         var updateMessage = function() {
-            if (gradetype.get('value') == FORUMIMPROVED_GRADETYPE_MANUAL) {
+            if (gradetype.get('value') == FORUMPLUSONE_GRADETYPE_MANUAL) {
                 warning.removeClass('hidden');
             } else {
                 warning.addClass('hidden');

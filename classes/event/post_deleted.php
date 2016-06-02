@@ -15,19 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_forumimproved post deleted event.
+ * The mod_forumplusone post deleted event.
  *
- * @package    mod_forumimproved
+ * @package    mod_forumplusone
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_forumimproved\event;
+namespace mod_forumplusone\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_forumimproved post deleted event class.
+ * The mod_forumplusone post deleted event class.
  *
  * @property-read array $other {
  *      Extra information about the event.
@@ -37,7 +37,7 @@ defined('MOODLE_INTERNAL') || die();
  *      - string forumtype: The type of forum the post is part of.
  * }
  *
- * @package    mod_forumimproved
+ * @package    mod_forumplusone
  * @since      Moodle 2.7
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -51,7 +51,7 @@ class post_deleted extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'd';
         $this->data['edulevel'] = self::LEVEL_OTHER;
-        $this->data['objecttable'] = 'forumimproved_posts';
+        $this->data['objecttable'] = 'forumplusone_posts';
     }
 
     /**
@@ -70,7 +70,7 @@ class post_deleted extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventpostdeleted', 'mod_forumimproved');
+        return get_string('eventpostdeleted', 'mod_forumplusone');
     }
 
     /**
@@ -83,9 +83,9 @@ class post_deleted extends \core\event\base {
             // Single discussion forums are an exception. We show
             // the forum itself since it only has one discussion
             // thread.
-            $url = new \moodle_url('/mod/forumimproved/view.php', array('f' => $this->other['forumid']));
+            $url = new \moodle_url('/mod/forumplusone/view.php', array('f' => $this->other['forumid']));
         } else {
-            $url = new \moodle_url('/mod/forumimproved/discuss.php', array('d' => $this->other['discussionid']));
+            $url = new \moodle_url('/mod/forumplusone/discuss.php', array('d' => $this->other['discussionid']));
         }
         return $url;
     }
@@ -96,10 +96,10 @@ class post_deleted extends \core\event\base {
      * @return array|null
      */
     protected function get_legacy_logdata() {
-        // The legacy log table expects a relative path to /mod/forumimproved/.
-        $logurl = substr($this->get_url()->out_as_local_url(), strlen('/mod/forumimproved/'));
+        // The legacy log table expects a relative path to /mod/forumplusone/.
+        $logurl = substr($this->get_url()->out_as_local_url(), strlen('/mod/forumplusone/'));
 
-        return array($this->courseid, 'forumimproved', 'delete post', $logurl, $this->objectid, $this->contextinstanceid);
+        return array($this->courseid, 'forumplusone', 'delete post', $logurl, $this->objectid, $this->contextinstanceid);
     }
 
     /**

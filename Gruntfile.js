@@ -33,6 +33,16 @@ module.exports = function(grunt) {
                     drop_console: true
                 }
             },
+            liveReload: {
+                options: {
+                    mangle: {
+                        expect: ['liveReload', 'window.liveReload', 'jQuery']
+                    }
+                },
+                files: {
+                    'js/liveReload.min.js': ['js/jQueryLoader.js', 'js/liveReload.js']
+                }
+            },
             collapseReplies: {
                 options: {
                     mangle: {

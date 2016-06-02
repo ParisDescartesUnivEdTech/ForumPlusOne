@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -67,9 +67,9 @@ if ($timetorestrict) {
 $PAGE->set_pagelayout('standard');
 $PAGE->set_url($FULLME); //TODO: this is very sloppy --skodak
 
-$config = get_config('forumimproved');
+$config = get_config('forumplusone');
 if (!empty($config->hideuserpicture) && $config->hideuserpicture) {
-    $PAGE->add_body_class('forumimproved-nouserpicture');
+    $PAGE->add_body_class('forumplusone-nouserpicture');
 }
 
 if (empty($search)) {   // Check the other parameters instead
@@ -83,13 +83,13 @@ if (empty($search)) {   // Check the other parameters instead
         $search .= ' forumid:'.$forumid;
     }
     if (!empty($user)) {
-        $search .= ' '.forumimproved_clean_search_terms($user, 'user:');
+        $search .= ' '.forumplusone_clean_search_terms($user, 'user:');
     }
     if (!empty($fullwords)) {
-        $search .= ' '.forumimproved_clean_search_terms($fullwords, '+');
+        $search .= ' '.forumplusone_clean_search_terms($fullwords, '+');
     }
     if (!empty($notwords)) {
-        $search .= ' '.forumimproved_clean_search_terms($notwords, '-');
+        $search .= ' '.forumplusone_clean_search_terms($notwords, '-');
     }
     if (!empty($phrase)) {
         $search .= ' "'.$phrase.'"';
@@ -106,7 +106,7 @@ if (empty($search)) {   // Check the other parameters instead
 }
 
 if ($search) {
-    $search = forumimproved_clean_search_terms($search);
+    $search = forumplusone_clean_search_terms($search);
 }
 
 if (!$course = $DB->get_record('course', array('id'=>$id))) {
@@ -120,24 +120,24 @@ $params = array(
     'other' => array('searchterm' => $search)
 );
 
-$event = \mod_forumimproved\event\course_searched::create($params);
+$event = \mod_forumplusone\event\course_searched::create($params);
 $event->trigger();
 
-$strforums = get_string("modulenameplural", "forumimproved");
-$strsearch = get_string("search", "forumimproved");
-$strsearchresults = get_string("searchresults", "forumimproved");
+$strforums = get_string("modulenameplural", "forumplusone");
+$strsearch = get_string("search", "forumplusone");
+$strsearchresults = get_string("searchresults", "forumplusone");
 $strpage = get_string("page");
 
 if (!$search || $showform) {
 
-    $PAGE->navbar->add($strforums, new moodle_url('/mod/forumimproved/index.php', array('id'=>$course->id)));
-    $PAGE->navbar->add(get_string('advancedsearch', 'forumimproved'));
+    $PAGE->navbar->add($strforums, new moodle_url('/mod/forumplusone/index.php', array('id'=>$course->id)));
+    $PAGE->navbar->add(get_string('advancedsearch', 'forumplusone'));
 
     $PAGE->set_title($strsearch);
     $PAGE->set_heading($course->fullname);
     echo $OUTPUT->header();
 
-    forumimproved_print_big_search_form($course);
+    forumplusone_print_big_search_form($course);
     echo $OUTPUT->footer();
     exit;
 }
@@ -150,11 +150,11 @@ if (!$individualparams && !empty($forumid)) {
 }
 $searchterms = explode(' ', $searchterms);
 
-$searchform = forumimproved_search_form($course, $forumid, $search);
+$searchform = forumplusone_search_form($course, $forumid, $search);
 
-$PAGE->navbar->add($strsearch, new moodle_url('/mod/forumimproved/search.php', array('id'=>$course->id)));
+$PAGE->navbar->add($strsearch, new moodle_url('/mod/forumplusone/search.php', array('id'=>$course->id)));
 $PAGE->navbar->add($strsearchresults);
-if (!$posts = forumimproved_search_posts($searchterms, $course->id, $page*$perpage, $perpage, $totalcount)) {
+if (!$posts = forumplusone_search_posts($searchterms, $course->id, $page*$perpage, $perpage, $totalcount)) {
     $PAGE->set_title($strsearchresults);
     $PAGE->set_heading($course->fullname);
     echo $OUTPUT->header();
@@ -165,7 +165,7 @@ if (!$posts = forumimproved_search_posts($searchterms, $course->id, $page*$perpa
         $words = $search;
     }
 
-    forumimproved_print_big_search_form($course);
+    forumplusone_print_big_search_form($course);
 
     echo $OUTPUT->footer();
     exit;
@@ -176,13 +176,13 @@ require_once($CFG->dirroot.'/rating/lib.php');
 
 //set up the ratings information that will be the same for all posts
 $ratingoptions = new stdClass();
-$ratingoptions->component = 'mod_forumimproved';
+$ratingoptions->component = 'mod_forumplusone';
 $ratingoptions->ratingarea = 'post';
 $ratingoptions->userid = $USER->id;
 $ratingoptions->returnurl = $PAGE->url->out(false);
 $rm = new rating_manager();
 
-$renderer = $PAGE->get_renderer('mod_forumimproved');
+$renderer = $PAGE->get_renderer('mod_forumplusone');
 $renderer->article_js();
 
 $PAGE->set_title($strsearchresults);
@@ -202,7 +202,7 @@ echo '<a href="search.php?id='.$course->id.
                          '&amp;dateto='.$dateto.
                          '&amp;datefrom='.$datefrom.
                          '&amp;showform=1'.
-                         '">'.get_string('advancedsearch','forumimproved').'...</a>';
+                         '">'.get_string('advancedsearch','forumplusone').'...</a>';
 echo '</div>';
 
 echo $OUTPUT->heading("$strsearchresults: $totalcount", 3);
@@ -223,8 +223,8 @@ foreach ($searchterms as $key => $searchterm) {
 }
 $strippedsearch = implode(' ', $searchterms);    // Rebuild the string
 
-echo $OUTPUT->box_start("mod-forumimproved-posts-container article");
-echo html_writer::start_tag('ol', array('class' => 'forumimproved-thread-replies-list'));
+echo $OUTPUT->box_start("mod-forumplusone-posts-container article");
+echo html_writer::start_tag('ol', array('class' => 'forumplusone-thread-replies-list'));
 $resultnumber = ($page * $perpage) + 1;
 $modinfo = get_fast_modinfo($course);
 foreach ($posts as $post) {
@@ -232,20 +232,20 @@ foreach ($posts as $post) {
 
     // Replace the simple subject with the three items forum name -> thread name
     // (if all three are appropriate) each as a link.
-    if (! $discussion = $DB->get_record('forumimproved_discussions', array('id' => $post->discussion))) {
-        print_error('invaliddiscussionid', 'forumimproved');
+    if (! $discussion = $DB->get_record('forumplusone_discussions', array('id' => $post->discussion))) {
+        print_error('invaliddiscussionid', 'forumplusone');
     }
-    if (! $forum = $DB->get_record('forumimproved', array('id' => "$discussion->forum"))) {
-        print_error('invalidforumid', 'forumimproved');
+    if (! $forum = $DB->get_record('forumplusone', array('id' => "$discussion->forum"))) {
+        print_error('invalidforumid', 'forumplusone');
     }
 
-    if (!$cm = get_coursemodule_from_instance('forumimproved', $forum->id)) {
+    if (!$cm = get_coursemodule_from_instance('forumplusone', $forum->id)) {
         print_error('invalidcoursemodule');
     }
 
     // TODO actually display if the search result has been read, for now just
     // hide the unread status marker for all results.
-    $post->postread = forumimproved_tp_is_post_read($USER->id, $post);
+    $post->postread = forumplusone_tp_is_post_read($USER->id, $post);
 
     $discussion->name = highlight($strippedsearch, $discussion->name);
 
@@ -294,25 +294,25 @@ foreach ($posts as $post) {
     $post->message = str_replace('</fgw9sdpq4>', '</mark>', $post->message);
 
     if ($missing_terms) {
-        $strmissingsearchterms = get_string('missingsearchterms','forumimproved');
+        $strmissingsearchterms = get_string('missingsearchterms','forumplusone');
         $post->message = '<p class="highlight2">'.$strmissingsearchterms.' '.$missing_terms.'</p>'.$post->message;
     }
 
     // Prepare a link to the post in context, to be displayed after the forum post.
-    $fulllink = "<a href=\"discuss.php?d=$post->discussion#p$post->id\">".get_string("postincontext", "forumimproved")."</a>";
+    $fulllink = "<a href=\"discuss.php?d=$post->discussion#p$post->id\">".get_string("postincontext", "forumplusone")."</a>";
 
     $commands = array('seeincontext' => $fulllink);
     if (empty($post->parent)) {
         $parent = null;
     } else {
-        $parent = $DB->get_record('forumimproved_posts', array('id' =>$post->parent));
+        $parent = $DB->get_record('forumplusone_posts', array('id' =>$post->parent));
     }
-    $postcm = $modinfo->instances['forumimproved'][$discussion->forum];
+    $postcm = $modinfo->instances['forumplusone'][$discussion->forum];
     $rendereredpost = $renderer->post($postcm, $discussion, $post, false, $parent, $commands, 0, $strippedsearch);
-    echo html_writer::tag('li', $rendereredpost, array('class' => 'forumimproved-post', 'data-count' => $resultnumber++));
+    echo html_writer::tag('li', $rendereredpost, array('class' => 'forumplusone-post', 'data-count' => $resultnumber++));
 }
 echo html_writer::end_tag('ol');
-echo $OUTPUT->box_end(); // End mod-forumimproved-posts-container
+echo $OUTPUT->box_end(); // End mod-forumplusone-posts-container
 $pagingurl = $url;
 if ($search && $forumid) {
     // Forum specific simple search.
@@ -328,42 +328,42 @@ echo $OUTPUT->footer();
   * @param stdClass $course The Course that will be searched.
   * @return void The function prints the form.
   */
-function forumimproved_print_big_search_form($course) {
+function forumplusone_print_big_search_form($course) {
     global $CFG, $DB, $words, $phrase, $user, $userid, $fullwords, $notwords, $datefrom, $dateto, $PAGE, $OUTPUT;
 
-    echo $OUTPUT->box(get_string('searchforumintro', 'forumimproved'), 'searchbox boxaligncenter', 'intro');
+    echo $OUTPUT->box(get_string('searchforumintro', 'forumplusone'), 'searchbox boxaligncenter', 'intro');
 
     echo $OUTPUT->box_start('generalbox boxaligncenter');
 
-    echo html_writer::script('', $CFG->wwwroot.'/mod/forumimproved/forum.js');
+    echo html_writer::script('', $CFG->wwwroot.'/mod/forumplusone/forum.js');
 
     echo '<form class="form-horizonal" id="searchform" action="search.php" method="get" role="form">';
 
     echo '<div class="form-group">';
-    echo '<label for="words">'.get_string('searchwords', 'forumimproved').'</label>';
+    echo '<label for="words">'.get_string('searchwords', 'forumplusone').'</label>';
     echo '<input type="hidden" value="'.$course->id.'" name="id" alt="" />';
     echo '<input class="form-control" type="text" size="35" name="words" id="words"value="'.s($words, true).'" alt="" />';
     echo '</div>';
 
     echo '<div class="form-group">';
-    echo '<label for="phrase">'.get_string('searchphrase', 'forumimproved').'</label>';
+    echo '<label for="phrase">'.get_string('searchphrase', 'forumplusone').'</label>';
     echo '<input  class="form-control" type="text" size="35" name="phrase" id="phrase" value="'.s($phrase, true).'" alt="" />';
     echo '</div>';
 
     echo '<div class="form-group">';
-    echo '<label for="notwords">'.get_string('searchnotwords', 'forumimproved').'</label>';
+    echo '<label for="notwords">'.get_string('searchnotwords', 'forumplusone').'</label>';
     echo '<input  class="form-control" type="text" size="35" name="notwords" id="notwords" value="'.s($notwords, true).'" alt="" />';
     echo '</div>';
 
     if ($DB->get_dbfamily() == 'mysql' || $DB->get_dbfamily() == 'postgres') {
         echo '<div class="form-group">';
-        echo '<label for="fullwords">'.get_string('searchfullwords', 'forumimproved').'</label>';
+        echo '<label for="fullwords">'.get_string('searchfullwords', 'forumplusone').'</label>';
         echo '<input  class="form-control" type="text" size="35" name="fullwords" id="fullwords" value="'.s($fullwords, true).'" alt="" />';
         echo '</div>';
     }
 
     echo '<div class="form-group">';
-    echo '<label>'.get_string('searchdatefrom', 'forumimproved').'</label>';
+    echo '<label>'.get_string('searchdatefrom', 'forumplusone').'</label>';
     if (empty($datefrom)) {
         $datefromchecked = '';
         $datefrom = make_timestamp(2000, 1, 1, 0, 0, 0);
@@ -371,7 +371,7 @@ function forumimproved_print_big_search_form($course) {
         $datefromchecked = 'checked="checked"';
     }
 
-    echo '<input name="timefromrestrict" type="checkbox" value="1" alt="'.get_string('searchdatefrom', 'forumimproved').'" onclick="return lockoptions(\'searchform\', \'timefromrestrict\', timefromitems)" '.  $datefromchecked . ' /> ';
+    echo '<input name="timefromrestrict" type="checkbox" value="1" alt="'.get_string('searchdatefrom', 'forumplusone').'" onclick="return lockoptions(\'searchform\', \'timefromrestrict\', timefromitems)" '.  $datefromchecked . ' /> ';
     $selectors = html_writer::select_time('days', 'fromday', $datefrom)
                . html_writer::select_time('months', 'frommonth', $datefrom)
                . html_writer::select_time('years', 'fromyear', $datefrom)
@@ -386,7 +386,7 @@ function forumimproved_print_big_search_form($course) {
     echo '</div>';
 
     echo '<div class="form-group">';
-    echo '<label>'.get_string('searchdateto', 'forumimproved').'</label>';
+    echo '<label>'.get_string('searchdateto', 'forumplusone').'</label>';
     if (empty($dateto)) {
         $datetochecked = '';
         $dateto = time() + 3600;
@@ -394,7 +394,7 @@ function forumimproved_print_big_search_form($course) {
         $datetochecked = 'checked="checked"';
     }
 
-    echo '<input name="timetorestrict" type="checkbox" value="1" alt="'.get_string('searchdateto', 'forumimproved').'" onclick="return lockoptions(\'searchform\', \'timetorestrict\', timetoitems)" ' .$datetochecked. ' /> ';
+    echo '<input name="timetorestrict" type="checkbox" value="1" alt="'.get_string('searchdateto', 'forumplusone').'" onclick="return lockoptions(\'searchform\', \'timetorestrict\', timetoitems)" ' .$datetochecked. ' /> ';
     $selectors = html_writer::select_time('days', 'today', $dateto)
                . html_writer::select_time('months', 'tomonth', $dateto)
                . html_writer::select_time('years', 'toyear', $dateto)
@@ -410,16 +410,16 @@ function forumimproved_print_big_search_form($course) {
     echo '</div>';
 
     echo '<div class="form-group">';
-    echo '<label for="menuforumid">'.get_string('searchwhichforums', 'forumimproved').'</label>';
-    echo html_writer::select(forumimproved_menu_list($course), 'forumid', '', array(''=>get_string('allforums', 'forumimproved')));
+    echo '<label for="menuforumid">'.get_string('searchwhichforums', 'forumplusone').'</label>';
+    echo html_writer::select(forumplusone_menu_list($course), 'forumid', '', array(''=>get_string('allforums', 'forumplusone')));
     echo '</div>';
 
     echo '<div class="form-group">';
-    echo '<label for="user">'.get_string('searchuser', 'forumimproved').'</label>';
+    echo '<label for="user">'.get_string('searchuser', 'forumplusone').'</label>';
     echo '<input class="form-control" type="text" size="35" name="user" id="user" value="'.s($user, true).'" />';
     echo '</div>';
 
-    echo '<input type="submit" value="'.get_string('searchforums', 'forumimproved').'"/>';
+    echo '<input type="submit" value="'.get_string('searchforums', 'forumplusone').'"/>';
 
     echo '</form>';
 
@@ -439,7 +439,7 @@ function forumimproved_print_big_search_form($course) {
  * @return string The filtered search terms, separated by spaces.
  * @todo Take the hardcoded limit out of this function and put it into a user-specified parameter.
  */
-function forumimproved_clean_search_terms($words, $prefix='') {
+function forumplusone_clean_search_terms($words, $prefix='') {
     $searchterms = explode(' ', $words);
     foreach ($searchterms as $key => $searchterm) {
         if (strlen($searchterm) < 2) {
@@ -457,20 +457,20 @@ function forumimproved_clean_search_terms($words, $prefix='') {
   * @param stdClass $course The Course to use.
   * @return array A set of formatted forum names stored against the forum id.
   */
-function forumimproved_menu_list($course)  {
+function forumplusone_menu_list($course)  {
     $menu = array();
 
     $modinfo = get_fast_modinfo($course);
-    if (empty($modinfo->instances['forumimproved'])) {
+    if (empty($modinfo->instances['forumplusone'])) {
         return $menu;
     }
 
-    foreach ($modinfo->instances['forumimproved'] as $cm) {
+    foreach ($modinfo->instances['forumplusone'] as $cm) {
         if (!$cm->uservisible) {
             continue;
         }
         $context = context_module::instance($cm->id);
-        if (!has_capability('mod/forumimproved:viewdiscussion', $context)) {
+        if (!has_capability('mod/forumplusone:viewdiscussion', $context)) {
             continue;
         }
         $menu[$cm->instance] = format_string($cm->name);

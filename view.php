@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -36,13 +36,13 @@
     if (!$f && !$id) {
         print_error('missingparameter');
     } else if ($f) {
-        $forum = $DB->get_record('forumimproved', array('id' => $f));
+        $forum = $DB->get_record('forumplusone', array('id' => $f));
         $params['f'] = $forum->id;
     } else {
-        if (!$cm = get_coursemodule_from_id('forumimproved', $id)){
+        if (!$cm = get_coursemodule_from_id('forumplusone', $id)){
             print_error('missingparameter');
         }
-        $forum = $DB->get_record('forumimproved', array('id' => $cm->instance));
+        $forum = $DB->get_record('forumplusone', array('id' => $cm->instance));
         $params['id'] = $cm->id;
     }
 
@@ -52,28 +52,28 @@
     if ($search) {
         $params['search'] = $search;
     }
-    $PAGE->set_url('/mod/forumimproved/view.php', $params);
+    $PAGE->set_url('/mod/forumplusone/view.php', $params);
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
     if (!empty($config->hideuserpicture) && $config->hideuserpicture) {
-        $PAGE->add_body_class('forumimproved-nouserpicture');
+        $PAGE->add_body_class('forumplusone-nouserpicture');
     }
 
     $course = $DB->get_record('course', array('id' => $forum->course));
 
-    if (empty($cm) && !$cm = get_coursemodule_from_instance("forumimproved", $forum->id, $course->id)) {
+    if (empty($cm) && !$cm = get_coursemodule_from_instance("forumplusone", $forum->id, $course->id)) {
         print_error('missingparameter');
     }
 
     if ($forum->type == 'single') {
-        $discussions = $DB->get_records('forumimproved_discussions', array('forum'=>$forum->id), 'timemodified ASC');
+        $discussions = $DB->get_records('forumplusone_discussions', array('forum'=>$forum->id), 'timemodified ASC');
         $discussion = array_pop($discussions);
 
         if (empty($discussion)) {
-            print_error('cannotfindfirstpost', 'forumimproved');
+            print_error('cannotfindfirstpost', 'forumplusone');
         }
 
-        redirect(new moodle_url('/mod/forumimproved/discuss.php', array('d' => $discussion->id)));
+        redirect(new moodle_url('/mod/forumplusone/discuss.php', array('d' => $discussion->id)));
     }
 
 // move require_course_login here to use forced language for course
@@ -87,7 +87,7 @@
     $PAGE->add_body_class('forumtype-'.$forum->type);
     $PAGE->set_heading($course->fullname);
 
-    $renderer = $PAGE->get_renderer('mod_forumimproved');
+    $renderer = $PAGE->get_renderer('mod_forumplusone');
 /// This has to be called before we start setting up page as it triggers view events.
     $discussionview = $renderer->render_discussionsview($forum);
 
@@ -99,8 +99,8 @@
         notice(get_string("activityiscurrentlyhidden"));
     }
 
-    if (!has_capability('mod/forumimproved:viewdiscussion', $context)) {
-        notice(get_string('noviewdiscussionspermission', 'forumimproved'));
+    if (!has_capability('mod/forumplusone:viewdiscussion', $context)) {
+        notice(get_string('noviewdiscussionspermission', 'forumplusone'));
     }
 
     echo $discussionview;

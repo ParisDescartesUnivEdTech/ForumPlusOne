@@ -18,7 +18,7 @@
 /**
  * Provides support for the conversion of moodle1 backup to the moodle2 format
  *
- * @package    mod_forumimproved
+ * @package    mod_forumplusone
  * @copyright  2011 Mark Nielsen <mark@moodlerooms.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Forum conversion handler
  */
-class moodle1_mod_forumimproved_handler extends moodle1_mod_handler {
+class moodle1_mod_forumplusone_handler extends moodle1_mod_handler {
 
     /** @var moodle1_file_manager */
     protected $fileman = null;
@@ -45,7 +45,7 @@ class moodle1_mod_forumimproved_handler extends moodle1_mod_handler {
      * For each path returned, the corresponding conversion method must be
      * defined.
      *
-     * Note that the paths /MOODLE_BACKUP/COURSE/MODULES/MOD/FORUMIMPROVED do not
+     * Note that the paths /MOODLE_BACKUP/COURSE/MODULES/MOD/FORUMPLUSONE do not
      * actually exist in the file. The last element with the module name was
      * appended by the moodle1_converter class.
      *
@@ -53,7 +53,7 @@ class moodle1_mod_forumimproved_handler extends moodle1_mod_handler {
      */
     public function get_paths() {
         return array(
-            new convert_path('forumimproved', '/MOODLE_BACKUP/COURSE/MODULES/MOD/FORUMIMPROVED',
+            new convert_path('forumplusone', '/MOODLE_BACKUP/COURSE/MODULES/MOD/FORUMPLUSONE',
                 array(
                     'renamefields' => array(
                         'format' => 'messageformat',
@@ -71,9 +71,9 @@ class moodle1_mod_forumimproved_handler extends moodle1_mod_handler {
     }
 
     /**
-     * Converts /MOODLE_BACKUP/COURSE/MODULES/MOD/FORUMIMPROVED data
+     * Converts /MOODLE_BACKUP/COURSE/MODULES/MOD/FORUMPLUSONE data
      */
-    public function process_forumimproved($data) {
+    public function process_forumplusone($data) {
         // get the course module id and context id
         $instanceid     = $data['id'];
         $cminfo         = $this->get_cminfo($instanceid);
@@ -81,7 +81,7 @@ class moodle1_mod_forumimproved_handler extends moodle1_mod_handler {
         $contextid      = $this->converter->get_contextid(CONTEXT_MODULE, $this->moduleid);
 
         // get a fresh new file manager for this instance
-        $this->fileman = $this->converter->get_file_manager($contextid, 'mod_forumimproved');
+        $this->fileman = $this->converter->get_file_manager($contextid, 'mod_forumplusone');
 
         // convert course files embedded into the intro
         $this->fileman->filearea = 'intro';
@@ -97,10 +97,10 @@ class moodle1_mod_forumimproved_handler extends moodle1_mod_handler {
         unset($data['multiattach']);
 
         // start writing forum.xml
-        $this->open_xml_writer("activities/forumimproved_{$this->moduleid}/forumimproved.xml");
+        $this->open_xml_writer("activities/forumplusone_{$this->moduleid}/forumplusone.xml");
         $this->xmlwriter->begin_tag('activity', array('id' => $instanceid, 'moduleid' => $this->moduleid,
-            'modulename' => 'forumimproved', 'contextid' => $contextid));
-        $this->xmlwriter->begin_tag('forumimproved', array('id' => $instanceid));
+            'modulename' => 'forumplusone', 'contextid' => $contextid));
+        $this->xmlwriter->begin_tag('forumplusone', array('id' => $instanceid));
 
         foreach ($data as $field => $value) {
             if ($field <> 'id') {
@@ -114,17 +114,17 @@ class moodle1_mod_forumimproved_handler extends moodle1_mod_handler {
     }
 
     /**
-     * This is executed when we reach the closing </MOD> tag of our 'forumimproved' path
+     * This is executed when we reach the closing </MOD> tag of our 'forumplusone' path
      */
-    public function on_forumimproved_end() {
-        // finish writing forumimproved.xml
+    public function on_forumplusone_end() {
+        // finish writing forumplusone.xml
         $this->xmlwriter->end_tag('discussions');
-        $this->xmlwriter->end_tag('forumimproved');
+        $this->xmlwriter->end_tag('forumplusone');
         $this->xmlwriter->end_tag('activity');
         $this->close_xml_writer();
 
         // write inforef.xml
-        $this->open_xml_writer("activities/forumimproved_{$this->moduleid}/inforef.xml");
+        $this->open_xml_writer("activities/forumplusone_{$this->moduleid}/inforef.xml");
         $this->xmlwriter->begin_tag('inforef');
         $this->xmlwriter->begin_tag('fileref');
         foreach ($this->fileman->get_fileids() as $fileid) {

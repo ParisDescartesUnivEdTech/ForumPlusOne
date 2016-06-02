@@ -1,4 +1,4 @@
-@mod @mod_forumimproved @_file_upload
+@mod @mod_forumplusone @_file_upload
 Feature: Add forum activities and discussions
   In order to discuss topics with other users
   As a teacher

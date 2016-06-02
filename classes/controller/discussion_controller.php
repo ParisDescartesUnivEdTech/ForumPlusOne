@@ -18,18 +18,18 @@
  * Edit Discussion or Post Controller
  *
  * @package    mod
- * @subpackage forumimproved
+ * @subpackage forumplusone
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_forumimproved\controller;
+namespace mod_forumplusone\controller;
 
 use coding_exception;
-use mod_forumimproved\response\json_response;
-use mod_forumimproved\service\discussion_service;
-use mod_forumimproved\service\post_service;
+use mod_forumplusone\response\json_response;
+use mod_forumplusone\service\discussion_service;
+use mod_forumplusone\service\post_service;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -72,10 +72,10 @@ class discussion_controller extends controller_abstract {
         $forum = $PAGE->activityrecord;
 
 
-        $discussion = $DB->get_record("forumimproved_discussions", array("id" => $discussionid), '*', MUST_EXIST);
-        $forum = $DB->get_record("forumimproved", array("id" => $discussion->forum), '*', MUST_EXIST);
+        $discussion = $DB->get_record("forumplusone_discussions", array("id" => $discussionid), '*', MUST_EXIST);
+        $forum = $DB->get_record("forumplusone", array("id" => $discussion->forum), '*', MUST_EXIST);
         $course = $DB->get_record("course", array("id" => $discussion->course), '*', MUST_EXIST);
-        if (! $cm = get_coursemodule_from_instance("forumimproved", $forum->id, $course->id)) {
+        if (! $cm = get_coursemodule_from_instance("forumplusone", $forum->id, $course->id)) {
             print_error('invalidcoursemodule');
         }
 
@@ -88,10 +88,10 @@ class discussion_controller extends controller_abstract {
         }
         if ($groupmode == SEPARATEGROUPS and !has_capability('moodle/site:accessallgroups', $PAGE->context)) {
             if ($discussion->groupid == -1) {
-                print_error('nopostforum', 'forumimproved');
+                print_error('nopostforum', 'forumplusone');
             } else {
                 if (!groups_is_member($discussion->groupid)) {
-                    print_error('nopostforum', 'forumimproved');
+                    print_error('nopostforum', 'forumplusone');
                 }
             }
         }
@@ -101,7 +101,7 @@ class discussion_controller extends controller_abstract {
         }
 
 
-        require_capability('mod/forumimproved:change_state_discussion', $PAGE->context);
+        require_capability('mod/forumplusone:change_state_discussion', $PAGE->context);
 
 
 

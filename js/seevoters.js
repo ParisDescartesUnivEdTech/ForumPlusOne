@@ -7,7 +7,7 @@
 
 
         var dispatch = function () {
-            var links = jQuery('.forumimproved-show-voters-link');
+            var links = jQuery('.forumplusone-show-voters-link');
 
 
             links.on('click', function(event) {
@@ -24,7 +24,7 @@
                 url = location.origin + pathname + "jquery.min.js";
 
                 jQuery.ajax({
-                    url: M.cfg.wwwroot + '/mod/forumimproved/route.php',
+                    url: M.cfg.wwwroot + '/mod/forumplusone/route.php',
                     data: {
                         action: 'whovote',
                         postid: self.parents('[data-postid]').attr('data-postid'),
@@ -42,7 +42,7 @@
                             return;
                         }
 
-                        var post = self.parents('.forumimproved-post-target').first();
+                        var post = self.parents('.forumplusone-post-target').first();
 
                         // Create panel
                         var panel = createVotersPanel(self, post);

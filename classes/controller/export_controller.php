@@ -18,20 +18,20 @@
  * Export Controller
  *
  * @package    mod
- * @subpackage forumimproved
+ * @subpackage forumplusone
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_forumimproved\controller;
+namespace mod_forumplusone\controller;
 
-use mod_forumimproved\export\csv_format;
-use mod_forumimproved\export\export_manager;
-use mod_forumimproved\export\file_adapter;
-use mod_forumimproved\export\print_adapter;
-use mod_forumimproved\export\text_format;
-use mod_forumimproved\form\export_form;
+use mod_forumplusone\export\csv_format;
+use mod_forumplusone\export\export_manager;
+use mod_forumplusone\export\file_adapter;
+use mod_forumplusone\export\print_adapter;
+use mod_forumplusone\export\text_format;
+use mod_forumplusone\form\export_form;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -52,7 +52,7 @@ class export_controller extends controller_abstract {
     public function require_capability($action) {
         global $PAGE;
 
-        require_capability('mod/forumimproved:viewdiscussion', $PAGE->context);
+        require_capability('mod/forumplusone:viewdiscussion', $PAGE->context);
 
         if (is_guest($PAGE->context)) {
             print_error('noguest');
@@ -66,14 +66,14 @@ class export_controller extends controller_abstract {
         global $PAGE;
 
         // Must fetch plain object
-        $cm    = get_coursemodule_from_id('forumimproved', $PAGE->cm->id, $PAGE->course->id, false, MUST_EXIST);
+        $cm    = get_coursemodule_from_id('forumplusone', $PAGE->cm->id, $PAGE->course->id, false, MUST_EXIST);
         $mform = new export_form($this->new_url(), (object) array(
             'cm'    => $cm,
             'forum' => $PAGE->activityrecord,
         ));
 
         if ($mform->is_cancelled()) {
-            redirect(new \moodle_url('/mod/forumimproved/view.php', array('id' => $cm->id)));
+            redirect(new \moodle_url('/mod/forumplusone/view.php', array('id' => $cm->id)));
         } else if ($data = $mform->get_data()) {
             if ($data->format == 'print') {
                 $adapter = new print_adapter($cm);

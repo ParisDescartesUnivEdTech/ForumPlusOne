@@ -1,4 +1,4 @@
-@mod @mod_forumimproved
+@mod @mod_forumplusone
 Feature: Posting to groups in a separate group discussion when restricted to groupings
   In order to post to groups in a forum with separate groups and groupings
   As a teacher

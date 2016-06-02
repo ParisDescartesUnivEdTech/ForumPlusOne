@@ -1,18 +1,18 @@
 /**
  * Forum Router
  *
- * @module moodle-mod_forumimproved-router
+ * @module moodle-mod_forumplusone-router
  */
 
 /**
  * Handles URL routing
  *
  * @constructor
- * @namespace M.mod_forumimproved
+ * @namespace M.mod_forumplusone
  * @class Router
  * @extends Y.Router
  */
-var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
+var ROUTER = Y.Base.create('forumplusoneRouter', Y.Router, [], {
     /**
      *
      * @method initializer
@@ -82,7 +82,7 @@ var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
             return;
         }
         // Whenever a route takes us somewhere else we need to move the editor back to its original container.
-        M.mod_forumimproved.restoreEditor();
+        M.mod_forumplusone.restoreEditor();
 
         if (this.routeUrl(e.currentTarget.get('href'))) {
             e.preventDefault();
@@ -114,7 +114,7 @@ var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
         e.preventDefault();
 
         // Put editor back to its original place in DOM.
-        M.mod_forumimproved.restoreEditor();
+        M.mod_forumplusone.restoreEditor();
 
         var formNode = e.currentTarget,
             forumId  = formNode.one(SELECTORS.INPUT_FORUM).get('value');
@@ -158,7 +158,7 @@ var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
          * Used for responding to routing actions
          *
          * @attribute article
-         * @type M.mod_forumimproved.Article
+         * @type M.mod_forumplusone.Article
          * @required
          */
         article: { value: null },
@@ -168,11 +168,11 @@ var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
          *
          * @attribute root
          * @type String
-         * @default '/mod/forumimproved'
+         * @default '/mod/forumplusone'
          * @required
          */
         root: {
-            value: '/mod/forumimproved'
+            value: '/mod/forumplusone'
         },
 
         /**
@@ -192,4 +192,4 @@ var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
     }
 });
 
-M.mod_forumimproved.Router = ROUTER;
+M.mod_forumplusone.Router = ROUTER;

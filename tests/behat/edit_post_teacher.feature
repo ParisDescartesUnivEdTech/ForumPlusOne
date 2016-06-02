@@ -1,4 +1,4 @@
-@mod @mod_forumimproved
+@mod @mod_forumplusone
 Feature: Teachers can edit or delete any forum post
   In order to refine the forum contents
   As a teacher

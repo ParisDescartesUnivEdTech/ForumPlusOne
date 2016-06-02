@@ -1,14 +1,14 @@
 /**
  * Forum Article View
  *
- * @module moodle-mod_forumimproved-article
+ * @module moodle-mod_forumplusone-article
  */
 
 /**
  * Handles updating forum article structure
  *
  * @constructor
- * @namespace M.mod_forumimproved
+ * @namespace M.mod_forumplusone
  * @class Article
  * @extends Y.Base
  */
@@ -33,7 +33,7 @@ ARTICLE.ATTRS = {
      * Used for REST calls
      *
      * @attribute io
-     * @type M.mod_forumimproved.Io
+     * @type M.mod_forumplusone.Io
      * @readOnly
      */
     io: { readOnly: true },
@@ -42,7 +42,7 @@ ARTICLE.ATTRS = {
      * Used primarily for updating the DOM
      *
      * @attribute dom
-     * @type M.mod_forumimproved.Dom
+     * @type M.mod_forumplusone.Dom
      * @readOnly
      */
     dom: { readOnly: true },
@@ -51,7 +51,7 @@ ARTICLE.ATTRS = {
      * Used for routing URLs within the same page
      *
      * @attribute router
-     * @type M.mod_forumimproved.Router
+     * @type M.mod_forumplusone.Router
      * @readOnly
      */
     router: { readOnly: true },
@@ -60,7 +60,7 @@ ARTICLE.ATTRS = {
      * Displays, hides and submits forms
      *
      * @attribute form
-     * @type M.mod_forumimproved.Form
+     * @type M.mod_forumplusone.Form
      * @readOnly
      */
     form: { readOnly: true },
@@ -69,7 +69,7 @@ ARTICLE.ATTRS = {
      * Maintains an aria live log.
      *
      * @attribute liveLog
-     * @type M.mod_forumimproved.init_livelog
+     * @type M.mod_forumplusone.init_livelog
      * @readOnly
      */
     liveLog: { readOnly: true },
@@ -95,11 +95,11 @@ Y.extend(ARTICLE, Y.Base,
          * Setup the app
          */
         initializer: function() {
-            this._set('router', new M.mod_forumimproved.Router({article: this, html5: false}));
-            this._set('io', new M.mod_forumimproved.Io({contextId: this.get('contextId')}));
-            this._set('dom', new M.mod_forumimproved.Dom({io: this.get('io')}));
-            this._set('form', new M.mod_forumimproved.Form({io: this.get('io')}));
-            this._set('liveLog', M.mod_forumimproved.init_livelog());
+            this._set('router', new M.mod_forumplusone.Router({article: this, html5: false}));
+            this._set('io', new M.mod_forumplusone.Io({contextId: this.get('contextId')}));
+            this._set('dom', new M.mod_forumplusone.Dom({io: this.get('io')}));
+            this._set('form', new M.mod_forumplusone.Form({io: this.get('io')}));
+            this._set('liveLog', M.mod_forumplusone.init_livelog());
             this.bind();
             // this.get('router').dispatch();
         },
@@ -109,7 +109,7 @@ Y.extend(ARTICLE, Y.Base,
          * @method bind
          */
         bind: function() {
-            var firstUnreadPost = document.getElementsByClassName("forumimproved-post-unread")[0];
+            var firstUnreadPost = document.getElementsByClassName("forumplusone-post-unread")[0];
             if(firstUnreadPost && location.hash === '#unread') {
                 // get the post parent to focus on
                 var post = document.getElementById(firstUnreadPost.id).parentNode;
@@ -133,7 +133,7 @@ Y.extend(ARTICLE, Y.Base,
                 router  = this.get('router');
 
             /* Clean html on paste */
-            Y.delegate('paste', form.handleFormPaste, document, '.forumimproved-textarea', form);
+            Y.delegate('paste', form.handleFormPaste, document, '.forumplusone-textarea', form);
 
             // We bind to document otherwise screen readers read everything as clickable.
             Y.delegate('click', form.handleCancelForm, document, SELECTORS.LINK_CANCEL, form);
@@ -161,20 +161,20 @@ Y.extend(ARTICLE, Y.Base,
                 editor = editArea.ancestor('.editor_atto');
 
                 if (editor){
-                    M.mod_forumimproved.toggleAdvancedEditor(advancedEditLink);
+                    M.mod_forumplusone.toggleAdvancedEditor(advancedEditLink);
                 } else {
                     // The advanced editor isn't available yet, lets try again periodically.
-                    advancedEditLink.setContent(M.util.get_string('loadingeditor', 'forumimproved'));
+                    advancedEditLink.setContent(M.util.get_string('loadingeditor', 'forumplusone'));
                     checkEditArea = setInterval(function(){
                         editor = editArea.ancestor('.editor_atto');
                         if (editor) {
                             clearInterval(checkEditArea);
-                            M.mod_forumimproved.toggleAdvancedEditor(advancedEditLink);
+                            M.mod_forumplusone.toggleAdvancedEditor(advancedEditLink);
                         }
                     }, 500);
                 }
 
-            }, document, '.forumimproved-use-advanced');
+            }, document, '.forumplusone-use-advanced');
 
             // We bind to document for these buttons as they get re-added on each discussion addition.
             Y.delegate('submit', form.handleFormSubmit, document, SELECTORS.FORM, form);
@@ -285,7 +285,7 @@ Y.extend(ARTICLE, Y.Base,
             if (node === null) {
                 return;
             }
-            if (window.confirm(M.str.mod_forumimproved.deletesure) === true) {
+            if (window.confirm(M.str.mod_forumplusone.deletesure) === true) {
                 this.deletePost(postId);
             }
         },
@@ -437,8 +437,8 @@ Y.extend(ARTICLE, Y.Base,
     }
 );
 
-M.mod_forumimproved.Article = ARTICLE;
-M.mod_forumimproved.init_article = function(config) {
+M.mod_forumplusone.Article = ARTICLE;
+M.mod_forumplusone.init_article = function(config) {
     new ARTICLE(config);
 };
 
@@ -446,7 +446,7 @@ M.mod_forumimproved.init_article = function(config) {
  * Trigger click event.
  * @param el
  */
-M.mod_forumimproved.dispatchClick = function(el) {
+M.mod_forumplusone.dispatchClick = function(el) {
     if (document.createEvent) {
         var event = new MouseEvent('click', {
             'view': window,
@@ -462,16 +462,16 @@ M.mod_forumimproved.dispatchClick = function(el) {
 /**
  * Restore editor to original position in DOM.
  */
-M.mod_forumimproved.restoreEditor = function() {
+M.mod_forumplusone.restoreEditor = function() {
     var editCont = Y.one('#hiddenadvancededitorcont');
     if (editCont) {
         var editArea = Y.one('#hiddenadvancededitoreditable'),
         editor = editArea.ancestor('.editor_atto'),
-        advancedEditLink = M.mod_forumimproved.Article.currentEditLink,
+        advancedEditLink = M.mod_forumplusone.Article.currentEditLink,
         contentEditable = false;
 
         if (advancedEditLink) {
-            contentEditable = advancedEditLink.previous('.forumimproved-textarea');
+            contentEditable = advancedEditLink.previous('.forumplusone-textarea');
         }
 
         var editorHidden = (!editor || editor.getComputedStyle('display') === 'none');
@@ -481,7 +481,7 @@ M.mod_forumimproved.restoreEditor = function() {
         if (!editorHidden) {
             if (editor.one('.atto_html_button.highlight')) {
                 // Trigger click on atto source button - we need to update the editor content.
-                M.mod_forumimproved.dispatchClick(editor.one('.atto_html_button.highlight')._node);
+                M.mod_forumplusone.dispatchClick(editor.one('.atto_html_button.highlight')._node);
             }
             // Update content editable div.
             if (contentEditable) {
@@ -492,7 +492,7 @@ M.mod_forumimproved.restoreEditor = function() {
 
 
         // Switch all editor links to hide mode.
-        M.mod_forumimproved.toggleAdvancedEditor(false, true);
+        M.mod_forumplusone.toggleAdvancedEditor(false, true);
 
         // Put editor back in its correct place.
         Y.one('#hiddenadvancededitorcont').show();
@@ -505,7 +505,7 @@ M.mod_forumimproved.restoreEditor = function() {
 /**
  * Toggle advanced editor in place of plain text editor.
  */
-M.mod_forumimproved.toggleAdvancedEditor = function(advancedEditLink, forcehide, keepLink) {
+M.mod_forumplusone.toggleAdvancedEditor = function(advancedEditLink, forcehide, keepLink) {
 
     var showEditor = false;
     if (!forcehide) {
@@ -513,7 +513,7 @@ M.mod_forumimproved.toggleAdvancedEditor = function(advancedEditLink, forcehide,
     }
 
     if (advancedEditLink) {
-        M.mod_forumimproved.Article.currentEditLink = advancedEditLink;
+        M.mod_forumplusone.Article.currentEditLink = advancedEditLink;
         if (showEditor) {
             advancedEditLink.removeClass('hideadvancededitor');
         } else {
@@ -528,26 +528,26 @@ M.mod_forumimproved.toggleAdvancedEditor = function(advancedEditLink, forcehide,
     if (forcehide) {
         // If advancedEditLink is not set and we are forcing a hide then we need to hide every instance and change all labels.
         if (!advancedEditLink){
-            var links = Y.all('.forumimproved-use-advanced');
+            var links = Y.all('.forumplusone-use-advanced');
             for (var l = 0; l<links.size(); l++) {
                 var link = links.item(l);
                 if (keepLink && keepLink === link){
                     continue; // Do not process this link.
                 }
                 // To hide this link and restore the editor, call myself.
-                M.mod_forumimproved.toggleAdvancedEditor(link, true);
+                M.mod_forumplusone.toggleAdvancedEditor(link, true);
             }
 
             return;
         }
     } else {
         // OK we need to make sure the editor isn't available anywhere else, so call myself.
-        M.mod_forumimproved.toggleAdvancedEditor(false, true, advancedEditLink);
+        M.mod_forumplusone.toggleAdvancedEditor(false, true, advancedEditLink);
     }
 
     var editCont = Y.one('#hiddenadvancededitorcont'),
         editArea,
-        contentEditable = advancedEditLink.previous('.forumimproved-textarea'),
+        contentEditable = advancedEditLink.previous('.forumplusone-textarea'),
         editor;
 
     if (editCont){
@@ -568,7 +568,7 @@ M.mod_forumimproved.toggleAdvancedEditor = function(advancedEditLink, forcehide,
 
     if (showEditor) {
         advancedEditLink.setAttribute('aria-pressed', 'true');
-        advancedEditLink.setContent(M.util.get_string('hideadvancededitor', 'forumimproved'));
+        advancedEditLink.setContent(M.util.get_string('hideadvancededitor', 'forumplusone'));
         contentEditable.hide();
         // Are we in source mode?
         if (editor.one('.atto_html_button.highlight')) {
@@ -591,18 +591,18 @@ M.mod_forumimproved.toggleAdvancedEditor = function(advancedEditLink, forcehide,
 
         // Whenever the html editor changes its content, update the text area.
         if (window.MutationObserver){
-            M.mod_forumimproved.Article.editorMutateObserver = new MutationObserver(editAreaChanged);
-            M.mod_forumimproved.Article.editorMutateObserver.observe(editArea.getDOMNode(), {childList: true, characterData: true, subtree: true});
+            M.mod_forumplusone.Article.editorMutateObserver = new MutationObserver(editAreaChanged);
+            M.mod_forumplusone.Article.editorMutateObserver.observe(editArea.getDOMNode(), {childList: true, characterData: true, subtree: true});
         } else {
             // Don't use yui delegate as I don't think it supports this event type
             editArea.getDOMNode().addEventListener ('DOMCharacterDataModified', editAreachanged, false);
         }
     } else {
         advancedEditLink.setAttribute('aria-pressed', 'false');
-        if (M.mod_forumimproved.Article.editorMutateObserver){
-            M.mod_forumimproved.Article.editorMutateObserver.disconnect();
+        if (M.mod_forumplusone.Article.editorMutateObserver){
+            M.mod_forumplusone.Article.editorMutateObserver.disconnect();
         }
-        advancedEditLink.setContent(M.util.get_string('useadvancededitor', 'forumimproved'));
+        advancedEditLink.setContent(M.util.get_string('useadvancededitor', 'forumplusone'));
         contentEditable.show();
 
         // If editor is not hidden then we need to update content editable div with editor content.
@@ -610,7 +610,7 @@ M.mod_forumimproved.toggleAdvancedEditor = function(advancedEditLink, forcehide,
             // Are we in source mode?
             if (editor.one('.atto_html_button.highlight')) {
                 // Trigger click on atto source button - we need to update the editor content.
-                M.mod_forumimproved.dispatchClick(editor.one('.atto_html_button.highlight')._node);
+                M.mod_forumplusone.dispatchClick(editor.one('.atto_html_button.highlight')._node);
             }
             // Update content of content editable div.
 

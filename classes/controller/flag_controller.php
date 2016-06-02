@@ -18,13 +18,13 @@
  * Post Flag Controller
  *
  * @package    mod
- * @subpackage forumimproved
+ * @subpackage forumplusone
  * @copyright  Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @author     Mark Nielsen
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_forumimproved\controller;
+namespace mod_forumplusone\controller;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -40,7 +40,7 @@ class flag_controller extends controller_abstract {
     public function require_capability($action) {
         global $PAGE;
 
-        require_capability('mod/forumimproved:editanypost', $PAGE->context);
+        require_capability('mod/forumplusone:editanypost', $PAGE->context);
     }
 
     /**
@@ -55,12 +55,12 @@ class flag_controller extends controller_abstract {
         $flag      = required_param('flag', PARAM_ALPHA);
         $returnurl = required_param('returnurl', PARAM_LOCALURL);
 
-        $flags    = $DB->get_field('forumimproved_posts', 'flags', array('id' => $postid), MUST_EXIST);
-        $flaglib  = new \forumimproved_lib_flag();
+        $flags    = $DB->get_field('forumplusone_posts', 'flags', array('id' => $postid), MUST_EXIST);
+        $flaglib  = new \forumplusone_lib_flag();
         $newflags = $flaglib->toggle_flag($flags, $flag);
 
         if ($newflags != $flags) {
-            $updateok = $DB->set_field('forumimproved_posts', 'flags', $newflags, array('id' => $postid));
+            $updateok = $DB->set_field('forumplusone_posts', 'flags', $newflags, array('id' => $postid));
             if (AJAX_SCRIPT && !$updateok){
                 http_response_code(500);
             }

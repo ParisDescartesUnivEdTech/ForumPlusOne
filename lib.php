@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -32,30 +32,30 @@ require_once($CFG->dirroot.'/user/selector/lib.php');
 /// CONSTANTS ///////////////////////////////////////////////////////////
 
 
-define('FORUMIMPROVED_CHOOSESUBSCRIBE', 0);
-define('FORUMIMPROVED_FORCESUBSCRIBE', 1);
-define('FORUMIMPROVED_INITIALSUBSCRIBE', 2);
-define('FORUMIMPROVED_DISALLOWSUBSCRIBE',3);
+define('FORUMPLUSONE_CHOOSESUBSCRIBE', 0);
+define('FORUMPLUSONE_FORCESUBSCRIBE', 1);
+define('FORUMPLUSONE_INITIALSUBSCRIBE', 2);
+define('FORUMPLUSONE_DISALLOWSUBSCRIBE',3);
 
-define ('FORUMIMPROVED_GRADETYPE_NONE', 0);
-define ('FORUMIMPROVED_GRADETYPE_MANUAL', 1);
-define ('FORUMIMPROVED_GRADETYPE_RATING', 2);
+define ('FORUMPLUSONE_GRADETYPE_NONE', 0);
+define ('FORUMPLUSONE_GRADETYPE_MANUAL', 1);
+define ('FORUMPLUSONE_GRADETYPE_RATING', 2);
 
-define('FORUMIMPROVED_MAILED_PENDING', 0);
-define('FORUMIMPROVED_MAILED_SUCCESS', 1);
-define('FORUMIMPROVED_MAILED_ERROR', 2);
+define('FORUMPLUSONE_MAILED_PENDING', 0);
+define('FORUMPLUSONE_MAILED_SUCCESS', 1);
+define('FORUMPLUSONE_MAILED_ERROR', 2);
 
-define('FORUMIMPROVED_DISCUSSION_STATE_OPEN', 0);
-define('FORUMIMPROVED_DISCUSSION_STATE_CLOSE', 1);
-define('FORUMIMPROVED_DISCUSSION_STATE_HIDDEN', 2);
+define('FORUMPLUSONE_DISCUSSION_STATE_OPEN', 0);
+define('FORUMPLUSONE_DISCUSSION_STATE_CLOSE', 1);
+define('FORUMPLUSONE_DISCUSSION_STATE_HIDDEN', 2);
 
-define('FORUMIMPROVED_COUNT_MODE_RECURSIVE', 0);
-define('FORUMIMPROVED_COUNT_MODE_FIRST_POST', 1);
+define('FORUMPLUSONE_COUNT_MODE_RECURSIVE', 0);
+define('FORUMPLUSONE_COUNT_MODE_FIRST_POST', 1);
 
 
-if (!defined('FORUMIMPROVED_CRON_USER_CACHE')) {
+if (!defined('FORUMPLUSONE_CRON_USER_CACHE')) {
     /** Defines how many full user records are cached in forum cron. */
-    define('FORUMIMPROVED_CRON_USER_CACHE', 5000);
+    define('FORUMPLUSONE_CRON_USER_CACHE', 5000);
 }
 
 /// STANDARD FUNCTIONS ///////////////////////////////////////////////////////////
@@ -67,15 +67,15 @@ if (!defined('FORUMIMPROVED_CRON_USER_CACHE')) {
  * of the new instance.
  *
  * @param stdClass $forum add forum instance
- * @param mod_forumimproved_mod_form $mform
+ * @param mod_forumplusone_mod_form $mform
  * @return int intance id
  */
-function forumimproved_add_instance($forum, $mform = null) {
+function forumplusone_add_instance($forum, $mform = null) {
     global $CFG, $DB;
 
     $forum->timemodified = time();
 
-    if ($forum->gradetype != FORUMIMPROVED_GRADETYPE_MANUAL) {
+    if ($forum->gradetype != FORUMPLUSONE_GRADETYPE_MANUAL) {
         foreach ($forum as $name => $value) {
             if (strpos($name, 'advancedgradingmethod_') !== false) {
                 $forum->$name = '';
@@ -102,7 +102,7 @@ function forumimproved_add_instance($forum, $mform = null) {
     }
 
 
-    $forum->id = $DB->insert_record('forumimproved', $forum);
+    $forum->id = $DB->insert_record('forumplusone', $forum);
     $modcontext = context_module::instance($forum->coursemodule);
 
     if ($forum->type == 'single') {  // Create related discussion.
@@ -117,24 +117,24 @@ function forumimproved_add_instance($forum, $mform = null) {
         $discussion->mailnow       = false;
         $discussion->groupid       = -1;
         $discussion->reveal        =  0;
-        $discussion->state         =  FORUMIMPROVED_DISCUSSION_STATE_OPEN;
+        $discussion->state         =  FORUMPLUSONE_DISCUSSION_STATE_OPEN;
 
         $message = '';
 
-        $discussion->id = forumimproved_add_discussion($discussion, null, $message);
+        $discussion->id = forumplusone_add_discussion($discussion, null, $message);
 
         if ($mform and $draftid = file_get_submitted_draft_itemid('introeditor')) {
             // Ugly hack - we need to copy the files somehow.
-            $discussion = $DB->get_record('forumimproved_discussions', array('id'=>$discussion->id), '*', MUST_EXIST);
-            $post = $DB->get_record('forumimproved_posts', array('id'=>$discussion->firstpost), '*', MUST_EXIST);
+            $discussion = $DB->get_record('forumplusone_discussions', array('id'=>$discussion->id), '*', MUST_EXIST);
+            $post = $DB->get_record('forumplusone_posts', array('id'=>$discussion->firstpost), '*', MUST_EXIST);
 
             $options = array('subdirs'=>true); // Use the same options as intro field!
-            $post->message = file_save_draft_area_files($draftid, $modcontext->id, 'mod_forumimproved', 'post', $post->id, $options, $post->message);
-            $DB->set_field('forumimproved_posts', 'message', $post->message, array('id'=>$post->id));
+            $post->message = file_save_draft_area_files($draftid, $modcontext->id, 'mod_forumplusone', 'post', $post->id, $options, $post->message);
+            $DB->set_field('forumplusone_posts', 'message', $post->message, array('id'=>$post->id));
         }
     }
 
-    forumimproved_grade_item_update($forum);
+    forumplusone_grade_item_update($forum);
 
     return $forum->id;
 }
@@ -147,11 +147,11 @@ function forumimproved_add_instance($forum, $mform = null) {
  * @param stdClass $forum The forum object
  * @return void
  */
-function forumimproved_instance_created($context, $forum) {
-    if ($forum->forcesubscribe == FORUMIMPROVED_INITIALSUBSCRIBE) {
-        $users = forumimproved_get_potential_subscribers($context, 0, 'u.id, u.email');
+function forumplusone_instance_created($context, $forum) {
+    if ($forum->forcesubscribe == FORUMPLUSONE_INITIALSUBSCRIBE) {
+        $users = forumplusone_get_potential_subscribers($context, 0, 'u.id, u.email');
         foreach ($users as $user) {
-            forumimproved_subscribe($user->id, $forum->id, $context);
+            forumplusone_subscribe($user->id, $forum->id, $context);
         }
     }
 }
@@ -165,13 +165,13 @@ function forumimproved_instance_created($context, $forum) {
  * @param object $forum forum instance (with magic quotes)
  * @return bool success
  */
-function forumimproved_update_instance($forum, $mform) {
+function forumplusone_update_instance($forum, $mform) {
     global $DB, $OUTPUT, $USER;
 
     $forum->timemodified = time();
     $forum->id           = $forum->instance;
 
-    if ($forum->gradetype != FORUMIMPROVED_GRADETYPE_MANUAL) {
+    if ($forum->gradetype != FORUMPLUSONE_GRADETYPE_MANUAL) {
         foreach ($forum as $name => $value) {
             if (strpos($name, 'advancedgradingmethod_') !== false) {
                 $forum->$name = '';
@@ -196,20 +196,20 @@ function forumimproved_update_instance($forum, $mform) {
         $forum->votetimestop = 0;
     }
 
-    $oldforum = $DB->get_record('forumimproved', array('id'=>$forum->id));
+    $oldforum = $DB->get_record('forumplusone', array('id'=>$forum->id));
 
     // MDL-3942 - if the aggregation type or scale (i.e. max grade) changes then recalculate the grades for the entire forum
     // if  scale changes - do we need to recheck the ratings, if ratings higher than scale how do we want to respond?
     // for count and sum aggregation types the grade we check to make sure they do not exceed the scale (i.e. max score) when calculating the grade
     if (($oldforum->assessed<>$forum->assessed) or ($oldforum->scale<>$forum->scale)) {
-        forumimproved_update_grades($forum); // recalculate grades for the forum
+        forumplusone_update_grades($forum); // recalculate grades for the forum
     }
 
     if ($forum->type == 'single') {  // Update related discussion and post.
-        $discussions = $DB->get_records('forumimproved_discussions', array('forum'=>$forum->id), 'timemodified ASC');
+        $discussions = $DB->get_records('forumplusone_discussions', array('forum'=>$forum->id), 'timemodified ASC');
         if (!empty($discussions)) {
             if (count($discussions) > 1) {
-                echo $OUTPUT->notification(get_string('warnformorepost', 'forumimproved'));
+                echo $OUTPUT->notification(get_string('warnformorepost', 'forumplusone'));
             }
             $discussion = array_pop($discussions);
         } else {
@@ -228,20 +228,20 @@ function forumimproved_update_instance($forum, $mform) {
 
             $message = '';
 
-            forumimproved_add_discussion($discussion, null, $message);
+            forumplusone_add_discussion($discussion, null, $message);
 
-            if (! $discussion = $DB->get_record('forumimproved_discussions', array('forum'=>$forum->id))) {
-                print_error('cannotadd', 'forumimproved');
+            if (! $discussion = $DB->get_record('forumplusone_discussions', array('forum'=>$forum->id))) {
+                print_error('cannotadd', 'forumplusone');
             }
         }
-        if (! $post = $DB->get_record('forumimproved_posts', array('id'=>$discussion->firstpost))) {
-            print_error('cannotfindfirstpost', 'forumimproved');
+        if (! $post = $DB->get_record('forumplusone_posts', array('id'=>$discussion->firstpost))) {
+            print_error('cannotfindfirstpost', 'forumplusone');
         }
 
-        $cm         = get_coursemodule_from_instance('forumimproved', $forum->id);
+        $cm         = get_coursemodule_from_instance('forumplusone', $forum->id);
         $modcontext = context_module::instance($cm->id, MUST_EXIST);
 
-        $post = $DB->get_record('forumimproved_posts', array('id'=>$discussion->firstpost), '*', MUST_EXIST);
+        $post = $DB->get_record('forumplusone_posts', array('id'=>$discussion->firstpost), '*', MUST_EXIST);
         $post->message       = $forum->intro;
         $post->messageformat = $forum->introformat;
         $post->messagetrust  = trusttext_trusted($modcontext);
@@ -251,25 +251,25 @@ function forumimproved_update_instance($forum, $mform) {
         if ($mform and $draftid = file_get_submitted_draft_itemid('introeditor')) {
             // Ugly hack - we need to copy the files somehow.
             $options = array('subdirs'=>true); // Use the same options as intro field!
-            $post->message = file_save_draft_area_files($draftid, $modcontext->id, 'mod_forumimproved', 'post', $post->id, $options, $post->message);
+            $post->message = file_save_draft_area_files($draftid, $modcontext->id, 'mod_forumplusone', 'post', $post->id, $options, $post->message);
         }
 
-        $DB->update_record('forumimproved_posts', $post);
+        $DB->update_record('forumplusone_posts', $post);
         $discussion->name = $forum->name;
-        $DB->update_record('forumimproved_discussions', $discussion);
+        $DB->update_record('forumplusone_discussions', $discussion);
     }
 
-    $DB->update_record('forumimproved', $forum);
+    $DB->update_record('forumplusone', $forum);
 
     $modcontext = context_module::instance($forum->coursemodule);
-    if (($forum->forcesubscribe == FORUMIMPROVED_INITIALSUBSCRIBE) && ($oldforum->forcesubscribe <> $forum->forcesubscribe)) {
-        $users = forumimproved_get_potential_subscribers($modcontext, 0, 'u.id, u.email', '');
+    if (($forum->forcesubscribe == FORUMPLUSONE_INITIALSUBSCRIBE) && ($oldforum->forcesubscribe <> $forum->forcesubscribe)) {
+        $users = forumplusone_get_potential_subscribers($modcontext, 0, 'u.id, u.email', '');
         foreach ($users as $user) {
-            forumimproved_subscribe($user->id, $forum->id, $modcontext);
+            forumplusone_subscribe($user->id, $forum->id, $modcontext);
         }
     }
 
-    forumimproved_grade_item_update($forum);
+    forumplusone_grade_item_update($forum);
 
     return true;
 }
@@ -284,13 +284,13 @@ function forumimproved_update_instance($forum, $mform) {
  * @param int $id forum instance id
  * @return bool success
  */
-function forumimproved_delete_instance($id) {
+function forumplusone_delete_instance($id) {
     global $DB;
 
-    if (!$forum = $DB->get_record('forumimproved', array('id'=>$id))) {
+    if (!$forum = $DB->get_record('forumplusone', array('id'=>$id))) {
         return false;
     }
-    if (!$cm = get_coursemodule_from_instance('forumimproved', $forum->id)) {
+    if (!$cm = get_coursemodule_from_instance('forumplusone', $forum->id)) {
         return false;
     }
     if (!$course = $DB->get_record('course', array('id'=>$cm->course))) {
@@ -305,29 +305,29 @@ function forumimproved_delete_instance($id) {
 
     $result = true;
 
-    if ($discussions = $DB->get_records('forumimproved_discussions', array('forum'=>$forum->id))) {
+    if ($discussions = $DB->get_records('forumplusone_discussions', array('forum'=>$forum->id))) {
         foreach ($discussions as $discussion) {
-            if (!forumimproved_delete_discussion($discussion, true, $course, $cm, $forum)) {
+            if (!forumplusone_delete_discussion($discussion, true, $course, $cm, $forum)) {
                 $result = false;
             }
         }
     }
 
-    if (!$DB->delete_records('forumimproved_digests', array('forum' => $forum->id))) {
+    if (!$DB->delete_records('forumplusone_digests', array('forum' => $forum->id))) {
         $result = false;
     }
 
-    if (!$DB->delete_records('forumimproved_subscriptions', array('forum'=>$forum->id))) {
+    if (!$DB->delete_records('forumplusone_subscriptions', array('forum'=>$forum->id))) {
         $result = false;
     }
 
-    forumimproved_delete_read_records_for_forum($forum->id);
+    forumplusone_delete_read_records_for_forum($forum->id);
 
-    if (!$DB->delete_records('forumimproved', array('id'=>$forum->id))) {
+    if (!$DB->delete_records('forumplusone', array('id'=>$forum->id))) {
         $result = false;
     }
 
-    forumimproved_grade_item_delete($forum);
+    forumplusone_grade_item_delete($forum);
 
     return $result;
 }
@@ -347,7 +347,7 @@ function forumimproved_delete_instance($id) {
  * @param string $feature
  * @return mixed True if yes (some features may use other values)
  */
-function forumimproved_supports($feature) {
+function forumplusone_supports($feature) {
     global $CFG;
 
     switch($feature) {
@@ -362,7 +362,7 @@ function forumimproved_supports($feature) {
         case FEATURE_RATE:                    return true;
         case FEATURE_BACKUP_MOODLE2:          return true;
         case FEATURE_SHOW_DESCRIPTION:        return true;
-        case FEATURE_ADVANCED_GRADING:        return (!empty($CFG->mod_forumimproved_grading_interface));
+        case FEATURE_ADVANCED_GRADING:        return (!empty($CFG->mod_forumplusone_grading_interface));
         case FEATURE_PLAGIARISM:              return true;
 
         default: return null;
@@ -374,8 +374,8 @@ function forumimproved_supports($feature) {
  *
  * @return array
  */
-function forumimproved_grading_areas_list() {
-    return array('posts' => get_string('posts', 'forumimproved'));
+function forumplusone_grading_areas_list() {
+    return array('posts' => get_string('posts', 'forumplusone'));
 }
 
 /**
@@ -391,11 +391,11 @@ function forumimproved_grading_areas_list() {
  * @return bool True if completed, false if not. (If no conditions, then return
  *   value depends on comparison type)
  */
-function forumimproved_get_completion_state($course,$cm,$userid,$type) {
+function forumplusone_get_completion_state($course,$cm,$userid,$type) {
     global $DB;
 
     // Get forum details
-    if (!($forum=$DB->get_record('forumimproved',array('id'=>$cm->instance)))) {
+    if (!($forum=$DB->get_record('forumplusone',array('id'=>$cm->instance)))) {
         throw new Exception("Can't find forum {$cm->instance}");
     }
 
@@ -406,14 +406,14 @@ function forumimproved_get_completion_state($course,$cm,$userid,$type) {
 SELECT
     COUNT(1)
 FROM
-    {forumimproved_posts} fp
-    INNER JOIN {forumimproved_discussions} fd ON fp.discussion=fd.id
+    {forumplusone_posts} fp
+    INNER JOIN {forumplusone_discussions} fd ON fp.discussion=fd.id
 WHERE
     fp.userid=:userid AND fd.forum=:forumid";
 
     if ($forum->completiondiscussions) {
         $value = $forum->completiondiscussions <=
-                 $DB->count_records('forumimproved_discussions',array('forum'=>$forum->id,'userid'=>$userid));
+                 $DB->count_records('forumplusone_discussions',array('forum'=>$forum->id,'userid'=>$userid));
         if ($type == COMPLETION_AND) {
             $result = $result && $value;
         } else {
@@ -451,7 +451,7 @@ WHERE
  * @param string $hostname The server's hostname
  * @return string A unique message-id
  */
-function forumimproved_get_email_message_id($postid, $usertoid, $hostname) {
+function forumplusone_get_email_message_id($postid, $usertoid, $hostname) {
     return '<'.hash('sha256',$postid.'to'.$usertoid).'@'.$hostname.'>';
 }
 
@@ -461,7 +461,7 @@ function forumimproved_get_email_message_id($postid, $usertoid, $hostname) {
  * @param stdClass $user
  * @return void, $user parameter is modified
  */
-function forumimproved_cron_minimise_user_record(stdClass $user) {
+function forumplusone_cron_minimise_user_record(stdClass $user) {
 
     // We store large amount of users in one huge array,
     // make sure we do not store info there we do not actually need
@@ -488,12 +488,12 @@ function forumimproved_cron_minimise_user_record(stdClass $user) {
  *
  * @todo MDL-44734 The function will be split up into seperate tasks.
  */
-function forumimproved_cron() {
+function forumplusone_cron() {
     global $CFG, $USER, $DB;
 
     $site = get_site();
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
 
     // All users that are subscribed to any post that needs sending,
     // please increase $CFG->extramemorylimit on large sites that
@@ -514,7 +514,7 @@ function forumimproved_cron() {
     $discussionsubscribers = array();
 
     require_once(__DIR__.'/repository/discussion.php');
-    $discussionrepo = new forumimproved_repository_discussion();
+    $discussionrepo = new forumplusone_repository_discussion();
 
     // Posts older than 2 days will not be mailed.  This is to avoid the problem where
     // cron has not been running for a long time, and then suddenly people are flooded
@@ -524,7 +524,7 @@ function forumimproved_cron() {
     $starttime = $endtime - 48 * 3600;   // Two days earlier
 
     // Get the list of forum subscriptions for per-user per-forum maildigest settings.
-    $digestsset = $DB->get_recordset('forumimproved_digests', null, '', 'id, userid, forum, maildigest');
+    $digestsset = $DB->get_recordset('forumplusone_digests', null, '', 'id, userid, forum, maildigest');
     $digests = array();
     foreach ($digestsset as $thisrow) {
         if (!isset($digests[$thisrow->forum])) {
@@ -534,13 +534,13 @@ function forumimproved_cron() {
     }
     $digestsset->close();
 
-    if ($posts = forumimproved_get_unmailed_posts($starttime, $endtime, $timenow)) {
+    if ($posts = forumplusone_get_unmailed_posts($starttime, $endtime, $timenow)) {
         // Mark them all now as being mailed.  It's unlikely but possible there
         // might be an error later so that a post is NOT actually mailed out,
         // but since mail isn't crucial, we can accept this risk.  Doing it now
         // prevents the risk of duplicated mails, which is a worse problem.
 
-        if (!forumimproved_mark_old_posts_as_mailed($endtime)) {
+        if (!forumplusone_mark_old_posts_as_mailed($endtime)) {
             mtrace('Errors occurred while trying to mark some posts as being mailed.');
             return false;  // Don't continue trying to mail them, in case we are in a cron loop
         }
@@ -550,7 +550,7 @@ function forumimproved_cron() {
 
             $discussionid = $post->discussion;
             if (!isset($discussions[$discussionid])) {
-                if ($discussion = $DB->get_record('forumimproved_discussions', array('id'=> $post->discussion))) {
+                if ($discussion = $DB->get_record('forumplusone_discussions', array('id'=> $post->discussion))) {
                     $discussions[$discussionid] = $discussion;
                 } else {
                     mtrace('Could not find discussion '.$discussionid);
@@ -560,7 +560,7 @@ function forumimproved_cron() {
             }
             $forumid = $discussions[$discussionid]->forum;
             if (!isset($forums[$forumid])) {
-                if ($forum = $DB->get_record('forumimproved', array('id' => $forumid))) {
+                if ($forum = $DB->get_record('forumplusone', array('id' => $forumid))) {
                     $forums[$forumid] = $forum;
                 } else {
                     mtrace('Could not find forum '.$forumid);
@@ -579,7 +579,7 @@ function forumimproved_cron() {
                 }
             }
             if (!isset($coursemodules[$forumid])) {
-                if ($cm = get_coursemodule_from_instance('forumimproved', $forumid, $courseid)) {
+                if ($cm = get_coursemodule_from_instance('forumplusone', $forumid, $courseid)) {
                     $coursemodules[$forumid] = $cm;
                 } else {
                     mtrace('Could not find course module for forum '.$forumid);
@@ -592,19 +592,19 @@ function forumimproved_cron() {
             // caching subscribed users of each forum
             if (!isset($subscribedusers[$forumid])) {
                 $modcontext = context_module::instance($coursemodules[$forumid]->id);
-                if ($subusers = forumimproved_subscribed_users($courses[$courseid], $forums[$forumid], 0, $modcontext, "u.*")) {
+                if ($subusers = forumplusone_subscribed_users($courses[$courseid], $forums[$forumid], 0, $modcontext, "u.*")) {
                     foreach ($subusers as $postuser) {
                         // this user is subscribed to this forum
                         $subscribedusers[$forumid][$postuser->id] = $postuser->id;
                         $userscount++;
-                        if ($userscount > FORUMIMPROVED_CRON_USER_CACHE) {
+                        if ($userscount > FORUMPLUSONE_CRON_USER_CACHE) {
                             // Store minimal user info.
                             $minuser = new stdClass();
                             $minuser->id = $postuser->id;
                             $users[$postuser->id] = $minuser;
                         } else {
                             // Cache full user record.
-                            forumimproved_cron_minimise_user_record($postuser);
+                            forumplusone_cron_minimise_user_record($postuser);
                             $users[$postuser->id] = $postuser;
                         }
                     }
@@ -618,7 +618,7 @@ function forumimproved_cron() {
             if (!isset($discussionsubscribers[$discussionid])) {
                 $modcontext = context_module::instance($coursemodules[$forumid]->id);
                 if ($subusers = $discussionrepo->get_subscribed_users($forums[$forumid], $discussions[$discussionid], $modcontext, 0, null, array(), 'u.email ASC')) {
-                    // Get a list of the users subscribed to discussions in the forumimproved.
+                    // Get a list of the users subscribed to discussions in the forumplusone.
                     foreach ($subusers as $postuser) {
                         unset($postuser->description); // not necessary
                         // the user is subscribed to this discussion
@@ -651,7 +651,7 @@ function forumimproved_cron() {
                 $userto = clone($userto);
             } else {
                 $userto = $DB->get_record('user', array('id' => $userto->id));
-                forumimproved_cron_minimise_user_record($userto);
+                forumplusone_cron_minimise_user_record($userto);
             }
             $userto->viewfullnames = array();
             $userto->canpost       = array();
@@ -685,7 +685,7 @@ function forumimproved_cron() {
 
                 // Don't send email if the forum is Q&A and the user has not posted
                 // Initial topics are still mailed
-                if ($forum->type == 'qanda' && !forumimproved_get_user_posted_time($discussion->id, $userto->id) && $pid != $discussion->firstpost) {
+                if ($forum->type == 'qanda' && !forumplusone_get_user_posted_time($discussion->id, $userto->id) && $pid != $discussion->firstpost) {
                     mtrace('Did not email '.$userto->id.' because user has not posted in discussion');
                     continue;
                 }
@@ -696,13 +696,13 @@ function forumimproved_cron() {
                     if (!isset($userfrom->idnumber)) {
                         // Minimalised user info, fetch full record.
                         $userfrom = $DB->get_record('user', array('id' => $userfrom->id));
-                        forumimproved_cron_minimise_user_record($userfrom);
+                        forumplusone_cron_minimise_user_record($userfrom);
                     }
 
                 } else if ($userfrom = $DB->get_record('user', array('id' => $post->userid))) {
-                    forumimproved_cron_minimise_user_record($userfrom);
+                    forumplusone_cron_minimise_user_record($userfrom);
                     // Fetch only once if possible, we can add it to user list, it will be skipped anyway.
-                    if ($userscount <= FORUMIMPROVED_CRON_USER_CACHE) {
+                    if ($userscount <= FORUMPLUSONE_CRON_USER_CACHE) {
                         $userscount++;
                         $users[$userfrom->id] = $userfrom;
                     }
@@ -724,7 +724,7 @@ function forumimproved_cron() {
                 }
                 if (!isset($userto->canpost[$discussion->id])) {
                     $modcontext = context_module::instance($cm->id);
-                    $userto->canpost[$discussion->id] = forumimproved_user_can_post($forum, $discussion, $userto, $cm, $course, $modcontext);
+                    $userto->canpost[$discussion->id] = forumplusone_user_can_post($forum, $discussion, $userto, $cm, $course, $modcontext);
                 }
                 if (!isset($userfrom->groups[$forum->id])) {
                     if (!isset($userfrom->groups)) {
@@ -752,7 +752,7 @@ function forumimproved_cron() {
                 }
 
                 // Make sure we're allowed to see it...
-                if (!forumimproved_user_can_see_post($forum, $discussion, $post, NULL, $cm)) {
+                if (!forumplusone_user_can_see_post($forum, $discussion, $post, NULL, $cm)) {
                     mtrace('user '.$userto->id. ' can not see '.$post->id);
                     continue;
                 }
@@ -760,7 +760,7 @@ function forumimproved_cron() {
                 // OK so we need to send the email.
 
                 // Does the user want this post in a digest?  If so postpone it for now.
-                $maildigest = forumimproved_get_user_maildigest_bulk($digests, $userto, $forum->id);
+                $maildigest = forumplusone_get_user_maildigest_bulk($digests, $userto, $forum->id);
 
                 if ($maildigest > 0) {
                     // This user wants the mails to be in digest form
@@ -769,7 +769,7 @@ function forumimproved_cron() {
                     $queue->discussionid = $discussion->id;
                     $queue->postid       = $post->id;
                     $queue->timemodified = $post->created;
-                    $DB->insert_record('forumimproved_queue', $queue);
+                    $DB->insert_record('forumplusone_queue', $queue);
                     continue;
                 }
 
@@ -781,15 +781,15 @@ function forumimproved_cron() {
                 $userfrom->customheaders = array (  // Headers to make emails easier to track
                            'Precedence: Bulk',
                            'List-Id: "'.$cleanforumname.'" <moodleforum'.$forum->id.'@'.$hostname.'>',
-                           'List-Help: '.$CFG->wwwroot.'/mod/forumimproved/view.php?f='.$forum->id,
-                           'Message-ID: '.forumimproved_get_email_message_id($post->id, $userto->id, $hostname),
+                           'List-Help: '.$CFG->wwwroot.'/mod/forumplusone/view.php?f='.$forum->id,
+                           'Message-ID: '.forumplusone_get_email_message_id($post->id, $userto->id, $hostname),
                            'X-Course-Id: '.$course->id,
                            'X-Course-Name: '.format_string($course->fullname, true)
                 );
 
                 if ($post->parent) {  // This post is a reply, so add headers for threading (see MDL-22551)
-                    $userfrom->customheaders[] = 'In-Reply-To: '.forumimproved_get_email_message_id($post->parent, $userto->id, $hostname);
-                    $userfrom->customheaders[] = 'References: '.forumimproved_get_email_message_id($post->parent, $userto->id, $hostname);
+                    $userfrom->customheaders[] = 'In-Reply-To: '.forumplusone_get_email_message_id($post->parent, $userto->id, $hostname);
+                    $userfrom->customheaders[] = 'References: '.forumplusone_get_email_message_id($post->parent, $userto->id, $hostname);
                 }
 
                 $shortname = format_string($course->shortname, true, array('context' => context_course::instance($course->id)));
@@ -798,18 +798,18 @@ function forumimproved_cron() {
                 $a->courseshortname = $shortname;
                 $a->forumname = $cleanforumname;
                 $a->subject = format_string($discussion->name, true);
-                $postsubject = html_to_text(get_string('postmailsubject', 'forumimproved', $a));
-                $posttext = forumimproved_make_mail_text($course, $cm, $forum, $discussion, $post, $userfrom, $userto);
-                $posthtml = forumimproved_make_mail_html($course, $cm, $forum, $discussion, $post, $userfrom, $userto);
+                $postsubject = html_to_text(get_string('postmailsubject', 'forumplusone', $a));
+                $posttext = forumplusone_make_mail_text($course, $cm, $forum, $discussion, $post, $userfrom, $userto);
+                $posthtml = forumplusone_make_mail_html($course, $cm, $forum, $discussion, $post, $userfrom, $userto);
 
                 // Send the post now!
 
                 mtrace('Sending ', '');
 
-                $postuser = forumimproved_anonymize_user($userfrom, $forum, $post);
+                $postuser = forumplusone_anonymize_user($userfrom, $forum, $post);
 
                 $eventdata = new stdClass();
-                $eventdata->component        = 'mod_forumimproved';
+                $eventdata->component        = 'mod_forumplusone';
                 $eventdata->name             = 'posts';
                 $eventdata->userfrom         = $postuser;
                 $eventdata->userto           = $userto;
@@ -819,7 +819,7 @@ function forumimproved_cron() {
                 $eventdata->fullmessagehtml  = $posthtml;
                 $eventdata->notification = 1;
 
-                // If forumimproved_replytouser is not set then send mail using the noreplyaddress.
+                // If forumplusone_replytouser is not set then send mail using the noreplyaddress.
                 if (empty($config->replytouser)) {
                     // Clone userfrom as it is referenced by $users.
                     $cloneduserfrom = clone($userfrom);
@@ -832,14 +832,14 @@ function forumimproved_cron() {
                 $smallmessagestrings->forumname = "$shortname: ".format_string($forum->name,true).": ".$discussion->name;
                 $smallmessagestrings->message = $post->message;
                 //make sure strings are in message recipients language
-                $eventdata->smallmessage = get_string_manager()->get_string('smallmessage', 'forumimproved', $smallmessagestrings, $userto->lang);
+                $eventdata->smallmessage = get_string_manager()->get_string('smallmessage', 'forumplusone', $smallmessagestrings, $userto->lang);
 
-                $eventdata->contexturl = "{$CFG->wwwroot}/mod/forumimproved/discuss.php?d={$discussion->id}#p{$post->id}";
+                $eventdata->contexturl = "{$CFG->wwwroot}/mod/forumplusone/discuss.php?d={$discussion->id}#p{$post->id}";
                 $eventdata->contexturlname = $discussion->name;
 
                 $mailresult = message_send($eventdata);
                 if (!$mailresult){
-                    mtrace("Error: mod/forumimproved/lib.php forumimproved_cron(): Could not send out mail for id $post->id to user $userto->id".
+                    mtrace("Error: mod/forumplusone/lib.php forumplusone_cron(): Could not send out mail for id $post->id to user $userto->id".
                          " ($userto->email) .. not trying again.");
                     $errorcount[$post->id]++;
                 } else {
@@ -854,7 +854,7 @@ function forumimproved_cron() {
             }
 
             // mark processed posts as read
-            forumimproved_mark_posts_read($userto, $userto->markposts);
+            forumplusone_mark_posts_read($userto, $userto->markposts);
             unset($userto);
         }
     }
@@ -863,7 +863,7 @@ function forumimproved_cron() {
         foreach ($posts as $post) {
             mtrace($mailcount[$post->id]." users were sent post $post->id");
             if ($errorcount[$post->id]) {
-                $DB->set_field('forumimproved_posts', 'mailed', FORUMIMPROVED_MAILED_ERROR, array('id' => $post->id));
+                $DB->set_field('forumplusone_posts', 'mailed', FORUMPLUSONE_MAILED_ERROR, array('id' => $post->id));
             }
         }
     }
@@ -884,7 +884,7 @@ function forumimproved_cron() {
     core_php_time_limit::raise(300); // terminate if not able to fetch all digests in 5 minutes
 
     if (!isset($config->digestmailtimelast)) {    // To catch the first time
-        set_config('digestmailtimelast', 0, 'forumimproved');
+        set_config('digestmailtimelast', 0, 'forumplusone');
         $config->digestmailtimelast = 0;
     }
 
@@ -893,14 +893,14 @@ function forumimproved_cron() {
 
     // Delete any really old ones (normally there shouldn't be any)
     $weekago = $timenow - (7 * 24 * 3600);
-    $DB->delete_records_select('forumimproved_queue', "timemodified < ?", array($weekago));
+    $DB->delete_records_select('forumplusone_queue', "timemodified < ?", array($weekago));
     mtrace ('Cleaned old digest records');
 
     if ($config->digestmailtimelast < $digesttime and $timenow > $digesttime) {
 
         mtrace('Sending forum digests: '.userdate($timenow, '', $sitetimezone));
 
-        $digestposts_rs = $DB->get_recordset_select('forumimproved_queue', "timemodified < ?", array($digesttime));
+        $digestposts_rs = $DB->get_recordset_select('forumplusone_queue', "timemodified < ?", array($digesttime));
 
         if ($digestposts_rs->valid()) {
 
@@ -913,7 +913,7 @@ function forumimproved_cron() {
 
             foreach ($digestposts_rs as $digestpost) {
                 if (!isset($posts[$digestpost->postid])) {
-                    if ($post = $DB->get_record('forumimproved_posts', array('id' => $digestpost->postid))) {
+                    if ($post = $DB->get_record('forumplusone_posts', array('id' => $digestpost->postid))) {
                         $posts[$digestpost->postid] = $post;
                     } else {
                         continue;
@@ -921,7 +921,7 @@ function forumimproved_cron() {
                 }
                 $discussionid = $digestpost->discussionid;
                 if (!isset($discussions[$discussionid])) {
-                    if ($discussion = $DB->get_record('forumimproved_discussions', array('id' => $discussionid))) {
+                    if ($discussion = $DB->get_record('forumplusone_discussions', array('id' => $discussionid))) {
                         $discussions[$discussionid] = $discussion;
                     } else {
                         continue;
@@ -929,7 +929,7 @@ function forumimproved_cron() {
                 }
                 $forumid = $discussions[$discussionid]->forum;
                 if (!isset($forums[$forumid])) {
-                    if ($forum = $DB->get_record('forumimproved', array('id' => $forumid))) {
+                    if ($forum = $DB->get_record('forumplusone', array('id' => $forumid))) {
                         $forums[$forumid] = $forum;
                     } else {
                         continue;
@@ -946,7 +946,7 @@ function forumimproved_cron() {
                 }
 
                 if (!isset($coursemodules[$forumid])) {
-                    if ($cm = get_coursemodule_from_instance('forumimproved', $forumid, $courseid)) {
+                    if ($cm = get_coursemodule_from_instance('forumplusone', $forumid, $courseid)) {
                         $coursemodules[$forumid] = $cm;
                     } else {
                         continue;
@@ -964,10 +964,10 @@ function forumimproved_cron() {
 
                 cron_setup_user();
 
-                mtrace(get_string('processingdigest', 'forumimproved', $userid), '... ');
+                mtrace(get_string('processingdigest', 'forumplusone', $userid), '... ');
 
                 // First of all delete all the queue entries for this user
-                $DB->delete_records_select('forumimproved_queue', "userid = ? AND timemodified < ?", array($userid, $digesttime));
+                $DB->delete_records_select('forumplusone_queue', "userid = ? AND timemodified < ?", array($userid, $digesttime));
 
                 // Init user caches - we keep the cache for one cycle only,
                 // otherwise it would unnecessarily consume memory.
@@ -975,7 +975,7 @@ function forumimproved_cron() {
                     $userto = clone($users[$userid]);
                 } else {
                     $userto = $DB->get_record('user', array('id' => $userid));
-                    forumimproved_cron_minimise_user_record($userto);
+                    forumplusone_cron_minimise_user_record($userto);
                 }
                 $userto->viewfullnames = array();
                 $userto->canpost       = array();
@@ -985,14 +985,14 @@ function forumimproved_cron() {
                 // mail is customised for the receiver.
                 cron_setup_user($userto);
 
-                $postsubject = get_string('digestmailsubject', 'forumimproved', format_string($site->shortname, true));
+                $postsubject = get_string('digestmailsubject', 'forumplusone', format_string($site->shortname, true));
 
                 $headerdata = new stdClass();
                 $headerdata->sitename = format_string($site->fullname, true);
                 $headerdata->userprefs = $CFG->wwwroot.'/user/edit.php?id='.$userid.'&amp;course='.$site->id;
 
-                $posttext = get_string('digestmailheader', 'forumimproved', $headerdata)."\n\n";
-                $headerdata->userprefs = '<a target="_blank" href="'.$headerdata->userprefs.'">'.get_string('digestmailprefs', 'forumimproved').'</a>';
+                $posttext = get_string('digestmailheader', 'forumplusone', $headerdata)."\n\n";
+                $headerdata->userprefs = '<a target="_blank" href="'.$headerdata->userprefs.'">'.get_string('digestmailprefs', 'forumplusone').'</a>';
 
                 $posthtml = "<head>";
 /*                foreach ($CFG->stylesheets as $stylesheet) {
@@ -1000,7 +1000,7 @@ function forumimproved_cron() {
                     $posthtml .= '<link rel="stylesheet" type="text/css" href="'.$stylesheet.'" />'."\n";
                 }*/
                 $posthtml .= "</head>\n<body id=\"email\">\n";
-                $posthtml .= '<p>'.get_string('digestmailheader', 'forumimproved', $headerdata).'</p><br /><hr size="1" noshade="noshade" />';
+                $posthtml .= '<p>'.get_string('digestmailheader', 'forumplusone', $headerdata).'</p><br /><hr size="1" noshade="noshade" />';
 
                 foreach ($thesediscussions as $discussionid) {
 
@@ -1021,11 +1021,11 @@ function forumimproved_cron() {
                     }
                     if (!isset($userto->canpost[$discussion->id])) {
                         $modcontext = context_module::instance($cm->id);
-                        $userto->canpost[$discussion->id] = forumimproved_user_can_post($forum, $discussion, $userto, $cm, $course, $modcontext);
+                        $userto->canpost[$discussion->id] = forumplusone_user_can_post($forum, $discussion, $userto, $cm, $course, $modcontext);
                     }
 
-                    $strforums      = get_string('forums', 'forumimproved');
-                    $canunsubscribe = ! forumimproved_is_forcesubscribed($forum);
+                    $strforums      = get_string('forums', 'forumplusone');
+                    $canunsubscribe = ! forumplusone_is_forcesubscribed($forum);
                     $canreply       = $userto->canpost[$discussion->id];
                     $shortname = format_string($course->shortname, true, array('context' => context_course::instance($course->id)));
 
@@ -1037,17 +1037,17 @@ function forumimproved_cron() {
                         $posttext  .= " -> ".format_string($discussion->name,true);
                     }
                     $posttext .= "\n";
-                    $posttext .= $CFG->wwwroot.'/mod/forumimproved/discuss.php?d='.$discussion->id;
+                    $posttext .= $CFG->wwwroot.'/mod/forumplusone/discuss.php?d='.$discussion->id;
                     $posttext .= "\n";
 
                     $posthtml .= "<p><font face=\"sans-serif\">".
                     "<a target=\"_blank\" href=\"$CFG->wwwroot/course/view.php?id=$course->id\">$shortname</a> -> ".
-                    "<a target=\"_blank\" href=\"$CFG->wwwroot/mod/forumimproved/index.php?id=$course->id\">$strforums</a> -> ".
-                    "<a target=\"_blank\" href=\"$CFG->wwwroot/mod/forumimproved/view.php?f=$forum->id\">".format_string($forum->name,true)."</a>";
+                    "<a target=\"_blank\" href=\"$CFG->wwwroot/mod/forumplusone/index.php?id=$course->id\">$strforums</a> -> ".
+                    "<a target=\"_blank\" href=\"$CFG->wwwroot/mod/forumplusone/view.php?f=$forum->id\">".format_string($forum->name,true)."</a>";
                     if ($discussion->name == $forum->name) {
                         $posthtml .= "</font></p>";
                     } else {
-                        $posthtml .= " -> <a target=\"_blank\" href=\"$CFG->wwwroot/mod/forumimproved/discuss.php?d=$discussion->id\">".format_string($discussion->name,true)."</a></font></p>";
+                        $posthtml .= " -> <a target=\"_blank\" href=\"$CFG->wwwroot/mod/forumplusone/discuss.php?d=$discussion->id\">".format_string($discussion->name,true)."</a></font></p>";
                     }
                     $posthtml .= '<p>';
 
@@ -1061,12 +1061,12 @@ function forumimproved_cron() {
                             $userfrom = $users[$post->userid];
                             if (!isset($userfrom->idnumber)) {
                                 $userfrom = $DB->get_record('user', array('id' => $userfrom->id));
-                                forumimproved_cron_minimise_user_record($userfrom);
+                                forumplusone_cron_minimise_user_record($userfrom);
                             }
 
                         } else if ($userfrom = $DB->get_record('user', array('id' => $post->userid))) {
-                            forumimproved_cron_minimise_user_record($userfrom);
-                            if ($userscount <= FORUMIMPROVED_CRON_USER_CACHE) {
+                            forumplusone_cron_minimise_user_record($userfrom);
+                            if ($userscount <= FORUMPLUSONE_CRON_USER_CACHE) {
                                 $userscount++;
                                 $users[$userfrom->id] = $userfrom;
                             }
@@ -1091,28 +1091,28 @@ function forumimproved_cron() {
 
                         $userfrom->customheaders = array ("Precedence: Bulk");
 
-                        $maildigest = forumimproved_get_user_maildigest_bulk($digests, $userto, $forum->id);
+                        $maildigest = forumplusone_get_user_maildigest_bulk($digests, $userto, $forum->id);
                         if ($maildigest == 2) {
-                            $postuser = forumimproved_anonymize_user($userfrom, $forum, $post);
+                            $postuser = forumplusone_anonymize_user($userfrom, $forum, $post);
                             // Subjects and link only
                             $posttext .= "\n";
-                            $posttext .= $CFG->wwwroot.'/mod/forumimproved/discuss.php?d='.$discussion->id;
+                            $posttext .= $CFG->wwwroot.'/mod/forumplusone/discuss.php?d='.$discussion->id;
                             $by = new stdClass();
                             $by->name = fullname($postuser);
                             $by->date = userdate($post->modified);
-                            $posttext .= "\n".get_string("bynameondate", "forumimproved", $by);
+                            $posttext .= "\n".get_string("bynameondate", "forumplusone", $by);
                             $posttext .= "\n---------------------------------------------------------------------";
 
 
-                            if (!forumimproved_is_anonymous_user($postuser)) {
+                            if (!forumplusone_is_anonymous_user($postuser)) {
                                 $by->name = "<a target=\"_blank\" href=\"$CFG->wwwroot/user/view.php?id=$postuser->id&amp;course=$course->id\">$by->name</a>";
                             }
-                            $posthtml .= '<div><a target="_blank" href="'.$CFG->wwwroot.'/mod/forumimproved/discuss.php?d='.$discussion->id.'#p'.$post->id.'">'.get_string("bynameondate", "forumimproved", $by).'</a></div>';
+                            $posthtml .= '<div><a target="_blank" href="'.$CFG->wwwroot.'/mod/forumplusone/discuss.php?d='.$discussion->id.'#p'.$post->id.'">'.get_string("bynameondate", "forumplusone", $by).'</a></div>';
 
                         } else {
                             // The full treatment
-                            $posttext .= forumimproved_make_mail_text($course, $cm, $forum, $discussion, $post, $userfrom, $userto, true);
-                            $posthtml .= forumimproved_make_mail_post($course, $cm, $forum, $discussion, $post, $userfrom, $userto, false, $canreply, true, false);
+                            $posttext .= forumplusone_make_mail_text($course, $cm, $forum, $discussion, $post, $userfrom, $userto, true);
+                            $posthtml .= forumplusone_make_mail_post($course, $cm, $forum, $discussion, $post, $userfrom, $userto, false, $canreply, true, false);
 
                             $cutoffdate = $timenow - ($config->oldpostdays*24*60*60);
                             if ($post->modified < $cutoffdate) {
@@ -1122,11 +1122,11 @@ function forumimproved_cron() {
                     }
                     $footerlinks = array();
                     if ($canunsubscribe) {
-                        $footerlinks[] = "<a href=\"$CFG->wwwroot/mod/forumimproved/subscribe.php?id=$forum->id\">" . get_string("unsubscribe", "forumimproved") . "</a>";
+                        $footerlinks[] = "<a href=\"$CFG->wwwroot/mod/forumplusone/subscribe.php?id=$forum->id\">" . get_string("unsubscribe", "forumplusone") . "</a>";
                     } else {
-                        $footerlinks[] = get_string("everyoneissubscribed", "forumimproved");
+                        $footerlinks[] = get_string("everyoneissubscribed", "forumplusone");
                     }
-                    $footerlinks[] = "<a href='{$CFG->wwwroot}/mod/forumimproved/index.php?id={$forum->course}'>" . get_string("digestmailpost", "forumimproved") . '</a>';
+                    $footerlinks[] = "<a href='{$CFG->wwwroot}/mod/forumplusone/index.php?id={$forum->course}'>" . get_string("digestmailpost", "forumplusone") . '</a>';
                     $posthtml .= "\n<div class='mdl-right'><font size=\"1\">" . implode('&nbsp;', $footerlinks) . '</font></div>';
                     $posthtml .= '<hr size="1" noshade="noshade" /></p>';
                 }
@@ -1143,38 +1143,38 @@ function forumimproved_cron() {
                 $mailresult = email_to_user($userto, $site->shortname, $postsubject, $posttext, $posthtml, $attachment, $attachname);
 
                 if (!$mailresult) {
-                    mtrace("ERROR: mod/forumimproved/cron.php: Could not send out digest mail to user $userto->id ".
+                    mtrace("ERROR: mod/forumplusone/cron.php: Could not send out digest mail to user $userto->id ".
                         "($userto->email)... not trying again.");
                 } else {
                     mtrace("success.");
                     $usermailcount++;
 
                     // Mark post as read
-                    forumimproved_mark_posts_read($userto, $userto->markposts);
+                    forumplusone_mark_posts_read($userto, $userto->markposts);
                 }
             }
         }
-    /// We have finishied all digest emails, update forumimproved digestmailtimelast
-        set_config('digestmailtimelast', $timenow, 'forumimproved');
+    /// We have finishied all digest emails, update forumplusone digestmailtimelast
+        set_config('digestmailtimelast', $timenow, 'forumplusone');
         $config->digestmailtimelast = $timenow;
     }
 
     cron_setup_user();
 
     if (!empty($usermailcount)) {
-        mtrace(get_string('digestsentusers', 'forumimproved', $usermailcount));
+        mtrace(get_string('digestsentusers', 'forumplusone', $usermailcount));
     }
 
     if (!empty($config->lastreadclean)) {
         $timenow = time();
         if ($config->lastreadclean + (24*3600) < $timenow) {
-            set_config('lastreadclean', $timenow, 'forumimproved');
+            set_config('lastreadclean', $timenow, 'forumplusone');
             mtrace('Removing old forum read tracking info...');
-            forumimproved_tp_clean_read_records();
+            forumplusone_tp_clean_read_records();
         }
     } else {
         $timenow = time();
-        set_config('lastreadclean', $timenow, 'forumimproved');
+        set_config('lastreadclean', $timenow, 'forumplusone');
     }
 
 
@@ -1197,7 +1197,7 @@ function forumimproved_cron() {
  * @param boolean $bare
  * @return string The email body in plain text format.
  */
-function forumimproved_make_mail_text($course, $cm, $forum, $discussion, $post, $userfrom, $userto, $bare = false) {
+function forumplusone_make_mail_text($course, $cm, $forum, $discussion, $post, $userfrom, $userto, $bare = false) {
     global $CFG, $USER;
 
     $modcontext = context_module::instance($cm->id);
@@ -1209,22 +1209,22 @@ function forumimproved_make_mail_text($course, $cm, $forum, $discussion, $post, 
     }
 
     if (!isset($userto->canpost[$discussion->id])) {
-        $canreply = forumimproved_user_can_post($forum, $discussion, $userto, $cm, $course, $modcontext);
+        $canreply = forumplusone_user_can_post($forum, $discussion, $userto, $cm, $course, $modcontext);
     } else {
         $canreply = $userto->canpost[$discussion->id];
     }
 
-    $postuser = forumimproved_anonymize_user($userfrom, $forum, $post);
+    $postuser = forumplusone_anonymize_user($userfrom, $forum, $post);
 
     $by = New stdClass;
     $by->name = fullname($postuser, $viewfullnames);
     $by->date = userdate($post->modified, "", $userto->timezone);
 
-    $strbynameondate = get_string('bynameondate', 'forumimproved', $by);
+    $strbynameondate = get_string('bynameondate', 'forumplusone', $by);
 
-    $strforums = get_string('forums', 'forumimproved');
+    $strforums = get_string('forums', 'forumplusone');
 
-    $canunsubscribe = ! forumimproved_is_forcesubscribed($forum);
+    $canunsubscribe = ! forumplusone_is_forcesubscribed($forum);
 
     $posttext = '';
 
@@ -1238,35 +1238,35 @@ function forumimproved_make_mail_text($course, $cm, $forum, $discussion, $post, 
     }
 
     // add absolute file links
-    $post->message = file_rewrite_pluginfile_urls($post->message, 'pluginfile.php', $modcontext->id, 'mod_forumimproved', 'post', $post->id);
+    $post->message = file_rewrite_pluginfile_urls($post->message, 'pluginfile.php', $modcontext->id, 'mod_forumplusone', 'post', $post->id);
 
     $posttext .= "\n";
-    $posttext .= $CFG->wwwroot.'/mod/forumimproved/discuss.php?d='.$discussion->id;
+    $posttext .= $CFG->wwwroot.'/mod/forumplusone/discuss.php?d='.$discussion->id;
     $posttext .= "\n---------------------------------------------------------------------\n";
     $posttext .= format_string($discussion->name,true);
     if ($bare) {
-        $posttext .= " ($CFG->wwwroot/mod/forumimproved/discuss.php?d=$discussion->id#p$post->id)";
+        $posttext .= " ($CFG->wwwroot/mod/forumplusone/discuss.php?d=$discussion->id#p$post->id)";
     }
     $posttext .= "\n".$strbynameondate."\n";
     $posttext .= "---------------------------------------------------------------------\n";
     $posttext .= format_text_email($post->message, $post->messageformat);
     $posttext .= "\n\n";
-    $posttext .= forumimproved_print_attachments($post, $cm, "text");
+    $posttext .= forumplusone_print_attachments($post, $cm, "text");
 
     if (!$bare && $canreply) {
         $posttext .= "---------------------------------------------------------------------\n";
-        $posttext .= get_string("postmailinfo", "forumimproved", $shortname)."\n";
-        $posttext .= "$CFG->wwwroot/mod/forumimproved/post.php?reply=$post->id\n";
+        $posttext .= get_string("postmailinfo", "forumplusone", $shortname)."\n";
+        $posttext .= "$CFG->wwwroot/mod/forumplusone/post.php?reply=$post->id\n";
     }
     if (!$bare && $canunsubscribe) {
         $posttext .= "\n---------------------------------------------------------------------\n";
-        $posttext .= get_string("unsubscribe", "forumimproved");
-        $posttext .= ": $CFG->wwwroot/mod/forumimproved/subscribe.php?id=$forum->id\n";
+        $posttext .= get_string("unsubscribe", "forumplusone");
+        $posttext .= ": $CFG->wwwroot/mod/forumplusone/subscribe.php?id=$forum->id\n";
     }
 
     $posttext .= "\n---------------------------------------------------------------------\n";
-    $posttext .= get_string("digestmailpost", "forumimproved");
-    $posttext .= ": {$CFG->wwwroot}/mod/forumimproved/index.php?id={$forum->course}\n";
+    $posttext .= get_string("digestmailpost", "forumplusone");
+    $posttext .= ": {$CFG->wwwroot}/mod/forumplusone/index.php?id={$forum->course}\n";
 
     return $posttext;
 }
@@ -1284,7 +1284,7 @@ function forumimproved_make_mail_text($course, $cm, $forum, $discussion, $post, 
  * @param object $userto
  * @return string The email text in HTML format
  */
-function forumimproved_make_mail_html($course, $cm, $forum, $discussion, $post, $userfrom, $userto) {
+function forumplusone_make_mail_html($course, $cm, $forum, $discussion, $post, $userfrom, $userto) {
     global $CFG;
 
     if ($userto->mailformat != 1) {  // Needs to be HTML
@@ -1292,13 +1292,13 @@ function forumimproved_make_mail_html($course, $cm, $forum, $discussion, $post, 
     }
 
     if (!isset($userto->canpost[$discussion->id])) {
-        $canreply = forumimproved_user_can_post($forum, $discussion, $userto, $cm, $course);
+        $canreply = forumplusone_user_can_post($forum, $discussion, $userto, $cm, $course);
     } else {
         $canreply = $userto->canpost[$discussion->id];
     }
 
-    $strforums = get_string('forums', 'forumimproved');
-    $canunsubscribe = ! forumimproved_is_forcesubscribed($forum);
+    $strforums = get_string('forums', 'forumplusone');
+    $canunsubscribe = ! forumplusone_is_forcesubscribed($forum);
     $shortname = format_string($course->shortname, true, array('context' => context_course::instance($course->id)));
 
     $posthtml = '<head>';
@@ -1311,22 +1311,22 @@ function forumimproved_make_mail_html($course, $cm, $forum, $discussion, $post, 
 
     $posthtml .= '<div class="navbar">'.
     '<a target="_blank" href="'.$CFG->wwwroot.'/course/view.php?id='.$course->id.'">'.$shortname.'</a> &raquo; '.
-    '<a target="_blank" href="'.$CFG->wwwroot.'/mod/forumimproved/index.php?id='.$course->id.'">'.$strforums.'</a> &raquo; '.
-    '<a target="_blank" href="'.$CFG->wwwroot.'/mod/forumimproved/view.php?f='.$forum->id.'">'.format_string($forum->name,true).'</a>';
+    '<a target="_blank" href="'.$CFG->wwwroot.'/mod/forumplusone/index.php?id='.$course->id.'">'.$strforums.'</a> &raquo; '.
+    '<a target="_blank" href="'.$CFG->wwwroot.'/mod/forumplusone/view.php?f='.$forum->id.'">'.format_string($forum->name,true).'</a>';
     if ($discussion->name == $forum->name) {
         $posthtml .= '</div>';
     } else {
-        $posthtml .= ' &raquo; <a target="_blank" href="'.$CFG->wwwroot.'/mod/forumimproved/discuss.php?d='.$discussion->id.'">'.
+        $posthtml .= ' &raquo; <a target="_blank" href="'.$CFG->wwwroot.'/mod/forumplusone/discuss.php?d='.$discussion->id.'">'.
                      format_string($discussion->name,true).'</a></div>';
     }
-    $posthtml .= forumimproved_make_mail_post($course, $cm, $forum, $discussion, $post, $userfrom, $userto, false, $canreply, true, false);
+    $posthtml .= forumplusone_make_mail_post($course, $cm, $forum, $discussion, $post, $userfrom, $userto, false, $canreply, true, false);
 
     $footerlinks = array();
     if ($canunsubscribe) {
-        $footerlinks[] = '<a href="' . $CFG->wwwroot . '/mod/forumimproved/subscribe.php?id=' . $forum->id . '">' . get_string('unsubscribe', 'forumimproved') . '</a>';
-        $footerlinks[] = '<a href="' . $CFG->wwwroot . '/mod/forumimproved/unsubscribeall.php">' . get_string('unsubscribeall', 'forumimproved') . '</a>';
+        $footerlinks[] = '<a href="' . $CFG->wwwroot . '/mod/forumplusone/subscribe.php?id=' . $forum->id . '">' . get_string('unsubscribe', 'forumplusone') . '</a>';
+        $footerlinks[] = '<a href="' . $CFG->wwwroot . '/mod/forumplusone/unsubscribeall.php">' . get_string('unsubscribeall', 'forumplusone') . '</a>';
     }
-    $footerlinks[] = "<a href='{$CFG->wwwroot}/mod/forumimproved/index.php?id={$forum->course}'>" . get_string('digestmailpost', 'forumimproved') . '</a>';
+    $footerlinks[] = "<a href='{$CFG->wwwroot}/mod/forumplusone/index.php?id={$forum->course}'>" . get_string('digestmailpost', 'forumplusone') . '</a>';
     $posthtml .= '<hr /><div class="mdl-align unsubscribelink">' . implode('&nbsp;', $footerlinks) . '</div>';
 
     $posthtml .= '</body>';
@@ -1343,21 +1343,21 @@ function forumimproved_make_mail_html($course, $cm, $forum, $discussion, $post, 
  * @param object $forum
  * @return object A standard object with 2 variables: info (number of posts for this user) and time (last modified)
  */
-function forumimproved_user_outline($course, $user, $mod, $forum) {
+function forumplusone_user_outline($course, $user, $mod, $forum) {
     global $CFG;
     require_once("$CFG->libdir/gradelib.php");
-    $grades = grade_get_grades($course->id, 'mod', 'forumimproved', $forum->id, $user->id);
+    $grades = grade_get_grades($course->id, 'mod', 'forumplusone', $forum->id, $user->id);
     if (empty($grades->items[0]->grades)) {
         $grade = false;
     } else {
         $grade = reset($grades->items[0]->grades);
     }
 
-    $count = forumimproved_count_user_posts($forum->id, $user->id);
+    $count = forumplusone_count_user_posts($forum->id, $user->id);
 
     if ($count && $count->postcount > 0) {
         $result = new stdClass();
-        $result->info = get_string("numposts", "forumimproved", $count->postcount);
+        $result->info = get_string("numposts", "forumplusone", $count->postcount);
         $result->time = $count->lastpost;
         if ($grade) {
             $result->info .= ', ' . get_string('grade') . ': ' . $grade->str_long_grade;
@@ -1390,11 +1390,11 @@ function forumimproved_user_outline($course, $user, $mod, $forum) {
  * @param object $mod
  * @param object $forum
  */
-function forumimproved_user_complete($course, $user, $mod, $forum) {
+function forumplusone_user_complete($course, $user, $mod, $forum) {
     global $CFG,$PAGE, $OUTPUT;
     require_once("$CFG->libdir/gradelib.php");
 
-    $grades = grade_get_grades($course->id, 'mod', 'forumimproved', $forum->id, $user->id);
+    $grades = grade_get_grades($course->id, 'mod', 'forumplusone', $forum->id, $user->id);
     if (!empty($grades->items[0]->grades)) {
         $grade = reset($grades->items[0]->grades);
         echo $OUTPUT->container(get_string('grade').': '.$grade->str_long_grade);
@@ -1403,12 +1403,12 @@ function forumimproved_user_complete($course, $user, $mod, $forum) {
         }
     }
 
-    if ($posts = forumimproved_get_user_posts($forum->id, $user->id)) {
+    if ($posts = forumplusone_get_user_posts($forum->id, $user->id)) {
 
-        if (!$cm = get_coursemodule_from_instance('forumimproved', $forum->id, $course->id)) {
+        if (!$cm = get_coursemodule_from_instance('forumplusone', $forum->id, $course->id)) {
             print_error('invalidcoursemodule');
         }
-        $discussions = forumimproved_get_user_involved_discussions($forum->id, $user->id);
+        $discussions = forumplusone_get_user_involved_discussions($forum->id, $user->id);
 
         foreach ($posts as $post) {
             if (!isset($discussions[$post->discussion])) {
@@ -1416,11 +1416,11 @@ function forumimproved_user_complete($course, $user, $mod, $forum) {
             }
             $discussion = $discussions[$post->discussion];
 
-            $renderer = $PAGE->get_renderer('mod_forumimproved');
+            $renderer = $PAGE->get_renderer('mod_forumplusone');
             echo $renderer->post($cm, $discussion, $post, false, null, false);
         }
     } else {
-        echo "<p>".get_string("noposts", "forumimproved")."</p>";
+        echo "<p>".get_string("noposts", "forumplusone")."</p>";
     }
 }
 
@@ -1431,7 +1431,7 @@ function forumimproved_user_complete($course, $user, $mod, $forum) {
  * @param  array $discussions Discussions with new posts array
  * @return array Forums with the number of new posts
  */
-function forumimproved_filter_user_groups_discussions($discussions) {
+function forumplusone_filter_user_groups_discussions($discussions) {
 
     // Group the remaining discussions posts by their forumid.
     $filteredforums = array();
@@ -1441,10 +1441,10 @@ function forumimproved_filter_user_groups_discussions($discussions) {
 
         // Course data is already cached.
         $instances = get_fast_modinfo($discussion->course)->get_instances();
-        $forum = $instances['forumimproved'][$discussion->forum];
+        $forum = $instances['forumplusone'][$discussion->forum];
 
         // Continue if the user should not see this discussion.
-        if (!forumimproved_is_user_group_discussion($forum, $discussion->groupid)) {
+        if (!forumplusone_is_user_group_discussion($forum, $discussion->groupid)) {
             continue;
         }
 
@@ -1469,7 +1469,7 @@ function forumimproved_filter_user_groups_discussions($discussions) {
  * @param int $discussiongroupid The discussion groupid
  * @return bool
  */
-function forumimproved_is_user_group_discussion(cm_info $cm, $discussiongroupid) {
+function forumplusone_is_user_group_discussion(cm_info $cm, $discussiongroupid) {
 
     if ($discussiongroupid == -1 || $cm->effectivegroupmode != SEPARATEGROUPS) {
         return true;
@@ -1494,18 +1494,18 @@ function forumimproved_is_user_group_discussion(cm_info $cm, $discussiongroupid)
  * @param array $courses
  * @param array $htmlarray
  */
-function forumimproved_print_overview($courses,&$htmlarray) {
+function forumplusone_print_overview($courses,&$htmlarray) {
     global $USER, $CFG, $DB, $SESSION;
 
     if (empty($courses) || !is_array($courses) || count($courses) == 0) {
         return array();
     }
 
-    if (!$forums = get_all_instances_in_courses('forumimproved',$courses)) {
+    if (!$forums = get_all_instances_in_courses('forumplusone',$courses)) {
         return;
     }
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
 
     // Courses to search for new posts
     $coursessqls = array();
@@ -1528,9 +1528,9 @@ function forumimproved_print_overview($courses,&$htmlarray) {
     $coursessql = implode(' OR ', $coursessqls);
 
     $sql = "SELECT d.id, d.forum, f.course, d.groupid, COUNT(*) as count "
-                .'FROM {forumimproved} f '
-                .'JOIN {forumimproved_discussions} d ON d.forum = f.id '
-                .'JOIN {forumimproved_posts} p ON p.discussion = d.id '
+                .'FROM {forumplusone} f '
+                .'JOIN {forumplusone_discussions} d ON d.forum = f.id '
+                .'JOIN {forumplusone_posts} p ON p.discussion = d.id '
                 ."WHERE ($coursessql) "
                 .'AND p.userid != ? '
                 .'GROUP BY d.id, d.forum, f.course, d.groupid '
@@ -1541,7 +1541,7 @@ function forumimproved_print_overview($courses,&$htmlarray) {
         $discussions = array();
     }
 
-    $forumsnewposts = forumimproved_filter_user_groups_discussions($discussions);
+    $forumsnewposts = forumplusone_filter_user_groups_discussions($discussions);
 
     // also get all forum tracking stuff ONCE.
     $trackingforums = array();
@@ -1552,9 +1552,9 @@ function forumimproved_print_overview($courses,&$htmlarray) {
     if (count($trackingforums) > 0) {
         $cutoffdate = isset($config->oldpostdays) ? (time() - ($config->oldpostdays*24*60*60)) : 0;
         $sql = 'SELECT d.forum,d.course,COUNT(p.id) AS count '.
-            ' FROM {forumimproved_posts} p '.
-            ' JOIN {forumimproved_discussions} d ON p.discussion = d.id '.
-            ' LEFT JOIN {forumimproved_read} r ON r.postid = p.id AND r.userid = ? WHERE (';
+            ' FROM {forumplusone_posts} p '.
+            ' JOIN {forumplusone_discussions} d ON p.discussion = d.id '.
+            ' LEFT JOIN {forumplusone_read} r ON r.postid = p.id AND r.userid = ? WHERE (';
         $params = array($USER->id);
 
         foreach ($trackingforums as $track) {
@@ -1589,7 +1589,7 @@ function forumimproved_print_overview($courses,&$htmlarray) {
         return;
     }
 
-    $strforum = get_string('modulename','forumimproved');
+    $strforum = get_string('modulename','forumplusone');
 
     foreach ($forums as $forum) {
         $str = '';
@@ -1605,12 +1605,12 @@ function forumimproved_print_overview($courses,&$htmlarray) {
             $showunread = true;
         }
         if ($count > 0 || $thisunread > 0) {
-            $str .= '<div class="overview forum"><div class="name">'.$strforum.': <a title="'.$strforum.'" href="'.$CFG->wwwroot.'/mod/forumimproved/view.php?f='.$forum->id.'">'.
+            $str .= '<div class="overview forum"><div class="name">'.$strforum.': <a title="'.$strforum.'" href="'.$CFG->wwwroot.'/mod/forumplusone/view.php?f='.$forum->id.'">'.
                 $forum->name.'</a></div>';
             $str .= '<div class="info"><span class="postsincelogin">';
-            $str .= get_string('overviewnumpostssince', 'forumimproved', $count)."</span>";
+            $str .= get_string('overviewnumpostssince', 'forumplusone', $count)."</span>";
             if (!empty($showunread)) {
-                $str .= '<div class="unreadposts">'.get_string('overviewnumunread', 'forumimproved', $thisunread).'</div>';
+                $str .= '<div class="unreadposts">'.get_string('overviewnumunread', 'forumplusone', $thisunread).'</div>';
             }
             $str .= '</div></div>';
         }
@@ -1618,10 +1618,10 @@ function forumimproved_print_overview($courses,&$htmlarray) {
             if (!array_key_exists($forum->course,$htmlarray)) {
                 $htmlarray[$forum->course] = array();
             }
-            if (!array_key_exists('forumimproved',$htmlarray[$forum->course])) {
-                $htmlarray[$forum->course]['forumimproved'] = ''; // initialize, avoid warnings
+            if (!array_key_exists('forumplusone',$htmlarray[$forum->course])) {
+                $htmlarray[$forum->course]['forumplusone'] = ''; // initialize, avoid warnings
             }
-            $htmlarray[$forum->course]['forumimproved'] .= $str;
+            $htmlarray[$forum->course]['forumplusone'] .= $str;
         }
     }
 }
@@ -1635,8 +1635,8 @@ function forumimproved_print_overview($courses,&$htmlarray) {
  * @param int $timestart
  * @return bool success
  */
-function forumimproved_print_recent_activity($course, $viewfullnames, $timestart) {
-    $recentactivity = forumimproved_recent_activity($course, $viewfullnames, $timestart);
+function forumplusone_print_recent_activity($course, $viewfullnames, $timestart) {
+    $recentactivity = forumplusone_recent_activity($course, $viewfullnames, $timestart);
     if (!empty($recentactivity)) {
         echo $recentactivity;
         return true;
@@ -1660,7 +1660,7 @@ function forumimproved_print_recent_activity($course, $viewfullnames, $timestart
  * @param int $timestart
  * @return string recent activity
  */
-function forumimproved_recent_activity($course, $viewfullnames, $timestart, $forumid = null) {
+function forumplusone_recent_activity($course, $viewfullnames, $timestart, $forumid = null) {
     global $CFG, $USER, $DB, $OUTPUT;
 
     $limitfrom = 0;
@@ -1673,9 +1673,9 @@ function forumimproved_recent_activity($course, $viewfullnames, $timestart, $for
     $allnamefields = user_picture::fields('u', null, 'duserid');
     $sql = "SELECT p.*, f.anonymous as forumanonymous, f.type AS forumtype, f.enable_states_disc,
                    d.forum, d.groupid, d.timestart, d.timeend, d.state, d.name, $allnamefields
-              FROM {forumimproved_posts} p
-              JOIN {forumimproved_discussions} d ON d.id = p.discussion
-              JOIN {forumimproved} f             ON f.id = d.forum
+              FROM {forumplusone_posts} p
+              JOIN {forumplusone_discussions} d ON d.id = p.discussion
+              JOIN {forumplusone} f             ON f.id = d.forum
               JOIN {user} u                 ON u.id = p.userid
              WHERE p.created > ?
                    AND f.course = ?
@@ -1689,40 +1689,40 @@ function forumimproved_recent_activity($course, $viewfullnames, $timestart, $for
     }
 
     $modinfo = get_fast_modinfo($course);
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
 
     $groupmodes = array();
     $cms    = array();
     $out = '';
     foreach ($posts as $post) {
-        if (!isset($modinfo->instances['forumimproved'][$post->forum])) {
+        if (!isset($modinfo->instances['forumplusone'][$post->forum])) {
             // not visible
             continue;
         }
-        $cm = $modinfo->instances['forumimproved'][$post->forum];
+        $cm = $modinfo->instances['forumplusone'][$post->forum];
         if (!$cm->uservisible) {
             continue;
         }
         $context = context_module::instance($cm->id);
 
-        if (!has_capability('mod/forumimproved:viewdiscussion', $context)) {
+        if (!has_capability('mod/forumplusone:viewdiscussion', $context)) {
             continue;
         }
 
-        if (forumimproved_is_discussion_hidden($post, $post) && !has_capability('mod/forumimproved:viewhiddendiscussion', $context)) {
+        if (forumplusone_is_discussion_hidden($post, $post) && !has_capability('mod/forumplusone:viewhiddendiscussion', $context)) {
             continue;
         }
 
         if (!empty($config->enabletimedposts) and $USER->id != $post->duserid
           and (($post->timestart > 0 and $post->timestart > time()) or ($post->timeend > 0 and $post->timeend < time()))) {
-            if (!has_capability('mod/forumimproved:viewhiddentimedposts', $context)) {
+            if (!has_capability('mod/forumplusone:viewhiddentimedposts', $context)) {
                 continue;
             }
         }
 
         // Check that the user can see the discussion.
-        if (forumimproved_is_user_group_discussion($cm, $post->groupid)) {
-            $postuser = forumimproved_extract_postuser($post, forumimproved_get_cm_forum($cm), context_module::instance($cm->id));
+        if (forumplusone_is_user_group_discussion($cm, $post->groupid)) {
+            $postuser = forumplusone_extract_postuser($post, forumplusone_get_cm_forum($cm), context_module::instance($cm->id));
 
             $userpicture = new user_picture($postuser);
             $userpicture->link = false;
@@ -1730,22 +1730,22 @@ function forumimproved_recent_activity($course, $viewfullnames, $timestart, $for
             $userpicture->size = 100;
             $picture = $OUTPUT->render($userpicture);
 
-            $url = $CFG->wwwroot.'/mod/forumimproved/discuss.php?d='.$post->discussion;
+            $url = $CFG->wwwroot.'/mod/forumplusone/discuss.php?d='.$post->discussion;
             if (!empty($post->parent)) {
                 $url .= '#p'.$post->id;
             }
 
             $postusername = fullname($postuser, $viewfullnames);
             $postsubject = break_up_long_words(format_string($post->name, true));
-            $posttime = forumimproved_relative_time($post->modified);
-            $out .= forumimproved_media_object($url, $picture, $postusername, $posttime, $postsubject);
+            $posttime = forumplusone_relative_time($post->modified);
+            $out .= forumplusone_media_object($url, $picture, $postusername, $posttime, $postsubject);
 
         }
 
     }
 
     if($out) {
-        $out = "<h3 class='forumimproved-recent-heading'>".get_string('newforumposts', 'forumimproved')."</h3>".$out;
+        $out = "<h3 class='forumplusone-recent-heading'>".get_string('newforumposts', 'forumplusone')."</h3>".$out;
 
     }
     return $out;
@@ -1760,7 +1760,7 @@ function forumimproved_recent_activity($course, $viewfullnames, $timestart, $for
  * @param $userid
  * @return string HTML media object
  */
-function forumimproved_media_object($url, $picture, $username, $time, $subject) {
+function forumplusone_media_object($url, $picture, $username, $time, $subject) {
         $out = "<div class=\"snap-media-object\">";
         $out .= "<a href='$url'>";
         $out .= $picture;
@@ -1778,13 +1778,13 @@ function forumimproved_media_object($url, $picture, $username, $time, $subject) 
  * @return bool|string
  * @author Mark Nielsen
  */
-function forumimproved_get_user_formatted_rating_grade($forum, $userid) {
-    $grades = forumimproved_get_user_rating_grades($forum, $userid);
+function forumplusone_get_user_formatted_rating_grade($forum, $userid) {
+    $grades = forumplusone_get_user_rating_grades($forum, $userid);
     if (!empty($grades) and array_key_exists($userid, $grades)) {
         $gradeitem = grade_item::fetch(array(
             'courseid'     => $forum->course,
             'itemtype'     => 'mod',
-            'itemmodule'   => 'forumimproved',
+            'itemmodule'   => 'forumplusone',
             'iteminstance' => $forum->id,
             'itemnumber'   => 0,
         ));
@@ -1803,7 +1803,7 @@ function forumimproved_get_user_formatted_rating_grade($forum, $userid) {
  * @return array array of grades, false if none
  * @author Mark Nielsen
  */
-function forumimproved_get_user_rating_grades($forum, $userid = 0) {
+function forumplusone_get_user_rating_grades($forum, $userid = 0) {
     global $CFG;
 
     if (!$forum->assessed) {
@@ -1812,16 +1812,16 @@ function forumimproved_get_user_rating_grades($forum, $userid = 0) {
     require_once($CFG->dirroot.'/rating/lib.php');
 
     $ratingoptions = new stdClass;
-    $ratingoptions->component = 'mod_forumimproved';
+    $ratingoptions->component = 'mod_forumplusone';
     $ratingoptions->ratingarea = 'post';
 
     //need these to work backwards to get a context id. Is there a better way to get contextid from a module instance?
-    $ratingoptions->modulename = 'forumimproved';
+    $ratingoptions->modulename = 'forumplusone';
     $ratingoptions->moduleid   = $forum->id;
     $ratingoptions->userid = $userid;
     $ratingoptions->aggregationmethod = $forum->assessed;
     $ratingoptions->scaleid = $forum->scale;
-    $ratingoptions->itemtable = 'forumimproved_posts';
+    $ratingoptions->itemtable = 'forumplusone_posts';
     $ratingoptions->itemtableusercolumn = 'userid';
 
     $rm = new rating_manager();
@@ -1837,11 +1837,11 @@ function forumimproved_get_user_rating_grades($forum, $userid = 0) {
  * @param int $userid optional user id, 0 means all users
  * @return array array of grades, false if none
  */
-function forumimproved_get_user_grades($forum, $userid = 0) {
-    if ($forum->gradetype != FORUMIMPROVED_GRADETYPE_RATING) {
+function forumplusone_get_user_grades($forum, $userid = 0) {
+    if ($forum->gradetype != FORUMPLUSONE_GRADETYPE_RATING) {
         return false;
     }
-    return forumimproved_get_user_rating_grades($forum, $userid);
+    return forumplusone_get_user_rating_grades($forum, $userid);
 }
 
 /**
@@ -1853,25 +1853,25 @@ function forumimproved_get_user_grades($forum, $userid = 0) {
  * @param boolean $nullifnone return null if grade does not exist
  * @return void
  */
-function forumimproved_update_grades($forum, $userid=0, $nullifnone=true) {
+function forumplusone_update_grades($forum, $userid=0, $nullifnone=true) {
     global $CFG;
     require_once($CFG->libdir.'/gradelib.php');
 
-    if ($forum->gradetype == FORUMIMPROVED_GRADETYPE_NONE or $forum->gradetype == FORUMIMPROVED_GRADETYPE_MANUAL or
-        ($forum->gradetype == FORUMIMPROVED_GRADETYPE_RATING and !$forum->assessed)) {
-        forumimproved_grade_item_update($forum);
+    if ($forum->gradetype == FORUMPLUSONE_GRADETYPE_NONE or $forum->gradetype == FORUMPLUSONE_GRADETYPE_MANUAL or
+        ($forum->gradetype == FORUMPLUSONE_GRADETYPE_RATING and !$forum->assessed)) {
+        forumplusone_grade_item_update($forum);
 
-    } else if ($grades = forumimproved_get_user_grades($forum, $userid)) {
-        forumimproved_grade_item_update($forum, $grades);
+    } else if ($grades = forumplusone_get_user_grades($forum, $userid)) {
+        forumplusone_grade_item_update($forum, $grades);
 
     } else if ($userid and $nullifnone) {
         $grade = new stdClass();
         $grade->userid   = $userid;
         $grade->rawgrade = NULL;
-        forumimproved_grade_item_update($forum, $grade);
+        forumplusone_grade_item_update($forum, $grade);
 
     } else {
-        forumimproved_grade_item_update($forum);
+        forumplusone_grade_item_update($forum);
     }
 }
 
@@ -1879,17 +1879,17 @@ function forumimproved_update_grades($forum, $userid=0, $nullifnone=true) {
  * Update all grades in gradebook.
  * @global object
  */
-function forumimproved_upgrade_grades() {
+function forumplusone_upgrade_grades() {
     global $DB;
 
     $sql = "SELECT COUNT('x')
-              FROM {forumimproved} f, {course_modules} cm, {modules} m
-             WHERE m.name='forumimproved' AND m.id=cm.module AND cm.instance=f.id";
+              FROM {forumplusone} f, {course_modules} cm, {modules} m
+             WHERE m.name='forumplusone' AND m.id=cm.module AND cm.instance=f.id";
     $count = $DB->count_records_sql($sql);
 
     $sql = "SELECT f.*, cm.idnumber AS cmidnumber, f.course AS courseid
-              FROM {forumimproved} f, {course_modules} cm, {modules} m
-             WHERE m.name='forumimproved' AND m.id=cm.module AND cm.instance=f.id";
+              FROM {forumplusone} f, {course_modules} cm, {modules} m
+             WHERE m.name='forumplusone' AND m.id=cm.module AND cm.instance=f.id";
     $rs = $DB->get_recordset_sql($sql);
     if ($rs->valid()) {
         $pbar = new progress_bar('forumupgradegrades', 500, true);
@@ -1897,7 +1897,7 @@ function forumimproved_upgrade_grades() {
         foreach ($rs as $forum) {
             $i++;
             upgrade_set_timeout(60*5); // set up timeout, may also abort execution
-            forumimproved_update_grades($forum, 0, false);
+            forumplusone_update_grades($forum, 0, false);
             $pbar->update($i, $count, "Updating Forum grades ($i/$count).");
         }
     }
@@ -1915,7 +1915,7 @@ function forumimproved_upgrade_grades() {
  * @param mixed $grades Optional array/object of grade(s); 'reset' means reset grades in gradebook
  * @return int 0 if ok
  */
-function forumimproved_grade_item_update($forum, $grades=NULL) {
+function forumplusone_grade_item_update($forum, $grades=NULL) {
     global $CFG;
     if (!function_exists('grade_update')) { //workaround for buggy PHP versions
         require_once($CFG->libdir.'/gradelib.php');
@@ -1923,7 +1923,7 @@ function forumimproved_grade_item_update($forum, $grades=NULL) {
 
     $params = array('itemname'=>$forum->name, 'idnumber'=>$forum->cmidnumber);
 
-    if ($forum->gradetype == FORUMIMPROVED_GRADETYPE_NONE or ($forum->gradetype == FORUMIMPROVED_GRADETYPE_RATING and !$forum->assessed) or $forum->scale == 0) {
+    if ($forum->gradetype == FORUMPLUSONE_GRADETYPE_NONE or ($forum->gradetype == FORUMPLUSONE_GRADETYPE_RATING and !$forum->assessed) or $forum->scale == 0) {
         $params['gradetype'] = GRADE_TYPE_NONE;
 
     } else if ($forum->scale > 0) {
@@ -1941,7 +1941,7 @@ function forumimproved_grade_item_update($forum, $grades=NULL) {
         $grades = NULL;
     }
 
-    return grade_update('mod/forumimproved', $forum->course, 'mod', 'forumimproved', $forum->id, 0, $grades, $params);
+    return grade_update('mod/forumplusone', $forum->course, 'mod', 'forumplusone', $forum->id, 0, $grades, $params);
 }
 
 /**
@@ -1951,11 +1951,11 @@ function forumimproved_grade_item_update($forum, $grades=NULL) {
  * @param stdClass $forum Forum object
  * @return grade_item
  */
-function forumimproved_grade_item_delete($forum) {
+function forumplusone_grade_item_delete($forum) {
     global $CFG;
     require_once($CFG->libdir.'/gradelib.php');
 
-    return grade_update('mod/forumimproved', $forum->course, 'mod', 'forumimproved', $forum->id, 0, NULL, array('deleted'=>1));
+    return grade_update('mod/forumplusone', $forum->course, 'mod', 'forumplusone', $forum->id, 0, NULL, array('deleted'=>1));
 }
 
 /**
@@ -1966,11 +1966,11 @@ function forumimproved_grade_item_delete($forum) {
  * @param int $scaleid negative number
  * @return bool
  */
-function forumimproved_scale_used ($forumid,$scaleid) {
+function forumplusone_scale_used ($forumid,$scaleid) {
     global $DB;
     $return = false;
 
-    $rec = $DB->get_record("forumimproved",array("id" => "$forumid","scale" => "-$scaleid"));
+    $rec = $DB->get_record("forumplusone",array("id" => "$forumid","scale" => "-$scaleid"));
 
     if (!empty($rec) && !empty($scaleid)) {
         $return = true;
@@ -1988,9 +1988,9 @@ function forumimproved_scale_used ($forumid,$scaleid) {
  * @param $scaleid int
  * @return boolean True if the scale is used by any forum
  */
-function forumimproved_scale_used_anywhere($scaleid) {
+function forumplusone_scale_used_anywhere($scaleid) {
     global $DB;
-    if ($scaleid and $DB->record_exists('forumimproved', array('scale' => -$scaleid))) {
+    if ($scaleid and $DB->record_exists('forumplusone', array('scale' => -$scaleid))) {
         return true;
     } else {
         return false;
@@ -2008,15 +2008,15 @@ function forumimproved_scale_used_anywhere($scaleid) {
  * @param int $postid
  * @return mixed array of posts or false
  */
-function forumimproved_get_post_full($postid) {
+function forumplusone_get_post_full($postid) {
     global $CFG, $DB;
 
     $allnames = get_all_user_name_fields(true, 'u');
-    return $DB->get_record_sql("SELECT p.*, d.forum, $allnames, u.email, u.picture, u.imagealt, r.lastread AS postread, ( SELECT COUNT(v.id) FROM {forumimproved_vote} v WHERE p.id = v.postid ) AS votecount
-                             FROM {forumimproved_posts} p
-                                  JOIN {forumimproved_discussions} d ON p.discussion = d.id
+    return $DB->get_record_sql("SELECT p.*, d.forum, $allnames, u.email, u.picture, u.imagealt, r.lastread AS postread, ( SELECT COUNT(v.id) FROM {forumplusone_vote} v WHERE p.id = v.postid ) AS votecount
+                             FROM {forumplusone_posts} p
+                                  JOIN {forumplusone_discussions} d ON p.discussion = d.id
                                   LEFT JOIN {user} u ON p.userid = u.id
-                                  LEFT JOIN {forumimproved_read} r ON r.postid = p.id AND r.userid = u.id
+                                  LEFT JOIN {forumplusone_read} r ON r.postid = p.id AND r.userid = u.id
                             WHERE p.id = ?", array($postid));
 }
 
@@ -2030,7 +2030,7 @@ function forumimproved_get_post_full($postid) {
  * @param bool $tracking does user track the forum?
  * @return array of posts
  */
-function forumimproved_get_all_discussion_posts($discussionid, $conditions = array()) {
+function forumplusone_get_all_discussion_posts($discussionid, $conditions = array()) {
     global $CFG, $DB, $USER;
 
     $tr_sel  = "";
@@ -2039,7 +2039,7 @@ function forumimproved_get_all_discussion_posts($discussionid, $conditions = arr
 
     $now = time();
     $tr_sel  = "fr.id AS postread";
-    $tr_join = "LEFT JOIN {forumimproved_read} fr ON (fr.postid = p.id AND fr.userid = ?)";
+    $tr_join = "LEFT JOIN {forumplusone_read} fr ON (fr.postid = p.id AND fr.userid = ?)";
     $params[] = $USER->id;
 
     $allnames = get_all_user_name_fields(true, 'u');
@@ -2052,8 +2052,8 @@ function forumimproved_get_all_discussion_posts($discussionid, $conditions = arr
         $conditionsql .= " AND $field = ?";
         $params[] = $value;
     }
-    if (!$posts = $DB->get_records_sql("SELECT p.*, $allnames, u.email, u.picture, u.imagealt, $tr_sel, ( SELECT COUNT(v.id) FROM {forumimproved_vote} v WHERE p.id = v.postid ) AS votecount
-                                     FROM {forumimproved_posts} p
+    if (!$posts = $DB->get_records_sql("SELECT p.*, $allnames, u.email, u.picture, u.imagealt, $tr_sel, ( SELECT COUNT(v.id) FROM {forumplusone_vote} v WHERE p.id = v.postid ) AS votecount
+                                     FROM {forumplusone_posts} p
                                           LEFT JOIN {user} u ON p.userid = u.id
                                           $tr_join
                                     WHERE p.discussion = ?
@@ -2064,7 +2064,7 @@ function forumimproved_get_all_discussion_posts($discussionid, $conditions = arr
     }
 
     foreach ($posts as $pid=>$p) {
-        if (forumimproved_tp_is_post_old($p)) {
+        if (forumplusone_tp_is_post_old($p)) {
              $posts[$pid]->postread = true;
         }
         if (!$p->parent) {
@@ -2095,16 +2095,16 @@ function forumimproved_get_all_discussion_posts($discussionid, $conditions = arr
  *         id, type, course, cmid, cmvisible, cmgroupmode, accessallgroups,
  *         viewhiddentimedposts
  */
-function forumimproved_get_readable_forums($userid, $courseid=0) {
+function forumplusone_get_readable_forums($userid, $courseid=0) {
 
     global $CFG, $DB, $USER;
     require_once($CFG->dirroot.'/course/lib.php');
 
-    if (!$forummod = $DB->get_record('modules', array('name' => 'forumimproved'))) {
-        print_error('notinstalled', 'forumimproved');
+    if (!$forummod = $DB->get_record('modules', array('name' => 'forumplusone'))) {
+        print_error('notinstalled', 'forumplusone');
     }
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
 
     if ($courseid) {
         $courses = $DB->get_records('course', array('id' => $courseid));
@@ -2124,14 +2124,14 @@ function forumimproved_get_readable_forums($userid, $courseid=0) {
 
         $modinfo = get_fast_modinfo($course);
 
-        if (empty($modinfo->instances['forumimproved'])) {
+        if (empty($modinfo->instances['forumplusone'])) {
             // hmm, no forums?
             continue;
         }
 
-        $courseforums = $DB->get_records('forumimproved', array('course' => $course->id));
+        $courseforums = $DB->get_records('forumplusone', array('course' => $course->id));
 
-        foreach ($modinfo->instances['forumimproved'] as $forumid => $cm) {
+        foreach ($modinfo->instances['forumplusone'] as $forumid => $cm) {
             if (!$cm->uservisible or !isset($courseforums[$forumid])) {
                 continue;
             }
@@ -2140,7 +2140,7 @@ function forumimproved_get_readable_forums($userid, $courseid=0) {
             $forum->context = $context;
             $forum->cm = $cm;
 
-            if (!has_capability('mod/forumimproved:viewdiscussion', $context)) {
+            if (!has_capability('mod/forumplusone:viewdiscussion', $context)) {
                 continue;
             }
 
@@ -2154,19 +2154,19 @@ function forumimproved_get_readable_forums($userid, $courseid=0) {
         /// hidden timed discussions
             $forum->viewhiddentimedposts = true;
             if (!empty($config->enabletimedposts)) {
-                if (!has_capability('mod/forumimproved:viewhiddentimedposts', $context)) {
+                if (!has_capability('mod/forumplusone:viewhiddentimedposts', $context)) {
                     $forum->viewhiddentimedposts = false;
                 }
             }
 
         /// qanda access
             if ($forum->type == 'qanda'
-                    && !has_capability('mod/forumimproved:viewqandawithoutposting', $context)) {
+                    && !has_capability('mod/forumplusone:viewqandawithoutposting', $context)) {
 
                 // We need to check whether the user has posted in the qanda forum.
                 $forum->onlydiscussions = array();  // Holds discussion ids for the discussions
                                                     // the user is allowed to see in this forum.
-                if ($discussionspostedin = forumimproved_discussions_user_has_posted_in($forum->id, $USER->id)) {
+                if ($discussionspostedin = forumplusone_discussions_user_has_posted_in($forum->id, $USER->id)) {
                     foreach ($discussionspostedin as $d) {
                         $forum->onlydiscussions[] = $d->id;
                     }
@@ -2197,12 +2197,12 @@ function forumimproved_get_readable_forums($userid, $courseid=0) {
  * @param string $extrasql
  * @return array|bool Array of posts found or false
  */
-function forumimproved_search_posts($searchterms, $courseid=0, $limitfrom=0, $limitnum=50,
+function forumplusone_search_posts($searchterms, $courseid=0, $limitfrom=0, $limitnum=50,
                             &$totalcount, $extrasql='') {
     global $CFG, $DB, $USER, $PAGE;
     require_once($CFG->libdir.'/searchlib.php');
 
-    $forums = forumimproved_get_readable_forums($USER->id, $courseid);
+    $forums = forumplusone_get_readable_forums($USER->id, $courseid);
 
     if (count($forums) == 0) {
         $totalcount = 0;
@@ -2224,7 +2224,7 @@ function forumimproved_search_posts($searchterms, $courseid=0, $limitfrom=0, $li
         }
 
         if ($forum->type == 'qanda'
-            && !has_capability('mod/forumimproved:viewqandawithoutposting', $forum->context)) {
+            && !has_capability('mod/forumplusone:viewqandawithoutposting', $forum->context)) {
             if (!empty($forum->onlydiscussions)) {
                 list($discussionid_sql, $discussionid_params) = $DB->get_in_or_equal($forum->onlydiscussions, SQL_PARAMS_NAMED, 'qanda'.$forumid.'_');
                 $params = array_merge($params, $discussionid_params);
@@ -2280,10 +2280,10 @@ function forumimproved_search_posts($searchterms, $courseid=0, $limitfrom=0, $li
     // Experimental feature under 1.8! MDL-8830
     // Use alternative text searches if defined
     // This feature only works under mysql until properly implemented for other DBs
-    // Requires manual creation of text index for forumimproved_posts before enabling it:
-    // CREATE FULLTEXT INDEX foru_post_tix ON [prefix]forumimproved_posts (subject, message)
+    // Requires manual creation of text index for forumplusone_posts before enabling it:
+    // CREATE FULLTEXT INDEX foru_post_tix ON [prefix]forumplusone_posts (subject, message)
     // Experimental feature under 1.8! MDL-8830
-        $usetextsearches = get_config('forumimproved', 'usetextsearches');
+        $usetextsearches = get_config('forumplusone', 'usetextsearches');
         if (!empty($usetextsearches)) {
             list($messagesearch, $msparams) = search_generate_text_SQL($parsearray, 'p.message', 'd.name',
                                                  'p.userid', 'u.id', 'u.firstname',
@@ -2296,8 +2296,8 @@ function forumimproved_search_posts($searchterms, $courseid=0, $limitfrom=0, $li
         $params = array_merge($params, $msparams);
     }
 
-    $fromsql = "{forumimproved_posts} p,
-                  {forumimproved_discussions} d JOIN {forumimproved} f ON f.id = d.forum,
+    $fromsql = "{forumplusone_posts} p,
+                  {forumplusone_discussions} d JOIN {forumplusone} f ON f.id = d.forum,
                   {user} u";
 
     foreach ($parsearray as $item){
@@ -2323,7 +2323,7 @@ function forumimproved_search_posts($searchterms, $courseid=0, $limitfrom=0, $li
                    FROM $fromsql
                   WHERE $selectsql";
 
-    if (!has_capability('mod/forumimproved:viewhiddentimedposts' , $PAGE->context)) {
+    if (!has_capability('mod/forumplusone:viewhiddentimedposts' , $PAGE->context)) {
         $selectsql .= ' AND (
                             f.enable_states_disc = 0
                         OR
@@ -2336,7 +2336,7 @@ function forumimproved_search_posts($searchterms, $courseid=0, $limitfrom=0, $li
                         OR
                             d.state <> :statehidden
                     )';
-        $params['statehidden'] = FORUMIMPROVED_DISCUSSION_STATE_HIDDEN;
+        $params['statehidden'] = FORUMPLUSONE_DISCUSSION_STATE_HIDDEN;
     }
 
     $allnames = get_all_user_name_fields(true, 'u');
@@ -2347,7 +2347,7 @@ function forumimproved_search_posts($searchterms, $courseid=0, $limitfrom=0, $li
                          u.picture,
                          u.imagealt,
                          u.email,
-                         ( SELECT COUNT(v.id) FROM {forumimproved_vote} v WHERE p.id = v.postid ) AS votecount
+                         ( SELECT COUNT(v.id) FROM {forumplusone_vote} v WHERE p.id = v.postid ) AS votecount
                     FROM $fromsql
                    WHERE $selectsql
                 ORDER BY p.modified DESC";
@@ -2368,10 +2368,10 @@ function forumimproved_search_posts($searchterms, $courseid=0, $limitfrom=0, $li
  * @param string $sort
  * @return array Array of ratings or false
  */
-function forumimproved_get_ratings($context, $postid, $sort = "u.firstname ASC") {
+function forumplusone_get_ratings($context, $postid, $sort = "u.firstname ASC") {
     $options = new stdClass;
     $options->context = $context;
-    $options->component = 'mod_forumimproved';
+    $options->component = 'mod_forumplusone';
     $options->ratingarea = 'post';
     $options->itemid = $postid;
     $options->sort = "ORDER BY $sort";
@@ -2389,7 +2389,7 @@ function forumimproved_get_ratings($context, $postid, $sort = "u.firstname ASC")
  * @param null|string $returnurl
  * @param null|int $userid
  */
-function forumimproved_get_ratings_for_posts(context_module $context, $forum, array $posts, $returnurl = null, $userid = null) {
+function forumplusone_get_ratings_for_posts(context_module $context, $forum, array $posts, $returnurl = null, $userid = null) {
     global $CFG, $USER;
 
     require_once($CFG->dirroot.'/rating/lib.php');
@@ -2401,11 +2401,11 @@ function forumimproved_get_ratings_for_posts(context_module $context, $forum, ar
         $userid = $USER->id;
     }
     if (empty($returnurl)) {
-        $returnurl = "$CFG->wwwroot/mod/forumimproved/view.php?id={$context->instanceid}";
+        $returnurl = "$CFG->wwwroot/mod/forumplusone/view.php?id={$context->instanceid}";
     }
     $ratingoptions                   = new stdClass;
     $ratingoptions->context          = $context;
-    $ratingoptions->component        = 'mod_forumimproved';
+    $ratingoptions->component        = 'mod_forumplusone';
     $ratingoptions->ratingarea       = 'post';
     $ratingoptions->items            = $posts;
     $ratingoptions->aggregate        = $forum->assessed;
@@ -2427,16 +2427,16 @@ function forumimproved_get_ratings_for_posts(context_module $context, $forum, ar
  * @param int $now used for timed discussions only
  * @return array
  */
-function forumimproved_get_unmailed_posts($starttime, $endtime, $now=null) {
+function forumplusone_get_unmailed_posts($starttime, $endtime, $now=null) {
     global $CFG, $DB;
 
     $params = array();
-    $params['mailed'] = FORUMIMPROVED_MAILED_PENDING;
+    $params['mailed'] = FORUMPLUSONE_MAILED_PENDING;
     $params['ptimestart'] = $starttime;
     $params['ptimeend'] = $endtime;
     $params['mailnow'] = 1;
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
 
     if (!empty($config->enabletimedposts)) {
         if (empty($now)) {
@@ -2450,8 +2450,8 @@ function forumimproved_get_unmailed_posts($starttime, $endtime, $now=null) {
     }
 
     return $DB->get_records_sql("SELECT p.*, d.course, d.forum
-                                 FROM {forumimproved_posts} p
-                                 JOIN {forumimproved_discussions} d ON d.id = p.discussion
+                                 FROM {forumplusone_posts} p
+                                 JOIN {forumplusone_discussions} d ON d.id = p.discussion
                                  WHERE p.mailed = :mailed
                                  AND p.created >= :ptimestart
                                  AND (p.created < :ptimeend OR p.mailnow = :mailnow)
@@ -2468,32 +2468,32 @@ function forumimproved_get_unmailed_posts($starttime, $endtime, $now=null) {
  * @param int $now Defaults to time()
  * @return bool
  */
-function forumimproved_mark_old_posts_as_mailed($endtime, $now=null) {
+function forumplusone_mark_old_posts_as_mailed($endtime, $now=null) {
     global $CFG, $DB;
 
     if (empty($now)) {
         $now = time();
     }
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
 
     $params = array();
-    $params['mailedsuccess'] = FORUMIMPROVED_MAILED_SUCCESS;
+    $params['mailedsuccess'] = FORUMPLUSONE_MAILED_SUCCESS;
     $params['now'] = $now;
     $params['endtime'] = $endtime;
     $params['mailnow'] = 1;
-    $params['mailedpending'] = FORUMIMPROVED_MAILED_PENDING;
+    $params['mailedpending'] = FORUMPLUSONE_MAILED_PENDING;
 
     if (empty($config->enabletimedposts)) {
-        return $DB->execute("UPDATE {forumimproved_posts}
+        return $DB->execute("UPDATE {forumplusone_posts}
                              SET mailed = :mailedsuccess
                              WHERE (created < :endtime OR mailnow = :mailnow)
                              AND mailed = :mailedpending", $params);
     } else {
-        return $DB->execute("UPDATE {forumimproved_posts}
+        return $DB->execute("UPDATE {forumplusone_posts}
                              SET mailed = :mailedsuccess
                              WHERE discussion NOT IN (SELECT d.id
-                                                      FROM {forumimproved_discussions} d
+                                                      FROM {forumplusone_discussions} d
                                                       WHERE d.timestart > :now)
                              AND (created < :endtime OR mailnow = :mailnow)
                              AND mailed = :mailedpending", $params);
@@ -2508,20 +2508,20 @@ function forumimproved_mark_old_posts_as_mailed($endtime, $now=null) {
  * @uses CONTEXT_MODULE
  * @return array
  */
-function forumimproved_get_user_posts($forumid, $userid, context_module $context = null) {
+function forumplusone_get_user_posts($forumid, $userid, context_module $context = null) {
     global $DB;
 
     $timedsql = "";
     $params = array($forumid, $userid);
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
 
     if (!empty($config->enabletimedposts)) {
         if (is_null($context)) {
-            $cm = get_coursemodule_from_instance('forumimproved', $forumid);
+            $cm = get_coursemodule_from_instance('forumplusone', $forumid);
             $context = context_module::instance($cm->id);
         }
-        if (!has_capability('mod/forumimproved:viewhiddentimedposts' , $context)) {
+        if (!has_capability('mod/forumplusone:viewhiddentimedposts' , $context)) {
             $now = time();
             $timedsql = "AND (d.timestart < ? AND (d.timeend = 0 OR d.timeend > ?))";
             $params[] = $now;
@@ -2530,12 +2530,12 @@ function forumimproved_get_user_posts($forumid, $userid, context_module $context
     }
 
     $allnames = get_all_user_name_fields(true, 'u');
-    return $DB->get_records_sql("SELECT p.*, d.forum, $allnames, u.email, u.picture, u.imagealt, r.lastread AS postread, ( SELECT COUNT(v.id) FROM {forumimproved_vote} v WHERE p.id = v.postid ) AS votecount
-                              FROM {forumimproved} f
-                                   JOIN {forumimproved_discussions} d ON d.forum = f.id
-                                   JOIN {forumimproved_posts} p       ON p.discussion = d.id
+    return $DB->get_records_sql("SELECT p.*, d.forum, $allnames, u.email, u.picture, u.imagealt, r.lastread AS postread, ( SELECT COUNT(v.id) FROM {forumplusone_vote} v WHERE p.id = v.postid ) AS votecount
+                              FROM {forumplusone} f
+                                   JOIN {forumplusone_discussions} d ON d.forum = f.id
+                                   JOIN {forumplusone_posts} p       ON p.discussion = d.id
                                    JOIN {user} u              ON u.id = p.userid
-                                   LEFT JOIN {forumimproved_read} r ON r.postid = p.id AND r.userid = u.id
+                                   LEFT JOIN {forumplusone_read} r ON r.postid = p.id AND r.userid = u.id
                              WHERE f.id = ?
                                    AND p.userid = ?
                                    $timedsql
@@ -2552,17 +2552,17 @@ function forumimproved_get_user_posts($forumid, $userid, context_module $context
  * @param int $userid
  * @return array Array or false
  */
-function forumimproved_get_user_involved_discussions($forumid, $userid) {
+function forumplusone_get_user_involved_discussions($forumid, $userid) {
     global $CFG, $DB;
 
     $timedsql = "";
     $params = array($forumid, $userid);
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
 
     if (!empty($config->enabletimedposts)) {
-        $cm = get_coursemodule_from_instance('forumimproved', $forumid);
-        if (!has_capability('mod/forumimproved:viewhiddentimedposts' , context_module::instance($cm->id))) {
+        $cm = get_coursemodule_from_instance('forumplusone', $forumid);
+        if (!has_capability('mod/forumplusone:viewhiddentimedposts' , context_module::instance($cm->id))) {
             $now = time();
             $timedsql = "AND (d.timestart < ? AND (d.timeend = 0 OR d.timeend > ?))";
             $params[] = $now;
@@ -2571,9 +2571,9 @@ function forumimproved_get_user_involved_discussions($forumid, $userid) {
     }
 
     return $DB->get_records_sql("SELECT DISTINCT d.*
-                              FROM {forumimproved} f
-                                   JOIN {forumimproved_discussions} d ON d.forum = f.id
-                                   JOIN {forumimproved_posts} p       ON p.discussion = d.id
+                              FROM {forumplusone} f
+                                   JOIN {forumplusone_discussions} d ON d.forum = f.id
+                                   JOIN {forumplusone_posts} p       ON p.discussion = d.id
                              WHERE f.id = ?
                                    AND p.userid = ?
                                    $timedsql", $params);
@@ -2588,17 +2588,17 @@ function forumimproved_get_user_involved_discussions($forumid, $userid) {
  * @param int $userid
  * @return array of counts or false
  */
-function forumimproved_count_user_posts($forumid, $userid) {
+function forumplusone_count_user_posts($forumid, $userid) {
     global $CFG, $DB;
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
 
     $timedsql = "";
     $params = array($forumid, $userid);
 
     if (!empty($config->enabletimedposts)) {
-        $cm = get_coursemodule_from_instance('forumimproved', $forumid);
-        if (!has_capability('mod/forumimproved:viewhiddentimedposts' , context_module::instance($cm->id))) {
+        $cm = get_coursemodule_from_instance('forumplusone', $forumid);
+        if (!has_capability('mod/forumplusone:viewhiddentimedposts' , context_module::instance($cm->id))) {
             $now = time();
             $timedsql = "AND (d.timestart < ? AND (d.timeend = 0 OR d.timeend > ?))";
             $params[] = $now;
@@ -2607,9 +2607,9 @@ function forumimproved_count_user_posts($forumid, $userid) {
     }
 
     return $DB->get_record_sql("SELECT COUNT(p.id) AS postcount, MAX(p.modified) AS lastpost
-                             FROM {forumimproved} f
-                                  JOIN {forumimproved_discussions} d ON d.forum = f.id
-                                  JOIN {forumimproved_posts} p       ON p.discussion = d.id
+                             FROM {forumplusone} f
+                                  JOIN {forumplusone_discussions} d ON d.forum = f.id
+                                  JOIN {forumplusone_posts} p       ON p.discussion = d.id
                                   JOIN {user} u              ON u.id = p.userid
                             WHERE f.id = ?
                                   AND p.userid = ?
@@ -2624,12 +2624,12 @@ function forumimproved_count_user_posts($forumid, $userid) {
  * @param int $dicsussionid
  * @return array
  */
-function forumimproved_get_firstpost_from_discussion($discussionid) {
+function forumplusone_get_firstpost_from_discussion($discussionid) {
     global $CFG, $DB;
 
-    return $DB->get_record_sql("SELECT p.*, ( SELECT COUNT(v.id) FROM {forumimproved_vote} v WHERE p.id = v.postid ) AS votecount
-                             FROM {forumimproved_discussions} d,
-                                  {forumimproved_posts} p
+    return $DB->get_record_sql("SELECT p.*, ( SELECT COUNT(v.id) FROM {forumplusone_vote} v WHERE p.id = v.postid ) AS votecount
+                             FROM {forumplusone_discussions} d,
+                                  {forumplusone_posts} p
                             WHERE d.id = ?
                               AND d.firstpost = p.id ", array($discussionid));
 }
@@ -2644,13 +2644,13 @@ function forumimproved_get_firstpost_from_discussion($discussionid) {
  * @param object $course
  * @return mixed
  */
-function forumimproved_count_discussions($forum, $cm, $course) {
+function forumplusone_count_discussions($forum, $cm, $course) {
     global $CFG, $DB, $USER;
 
     static $cache = array();
 
     $now = round(time(), -2); // db cache friendliness
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
 
     $params = array($course->id);
 
@@ -2664,8 +2664,8 @@ function forumimproved_count_discussions($forum, $cm, $course) {
         }
 
         $sql = "SELECT f.id, COUNT(d.id) as dcount
-                  FROM {forumimproved} f
-                       JOIN {forumimproved_discussions} d ON d.forum = f.id
+                  FROM {forumplusone} f
+                       JOIN {forumplusone_discussions} d ON d.forum = f.id
                  WHERE f.course = ?
                        $timedsql
               GROUP BY f.id";
@@ -2715,7 +2715,7 @@ function forumimproved_count_discussions($forum, $cm, $course) {
     }
 
     $sql = "SELECT COUNT(d.id)
-              FROM {forumimproved_discussions} d
+              FROM {forumplusone_discussions} d
              WHERE d.groupid $mygroups_sql AND d.forum = ?
                    $timedsql";
 
@@ -2739,12 +2739,12 @@ function forumimproved_count_discussions($forum, $cm, $course) {
  * @param int $perpage
  * @return moodle_recordset|array
  */
-function forumimproved_get_discussions($cm, $forumsort="d.timemodified DESC", $forumselect=true, $limit=-1, $userlastmodified=false, $page=-1, $perpage=0, $returnrs = true, $viewhidden = false) {
+function forumplusone_get_discussions($cm, $forumsort="d.timemodified DESC", $forumselect=true, $limit=-1, $userlastmodified=false, $page=-1, $perpage=0, $returnrs = true, $viewhidden = false) {
     global $CFG, $DB, $USER;
 
     require_once(__DIR__.'/lib/discussion/subscribe.php');
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
     $timelimit = '';
 
     $now = round(time(), -2);
@@ -2753,18 +2753,18 @@ function forumimproved_get_discussions($cm, $forumsort="d.timemodified DESC", $f
 
     $modcontext = context_module::instance($cm->id);
 
-    if (!has_capability('mod/forumimproved:viewdiscussion', $modcontext)) { /// User must have perms to view discussions
+    if (!has_capability('mod/forumplusone:viewdiscussion', $modcontext)) { /// User must have perms to view discussions
         return array();
     }
 
-    $forum = $DB->get_record('forumimproved', array('id' => $cm->instance), '*', MUST_EXIST);
+    $forum = $DB->get_record('forumplusone', array('id' => $cm->instance), '*', MUST_EXIST);
 
     $trackselect = ' unread.unread, dunread.postread, ';
     $tracksql    = 'LEFT OUTER JOIN (
         SELECT d.id, COUNT(p.id) AS unread
-          FROM {forumimproved_discussions} d
-          JOIN {forumimproved_posts} p ON p.discussion = d.id
-     LEFT JOIN {forumimproved_read} r ON (r.postid = p.id AND r.userid = ?)
+          FROM {forumplusone_discussions} d
+          JOIN {forumplusone_posts} p ON p.discussion = d.id
+     LEFT JOIN {forumplusone_read} r ON (r.postid = p.id AND r.userid = ?)
          WHERE d.forum = ?
            AND p.modified >= ? AND r.id is NULL
            AND (p.privatereply = 0 OR p.privatereply = ? OR p.userid = ?)
@@ -2773,19 +2773,19 @@ function forumimproved_get_discussions($cm, $forumsort="d.timemodified DESC", $f
 
 LEFT OUTER JOIN (
         SELECT d.id, CASE WHEN r.id IS NULL THEN 0 ELSE 1 END AS postread
-          FROM {forumimproved_discussions} d
-          JOIN {forumimproved_posts} p ON p.discussion = d.id AND p.parent = 0
-LEFT OUTER JOIN {forumimproved_read} r ON (r.postid = p.id AND r.userid = ?)
+          FROM {forumplusone_discussions} d
+          JOIN {forumplusone_posts} p ON p.discussion = d.id AND p.parent = 0
+LEFT OUTER JOIN {forumplusone_read} r ON (r.postid = p.id AND r.userid = ?)
          WHERE d.forum = ?
            AND p.modified >= ?
     ) dunread ON d.id = dunread.id';
 
     $params = array_merge($params, array($USER->id, $cm->instance, $cutoffdate, $USER->id, $USER->id, $USER->id, $cm->instance, $cutoffdate));
 
-    $subscribe = new forumimproved_lib_discussion_subscribe($forum, $modcontext);
+    $subscribe = new forumplusone_lib_discussion_subscribe($forum, $modcontext);
     if ($subscribe->can_subscribe()) {
         $subscribeselect = ' sd.id AS subscriptionid, ';
-        $subscribesql = 'LEFT OUTER JOIN {forumimproved_subs_disc} sd ON d.id = sd.discussion AND sd.userid = ?';
+        $subscribesql = 'LEFT OUTER JOIN {forumplusone_subs_disc} sd ON d.id = sd.discussion AND sd.userid = ?';
         $params[] = $USER->id;
     } else {
         $subscribeselect = $subscribesql = '';
@@ -2794,7 +2794,7 @@ LEFT OUTER JOIN {forumimproved_read} r ON (r.postid = p.id AND r.userid = ?)
 
     if (!empty($config->enabletimedposts)) { /// Users must fulfill timed posts
 
-        if (!has_capability('mod/forumimproved:viewhiddentimedposts', $modcontext)) {
+        if (!has_capability('mod/forumplusone:viewhiddentimedposts', $modcontext)) {
             $timelimit = " AND ((d.timestart <= ? AND (d.timeend = 0 OR d.timeend > ?))";
             $params[] = $now;
             $params[] = $now;
@@ -2857,7 +2857,7 @@ LEFT OUTER JOIN {forumimproved_read} r ON (r.postid = p.id AND r.userid = ?)
     } else {
         $postdata = "p.*";
     }
-    $postdata .= ", ( SELECT COUNT(v.id) FROM {forumimproved_vote} v WHERE p.id = v.postid ) AS votecount";
+    $postdata .= ", ( SELECT COUNT(v.id) FROM {forumplusone_vote} v WHERE p.id = v.postid ) AS votecount";
 
     if (empty($userlastmodified)) {  // We don't need to know this
         $umfields = "";
@@ -2865,7 +2865,7 @@ LEFT OUTER JOIN {forumimproved_read} r ON (r.postid = p.id AND r.userid = ?)
     } else {
         $umfields = ', up.reveal AS umreveal, ' . get_all_user_name_fields(true, 'um', null, 'um');
         $umtable  = " LEFT JOIN {user} um ON (d.usermodified = um.id)
-                      LEFT OUTER JOIN {forumimproved_posts} up ON lastpost.postid = up.id";
+                      LEFT OUTER JOIN {forumplusone_posts} up ON lastpost.postid = up.id";
     }
 
     // Sort of hacky, but allows for custom select
@@ -2878,21 +2878,21 @@ LEFT OUTER JOIN {forumimproved_read} r ON (r.postid = p.id AND r.userid = ?)
                            $allnames, u.email, u.picture, u.imagealt $umfields,
                             ( -- get date of latest the discussion
                                 SELECT MAX(p2.created)
-                                FROM {forumimproved_posts} p2
+                                FROM {forumplusone_posts} p2
                                 WHERE p2.discussion = p.discussion
                             ) lastpostcreationdate,
                      ";
-        if ($forum->count_vote_mode == FORUMIMPROVED_COUNT_MODE_RECURSIVE) {
+        if ($forum->count_vote_mode == FORUMPLUSONE_COUNT_MODE_RECURSIVE) {
             $selectsql .= '(
                                SELECT COUNT(v.id)
-                               FROM {forumimproved_vote} v, {forumimproved_posts} p2
+                               FROM {forumplusone_vote} v, {forumplusone_posts} p2
                                WHERE v.postid = p2.id AND p2.discussion = p.discussion
                            ) countVote';
         }
         else {
             $selectsql .= '(
                                SELECT COUNT(v.id)
-                               FROM {forumimproved_vote} v
+                               FROM {forumplusone_vote} v
                                WHERE v.postid = p.id
                            ) countVote';
         }
@@ -2902,25 +2902,25 @@ LEFT OUTER JOIN {forumimproved_read} r ON (r.postid = p.id AND r.userid = ?)
     $visibilitySelect = '';
     if (!$viewhidden) {
         $visibilitySelect = 'AND d.state <> ?';
-        $params[] = FORUMIMPROVED_DISCUSSION_STATE_HIDDEN;
+        $params[] = FORUMPLUSONE_DISCUSSION_STATE_HIDDEN;
     }
 
 
 
     $sql = "SELECT $selectsql
-              FROM {forumimproved_discussions} d
-                   JOIN {forumimproved_posts} p ON p.discussion = d.id
+              FROM {forumplusone_discussions} d
+                   JOIN {forumplusone_posts} p ON p.discussion = d.id
                    JOIN {user} u ON p.userid = u.id
         LEFT OUTER JOIN (SELECT p.discussion, COUNT(p.id) AS replies
-                           FROM {forumimproved_posts} p
-                           JOIN {forumimproved_discussions} d ON p.discussion = d.id
+                           FROM {forumplusone_posts} p
+                           JOIN {forumplusone_discussions} d ON p.discussion = d.id
                           WHERE p.parent > 0
                             AND d.forum = ?
                             AND (p.privatereply = 0 OR p.privatereply = ? OR p.userid = ?)
                           GROUP BY p.discussion) extra ON d.id = extra.discussion
               LEFT JOIN (SELECT p.discussion, p.id postid, p.userid, p.modified
-                           FROM {forumimproved_discussions} d
-                      LEFT JOIN {forumimproved_posts} p ON d.usermodified = p.userid AND d.id = p.discussion AND p.modified = d.timemodified
+                           FROM {forumplusone_discussions} d
+                      LEFT JOIN {forumplusone_posts} p ON d.usermodified = p.userid AND d.id = p.discussion AND p.modified = d.timemodified
                           WHERE d.forum = ?) lastpost ON d.id = lastpost.discussion
                    $tracksql
                    $subscribesql
@@ -2952,7 +2952,7 @@ LEFT OUTER JOIN {forumimproved_read} r ON (r.postid = p.id AND r.userid = ?)
  *               they contain the record with minimal information such as 'id' and 'name'.
  *               When the neighbour is not found the value is false.
  */
-function forumimproved_get_discussion_neighbours($cm, $discussion) {
+function forumplusone_get_discussion_neighbours($cm, $discussion) {
     global $CFG, $DB, $USER;
 
     if ($cm->instance != $discussion->forum) {
@@ -2970,7 +2970,7 @@ function forumimproved_get_discussion_neighbours($cm, $discussion) {
     // Users must fulfill timed posts.
     $timelimit = '';
     if (!empty($CFG->forum_enabletimedposts)) {
-        if (!has_capability('mod/forumimproved:viewhiddentimedposts', $modcontext)) {
+        if (!has_capability('mod/forumplusone:viewhiddentimedposts', $modcontext)) {
             $timelimit = ' AND ((d.timestart <= :tltimestart AND (d.timeend = 0 OR d.timeend > :tltimeend))';
             $params['tltimestart'] = $now;
             $params['tltimeend'] = $now;
@@ -3005,7 +3005,7 @@ function forumimproved_get_discussion_neighbours($cm, $discussion) {
     $params['disctimemodified'] = $discussion->timemodified;
 
     $sql = "SELECT d.id, d.name, d.timemodified, d.groupid, d.timestart, d.timeend
-              FROM {forumimproved_discussions} d
+              FROM {forumplusone_discussions} d
              WHERE d.forum = :forumid
                AND d.id <> :discid
                    $timelimit
@@ -3033,10 +3033,10 @@ function forumimproved_get_discussion_neighbours($cm, $discussion) {
  * @param bool $viewhidden
  * @return int
  */
-function forumimproved_get_discussions_count($cm, $viewhidden = false) {
+function forumplusone_get_discussions_count($cm, $viewhidden = false) {
     global $CFG, $DB, $USER;
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
     $now = round(time(), -2);
     $params = array($cm->instance);
     $groupmode    = groups_get_activity_groupmode($cm);
@@ -3072,7 +3072,7 @@ function forumimproved_get_discussions_count($cm, $viewhidden = false) {
 
         $modcontext = context_module::instance($cm->id);
 
-        if (!has_capability('mod/forumimproved:viewhiddentimedposts', $modcontext)) {
+        if (!has_capability('mod/forumplusone:viewhiddentimedposts', $modcontext)) {
             $timelimit = " AND ((d.timestart <= ? AND (d.timeend = 0 OR d.timeend > ?))";
             $params[] = $now;
             $params[] = $now;
@@ -3088,14 +3088,14 @@ function forumimproved_get_discussions_count($cm, $viewhidden = false) {
     $visibilitySelect = '';
     if (!$viewhidden) {
         $visibilitySelect = 'AND d.state <> ?';
-        $params[] = FORUMIMPROVED_DISCUSSION_STATE_HIDDEN;
+        $params[] = FORUMPLUSONE_DISCUSSION_STATE_HIDDEN;
     }
 
 
 
     $sql = "SELECT COUNT(d.id)
-              FROM {forumimproved_discussions} d
-                   JOIN {forumimproved_posts} p ON p.discussion = d.id
+              FROM {forumplusone_discussions} d
+                   JOIN {forumplusone_posts} p ON p.discussion = d.id
              WHERE d.forum = ? AND p.parent = 0
                    $groupselect $timelimit $visibilitySelect";
 
@@ -3111,11 +3111,11 @@ function forumimproved_get_discussions_count($cm, $viewhidden = false) {
  * @param string $sort sort order. As for get_users_by_capability.
  * @return array list of users.
  */
-function forumimproved_get_potential_subscribers($forumcontext, $groupid, $fields, $sort = '') {
+function forumplusone_get_potential_subscribers($forumcontext, $groupid, $fields, $sort = '') {
     global $DB;
 
     // only active enrolled users or everybody on the frontpage
-    list($esql, $params) = get_enrolled_sql($forumcontext, 'mod/forumimproved:allowforcesubscribe', $groupid, true);
+    list($esql, $params) = get_enrolled_sql($forumcontext, 'mod/forumplusone:allowforcesubscribe', $groupid, true);
     if (!$sort) {
         list($sort, $sortparams) = users_order_by_sql('u');
         $params = array_merge($params, $sortparams);
@@ -3141,7 +3141,7 @@ function forumimproved_get_potential_subscribers($forumcontext, $groupid, $field
  * @param string $fields requested user fields (with "u." table prefix)
  * @return array list of users.
  */
-function forumimproved_subscribed_users($course, $forum, $groupid=0, $context = null, $fields = null) {
+function forumplusone_subscribed_users($course, $forum, $groupid=0, $context = null, $fields = null) {
     global $CFG, $DB;
 
     $allnames = get_all_user_name_fields(true, 'u');
@@ -3168,12 +3168,12 @@ function forumimproved_subscribed_users($course, $forum, $groupid=0, $context = 
     }
 
     if (empty($context)) {
-        $cm = get_coursemodule_from_instance('forumimproved', $forum->id, $course->id);
+        $cm = get_coursemodule_from_instance('forumplusone', $forum->id, $course->id);
         $context = context_module::instance($cm->id);
     }
 
-    if (forumimproved_is_forcesubscribed($forum)) {
-        $results = forumimproved_get_potential_subscribers($context, $groupid, $fields, "u.email ASC");
+    if (forumplusone_is_forcesubscribed($forum)) {
+        $results = forumplusone_get_potential_subscribers($context, $groupid, $fields, "u.email ASC");
 
     } else {
         // only active enrolled users or everybody on the frontpage
@@ -3182,7 +3182,7 @@ function forumimproved_subscribed_users($course, $forum, $groupid=0, $context = 
         $results = $DB->get_records_sql("SELECT $fields
                                            FROM {user} u
                                            JOIN ($esql) je ON je.id = u.id
-                                           JOIN {forumimproved_subscriptions} s ON s.userid = u.id
+                                           JOIN {forumplusone_subscriptions} s ON s.userid = u.id
                                           WHERE s.forum = :forumid
                                        ORDER BY u.email ASC", $params);
     }
@@ -3190,7 +3190,7 @@ function forumimproved_subscribed_users($course, $forum, $groupid=0, $context = 
     // Guest user should never be subscribed to a forum.
     unset($results[$CFG->siteguest]);
 
-    $cm = get_coursemodule_from_instance('forumimproved', $forum->id);
+    $cm = get_coursemodule_from_instance('forumplusone', $forum->id);
     $modinfo = get_fast_modinfo($cm->course);
     return groups_filter_users_by_course_module_visible($modinfo->get_cm($cm->id), $results);
 }
@@ -3202,13 +3202,13 @@ function forumimproved_subscribed_users($course, $forum, $groupid=0, $context = 
  * @param string $sortSql
  * @return array of vote, with voters datas
  */
-function forumimproved_get_all_post_votes($postid, $sqlSort = null) {
+function forumplusone_get_all_post_votes($postid, $sqlSort = null) {
     global $DB;
 
     $allnames = get_all_user_name_fields(true, 'u');
 
     $req = "SELECT v.*, $allnames, u.email, u.picture, u.imagealt
-            FROM {forumimproved_vote} v, {user} u
+            FROM {forumplusone_vote} v, {user} u
             WHERE v.userid = u.id AND v.postid = ?";
 
     if (!empty($sqlSort)) {
@@ -3231,14 +3231,14 @@ function forumimproved_get_all_post_votes($postid, $sqlSort = null) {
  * @param int $countmode
  * @return int count of vote in a forum, using a count mode
  */
-function forumimproved_get_count_votes($discussionid, $countmode = FORUMIMPROVED_COUNT_MODE_RECURSIVE) {
+function forumplusone_get_count_votes($discussionid, $countmode = FORUMPLUSONE_COUNT_MODE_RECURSIVE) {
     global $DB;
 
     $req = 'SELECT COUNT(v.id) count
-            FROM {forumimproved_vote} v, {forumimproved_posts} p
+            FROM {forumplusone_vote} v, {forumplusone_posts} p
             WHERE v.postid = p.id AND p.discussion = ?';
 
-    if ($countmode == FORUMIMPROVED_COUNT_MODE_FIRST_POST) {
+    if ($countmode == FORUMPLUSONE_COUNT_MODE_FIRST_POST) {
         $req .= " AND p.parent = 0";
     }
 
@@ -3257,11 +3257,11 @@ function forumimproved_get_count_votes($discussionid, $countmode = FORUMIMPROVED
  * @param int $courseid
  * @param string $type
  */
-function forumimproved_get_course_forum($courseid, $type) {
+function forumplusone_get_course_forum($courseid, $type) {
 // How to set up special 1-per-course forums
     global $CFG, $DB, $OUTPUT, $USER;
 
-    if ($forums = $DB->get_records_select("forumimproved", "course = ? AND type = ?", array($courseid, $type), "id ASC")) {
+    if ($forums = $DB->get_records_select("forumplusone", "course = ? AND type = ?", array($courseid, $type), "id ASC")) {
         // There should always only be ONE, but with the right combination of
         // errors there might be more.  In this case, just return the oldest one (lowest ID).
         foreach ($forums as $forum) {
@@ -3278,9 +3278,9 @@ function forumimproved_get_course_forum($courseid, $type) {
     }
     switch ($forum->type) {
         case "news":
-            $forum->name  = get_string("namenews", "forumimproved");
-            $forum->intro = get_string("intronews", "forumimproved");
-            $forum->forcesubscribe = FORUMIMPROVED_FORCESUBSCRIBE;
+            $forum->name  = get_string("namenews", "forumplusone");
+            $forum->intro = get_string("intronews", "forumplusone");
+            $forum->forcesubscribe = FORUMPLUSONE_FORCESUBSCRIBE;
             $forum->assessed = 0;
             if ($courseid == SITEID) {
                 $forum->name  = get_string("sitenews");
@@ -3288,14 +3288,14 @@ function forumimproved_get_course_forum($courseid, $type) {
             }
             break;
         case "social":
-            $forum->name  = get_string("namesocial", "forumimproved");
-            $forum->intro = get_string("introsocial", "forumimproved");
+            $forum->name  = get_string("namesocial", "forumplusone");
+            $forum->intro = get_string("introsocial", "forumplusone");
             $forum->assessed = 0;
             $forum->forcesubscribe = 0;
             break;
         case "blog":
-            $forum->name = get_string('blogforum', 'forumimproved');
-            $forum->intro = get_string('introblog', 'forumimproved');
+            $forum->name = get_string('blogforum', 'forumplusone');
+            $forum->intro = get_string('introblog', 'forumplusone');
             $forum->assessed = 0;
             $forum->forcesubscribe = 0;
             break;
@@ -3306,10 +3306,10 @@ function forumimproved_get_course_forum($courseid, $type) {
     }
 
     $forum->timemodified = time();
-    $forum->id = $DB->insert_record("forumimproved", $forum);
+    $forum->id = $DB->insert_record("forumplusone", $forum);
 
-    if (! $module = $DB->get_record("modules", array("name" => "forumimproved"))) {
-        echo $OUTPUT->notification("Could not find forumimproved module!!");
+    if (! $module = $DB->get_record("modules", array("name" => "forumplusone"))) {
+        echo $OUTPUT->notification("Could not find forumplusone module!!");
         return false;
     }
     $mod = new stdClass();
@@ -3323,7 +3323,7 @@ function forumimproved_get_course_forum($courseid, $type) {
         return false;
     }
     $sectionid = course_add_cm_to_section($courseid, $mod->coursemodule, 0);
-    return $DB->get_record("forumimproved", array("id" => "$forum->id"));
+    return $DB->get_record("forumplusone", array("id" => "$forum->id"));
 }
 
 
@@ -3346,7 +3346,7 @@ function forumimproved_get_course_forum($courseid, $type) {
  * @param string $footer
  * @return string
  */
-function forumimproved_make_mail_post($course, $cm, $forum, $discussion, $post, $userfrom, $userto,
+function forumplusone_make_mail_post($course, $cm, $forum, $discussion, $post, $userfrom, $userto,
                               $ownpost=false, $reply=false, $link=false, $rate=false, $footer="") {
 
     global $CFG, $OUTPUT;
@@ -3359,10 +3359,10 @@ function forumimproved_make_mail_post($course, $cm, $forum, $discussion, $post, 
         $viewfullnames = $userto->viewfullnames[$forum->id];
     }
 
-    $postuser = forumimproved_anonymize_user($userfrom, $forum, $post);
+    $postuser = forumplusone_anonymize_user($userfrom, $forum, $post);
 
     // add absolute file links
-    $post->message = file_rewrite_pluginfile_urls($post->message, 'pluginfile.php', $modcontext->id, 'mod_forumimproved', 'post', $post->id);
+    $post->message = file_rewrite_pluginfile_urls($post->message, 'pluginfile.php', $modcontext->id, 'mod_forumplusone', 'post', $post->id);
 
     // format the post body
     $options = new stdClass();
@@ -3372,7 +3372,7 @@ function forumimproved_make_mail_post($course, $cm, $forum, $discussion, $post, 
     $output = '<table border="0" cellpadding="3" cellspacing="0" class="forumpost">';
 
     $output .= '<tr class="header"><td width="35" valign="top" class="picture left">';
-    $output .= $OUTPUT->user_picture($postuser, array('courseid'=>$course->id, 'link' => (!forumimproved_is_anonymous_user($postuser))));
+    $output .= $OUTPUT->user_picture($postuser, array('courseid'=>$course->id, 'link' => (!forumplusone_is_anonymous_user($postuser))));
     $output .= '</td>';
 
     if ($post->parent) {
@@ -3383,13 +3383,13 @@ function forumimproved_make_mail_post($course, $cm, $forum, $discussion, $post, 
 
     $fullname = fullname($postuser, $viewfullnames);
     $by = new stdClass();
-    if (!forumimproved_is_anonymous_user($postuser)) {
+    if (!forumplusone_is_anonymous_user($postuser)) {
         $by->name = '<a href="'.$CFG->wwwroot.'/user/view.php?id='.$postuser->id.'&amp;course='.$course->id.'">'.$fullname.'</a>';
     } else {
         $by->name = $fullname;
     }
     $by->date = userdate($post->modified, '', $userto->timezone);
-    $output .= '<div class="author">'.get_string('bynameondate', 'forumimproved', $by).'</div>';
+    $output .= '<div class="author">'.get_string('bynameondate', 'forumplusone', $by).'</div>';
 
     $output .= '</td></tr>';
 
@@ -3409,7 +3409,7 @@ function forumimproved_make_mail_post($course, $cm, $forum, $discussion, $post, 
 
     $output .= '</td><td class="content">';
 
-    $attachments = forumimproved_print_attachments($post, $cm, 'html');
+    $attachments = forumplusone_print_attachments($post, $cm, 'html');
     if ($attachments !== '') {
         $output .= '<div class="attachments">';
         $output .= $attachments;
@@ -3422,13 +3422,13 @@ function forumimproved_make_mail_post($course, $cm, $forum, $discussion, $post, 
     $commands = array();
 
     if ($post->parent) {
-        $commands[] = '<a target="_blank" href="'.$CFG->wwwroot.'/mod/forumimproved/discuss.php?d='.
-                      $post->discussion.'&amp;parent='.$post->parent.'">'.get_string('parent', 'forumimproved').'</a>';
+        $commands[] = '<a target="_blank" href="'.$CFG->wwwroot.'/mod/forumplusone/discuss.php?d='.
+                      $post->discussion.'&amp;parent='.$post->parent.'">'.get_string('parent', 'forumplusone').'</a>';
     }
 
     if ($reply) {
-        $commands[] = '<a target="_blank" href="'.$CFG->wwwroot.'/mod/forumimproved/post.php?reply='.$post->id.'">'.
-                      get_string('reply', 'forumimproved').'</a>';
+        $commands[] = '<a target="_blank" href="'.$CFG->wwwroot.'/mod/forumplusone/post.php?reply='.$post->id.'">'.
+                      get_string('reply', 'forumplusone').'</a>';
     }
 
     $output .= '<div class="commands">';
@@ -3438,8 +3438,8 @@ function forumimproved_make_mail_post($course, $cm, $forum, $discussion, $post, 
 // Context link to post if required
     if ($link) {
         $output .= '<div class="link">';
-        $output .= '<a target="_blank" href="'.$CFG->wwwroot.'/mod/forumimproved/discuss.php?d='.$post->discussion.'#p'.$post->id.'">'.
-                     get_string('postincontext', 'forumimproved').'</a>';
+        $output .= '<a target="_blank" href="'.$CFG->wwwroot.'/mod/forumplusone/discuss.php?d='.$post->discussion.'#p'.$post->id.'">'.
+                     get_string('postincontext', 'forumplusone').'</a>';
         $output .= '</div>';
     }
 
@@ -3457,18 +3457,18 @@ function forumimproved_make_mail_post($course, $cm, $forum, $discussion, $post, 
  * @param string $options the context id
  * @return array an associative array of the user's rating permissions
  */
-function forumimproved_rating_permissions($contextid, $component, $ratingarea) {
+function forumplusone_rating_permissions($contextid, $component, $ratingarea) {
     $context = context::instance_by_id($contextid, MUST_EXIST);
-    if ($component != 'mod_forumimproved' || $ratingarea != 'post') {
+    if ($component != 'mod_forumplusone' || $ratingarea != 'post') {
         // We don't know about this component/ratingarea so just return null to get the
         // default restrictive permissions.
         return null;
     }
     return array(
-        'view'    => has_capability('mod/forumimproved:viewrating', $context),
-        'viewany' => has_capability('mod/forumimproved:viewanyrating', $context),
-        'viewall' => has_capability('mod/forumimproved:viewallratings', $context),
-        'rate'    => has_capability('mod/forumimproved:rate', $context)
+        'view'    => has_capability('mod/forumplusone:viewrating', $context),
+        'viewany' => has_capability('mod/forumplusone:viewanyrating', $context),
+        'viewall' => has_capability('mod/forumplusone:viewallratings', $context),
+        'rate'    => has_capability('mod/forumplusone:rate', $context)
     );
 }
 
@@ -3476,7 +3476,7 @@ function forumimproved_rating_permissions($contextid, $component, $ratingarea) {
  * Validates a submitted rating
  * @param array $params submitted data
  *            context => object the context in which the rated items exists [required]
- *            component => The component for this module - should always be mod_forumimproved [required]
+ *            component => The component for this module - should always be mod_forumplusone [required]
  *            ratingarea => object the context in which the rated items exists [required]
  *            itemid => int the ID of the object being rated [required]
  *            scaleid => int the scale from which the user can select a rating. Used for bounds checking. [required]
@@ -3485,11 +3485,11 @@ function forumimproved_rating_permissions($contextid, $component, $ratingarea) {
  *            aggregation => int the aggregation method to apply when calculating grades ie RATING_AGGREGATE_AVERAGE [required]
  * @return boolean true if the rating is valid. Will throw rating_exception if not
  */
-function forumimproved_rating_validate($params) {
+function forumplusone_rating_validate($params) {
     global $DB, $USER;
 
-    // Check the component is mod_forumimproved
-    if ($params['component'] != 'mod_forumimproved') {
+    // Check the component is mod_forumplusone
+    if ($params['component'] != 'mod_forumplusone') {
         throw new rating_exception('invalidcomponent');
     }
 
@@ -3503,12 +3503,12 @@ function forumimproved_rating_validate($params) {
         throw new rating_exception('nopermissiontorate');
     }
 
-    // Fetch all the related records ... we need to do this anyway to call forumimproved_user_can_see_post
-    $post = $DB->get_record('forumimproved_posts', array('id' => $params['itemid'], 'userid' => $params['rateduserid']), '*', MUST_EXIST);
-    $discussion = $DB->get_record('forumimproved_discussions', array('id' => $post->discussion), '*', MUST_EXIST);
-    $forum = $DB->get_record('forumimproved', array('id' => $discussion->forum), '*', MUST_EXIST);
+    // Fetch all the related records ... we need to do this anyway to call forumplusone_user_can_see_post
+    $post = $DB->get_record('forumplusone_posts', array('id' => $params['itemid'], 'userid' => $params['rateduserid']), '*', MUST_EXIST);
+    $discussion = $DB->get_record('forumplusone_discussions', array('id' => $post->discussion), '*', MUST_EXIST);
+    $forum = $DB->get_record('forumplusone', array('id' => $discussion->forum), '*', MUST_EXIST);
     $course = $DB->get_record('course', array('id' => $forum->course), '*', MUST_EXIST);
-    $cm = get_coursemodule_from_instance('forumimproved', $forum->id, $course->id , false, MUST_EXIST);
+    $cm = get_coursemodule_from_instance('forumplusone', $forum->id, $course->id , false, MUST_EXIST);
     $context = context_module::instance($cm->id);
 
     // Make sure the context provided is the context of the forum
@@ -3565,7 +3565,7 @@ function forumimproved_rating_validate($params) {
     }
 
     // perform some final capability checks
-    if (!forumimproved_user_can_see_post($forum, $discussion, $post, $USER, $cm)) {
+    if (!forumplusone_user_can_see_post($forum, $discussion, $post, $USER, $cm)) {
         throw new rating_exception('nopermissiontorate');
     }
 
@@ -3578,15 +3578,15 @@ function forumimproved_rating_validate($params) {
  * @param string $search
  * @return string
  */
-function forumimproved_search_form($course, $forumid=null, $search='') {
+function forumplusone_search_form($course, $forumid=null, $search='') {
     global $CFG;
 
-    $output  = '<div class="forumimproved-search">';
-    $output .= '<form action="'.$CFG->wwwroot.'/mod/forumimproved/search.php">';
+    $output  = '<div class="forumplusone-search">';
+    $output .= '<form action="'.$CFG->wwwroot.'/mod/forumplusone/search.php">';
     $output .= '<fieldset class="invisiblefieldset">';
-    $output .= '<label class="accesshide" for="search" >'.get_string('search', 'forumimproved').'</label>';
-    $output .= '<input id="search" name="search" type="search" placeholder="'.get_string('search', 'forumimproved').'" value="'.s($search, true).'"/>';
-    $output .= '<input id="searchforums" value="'.get_string('searchforums', 'forumimproved').'" type="submit" />';
+    $output .= '<label class="accesshide" for="search" >'.get_string('search', 'forumplusone').'</label>';
+    $output .= '<input id="search" name="search" type="search" placeholder="'.get_string('search', 'forumplusone').'" value="'.s($search, true).'"/>';
+    $output .= '<input id="searchforums" value="'.get_string('searchforums', 'forumplusone').'" type="submit" />';
     $output .= '<input name="id" type="hidden" value="'.$course->id.'" />';
     if ($forumid != null) {
         $output .= '<input name="forumid" type="hidden" value="'.s($forumid).'" />';
@@ -3603,7 +3603,7 @@ function forumimproved_search_form($course, $forumid=null, $search='') {
  * @global object
  * @global object
  */
-function forumimproved_set_return() {
+function forumplusone_set_return() {
     global $CFG, $SESSION;
 
     // If its an AJAX_SCRIPT then it makes no sense to set this variable.
@@ -3631,7 +3631,7 @@ function forumimproved_set_return() {
  * @param string $default
  * @return string
  */
-function forumimproved_go_back_to($default) {
+function forumplusone_go_back_to($default) {
     global $SESSION;
 
     if (!empty($SESSION->fromdiscussion)
@@ -3640,7 +3640,7 @@ function forumimproved_go_back_to($default) {
         // ajax page and we will end up redirecting incorrectly to route.php.
         $murl = new moodle_url($SESSION->fromdiscussion);
         $path = $murl->get_path();
-        if (strpos($path, '/mod/forumimproved/route.php') === 0) {
+        if (strpos($path, '/mod/forumplusone/route.php') === 0) {
             // OK - this is bad, we are not using AJAX but the redirect url is an AJAX url, so kill it.
             unset($SESSION->fromdiscussion);
         }
@@ -3667,32 +3667,32 @@ function forumimproved_go_back_to($default) {
  * @param int $forumto target forum id
  * @return bool success
  */
-function forumimproved_move_attachments($discussion, $forumfrom, $forumto) {
+function forumplusone_move_attachments($discussion, $forumfrom, $forumto) {
     global $DB;
 
     $fs = get_file_storage();
 
-    $newcm = get_coursemodule_from_instance('forumimproved', $forumto);
-    $oldcm = get_coursemodule_from_instance('forumimproved', $forumfrom);
+    $newcm = get_coursemodule_from_instance('forumplusone', $forumto);
+    $oldcm = get_coursemodule_from_instance('forumplusone', $forumfrom);
 
     $newcontext = context_module::instance($newcm->id);
     $oldcontext = context_module::instance($oldcm->id);
 
     // loop through all posts, better not use attachment flag ;-)
-    if ($posts = $DB->get_records('forumimproved_posts', array('discussion'=>$discussion->id), '', 'id, attachment')) {
+    if ($posts = $DB->get_records('forumplusone_posts', array('discussion'=>$discussion->id), '', 'id, attachment')) {
         foreach ($posts as $post) {
             $fs->move_area_files_to_new_context($oldcontext->id,
-                    $newcontext->id, 'mod_forumimproved', 'post', $post->id);
+                    $newcontext->id, 'mod_forumplusone', 'post', $post->id);
             $attachmentsmoved = $fs->move_area_files_to_new_context($oldcontext->id,
-                    $newcontext->id, 'mod_forumimproved', 'attachment', $post->id);
+                    $newcontext->id, 'mod_forumplusone', 'attachment', $post->id);
             if ($attachmentsmoved > 0 && $post->attachment != '1') {
                 // Weird - let's fix it
                 $post->attachment = '1';
-                $DB->update_record('forumimproved_posts', $post);
+                $DB->update_record('forumplusone_posts', $post);
             } else if ($attachmentsmoved == 0 && $post->attachment != '') {
                 // Weird - let's fix it
                 $post->attachment = '';
-                $DB->update_record('forumimproved_posts', $post);
+                $DB->update_record('forumplusone_posts', $post);
             }
         }
     }
@@ -3711,7 +3711,7 @@ function forumimproved_move_attachments($discussion, $forumfrom, $forumto) {
  * @param string $type html/text/separateimages
  * @return mixed string or array of (html text withouth images and image HTML)
  */
-function forumimproved_print_attachments($post, $cm, $type) {
+function forumplusone_print_attachments($post, $cm, $type) {
     global $CFG, $DB, $USER, $OUTPUT;
 
     if (empty($post->attachment)) {
@@ -3725,20 +3725,20 @@ function forumimproved_print_attachments($post, $cm, $type) {
     if (!$context = context_module::instance($cm->id)) {
         return $type !== 'separateimages' ? '' : array('', '');
     }
-    $strattachment = get_string('attachment', 'forumimproved');
+    $strattachment = get_string('attachment', 'forumplusone');
 
     $fs = get_file_storage();
 
     $imagereturn = '';
     $output = '';
 
-    $canexport = !empty($CFG->enableportfolios) && empty(forumimproved_get_cm_forum($cm)->anonymous) && (has_capability('mod/forumimproved:exportpost', $context) || ($post->userid == $USER->id && has_capability('mod/forumimproved:exportownpost', $context)));
+    $canexport = !empty($CFG->enableportfolios) && empty(forumplusone_get_cm_forum($cm)->anonymous) && (has_capability('mod/forumplusone:exportpost', $context) || ($post->userid == $USER->id && has_capability('mod/forumplusone:exportownpost', $context)));
 
     if ($canexport) {
         require_once($CFG->libdir.'/portfoliolib.php');
     }
 
-    $files = $fs->get_area_files($context->id, 'mod_forumimproved', 'attachment', $post->id, "timemodified", false);
+    $files = $fs->get_area_files($context->id, 'mod_forumplusone', 'attachment', $post->id, "timemodified", false);
     if ($files) {
         if ($canexport) {
             $button = new portfolio_add_button();
@@ -3747,13 +3747,13 @@ function forumimproved_print_attachments($post, $cm, $type) {
             $filename = $file->get_filename();
             $mimetype = $file->get_mimetype();
             $iconimage = $OUTPUT->pix_icon(file_file_icon($file), get_mimetype_description($file), 'moodle', array('class' => 'icon'));
-            $path = file_encode_url($CFG->wwwroot.'/pluginfile.php', '/'.$context->id.'/mod_forumimproved/attachment/'.$post->id.'/'.$filename);
+            $path = file_encode_url($CFG->wwwroot.'/pluginfile.php', '/'.$context->id.'/mod_forumplusone/attachment/'.$post->id.'/'.$filename);
 
             if ($type == 'html') {
                 $output .= "<a href=\"$path\">$iconimage</a> ";
                 $output .= "<a href=\"$path\">".s($filename)."</a>";
                 if ($canexport) {
-                    $button->set_callback_options('forumimproved_portfolio_caller', array('postid' => $post->id, 'attachment' => $file->get_id()), 'mod_forumimproved');
+                    $button->set_callback_options('forumplusone_portfolio_caller', array('postid' => $post->id, 'attachment' => $file->get_id()), 'mod_forumplusone');
                     $button->set_format_by_file($file);
                     $output .= $button->to_html(PORTFOLIO_ADD_ICON_LINK);
                 }
@@ -3767,7 +3767,7 @@ function forumimproved_print_attachments($post, $cm, $type) {
                     // Image attachments don't get printed as links
                     $imagereturn .= "<br /><img src=\"$path\" alt=\"\" />";
                     if ($canexport) {
-                        $button->set_callback_options('forumimproved_portfolio_caller', array('postid' => $post->id, 'attachment' => $file->get_id()), 'mod_forumimproved');
+                        $button->set_callback_options('forumplusone_portfolio_caller', array('postid' => $post->id, 'attachment' => $file->get_id()), 'mod_forumplusone');
                         $button->set_format_by_file($file);
                         $imagereturn .= $button->to_html(PORTFOLIO_ADD_ICON_LINK);
                     }
@@ -3775,7 +3775,7 @@ function forumimproved_print_attachments($post, $cm, $type) {
                     $output .= "<a href=\"$path\">$iconimage</a> ";
                     $output .= format_text("<a href=\"$path\">".s($filename)."</a>", FORMAT_HTML, array('context'=>$context));
                     if ($canexport) {
-                        $button->set_callback_options('forumimproved_portfolio_caller', array('postid' => $post->id, 'attachment' => $file->get_id()), 'mod_forumimproved');
+                        $button->set_callback_options('forumplusone_portfolio_caller', array('postid' => $post->id, 'attachment' => $file->get_id()), 'mod_forumplusone');
                         $button->set_format_by_file($file);
                         $output .= $button->to_html(PORTFOLIO_ADD_ICON_LINK);
                     }
@@ -3789,7 +3789,7 @@ function forumimproved_print_attachments($post, $cm, $type) {
                     'file' => $file,
                     'cmid' => $cm->id,
                     'course' => $cm->course,
-                    'forumimproved' => $cm->instance));
+                    'forumplusone' => $cm->instance));
                 $output .= '<br />';
             }
         }
@@ -3810,24 +3810,24 @@ function forumimproved_print_attachments($post, $cm, $type) {
 /**
  * Lists all browsable file areas
  *
- * @package  mod_forumimproved
+ * @package  mod_forumplusone
  * @category files
  * @param stdClass $course course object
  * @param stdClass $cm course module object
  * @param stdClass $context context object
  * @return array
  */
-function forumimproved_get_file_areas($course, $cm, $context) {
+function forumplusone_get_file_areas($course, $cm, $context) {
     return array(
-        'attachment' => get_string('areaattachment', 'mod_forumimproved'),
-        'post' => get_string('areapost', 'mod_forumimproved'),
+        'attachment' => get_string('areaattachment', 'mod_forumplusone'),
+        'post' => get_string('areapost', 'mod_forumplusone'),
     );
 }
 
 /**
  * File browsing support for forum module.
  *
- * @package  mod_forumimproved
+ * @package  mod_forumplusone
  * @category files
  * @param stdClass $browser file browser object
  * @param stdClass $areas file areas
@@ -3840,7 +3840,7 @@ function forumimproved_get_file_areas($course, $cm, $context) {
  * @param string $filename file name
  * @return file_info instance or null if not found
  */
-function forumimproved_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
+function forumplusone_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
     global $CFG, $DB, $USER;
 
     if ($context->contextlevel != CONTEXT_MODULE) {
@@ -3852,16 +3852,16 @@ function forumimproved_get_file_info($browser, $areas, $course, $cm, $context, $
         return null;
     }
 
-    // Note that forumimproved_user_can_see_post() additionally allows access for parent roles
+    // Note that forumplusone_user_can_see_post() additionally allows access for parent roles
     // and it explicitly checks qanda forum type, too. One day, when we stop requiring
     // course:managefiles, we will need to extend this.
-    if (!has_capability('mod/forumimproved:viewdiscussion', $context)) {
+    if (!has_capability('mod/forumplusone:viewdiscussion', $context)) {
         return null;
     }
 
     if (is_null($itemid)) {
-        require_once($CFG->dirroot.'/mod/forumimproved/locallib.php');
-        return new forumimproved_file_info_container($browser, $course, $cm, $context, $areas, $filearea);
+        require_once($CFG->dirroot.'/mod/forumplusone/locallib.php');
+        return new forumplusone_file_info_container($browser, $course, $cm, $context, $areas, $filearea);
     }
 
     static $cached = array();
@@ -3873,7 +3873,7 @@ function forumimproved_get_file_info($browser, $areas, $course, $cm, $context, $
 
     if (isset($cached['post']) && $cached['post']->id == $itemid) {
         $post = $cached['post'];
-    } else if ($post = $DB->get_record('forumimproved_posts', array('id' => $itemid))) {
+    } else if ($post = $DB->get_record('forumplusone_posts', array('id' => $itemid))) {
         $cached['post'] = $post;
     } else {
         return null;
@@ -3881,7 +3881,7 @@ function forumimproved_get_file_info($browser, $areas, $course, $cm, $context, $
 
     if (isset($cached['discussion']) && $cached['discussion']->id == $post->discussion) {
         $discussion = $cached['discussion'];
-    } else if ($discussion = $DB->get_record('forumimproved_discussions', array('id' => $post->discussion))) {
+    } else if ($discussion = $DB->get_record('forumplusone_discussions', array('id' => $post->discussion))) {
         $cached['discussion'] = $discussion;
     } else {
         return null;
@@ -3889,7 +3889,7 @@ function forumimproved_get_file_info($browser, $areas, $course, $cm, $context, $
 
     if (isset($cached['forum']) && $cached['forum']->id == $cm->instance) {
         $forum = $cached['forum'];
-    } else if ($forum = $DB->get_record('forumimproved', array('id' => $cm->instance))) {
+    } else if ($forum = $DB->get_record('forumplusone', array('id' => $cm->instance))) {
         $cached['forum'] = $forum;
     } else {
         return null;
@@ -3898,7 +3898,7 @@ function forumimproved_get_file_info($browser, $areas, $course, $cm, $context, $
     $fs = get_file_storage();
     $filepath = is_null($filepath) ? '/' : $filepath;
     $filename = is_null($filename) ? '.' : $filename;
-    if (!($storedfile = $fs->get_file($context->id, 'mod_forumimproved', $filearea, $itemid, $filepath, $filename))) {
+    if (!($storedfile = $fs->get_file($context->id, 'mod_forumplusone', $filearea, $itemid, $filepath, $filename))) {
         return null;
     }
 
@@ -3916,7 +3916,7 @@ function forumimproved_get_file_info($browser, $areas, $course, $cm, $context, $
     }
 
     // Make sure we're allowed to see it...
-    if (!forumimproved_user_can_see_post($forum, $discussion, $post, NULL, $cm)) {
+    if (!forumplusone_user_can_see_post($forum, $discussion, $post, NULL, $cm)) {
         return null;
     }
 
@@ -3927,7 +3927,7 @@ function forumimproved_get_file_info($browser, $areas, $course, $cm, $context, $
 /**
  * Serves the forum attachments. Implements needed access control ;-)
  *
- * @package  mod_forumimproved
+ * @package  mod_forumplusone
  * @category files
  * @param stdClass $course course object
  * @param stdClass $cm course module object
@@ -3938,7 +3938,7 @@ function forumimproved_get_file_info($browser, $areas, $course, $cm, $context, $
  * @param array $options additional options affecting the file serving
  * @return bool false if file not found, does not return if found - justsend the file
  */
-function forumimproved_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
+function forumplusone_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
     global $CFG, $DB;
 
     if ($context->contextlevel != CONTEXT_MODULE) {
@@ -3947,10 +3947,10 @@ function forumimproved_pluginfile($course, $cm, $context, $filearea, $args, $for
 
     require_course_login($course, true, $cm);
 
-    $areas = forumimproved_get_file_areas($course, $cm, $context);
+    $areas = forumplusone_get_file_areas($course, $cm, $context);
 
     // Try comment area first. SC INT-4387.
-    forumimproved_forum_comments_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, $options);
+    forumplusone_forum_comments_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, $options);
 
     // filearea must contain a real area
     if (!isset($areas[$filearea])) {
@@ -3959,21 +3959,21 @@ function forumimproved_pluginfile($course, $cm, $context, $filearea, $args, $for
 
     $postid = (int)array_shift($args);
 
-    if (!$post = $DB->get_record('forumimproved_posts', array('id'=>$postid))) {
+    if (!$post = $DB->get_record('forumplusone_posts', array('id'=>$postid))) {
         return false;
     }
 
-    if (!$discussion = $DB->get_record('forumimproved_discussions', array('id'=>$post->discussion))) {
+    if (!$discussion = $DB->get_record('forumplusone_discussions', array('id'=>$post->discussion))) {
         return false;
     }
 
-    if (!$forum = $DB->get_record('forumimproved', array('id'=>$cm->instance))) {
+    if (!$forum = $DB->get_record('forumplusone', array('id'=>$cm->instance))) {
         return false;
     }
 
     $fs = get_file_storage();
     $relativepath = implode('/', $args);
-    $fullpath = "/$context->id/mod_forumimproved/$filearea/$postid/$relativepath";
+    $fullpath = "/$context->id/mod_forumplusone/$filearea/$postid/$relativepath";
     if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
         return false;
     }
@@ -3989,7 +3989,7 @@ function forumimproved_pluginfile($course, $cm, $context, $filearea, $args, $for
     }
 
     // Make sure we're allowed to see it...
-    if (!forumimproved_user_can_see_post($forum, $discussion, $post, NULL, $cm)) {
+    if (!forumplusone_user_can_see_post($forum, $discussion, $post, NULL, $cm)) {
         return false;
     }
 
@@ -4006,15 +4006,15 @@ function forumimproved_pluginfile($course, $cm, $context, $filearea, $args, $for
  * @param object $cm
  * @param mixed $mform
  * @param string $unused
- * @param \mod_forumimproved\upload_file $uploader
+ * @param \mod_forumplusone\upload_file $uploader
  * @return bool
  */
-function forumimproved_add_attachment($post, $forum, $cm, $mform=null, $unused=null, \mod_forumimproved\upload_file $uploader = null) {
+function forumplusone_add_attachment($post, $forum, $cm, $mform=null, $unused=null, \mod_forumplusone\upload_file $uploader = null) {
     global $DB;
 
-    if ($uploader instanceof \mod_forumimproved\upload_file) {
+    if ($uploader instanceof \mod_forumplusone\upload_file) {
         $files = $uploader->process_file_upload($post->id);
-        $DB->set_field('forumimproved_posts', 'attachment', empty($files) ? 0 : 1, array('id' => $post->id));
+        $DB->set_field('forumplusone_posts', 'attachment', empty($files) ? 0 : 1, array('id' => $post->id));
         return true;
     }
 
@@ -4030,10 +4030,10 @@ function forumimproved_add_attachment($post, $forum, $cm, $mform=null, $unused=n
 
     $info = file_get_draft_area_info($post->attachments);
     $present = ($info['filecount']>0) ? '1' : '';
-    file_save_draft_area_files($post->attachments, $context->id, 'mod_forumimproved', 'attachment', $post->id,
-            mod_forumimproved_post_form::attachment_options($forum));
+    file_save_draft_area_files($post->attachments, $context->id, 'mod_forumplusone', 'attachment', $post->id,
+            mod_forumplusone_post_form::attachment_options($forum));
 
-    $DB->set_field('forumimproved_posts', 'attachment', $present, array('id'=>$post->id));
+    $DB->set_field('forumplusone_posts', 'attachment', $present, array('id'=>$post->id));
 
     return true;
 }
@@ -4047,19 +4047,19 @@ function forumimproved_add_attachment($post, $forum, $cm, $mform=null, $unused=n
  * @param object $post
  * @param mixed $mform
  * @param string $message
- * @param \mod_forumimproved\upload_file $uploader
+ * @param \mod_forumplusone\upload_file $uploader
  * @return int
  */
-function forumimproved_add_new_post($post, $mform, &$message, \mod_forumimproved\upload_file $uploader = null) {
+function forumplusone_add_new_post($post, $mform, &$message, \mod_forumplusone\upload_file $uploader = null) {
     global $USER, $CFG, $DB;
 
-    $discussion = $DB->get_record('forumimproved_discussions', array('id' => $post->discussion));
-    $forum      = $DB->get_record('forumimproved', array('id' => $discussion->forum));
-    $cm         = get_coursemodule_from_instance('forumimproved', $forum->id);
+    $discussion = $DB->get_record('forumplusone_discussions', array('id' => $post->discussion));
+    $forum      = $DB->get_record('forumplusone', array('id' => $discussion->forum));
+    $cm         = get_coursemodule_from_instance('forumplusone', $forum->id);
     $context    = context_module::instance($cm->id);
 
     $post->created    = $post->modified = time();
-    $post->mailed     = FORUMIMPROVED_MAILED_PENDING;
+    $post->mailed     = FORUMPLUSONE_MAILED_PENDING;
     $post->userid     = $USER->id;
     $post->attachment = "";
     if (!isset($post->totalscore)) {
@@ -4069,22 +4069,22 @@ function forumimproved_add_new_post($post, $mform, &$message, \mod_forumimproved
         $post->mailnow    = 0;
     }
 
-    $post->id = $DB->insert_record("forumimproved_posts", $post);
-    $post->message = file_save_draft_area_files($post->itemid, $context->id, 'mod_forumimproved', 'post', $post->id,
-            mod_forumimproved_post_form::editor_options($context, null), $post->message);
-    $DB->set_field('forumimproved_posts', 'message', $post->message, array('id'=>$post->id));
-    forumimproved_add_attachment($post, $forum, $cm, $mform, $message, $uploader);
+    $post->id = $DB->insert_record("forumplusone_posts", $post);
+    $post->message = file_save_draft_area_files($post->itemid, $context->id, 'mod_forumplusone', 'post', $post->id,
+            mod_forumplusone_post_form::editor_options($context, null), $post->message);
+    $DB->set_field('forumplusone_posts', 'message', $post->message, array('id'=>$post->id));
+    forumplusone_add_attachment($post, $forum, $cm, $mform, $message, $uploader);
 
     // Update discussion modified date
     if (empty($post->privatereply)) {
-        $DB->set_field("forumimproved_discussions", "timemodified", $post->modified, array("id" => $post->discussion));
-        $DB->set_field("forumimproved_discussions", "usermodified", $post->userid, array("id" => $post->discussion));
+        $DB->set_field("forumplusone_discussions", "timemodified", $post->modified, array("id" => $post->discussion));
+        $DB->set_field("forumplusone_discussions", "usermodified", $post->userid, array("id" => $post->discussion));
     }
 
-    forumimproved_mark_post_read($post->userid, $post, $post->forum);
+    forumplusone_mark_post_read($post->userid, $post, $post->forum);
 
     // Let Moodle know that assessable content is uploaded (eg for plagiarism detection)
-    forumimproved_trigger_content_uploaded_event($post, $cm, 'forumimproved_add_new_post');
+    forumplusone_trigger_content_uploaded_event($post, $cm, 'forumplusone_add_new_post');
 
     return $post->id;
 }
@@ -4098,20 +4098,20 @@ function forumimproved_add_new_post($post, $mform, &$message, \mod_forumimproved
  * @param object $post
  * @param mixed $mform
  * @param string $message
- * @param \mod_forumimproved\upload_file $uploader
+ * @param \mod_forumplusone\upload_file $uploader
  * @return bool
  */
-function forumimproved_update_post($post, $mform, &$message, \mod_forumimproved\upload_file $uploader = null) {
+function forumplusone_update_post($post, $mform, &$message, \mod_forumplusone\upload_file $uploader = null) {
     global $USER, $CFG, $DB;
 
-    $discussion = $DB->get_record('forumimproved_discussions', array('id' => $post->discussion));
-    $forum      = $DB->get_record('forumimproved', array('id' => $discussion->forum));
-    $cm         = get_coursemodule_from_instance('forumimproved', $forum->id);
+    $discussion = $DB->get_record('forumplusone_discussions', array('id' => $post->discussion));
+    $forum      = $DB->get_record('forumplusone', array('id' => $discussion->forum));
+    $cm         = get_coursemodule_from_instance('forumplusone', $forum->id);
     $context    = context_module::instance($cm->id);
 
     $post->modified = time();
 
-    $DB->update_record('forumimproved_posts', $post);
+    $DB->update_record('forumplusone_posts', $post);
 
     if (empty($post->privatereply)) {
         $discussion->timemodified = $post->modified; // last modified tracking
@@ -4123,18 +4123,18 @@ function forumimproved_update_post($post, $mform, &$message, \mod_forumimproved\
         $discussion->timestart = $post->timestart;
         $discussion->timeend   = $post->timeend;
     }
-    $post->message = file_save_draft_area_files($post->itemid, $context->id, 'mod_forumimproved', 'post', $post->id,
-            mod_forumimproved_post_form::editor_options($context, $post->id), $post->message);
-    $DB->set_field('forumimproved_posts', 'message', $post->message, array('id'=>$post->id));
+    $post->message = file_save_draft_area_files($post->itemid, $context->id, 'mod_forumplusone', 'post', $post->id,
+            mod_forumplusone_post_form::editor_options($context, $post->id), $post->message);
+    $DB->set_field('forumplusone_posts', 'message', $post->message, array('id'=>$post->id));
 
-    $DB->update_record('forumimproved_discussions', $discussion);
+    $DB->update_record('forumplusone_discussions', $discussion);
 
-    forumimproved_add_attachment($post, $forum, $cm, $mform, $message, $uploader);
+    forumplusone_add_attachment($post, $forum, $cm, $mform, $message, $uploader);
 
-    forumimproved_mark_post_read($post->userid, $post, $post->forum);
+    forumplusone_mark_post_read($post->userid, $post, $post->forum);
 
     // Let Moodle know that assessable content is uploaded (eg for plagiarism detection)
-    forumimproved_trigger_content_uploaded_event($post, $cm, 'forumimproved_update_post');
+    forumplusone_trigger_content_uploaded_event($post, $cm, 'forumplusone_update_post');
 
     return true;
 }
@@ -4147,10 +4147,10 @@ function forumimproved_update_post($post, $mform, &$message, \mod_forumimproved\
  * @param mixed $mform
  * @param string $unused
  * @param int $userid
- * @param \mod_forumimproved\upload_file $uploader
+ * @param \mod_forumplusone\upload_file $uploader
  * @return object
  */
-function forumimproved_add_discussion($discussion, $mform=null, $unused=null, $userid=null, \mod_forumimproved\upload_file $uploader = null) {
+function forumplusone_add_discussion($discussion, $mform=null, $unused=null, $userid=null, \mod_forumplusone\upload_file $uploader = null) {
     global $USER, $CFG, $DB;
 
     $timenow = time();
@@ -4162,8 +4162,8 @@ function forumimproved_add_discussion($discussion, $mform=null, $unused=null, $u
     // The first post is stored as a real post, and linked
     // to from the discuss entry.
 
-    $forum = $DB->get_record('forumimproved', array('id'=>$discussion->forum));
-    $cm    = get_coursemodule_from_instance('forumimproved', $forum->id);
+    $forum = $DB->get_record('forumplusone', array('id'=>$discussion->forum));
+    $cm    = get_coursemodule_from_instance('forumplusone', $forum->id);
 
     $post = new stdClass();
     $post->discussion    = 0;
@@ -4171,7 +4171,7 @@ function forumimproved_add_discussion($discussion, $mform=null, $unused=null, $u
     $post->userid        = $userid;
     $post->created       = $timenow;
     $post->modified      = $timenow;
-    $post->mailed        = FORUMIMPROVED_MAILED_PENDING;
+    $post->mailed        = FORUMPLUSONE_MAILED_PENDING;
     $post->message       = $discussion->message;
     $post->messageformat = $discussion->messageformat;
     $post->messagetrust  = $discussion->messagetrust;
@@ -4187,14 +4187,14 @@ function forumimproved_add_discussion($discussion, $mform=null, $unused=null, $u
             $post->reveal = 1;
         }
     }
-    $post->id = $DB->insert_record("forumimproved_posts", $post);
+    $post->id = $DB->insert_record("forumplusone_posts", $post);
 
     // TODO: Fix the calling code so that there always is a $cm when this function is called
     if (!empty($cm->id) && !empty($discussion->itemid)) {   // In "single simple discussions" this may not exist yet
         $context = context_module::instance($cm->id);
-        $text = file_save_draft_area_files($discussion->itemid, $context->id, 'mod_forumimproved', 'post', $post->id,
-                mod_forumimproved_post_form::editor_options($context, null), $post->message);
-        $DB->set_field('forumimproved_posts', 'message', $text, array('id'=>$post->id));
+        $text = file_save_draft_area_files($discussion->itemid, $context->id, 'mod_forumplusone', 'post', $post->id,
+                mod_forumplusone_post_form::editor_options($context, null), $post->message);
+        $DB->set_field('forumplusone_posts', 'message', $text, array('id'=>$post->id));
     }
 
     // Now do the main entry for the discussion, linking to this first post
@@ -4204,22 +4204,22 @@ function forumimproved_add_discussion($discussion, $mform=null, $unused=null, $u
     $discussion->usermodified = $post->userid;
     $discussion->userid       = $userid;
     $discussion->assessed     = 0;
-    $discussion->state        = FORUMIMPROVED_DISCUSSION_STATE_OPEN;
+    $discussion->state        = FORUMPLUSONE_DISCUSSION_STATE_OPEN;
 
-    $post->discussion = $DB->insert_record("forumimproved_discussions", $discussion);
+    $post->discussion = $DB->insert_record("forumplusone_discussions", $discussion);
 
     // Finally, set the pointer on the post.
-    $DB->set_field("forumimproved_posts", "discussion", $post->discussion, array("id"=>$post->id));
+    $DB->set_field("forumplusone_posts", "discussion", $post->discussion, array("id"=>$post->id));
 
     if (!empty($cm->id)) {
-        forumimproved_add_attachment($post, $forum, $cm, $mform, $unused, $uploader);
+        forumplusone_add_attachment($post, $forum, $cm, $mform, $unused, $uploader);
     }
 
-    forumimproved_mark_post_read($post->userid, $post, $post->forum);
+    forumplusone_mark_post_read($post->userid, $post, $post->forum);
 
     // Let Moodle know that assessable content is uploaded (eg for plagiarism detection)
     if (!empty($cm->id)) {
-        forumimproved_trigger_content_uploaded_event($post, $cm, 'forumimproved_add_discussion');
+        forumplusone_trigger_content_uploaded_event($post, $cm, 'forumplusone_add_discussion');
     }
 
     return $post->discussion;
@@ -4236,29 +4236,29 @@ function forumimproved_add_discussion($discussion, $mform=null, $unused=null, $u
  * @param object $post
  * @return string The URL to redirect to
  */
-function forumimproved_verify_and_delete_post($course, $cm, $forum, $modcontext, $discussion, $post) {
+function forumplusone_verify_and_delete_post($course, $cm, $forum, $modcontext, $discussion, $post) {
     global $CFG, $USER;
 
     // Check user capability to delete post.
     $timepassed = time() - $post->created;
-    if (($timepassed > $CFG->maxeditingtime) && !has_capability('mod/forumimproved:deleteanypost', $modcontext)) {
-        print_error("cannotdeletepost", "forumimproved",
-            forumimproved_go_back_to("discuss.php?d=$post->discussion"));
+    if (($timepassed > $CFG->maxeditingtime) && !has_capability('mod/forumplusone:deleteanypost', $modcontext)) {
+        print_error("cannotdeletepost", "forumplusone",
+            forumplusone_go_back_to("discuss.php?d=$post->discussion"));
     }
     if ($post->totalscore) {
         print_error('couldnotdeleteratings', 'rating',
-            forumimproved_go_back_to("discuss.php?d=$post->discussion"));
+            forumplusone_go_back_to("discuss.php?d=$post->discussion"));
     }
-    if (forumimproved_count_replies($post) && !has_capability('mod/forumimproved:deleteanypost', $modcontext)) {
-        print_error("couldnotdeletereplies", "forumimproved",
-            forumimproved_go_back_to("discuss.php?d=$post->discussion"));
+    if (forumplusone_count_replies($post) && !has_capability('mod/forumplusone:deleteanypost', $modcontext)) {
+        print_error("couldnotdeletereplies", "forumplusone",
+            forumplusone_go_back_to("discuss.php?d=$post->discussion"));
     }
     if (!$post->parent) { // post is a discussion topic as well, so delete discussion
         if ($forum->type == 'single') {
-            print_error('cannnotdeletesinglediscussion', 'forumimproved',
-                forumimproved_go_back_to("discuss.php?d=$post->discussion"));
+            print_error('cannnotdeletesinglediscussion', 'forumplusone',
+                forumplusone_go_back_to("discuss.php?d=$post->discussion"));
         }
-        forumimproved_delete_discussion($discussion, false, $course, $cm, $forum);
+        forumplusone_delete_discussion($discussion, false, $course, $cm, $forum);
 
         $params = array(
             'objectid' => $discussion->id,
@@ -4268,15 +4268,15 @@ function forumimproved_verify_and_delete_post($course, $cm, $forum, $modcontext,
             )
         );
 
-        $event = \mod_forumimproved\event\discussion_deleted::create($params);
-        $event->add_record_snapshot('forumimproved_discussions', $discussion);
+        $event = \mod_forumplusone\event\discussion_deleted::create($params);
+        $event->add_record_snapshot('forumplusone_discussions', $discussion);
         $event->trigger();
 
-        return $CFG->wwwroot."/mod/forumimproved/view.php?id=$cm->id";
+        return $CFG->wwwroot."/mod/forumplusone/view.php?id=$cm->id";
 
     }
-    if (!forumimproved_delete_post($post, has_capability('mod/forumimproved:deleteanypost', $modcontext), $course, $cm, $forum)) {
-        print_error('errorwhiledelete', 'forumimproved');
+    if (!forumplusone_delete_post($post, has_capability('mod/forumplusone:deleteanypost', $modcontext), $course, $cm, $forum)) {
+        print_error('errorwhiledelete', 'forumplusone');
     }
     if ($forum->type == 'single') {
         // Single discussion forums are an exception. We show
@@ -4300,12 +4300,12 @@ function forumimproved_verify_and_delete_post($course, $cm, $forum, $modcontext,
     if ($post->userid !== $USER->id) {
         $params['relateduserid'] = $post->userid;
     }
-    $event = \mod_forumimproved\event\post_deleted::create($params);
-    $event->add_record_snapshot('forumimproved_posts', $post);
-    $event->add_record_snapshot('forumimproved_discussions', $discussion);
+    $event = \mod_forumplusone\event\post_deleted::create($params);
+    $event->add_record_snapshot('forumplusone_posts', $post);
+    $event->add_record_snapshot('forumplusone_discussions', $discussion);
     $event->trigger();
 
-    return forumimproved_go_back_to($discussionurl);
+    return forumplusone_go_back_to($discussionurl);
 }
 
 /**
@@ -4319,28 +4319,28 @@ function forumimproved_verify_and_delete_post($course, $cm, $forum, $modcontext,
  * @param object $forum Forum
  * @return bool
  */
-function forumimproved_delete_discussion($discussion, $fulldelete, $course, $cm, $forum) {
+function forumplusone_delete_discussion($discussion, $fulldelete, $course, $cm, $forum) {
     global $DB, $CFG;
     require_once($CFG->libdir.'/completionlib.php');
 
     $result = true;
 
-    if ($posts = $DB->get_records("forumimproved_posts", array("discussion" => $discussion->id))) {
+    if ($posts = $DB->get_records("forumplusone_posts", array("discussion" => $discussion->id))) {
         foreach ($posts as $post) {
             $post->course = $discussion->course;
             $post->forum  = $discussion->forum;
-            if (!forumimproved_delete_post($post, 'ignore', $course, $cm, $forum, $fulldelete)) {
+            if (!forumplusone_delete_post($post, 'ignore', $course, $cm, $forum, $fulldelete)) {
                 $result = false;
             }
         }
     }
 
-    forumimproved_delete_read_records_for_discussion($discussion->id);
+    forumplusone_delete_read_records_for_discussion($discussion->id);
 
-    if (!$DB->delete_records("forumimproved_discussions", array("id"=>$discussion->id))) {
+    if (!$DB->delete_records("forumplusone_discussions", array("id"=>$discussion->id))) {
         $result = false;
     }
-    if (!$DB->delete_records('forumimproved_subs_disc', array('discussion' => $discussion->id))) {
+    if (!$DB->delete_records('forumplusone_subs_disc', array('discussion' => $discussion->id))) {
         $result = false;
     }
 
@@ -4375,16 +4375,16 @@ function forumimproved_delete_discussion($discussion, $fulldelete, $course, $cm,
  *   would otherwise be updated, i.e. when deleting entire forum anyway.
  * @return bool
  */
-function forumimproved_delete_post($post, $children, $course, $cm, $forum, $skipcompletion=false) {
+function forumplusone_delete_post($post, $children, $course, $cm, $forum, $skipcompletion=false) {
     global $DB, $CFG;
     require_once($CFG->libdir.'/completionlib.php');
 
     $context = context_module::instance($cm->id);
 
-    if ($children !== 'ignore' && ($childposts = $DB->get_records('forumimproved_posts', array('parent'=>$post->id)))) {
+    if ($children !== 'ignore' && ($childposts = $DB->get_records('forumplusone_posts', array('parent'=>$post->id)))) {
        if ($children) {
            foreach ($childposts as $childpost) {
-               forumimproved_delete_post($childpost, true, $course, $cm, $forum, $skipcompletion);
+               forumplusone_delete_post($childpost, true, $course, $cm, $forum, $skipcompletion);
            }
        } else {
            return false;
@@ -4395,7 +4395,7 @@ function forumimproved_delete_post($post, $children, $course, $cm, $forum, $skip
     require_once($CFG->dirroot.'/rating/lib.php');
     $delopt = new stdClass;
     $delopt->contextid = $context->id;
-    $delopt->component = 'mod_forumimproved';
+    $delopt->component = 'mod_forumplusone';
     $delopt->ratingarea = 'post';
     $delopt->itemid = $post->id;
     $rm = new rating_manager();
@@ -4403,15 +4403,15 @@ function forumimproved_delete_post($post, $children, $course, $cm, $forum, $skip
 
     //delete attachments
     $fs = get_file_storage();
-    $fs->delete_area_files($context->id, 'mod_forumimproved', 'attachment', $post->id);
-    $fs->delete_area_files($context->id, 'mod_forumimproved', 'post', $post->id);
+    $fs->delete_area_files($context->id, 'mod_forumplusone', 'attachment', $post->id);
+    $fs->delete_area_files($context->id, 'mod_forumplusone', 'post', $post->id);
 
-    if ($DB->delete_records("forumimproved_posts", array("id" => $post->id))) {
+    if ($DB->delete_records("forumplusone_posts", array("id" => $post->id))) {
 
-        forumimproved_delete_read_records_for_post($post->id);
+        forumplusone_delete_read_records_for_post($post->id);
 
     // Just in case we are deleting the last post
-        forumimproved_discussion_update_last_post($post->discussion);
+        forumplusone_discussion_update_last_post($post->discussion);
 
         // Update completion state if we are tracking completion based on number of posts
         // But don't bother when deleting whole thing
@@ -4436,10 +4436,10 @@ function forumimproved_delete_post($post, $children, $course, $cm, $forum, $skip
  * @param string $name
  * @return bool
 */
-function forumimproved_trigger_content_uploaded_event($post, $cm, $name) {
+function forumplusone_trigger_content_uploaded_event($post, $cm, $name) {
     $context = context_module::instance($cm->id);
     $fs = get_file_storage();
-    $files = $fs->get_area_files($context->id, 'mod_forumimproved', 'attachment', $post->id, "timemodified", false);
+    $files = $fs->get_area_files($context->id, 'mod_forumplusone', 'attachment', $post->id, "timemodified", false);
     $params = array(
         'context' => $context,
         'objectid' => $post->id,
@@ -4450,7 +4450,7 @@ function forumimproved_trigger_content_uploaded_event($post, $cm, $name) {
             'triggeredfrom' => $name,
         )
     );
-    $event = \mod_forumimproved\event\assessable_uploaded::create($params);
+    $event = \mod_forumplusone\event\assessable_uploaded::create($params);
     $event->trigger();
     return true;
 }
@@ -4461,7 +4461,7 @@ function forumimproved_trigger_content_uploaded_event($post, $cm, $name) {
  * @param bool $children
  * @return int
  */
-function forumimproved_count_replies($post, $children=true) {
+function forumplusone_count_replies($post, $children=true) {
     global $DB, $USER;
     $count = 0;
 
@@ -4469,14 +4469,14 @@ function forumimproved_count_replies($post, $children=true) {
     $params = array($post->id, $USER->id, $USER->id);
 
     if ($children) {
-        if ($childposts = $DB->get_records_select('forumimproved_posts', $select, $params)) {
+        if ($childposts = $DB->get_records_select('forumplusone_posts', $select, $params)) {
            foreach ($childposts as $childpost) {
                $count ++;                   // For this child
-               $count += forumimproved_count_replies($childpost, true);
+               $count += forumplusone_count_replies($childpost, true);
            }
         }
     } else {
-        $count += $DB->count_records_select('forumimproved_posts', $select, $params);
+        $count += $DB->count_records_select('forumplusone_posts', $select, $params);
     }
 
     return $count;
@@ -4489,9 +4489,9 @@ function forumimproved_count_replies($post, $children=true) {
  * @param mixed $value
  * @return bool
  */
-function forumimproved_forcesubscribe($forumid, $value=1) {
+function forumplusone_forcesubscribe($forumid, $value=1) {
     global $DB;
-    return $DB->set_field("forumimproved", "forcesubscribe", $value, array("id" => $forumid));
+    return $DB->set_field("forumplusone", "forcesubscribe", $value, array("id" => $forumid));
 }
 
 /**
@@ -4499,21 +4499,21 @@ function forumimproved_forcesubscribe($forumid, $value=1) {
  * @param object $forum
  * @return bool
  */
-function forumimproved_is_forcesubscribed($forum) {
+function forumplusone_is_forcesubscribed($forum) {
     global $DB;
     if (isset($forum->forcesubscribe)) {    // then we use that
-        return ($forum->forcesubscribe == FORUMIMPROVED_FORCESUBSCRIBE);
+        return ($forum->forcesubscribe == FORUMPLUSONE_FORCESUBSCRIBE);
     } else {   // Check the database
-       return ($DB->get_field('forumimproved', 'forcesubscribe', array('id' => $forum)) == FORUMIMPROVED_FORCESUBSCRIBE);
+       return ($DB->get_field('forumplusone', 'forcesubscribe', array('id' => $forum)) == FORUMPLUSONE_FORCESUBSCRIBE);
     }
 }
 
-function forumimproved_get_forcesubscribed($forum) {
+function forumplusone_get_forcesubscribed($forum) {
     global $DB;
     if (isset($forum->forcesubscribe)) {    // then we use that
         return $forum->forcesubscribe;
     } else {   // Check the database
-        return $DB->get_field('forumimproved', 'forcesubscribe', array('id' => $forum));
+        return $DB->get_field('forumplusone', 'forcesubscribe', array('id' => $forum));
     }
 }
 
@@ -4523,27 +4523,27 @@ function forumimproved_get_forcesubscribed($forum) {
  * @param object $forum
  * @return bool
  */
-function forumimproved_is_subscribed($userid, $forum) {
+function forumplusone_is_subscribed($userid, $forum) {
     global $DB;
     if (is_numeric($forum)) {
-        $forum = $DB->get_record('forumimproved', array('id' => $forum));
+        $forum = $DB->get_record('forumplusone', array('id' => $forum));
     }
     // If forum is force subscribed and has allowforcesubscribe, then user is subscribed.
-    $cm = get_coursemodule_from_instance('forumimproved', $forum->id);
-    if (forumimproved_is_forcesubscribed($forum) && $cm &&
-            has_capability('mod/forumimproved:allowforcesubscribe', context_module::instance($cm->id), $userid)) {
+    $cm = get_coursemodule_from_instance('forumplusone', $forum->id);
+    if (forumplusone_is_forcesubscribed($forum) && $cm &&
+            has_capability('mod/forumplusone:allowforcesubscribe', context_module::instance($cm->id), $userid)) {
         return true;
     }
-    return $DB->record_exists("forumimproved_subscriptions", array("userid" => $userid, "forum" => $forum->id));
+    return $DB->record_exists("forumplusone_subscriptions", array("userid" => $userid, "forum" => $forum->id));
 }
 
-function forumimproved_get_subscribed_forums($course) {
+function forumplusone_get_subscribed_forums($course) {
     global $USER, $CFG, $DB;
     $sql = "SELECT f.id
-              FROM {forumimproved} f
-                   LEFT JOIN {forumimproved_subscriptions} fs ON (fs.forum = f.id AND fs.userid = ?)
+              FROM {forumplusone} f
+                   LEFT JOIN {forumplusone_subscriptions} fs ON (fs.forum = f.id AND fs.userid = ?)
              WHERE f.course = ?
-                   AND (f.forcesubscribe = ".FORUMIMPROVED_FORCESUBSCRIBE." OR fs.id IS NOT NULL)";
+                   AND (f.forcesubscribe = ".FORUMPLUSONE_FORCESUBSCRIBE." OR fs.id IS NOT NULL)";
     if ($subscribed = $DB->get_records_sql($sql, array($USER->id, $course->id))) {
         foreach ($subscribed as $s) {
             $subscribed[$s->id] = $s->id;
@@ -4559,7 +4559,7 @@ function forumimproved_get_subscribed_forums($course) {
  *
  * @return array An array of unsubscribable forums
  */
-function forumimproved_get_optional_subscribed_forums() {
+function forumplusone_get_optional_subscribed_forums() {
     global $USER, $DB;
 
     // Get courses that $USER is enrolled in and can see
@@ -4576,13 +4576,13 @@ function forumimproved_get_optional_subscribed_forums() {
 
     // get all forums from the user's courses that they are subscribed to and which are not set to forced
     $sql = "SELECT f.id, cm.id as cm, cm.visible
-              FROM {forumimproved} f
+              FROM {forumplusone} f
                    JOIN {course_modules} cm ON cm.instance = f.id
                    JOIN {modules} m ON m.name = :modulename AND m.id = cm.module
-                   LEFT JOIN {forumimproved_subscriptions} fs ON (fs.forum = f.id AND fs.userid = :userid)
+                   LEFT JOIN {forumplusone_subscriptions} fs ON (fs.forum = f.id AND fs.userid = :userid)
              WHERE f.forcesubscribe <> :forcesubscribe AND fs.id IS NOT NULL
                    AND cm.course $coursesql";
-    $params = array_merge($courseparams, array('modulename'=>'forumimproved', 'userid'=>$USER->id, 'forcesubscribe'=>FORUMIMPROVED_FORCESUBSCRIBE));
+    $params = array_merge($courseparams, array('modulename'=>'forumplusone', 'userid'=>$USER->id, 'forcesubscribe'=>FORUMPLUSONE_FORCESUBSCRIBE));
     if (!$forums = $DB->get_records_sql($sql, $params)) {
         return array();
     }
@@ -4600,7 +4600,7 @@ function forumimproved_get_optional_subscribed_forums() {
             }
         }
 
-        // subscribe.php only requires 'mod/forumimproved:managesubscriptions' when
+        // subscribe.php only requires 'mod/forumplusone:managesubscriptions' when
         // unsubscribing a user other than yourself so we don't require it here either
 
         // A check for whether the forum has subscription set to forced is built into the SQL above
@@ -4618,15 +4618,15 @@ function forumimproved_get_optional_subscribed_forums() {
  * @param int $forumid
  * @param context_module|null $context Module context, may be omitted if not known or if called for the current module set in page.
  */
-function forumimproved_subscribe($userid, $forumid, $context = null) {
+function forumplusone_subscribe($userid, $forumid, $context = null) {
     global $DB, $PAGE;
 
     require_once(__DIR__.'/repository/discussion.php');
 
-    $repo = new forumimproved_repository_discussion();
+    $repo = new forumplusone_repository_discussion();
     $repo->unsubscribe_all($forumid, $userid);
 
-    if ($DB->record_exists("forumimproved_subscriptions", array("userid"=>$userid, "forum"=>$forumid))) {
+    if ($DB->record_exists("forumplusone_subscriptions", array("userid"=>$userid, "forum"=>$forumid))) {
         return true;
     }
 
@@ -4634,15 +4634,15 @@ function forumimproved_subscribe($userid, $forumid, $context = null) {
     $sub->userid  = $userid;
     $sub->forum = $forumid;
 
-    $result = $DB->insert_record("forumimproved_subscriptions", $sub);
+    $result = $DB->insert_record("forumplusone_subscriptions", $sub);
 
     if (!$context) {
         // Find out forum context. First try to take current page context to save on DB query.
-        if ($PAGE->cm && $PAGE->cm->modname === 'forumimproved' && $PAGE->cm->instance == $forumid
+        if ($PAGE->cm && $PAGE->cm->modname === 'forumplusone' && $PAGE->cm->instance == $forumid
                 && $PAGE->context->contextlevel == CONTEXT_MODULE && $PAGE->context->instanceid == $PAGE->cm->id) {
             $context = $PAGE->context;
         } else {
-            $cm = get_coursemodule_from_instance('forumimproved', $forumid);
+            $cm = get_coursemodule_from_instance('forumplusone', $forumid);
             $context = context_module::instance($cm->id);
         }
     }
@@ -4653,7 +4653,7 @@ function forumimproved_subscribe($userid, $forumid, $context = null) {
         'other' => array('forumid' => $forumid),
 
     );
-    $event  = \mod_forumimproved\event\subscription_created::create($params);
+    $event  = \mod_forumplusone\event\subscription_created::create($params);
     $event->trigger();
 
     return $result;
@@ -4667,21 +4667,21 @@ function forumimproved_subscribe($userid, $forumid, $context = null) {
  * @param int $forumid
  * @param context_module|null $context Module context, may be omitted if not known or if called for the current module set in page.
  */
-function forumimproved_unsubscribe($userid, $forumid, $context = null) {
+function forumplusone_unsubscribe($userid, $forumid, $context = null) {
     global $DB, $PAGE;
 
-    $DB->delete_records('forumimproved_digests', array('userid' => $userid, 'forum' => $forumid));
+    $DB->delete_records('forumplusone_digests', array('userid' => $userid, 'forum' => $forumid));
 
-    if ($forumsubscription = $DB->get_record('forumimproved_subscriptions', array('userid' => $userid, 'forum' => $forumid))) {
-        $DB->delete_records('forumimproved_subscriptions', array('id' => $forumsubscription->id));
+    if ($forumsubscription = $DB->get_record('forumplusone_subscriptions', array('userid' => $userid, 'forum' => $forumid))) {
+        $DB->delete_records('forumplusone_subscriptions', array('id' => $forumsubscription->id));
 
         if (!$context) {
             // Find out forum context. First try to take current page context to save on DB query.
-            if ($PAGE->cm && $PAGE->cm->modname === 'forumimproved' && $PAGE->cm->instance == $forumid
+            if ($PAGE->cm && $PAGE->cm->modname === 'forumplusone' && $PAGE->cm->instance == $forumid
                     && $PAGE->context->contextlevel == CONTEXT_MODULE && $PAGE->context->instanceid == $PAGE->cm->id) {
                 $context = $PAGE->context;
             } else {
-                $cm = get_coursemodule_from_instance('forumimproved', $forumid);
+                $cm = get_coursemodule_from_instance('forumplusone', $forumid);
                 $context = context_module::instance($cm->id);
             }
         }
@@ -4692,8 +4692,8 @@ function forumimproved_unsubscribe($userid, $forumid, $context = null) {
             'other' => array('forumid' => $forumid),
 
         );
-        $event = \mod_forumimproved\event\subscription_deleted::create($params);
-        $event->add_record_snapshot('forumimproved_subscriptions', $forumsubscription);
+        $event = \mod_forumplusone\event\subscription_deleted::create($params);
+        $event->add_record_snapshot('forumplusone_subscriptions', $forumsubscription);
         $event->trigger();
     }
 
@@ -4708,17 +4708,17 @@ function forumimproved_unsubscribe($userid, $forumid, $context = null) {
  * @param object $post
  * @param object $forum
  */
-function forumimproved_post_subscription($post, $forum) {
+function forumplusone_post_subscription($post, $forum) {
 
     global $USER;
 
     $action = '';
-    $subscribed = forumimproved_is_subscribed($USER->id, $forum);
+    $subscribed = forumplusone_is_subscribed($USER->id, $forum);
 
-    if ($forum->forcesubscribe == FORUMIMPROVED_FORCESUBSCRIBE) { // database ignored
+    if ($forum->forcesubscribe == FORUMPLUSONE_FORCESUBSCRIBE) { // database ignored
         return "";
 
-    } elseif (($forum->forcesubscribe == FORUMIMPROVED_DISALLOWSUBSCRIBE)
+    } elseif (($forum->forcesubscribe == FORUMPLUSONE_DISALLOWSUBSCRIBE)
         && !has_capability('moodle/course:manageactivities', context_course::instance($forum->course), $USER->id)) {
         if ($subscribed) {
             $action = 'unsubscribe'; // sanity check, following MDL-14558
@@ -4748,11 +4748,11 @@ function forumimproved_post_subscription($post, $forum) {
 
     switch ($action) {
         case 'subscribe':
-            forumimproved_subscribe($USER->id, $post->forum);
-            return "<p>".get_string("nowsubscribed", "forumimproved", $info)."</p>";
+            forumplusone_subscribe($USER->id, $post->forum);
+            return "<p>".get_string("nowsubscribed", "forumplusone", $info)."</p>";
         case 'unsubscribe':
-            forumimproved_unsubscribe($USER->id, $post->forum);
-            return "<p>".get_string("nownotsubscribed", "forumimproved", $info)."</p>";
+            forumplusone_unsubscribe($USER->id, $post->forum);
+            return "<p>".get_string("nownotsubscribed", "forumplusone", $info)."</p>";
     }
 }
 
@@ -4771,20 +4771,20 @@ function forumimproved_post_subscription($post, $forum) {
  * @param array $subscribed_forums
  * @return string
  */
-function forumimproved_get_subscribe_link($forum, $context, $messages = array(), $cantaccessagroup = false, $fakelink=true, $backtoindex=false, $subscribed_forums=null) {
+function forumplusone_get_subscribe_link($forum, $context, $messages = array(), $cantaccessagroup = false, $fakelink=true, $backtoindex=false, $subscribed_forums=null) {
     global $USER, $PAGE, $OUTPUT;
     $defaultmessages = array(
-        'subscribed' => get_string('unsubscribe', 'forumimproved'),
-        'unsubscribed' => get_string('subscribe', 'forumimproved'),
+        'subscribed' => get_string('unsubscribe', 'forumplusone'),
+        'unsubscribed' => get_string('subscribe', 'forumplusone'),
         'cantaccessgroup' => get_string('no'),
-        'forcesubscribed' => get_string('everyoneissubscribed', 'forumimproved'),
-        'cantsubscribe' => get_string('disallowsubscribe','forumimproved')
+        'forcesubscribed' => get_string('everyoneissubscribed', 'forumplusone'),
+        'cantsubscribe' => get_string('disallowsubscribe','forumplusone')
     );
     $messages = $messages + $defaultmessages;
 
-    if (forumimproved_is_forcesubscribed($forum)) {
+    if (forumplusone_is_forcesubscribed($forum)) {
         return $messages['forcesubscribed'];
-    } else if ($forum->forcesubscribe == FORUMIMPROVED_DISALLOWSUBSCRIBE && !has_capability('mod/forumimproved:managesubscriptions', $context)) {
+    } else if ($forum->forcesubscribe == FORUMPLUSONE_DISALLOWSUBSCRIBE && !has_capability('mod/forumplusone:managesubscriptions', $context)) {
         return $messages['cantsubscribe'];
     } else if ($cantaccessagroup) {
         return $messages['cantaccessgroup'];
@@ -4793,16 +4793,16 @@ function forumimproved_get_subscribe_link($forum, $context, $messages = array(),
             return '';
         }
         if (is_null($subscribed_forums)) {
-            $subscribed = forumimproved_is_subscribed($USER->id, $forum);
+            $subscribed = forumplusone_is_subscribed($USER->id, $forum);
         } else {
             $subscribed = !empty($subscribed_forums[$forum->id]);
         }
         if ($subscribed) {
             $linktext = $messages['subscribed'];
-            $linktitle = get_string('subscribestop', 'forumimproved');
+            $linktitle = get_string('subscribestop', 'forumplusone');
         } else {
             $linktext = $messages['unsubscribed'];
-            $linktitle = get_string('subscribestart', 'forumimproved');
+            $linktitle = get_string('subscribestart', 'forumplusone');
         }
 
         $options = array();
@@ -4815,13 +4815,13 @@ function forumimproved_get_subscribe_link($forum, $context, $messages = array(),
         $link = '';
 
         if ($fakelink) {
-            $PAGE->requires->js('/mod/forumimproved/forum.js');
-            $PAGE->requires->js_function_call('forumimproved_produce_subscribe_link', array($forum->id, $backtoindexlink, $linktext, $linktitle));
+            $PAGE->requires->js('/mod/forumplusone/forum.js');
+            $PAGE->requires->js_function_call('forumplusone_produce_subscribe_link', array($forum->id, $backtoindexlink, $linktext, $linktitle));
             $link = "<noscript>";
         }
         $options['id'] = $forum->id;
         $options['sesskey'] = sesskey();
-        $url = new moodle_url('/mod/forumimproved/subscribe.php', $options);
+        $url = new moodle_url('/mod/forumplusone/subscribe.php', $options);
         $link .= $OUTPUT->single_button($url, $linktext, 'get', array('title'=>$linktitle));
         if ($fakelink) {
             $link .= '</noscript>';
@@ -4839,11 +4839,11 @@ function forumimproved_get_subscribe_link($forum, $context, $messages = array(),
  * @param int $userid
  * @return bool
  */
-function forumimproved_user_has_posted_discussion($forumid, $userid) {
+function forumplusone_user_has_posted_discussion($forumid, $userid) {
     global $CFG, $DB;
 
     $sql = "SELECT 'x'
-              FROM {forumimproved_discussions} d, {forumimproved_posts} p
+              FROM {forumplusone_discussions} d, {forumplusone_posts} p
              WHERE d.forum = ? AND p.discussion = d.id AND p.parent = 0 and p.userid = ?";
 
     return $DB->record_exists_sql($sql, array($forumid, $userid));
@@ -4856,13 +4856,13 @@ function forumimproved_user_has_posted_discussion($forumid, $userid) {
  * @param int $userid
  * @return array
  */
-function forumimproved_discussions_user_has_posted_in($forumid, $userid) {
+function forumplusone_discussions_user_has_posted_in($forumid, $userid) {
     global $CFG, $DB;
 
     $haspostedsql = "SELECT DISTINCT d.id AS id,
                             d.*
-                       FROM {forumimproved_posts} p,
-                            {forumimproved_discussions} d
+                       FROM {forumplusone_posts} p,
+                            {forumplusone_discussions} d
                       WHERE p.discussion = d.id
                         AND d.forum = ?
                         AND p.userid = ?";
@@ -4878,18 +4878,18 @@ function forumimproved_discussions_user_has_posted_in($forumid, $userid) {
  * @param int $userid
  * @return bool
  */
-function forumimproved_user_has_posted($forumid, $did, $userid) {
+function forumplusone_user_has_posted($forumid, $did, $userid) {
     global $DB;
 
     if (empty($did)) {
         // posted in any forum discussion?
         $sql = "SELECT 'x'
-                  FROM {forumimproved_posts} p
-                  JOIN {forumimproved_discussions} d ON d.id = p.discussion
+                  FROM {forumplusone_posts} p
+                  JOIN {forumplusone_discussions} d ON d.id = p.discussion
                  WHERE p.userid = :userid AND d.forum = :forumid";
         return $DB->record_exists_sql($sql, array('forumid'=>$forumid,'userid'=>$userid));
     } else {
-        return $DB->record_exists('forumimproved_posts', array('discussion'=>$did,'userid'=>$userid));
+        return $DB->record_exists('forumplusone_posts', array('discussion'=>$did,'userid'=>$userid));
     }
 }
 
@@ -4900,10 +4900,10 @@ function forumimproved_user_has_posted($forumid, $did, $userid) {
  * @param int $userid User id
  * @return int|bool post creation time stamp or return false
  */
-function forumimproved_get_user_posted_time($did, $userid) {
+function forumplusone_get_user_posted_time($did, $userid) {
     global $DB;
 
-    $posttime = $DB->get_field('forumimproved_posts', 'MIN(created)', array('userid'=>$userid, 'discussion'=>$did));
+    $posttime = $DB->get_field('forumplusone_posts', 'MIN(created)', array('userid'=>$userid, 'discussion'=>$did));
     if (empty($posttime)) {
         return false;
     }
@@ -4919,7 +4919,7 @@ function forumimproved_get_user_posted_time($did, $userid) {
  * @param object $context
  * @return bool
  */
-function forumimproved_user_can_post_discussion($forum, $currentgroup=null, $unused=-1, $cm=NULL, $context=NULL) {
+function forumplusone_user_can_post_discussion($forum, $currentgroup=null, $unused=-1, $cm=NULL, $context=NULL) {
 // $forum is an object
     global $USER;
 
@@ -4930,7 +4930,7 @@ function forumimproved_user_can_post_discussion($forum, $currentgroup=null, $unu
 
     if (!$cm) {
         debugging('missing cm', DEBUG_DEVELOPER);
-        if (!$cm = get_coursemodule_from_instance('forumimproved', $forum->id, $forum->course)) {
+        if (!$cm = get_coursemodule_from_instance('forumplusone', $forum->id, $forum->course)) {
             print_error('invalidcoursemodule');
         }
     }
@@ -4946,11 +4946,11 @@ function forumimproved_user_can_post_discussion($forum, $currentgroup=null, $unu
     $groupmode = groups_get_activity_groupmode($cm);
 
     if ($forum->type == 'news') {
-        $capname = 'mod/forumimproved:addnews';
+        $capname = 'mod/forumplusone:addnews';
     } else if ($forum->type == 'qanda') {
-        $capname = 'mod/forumimproved:addquestion';
+        $capname = 'mod/forumplusone:addquestion';
     } else {
-        $capname = 'mod/forumimproved:startdiscussion';
+        $capname = 'mod/forumplusone:startdiscussion';
     }
 
     if (!has_capability($capname, $context)) {
@@ -4962,7 +4962,7 @@ function forumimproved_user_can_post_discussion($forum, $currentgroup=null, $unu
     }
 
     if ($forum->type == 'eachuser') {
-        if (forumimproved_user_has_posted_discussion($forum->id, $USER->id)) {
+        if (forumplusone_user_has_posted_discussion($forum->id, $USER->id)) {
             return false;
         }
     }
@@ -4982,7 +4982,7 @@ function forumimproved_user_can_post_discussion($forum, $currentgroup=null, $unu
 
 /**
  * This function checks whether the user can reply to posts in a forum
- * discussion. Use forumimproved_user_can_post_discussion() to check whether the user
+ * discussion. Use forumplusone_user_can_post_discussion() to check whether the user
  * can start discussions.
  *
  * @global object
@@ -4998,7 +4998,7 @@ function forumimproved_user_can_post_discussion($forum, $currentgroup=null, $unu
  * @param object $context
  * @return bool
  */
-function forumimproved_user_can_post($forum, $discussion, $user=NULL, $cm=NULL, $course=NULL, $context=NULL) {
+function forumplusone_user_can_post($forum, $discussion, $user=NULL, $cm=NULL, $course=NULL, $context=NULL) {
     global $USER, $DB;
     if (empty($user)) {
         $user = $USER;
@@ -5016,7 +5016,7 @@ function forumimproved_user_can_post($forum, $discussion, $user=NULL, $cm=NULL, 
 
     if (!$cm) {
         debugging('missing cm', DEBUG_DEVELOPER);
-        if (!$cm = get_coursemodule_from_instance('forumimproved', $forum->id, $forum->course)) {
+        if (!$cm = get_coursemodule_from_instance('forumplusone', $forum->id, $forum->course)) {
             print_error('invalidcoursemodule');
         }
     }
@@ -5038,9 +5038,9 @@ function forumimproved_user_can_post($forum, $discussion, $user=NULL, $cm=NULL, 
     }
 
     if ($forum->type == 'news') {
-        $capname = 'mod/forumimproved:replynews';
+        $capname = 'mod/forumplusone:replynews';
     } else {
-        $capname = 'mod/forumimproved:replypost';
+        $capname = 'mod/forumplusone:replypost';
     }
 
     if (!has_capability($capname, $context, $user->id)) {
@@ -5079,16 +5079,16 @@ function forumimproved_user_can_post($forum, $discussion, $user=NULL, $cm=NULL, 
 * @param object $context
 * @return boolean returns true if they can view post, false otherwise
 */
-function forumimproved_user_can_see_timed_discussion($discussion, $user, $context) {
+function forumplusone_user_can_see_timed_discussion($discussion, $user, $context) {
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
 
     // Check that the user can view a discussion that is normally hidden due to access times.
     if (!empty($config->enabletimedposts)) {
         $time = time();
         if (($discussion->timestart != 0 && $discussion->timestart > $time)
             || ($discussion->timeend != 0 && $discussion->timeend < $time)) {
-            if (!has_capability('mod/forumimproved:viewhiddentimedposts', $context, $user->id)) {
+            if (!has_capability('mod/forumplusone:viewhiddentimedposts', $context, $user->id)) {
                 return false;
             }
         }
@@ -5105,7 +5105,7 @@ function forumimproved_user_can_see_timed_discussion($discussion, $user, $contex
 * @param object $context
 * @return boolean returns true if they can view post, false otherwise
 */
-function forumimproved_user_can_see_group_discussion($discussion, $cm, $context) {
+function forumplusone_user_can_see_group_discussion($discussion, $cm, $context) {
 
     // If it's a grouped discussion, make sure the user is a member.
     if ($discussion->groupid > 0) {
@@ -5128,7 +5128,7 @@ function forumimproved_user_can_see_group_discussion($discussion, $cm, $context)
  * @param object $user
  * @return bool
  */
-function forumimproved_user_can_see_discussion($forum, $discussion, $context, $user=NULL) {
+function forumplusone_user_can_see_discussion($forum, $discussion, $context, $user=NULL) {
     global $USER, $DB;
 
     if (empty($user) || empty($user->id)) {
@@ -5138,35 +5138,35 @@ function forumimproved_user_can_see_discussion($forum, $discussion, $context, $u
     // retrieve objects (yuk)
     if (is_numeric($forum)) {
         debugging('missing full forum', DEBUG_DEVELOPER);
-        if (!$forum = $DB->get_record('forumimproved',array('id'=>$forum))) {
+        if (!$forum = $DB->get_record('forumplusone',array('id'=>$forum))) {
             return false;
         }
     }
     if (is_numeric($discussion)) {
         debugging('missing full discussion', DEBUG_DEVELOPER);
-        if (!$discussion = $DB->get_record('forumimproved_discussions',array('id'=>$discussion))) {
+        if (!$discussion = $DB->get_record('forumplusone_discussions',array('id'=>$discussion))) {
             return false;
         }
     }
-    if (!$cm = get_coursemodule_from_instance('forumimproved', $forum->id, $forum->course)) {
+    if (!$cm = get_coursemodule_from_instance('forumplusone', $forum->id, $forum->course)) {
         print_error('invalidcoursemodule');
     }
 
-    if (!has_capability('mod/forumimproved:viewdiscussion', $context)) {
+    if (!has_capability('mod/forumplusone:viewdiscussion', $context)) {
         return false;
     }
 
-    if (!forumimproved_user_can_see_timed_discussion($discussion, $user, $context)) {
+    if (!forumplusone_user_can_see_timed_discussion($discussion, $user, $context)) {
         return false;
     }
 
-    if (!forumimproved_user_can_see_group_discussion($discussion, $cm, $context)) {
+    if (!forumplusone_user_can_see_group_discussion($discussion, $cm, $context)) {
         return false;
     }
 
     if ($forum->type == 'qanda' &&
-            !forumimproved_user_has_posted($forum->id, $discussion->id, $user->id) &&
-            !has_capability('mod/forumimproved:viewqandawithoutposting', $context)) {
+            !forumplusone_user_has_posted($forum->id, $discussion->id, $user->id) &&
+            !has_capability('mod/forumplusone:viewqandawithoutposting', $context)) {
         return false;
     }
     return true;
@@ -5182,7 +5182,7 @@ function forumimproved_user_can_see_discussion($forum, $discussion, $context, $u
  * @param object $cm
  * @return bool
  */
-function forumimproved_user_can_see_post($forum, $discussion, $post, $user=NULL, $cm=NULL) {
+function forumplusone_user_can_see_post($forum, $discussion, $post, $user=NULL, $cm=NULL) {
     global $CFG, $USER, $DB;
 
     // Context used throughout function.
@@ -5191,20 +5191,20 @@ function forumimproved_user_can_see_post($forum, $discussion, $post, $user=NULL,
     // retrieve objects (yuk)
     if (is_numeric($forum)) {
         debugging('missing full forum', DEBUG_DEVELOPER);
-        if (!$forum = $DB->get_record('forumimproved',array('id'=>$forum))) {
+        if (!$forum = $DB->get_record('forumplusone',array('id'=>$forum))) {
             return false;
         }
     }
 
     if (is_numeric($discussion)) {
         debugging('missing full discussion', DEBUG_DEVELOPER);
-        if (!$discussion = $DB->get_record('forumimproved_discussions',array('id'=>$discussion))) {
+        if (!$discussion = $DB->get_record('forumplusone_discussions',array('id'=>$discussion))) {
             return false;
         }
     }
     if (is_numeric($post)) {
         debugging('missing full post', DEBUG_DEVELOPER);
-        if (!$post = $DB->get_record('forumimproved_posts',array('id'=>$post))) {
+        if (!$post = $DB->get_record('forumplusone_posts',array('id'=>$post))) {
             return false;
         }
     }
@@ -5215,7 +5215,7 @@ function forumimproved_user_can_see_post($forum, $discussion, $post, $user=NULL,
 
     if (!$cm) {
         debugging('missing cm', DEBUG_DEVELOPER);
-        if (!$cm = get_coursemodule_from_instance('forumimproved', $forum->id, $forum->course)) {
+        if (!$cm = get_coursemodule_from_instance('forumplusone', $forum->id, $forum->course)) {
             print_error('invalidcoursemodule');
         }
     }
@@ -5224,7 +5224,7 @@ function forumimproved_user_can_see_post($forum, $discussion, $post, $user=NULL,
         $user = $USER;
     }
 
-    $canviewdiscussion = has_capability('mod/forumimproved:viewdiscussion', $modcontext, $user->id);
+    $canviewdiscussion = has_capability('mod/forumplusone:viewdiscussion', $modcontext, $user->id);
     if (!$canviewdiscussion && !has_all_capabilities(array('moodle/user:viewdetails', 'moodle/user:readuserposts'), context_user::instance($post->userid))) {
         return false;
     }
@@ -5239,11 +5239,11 @@ function forumimproved_user_can_see_post($forum, $discussion, $post, $user=NULL,
         }
     }
 
-    if (!forumimproved_user_can_see_timed_discussion($discussion, $user, $modcontext)) {
+    if (!forumplusone_user_can_see_timed_discussion($discussion, $user, $modcontext)) {
         return false;
     }
 
-    if (!forumimproved_user_can_see_group_discussion($discussion, $cm, $modcontext)) {
+    if (!forumplusone_user_can_see_group_discussion($discussion, $cm, $modcontext)) {
         return false;
     }
 
@@ -5257,12 +5257,12 @@ function forumimproved_user_can_see_post($forum, $discussion, $post, $user=NULL,
     }
 
     if ($forum->type == 'qanda') {
-        $firstpost = forumimproved_get_firstpost_from_discussion($discussion->id);
-        $userfirstpost = forumimproved_get_user_posted_time($discussion->id, $user->id);
+        $firstpost = forumplusone_get_firstpost_from_discussion($discussion->id);
+        $userfirstpost = forumplusone_get_user_posted_time($discussion->id, $user->id);
 
         return (($userfirstpost !== false && (time() - $userfirstpost >= $CFG->maxeditingtime)) ||
                 $firstpost->id == $post->id || $post->userid == $user->id || $firstpost->userid == $user->id ||
-                has_capability('mod/forumimproved:viewqandawithoutposting', $modcontext, $user->id));
+                has_capability('mod/forumplusone:viewqandawithoutposting', $modcontext, $user->id));
     }
     return true;
 }
@@ -5284,14 +5284,14 @@ function forumimproved_user_can_see_post($forum, $discussion, $post, $user=NULL,
  * @param bool $viewhidden Show the hidden discussions
  *
  */
-function forumimproved_print_latest_discussions($course, $forum, $maxdiscussions=-1, $sort='',
+function forumplusone_print_latest_discussions($course, $forum, $maxdiscussions=-1, $sort='',
                                         $currentgroup=-1, $groupmode=-1, $page=-1, $perpage=100, $cm=NULL, $viewhidden=false) {
     global $CFG, $USER, $OUTPUT, $PAGE;
 
     require_once($CFG->dirroot.'/rating/lib.php');
 
     if (!$cm) {
-        if (!$cm = get_coursemodule_from_instance('forumimproved', $forum->id, $forum->course)) {
+        if (!$cm = get_coursemodule_from_instance('forumplusone', $forum->id, $forum->course)) {
             print_error('invalidcoursemodule');
         }
     }
@@ -5318,8 +5318,8 @@ function forumimproved_print_latest_discussions($course, $forum, $maxdiscussions
         $perpage = $maxdiscussions;
     }
 
-    $renderer = $PAGE->get_renderer('mod_forumimproved');
-    $PAGE->requires->js_init_call('M.mod_forumimproved.init', null, false, $renderer->get_js_module());
+    $renderer = $PAGE->get_renderer('mod_forumplusone');
+    $PAGE->requires->js_init_call('M.mod_forumplusone.init', null, false, $renderer->get_js_module());
 
     $fullpost = true;
 
@@ -5337,7 +5337,7 @@ function forumimproved_print_latest_discussions($course, $forum, $maxdiscussions
     // button for it. We do not show the button if we are showing site news
     // and the current user is a guest.
 
-    $canstart = forumimproved_user_can_post_discussion($forum, $currentgroup, $groupmode, $cm, $context);
+    $canstart = forumplusone_user_can_post_discussion($forum, $currentgroup, $groupmode, $cm, $context);
     if (!$canstart and $forum->type !== 'news') {
         if (isguestuser() or !isloggedin()) {
             $canstart = true;
@@ -5352,13 +5352,13 @@ function forumimproved_print_latest_discussions($course, $forum, $maxdiscussions
 
     // Get all the recent discussions we're allowed to see
     $getuserlastmodified = true;
-    $discussions = forumimproved_get_discussions($cm, $sort, $fullpost, $maxdiscussions, $getuserlastmodified, $page, $perpage, false, $viewhidden);
+    $discussions = forumplusone_get_discussions($cm, $sort, $fullpost, $maxdiscussions, $getuserlastmodified, $page, $perpage, false, $viewhidden);
 
     // If we want paging
     $numdiscussions = null;
     if ($page != -1) {
         // Get the number of discussions found.
-        $numdiscussions = forumimproved_get_discussions_count($cm, $viewhidden);
+        $numdiscussions = forumplusone_get_discussions_count($cm, $viewhidden);
     } else {
         if ($maxdiscussions > 0 and $maxdiscussions <= count($discussions)) {
             $olddiscussionlink = true;
@@ -5370,58 +5370,58 @@ function forumimproved_print_latest_discussions($course, $forum, $maxdiscussions
     if (!$canstart && (isguestuser()
         or !isloggedin()
         or  $forum->type == 'news'
-        or  $forum->type == 'qanda' and !has_capability('mod/forumimproved:addquestion', $context)
-        or  $forum->type != 'qanda' and !has_capability('mod/forumimproved:startdiscussion', $context))) {
+        or  $forum->type == 'qanda' and !has_capability('mod/forumplusone:addquestion', $context)
+        or  $forum->type != 'qanda' and !has_capability('mod/forumplusone:startdiscussion', $context))) {
         // no button and no info
     } else if (!$canstart && $groupmode and !has_capability('moodle/site:accessallgroups', $context)) {
         // inform users why they can not post new discussion
         if (!$currentgroup) {
-            echo $OUTPUT->notification(get_string('cannotadddiscussionall', 'forumimproved'), 'notifyproblem forumimproved-cannot-post');
+            echo $OUTPUT->notification(get_string('cannotadddiscussionall', 'forumplusone'), 'notifyproblem forumplusone-cannot-post');
         } else if (!groups_is_member($currentgroup)) {
-            echo $OUTPUT->notification(get_string('cannotadddiscussion', 'forumimproved'), 'notifyproblem forumimproved-cannot-post');
+            echo $OUTPUT->notification(get_string('cannotadddiscussion', 'forumplusone'), 'notifyproblem forumplusone-cannot-post');
         }
     }
 
 
     if ($discussions) {
-        echo "<h3 class='forumimproved-discussion-count' data-count='$numdiscussions'>".get_string('xdiscussions', 'forumimproved', $numdiscussions)."</h3>";
+        echo "<h3 class='forumplusone-discussion-count' data-count='$numdiscussions'>".get_string('xdiscussions', 'forumplusone', $numdiscussions)."</h3>";
     }
 
     // lots of echo instead of building up and printing - bad
-    echo '<div id="forumimproved-menu">';
+    echo '<div id="forumplusone-menu">';
     if ($canstart) {
         echo
-        '<form class="forumimproved-add-discussion" id="newdiscussionform" method="get" action="'.$CFG->wwwroot.'/mod/forumimproved/post.php">
+        '<form class="forumplusone-add-discussion" id="newdiscussionform" method="get" action="'.$CFG->wwwroot.'/mod/forumplusone/post.php">
         <div>
         <input type="hidden" name="forum" value="'.$forum->id.'" />
-        <input type="submit" value="'.get_string('addanewtopic', 'forumimproved').'" />
+        <input type="submit" value="'.get_string('addanewtopic', 'forumplusone').'" />
         </div>
         </form>';
     }
-    echo forumimproved_search_form($course, $forum->id);
+    echo forumplusone_search_form($course, $forum->id);
 
     // Sort/Filter options
     if ($discussions && $numdiscussions > 0) {
-        echo "<div id='forumimproved-filter-options'>";
+        echo "<div id='forumplusone-filter-options'>";
         groups_print_activity_menu($cm, $PAGE->url);
         if ($forum->type != 'single' && $numdiscussions > 1) {
             require_once(__DIR__.'/lib/discussion/sort.php');
-            $dsort = forumimproved_lib_discussion_sort::get_from_session($forum, $context);
+            $dsort = forumplusone_lib_discussion_sort::get_from_session($forum, $context);
             $dsort->set_key(optional_param('dsortkey', $dsort->get_key(), PARAM_ALPHA));
-            forumimproved_lib_discussion_sort::set_to_session($dsort);
+            forumplusone_lib_discussion_sort::set_to_session($dsort);
             echo $renderer->discussion_sorting($cm, $dsort);
         }
         echo "</div>";
     }
 
-    echo "</div><!-- end forumimproved-menu -->";
+    echo "</div><!-- end forumplusone-menu -->";
 
 
     // When there are no threads, return;
     if (!$discussions) {
         // in an empty forum, if the user can start a thread this div is where the js puts it
         if ($canstart) {
-            echo '<div class="mod-forumimproved-posts-container article">';
+            echo '<div class="mod-forumplusone-posts-container article">';
             echo $renderer->discussions($cm, array(), array(
                 'total'   => 0,
                 'page'    => $page,
@@ -5435,13 +5435,13 @@ function forumimproved_print_latest_discussions($course, $forum, $maxdiscussions
     if ($forum->assessed != RATING_AGGREGATE_NONE) {
         $ratingoptions = new stdClass;
         $ratingoptions->context = $context;
-        $ratingoptions->component = 'mod_forumimproved';
+        $ratingoptions->component = 'mod_forumplusone';
         $ratingoptions->ratingarea = 'post';
         $ratingoptions->items = $discussions;
         $ratingoptions->aggregate = $forum->assessed;
         $ratingoptions->scaleid = $forum->scale;
         $ratingoptions->userid = $USER->id;
-        $ratingoptions->returnurl = "$CFG->wwwroot/mod/forumimproved/view.php?id=$cm->id";
+        $ratingoptions->returnurl = "$CFG->wwwroot/mod/forumplusone/view.php?id=$cm->id";
         $ratingoptions->assesstimestart = $forum->assesstimestart;
         $ratingoptions->assesstimefinish = $forum->assesstimefinish;
 
@@ -5453,14 +5453,14 @@ function forumimproved_print_latest_discussions($course, $forum, $maxdiscussions
 
     $strdatestring = get_string('strftimerecentfull');
 
-    echo '<div class="mod-forumimproved-posts-container article">';
+    echo '<div class="mod-forumplusone-posts-container article">';
 
     // Can be used by some output formats.
     $discussionlist = array();
 
     foreach ($discussions as $discussion) {
-        if ($forum->type == 'qanda' && !has_capability('mod/forumimproved:viewqandawithoutposting', $context) &&
-            !forumimproved_user_has_posted($forum->id, $discussion->discussion, $USER->id)) {
+        if ($forum->type == 'qanda' && !has_capability('mod/forumplusone:viewqandawithoutposting', $context) &&
+            !forumplusone_user_has_posted($forum->id, $discussion->discussion, $USER->id)) {
             $canviewparticipants = false;
         }
 
@@ -5485,7 +5485,7 @@ function forumimproved_print_latest_discussions($course, $forum, $maxdiscussions
             $ownpost=false;
         }
 
-        $disc = forumimproved_extract_discussion($discussion, $forum);
+        $disc = forumplusone_extract_discussion($discussion, $forum);
         $discussionlist[$disc->id] = array($disc, $discussion);
     }
 
@@ -5497,16 +5497,16 @@ function forumimproved_print_latest_discussions($course, $forum, $maxdiscussions
 
     if ($olddiscussionlink) {
         if ($forum->type == 'news') {
-            $strolder = get_string('oldertopics', 'forumimproved');
+            $strolder = get_string('oldertopics', 'forumplusone');
         } else {
-            $strolder = get_string('olderdiscussions', 'forumimproved');
+            $strolder = get_string('olderdiscussions', 'forumplusone');
         }
         echo '<div class="forumolddiscuss">';
-        echo '<a href="'.$CFG->wwwroot.'/mod/forumimproved/view.php?f='.$forum->id.'&amp;showall=1">';
+        echo '<a href="'.$CFG->wwwroot.'/mod/forumplusone/view.php?f='.$forum->id.'&amp;showall=1">';
         echo $strolder.'</a> ...</div>';
     }
 
-    echo "</div>"; // End mod-forumimproved-posts-container
+    echo "</div>"; // End mod-forumplusone-posts-container
 
     if ($page != -1) {
         echo $OUTPUT->paging_bar($numdiscussions, $page, $perpage, "view.php?f=$forum->id");
@@ -5528,21 +5528,21 @@ function forumimproved_print_latest_discussions($course, $forum, $maxdiscussions
  * @param mixed $canreply
  * @param bool $canrate
  */
-function forumimproved_print_discussion($course, $cm, $forum, $discussion, $post, $canreply=NULL, $canrate=false) {
+function forumplusone_print_discussion($course, $cm, $forum, $discussion, $post, $canreply=NULL, $canrate=false) {
     global $USER, $CFG, $OUTPUT, $PAGE;
 
     require_once($CFG->dirroot.'/rating/lib.php');
 
     $modcontext = context_module::instance($cm->id);
     if ($canreply === NULL) {
-        $reply = forumimproved_user_can_post($forum, $discussion, $USER, $cm, $course, $modcontext);
+        $reply = forumplusone_user_can_post($forum, $discussion, $USER, $cm, $course, $modcontext);
     } else {
         $reply = $canreply;
     }
 
     $posters = array();
 
-    $posts = forumimproved_get_all_discussion_posts($discussion->id);
+    $posts = forumplusone_get_all_discussion_posts($discussion->id);
     $post = $posts[$post->id];
 
     foreach ($posts as $pid=>$p) {
@@ -5553,16 +5553,16 @@ function forumimproved_print_discussion($course, $cm, $forum, $discussion, $post
     if ($forum->assessed != RATING_AGGREGATE_NONE) {
         $ratingoptions = new stdClass;
         $ratingoptions->context = $modcontext;
-        $ratingoptions->component = 'mod_forumimproved';
+        $ratingoptions->component = 'mod_forumplusone';
         $ratingoptions->ratingarea = 'post';
         $ratingoptions->items = $posts;
         $ratingoptions->aggregate = $forum->assessed;//the aggregation method
         $ratingoptions->scaleid = $forum->scale;
         $ratingoptions->userid = $USER->id;
         if ($forum->type == 'single' or !$discussion->id) {
-            $ratingoptions->returnurl = "$CFG->wwwroot/mod/forumimproved/view.php?id=$cm->id";
+            $ratingoptions->returnurl = "$CFG->wwwroot/mod/forumplusone/view.php?id=$cm->id";
         } else {
-            $ratingoptions->returnurl = "$CFG->wwwroot/mod/forumimproved/discuss.php?d=$discussion->id";
+            $ratingoptions->returnurl = "$CFG->wwwroot/mod/forumplusone/discuss.php?d=$discussion->id";
         }
         $ratingoptions->assesstimestart = $forum->assesstimestart;
         $ratingoptions->assesstimefinish = $forum->assesstimefinish;
@@ -5577,11 +5577,11 @@ function forumimproved_print_discussion($course, $cm, $forum, $discussion, $post
 
     $postread = !empty($post->postread);
 
-    echo $OUTPUT->box_start("mod-forumimproved-posts-container article");
+    echo $OUTPUT->box_start("mod-forumplusone-posts-container article");
 
-    $renderer = $PAGE->get_renderer('mod_forumimproved');
+    $renderer = $PAGE->get_renderer('mod_forumplusone');
     echo $renderer->discussion_thread($cm, $discussion, $post, $posts, $reply);
-    echo $OUTPUT->box_end(); // End mod-forumimproved-posts-container
+    echo $OUTPUT->box_end(); // End mod-forumplusone-posts-container
     return;
 
 }
@@ -5597,10 +5597,10 @@ function forumimproved_print_discussion($course, $cm, $forum, $discussion, $post
  * @global object
  * @global object
  */
-function forumimproved_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid=0, $groupid=0)  {
+function forumplusone_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid=0, $groupid=0)  {
     global $COURSE, $USER, $DB;
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
 
     if ($COURSE->id == $courseid) {
         $course = $COURSE;
@@ -5613,15 +5613,15 @@ function forumimproved_get_recent_mod_activity(&$activities, &$index, $timestart
     $cm = $modinfo->cms[$cmid];
 
     // Cannot report on recent activity on anonymous forums as we could reveal user's identity.
-    $anonymous = $DB->get_field('forumimproved', 'anonymous', array('id' => $cm->instance), MUST_EXIST);
+    $anonymous = $DB->get_field('forumplusone', 'anonymous', array('id' => $cm->instance), MUST_EXIST);
     if (!empty($anonymous)) {
         $tmpactivity             = new stdClass();
-        $tmpactivity->type       = 'forumimproved';
+        $tmpactivity->type       = 'forumplusone';
         $tmpactivity->cmid       = $cm->id;
         $tmpactivity->name       = format_string($cm->name, true);;
         $tmpactivity->sectionnum = $cm->sectionnum;
         $tmpactivity->timestamp  = time();
-        $tmpactivity->content    = get_string('anonymousrecentactivity', 'forumimproved');
+        $tmpactivity->content    = get_string('anonymousrecentactivity', 'forumplusone');
 
         $activities[$index++] = $tmpactivity;
         return;
@@ -5647,10 +5647,10 @@ function forumimproved_get_recent_mod_activity(&$activities, &$index, $timestart
     if (!$posts = $DB->get_records_sql("SELECT p.*, f.anonymous AS forumanonymous, f.type AS forumtype, d.forum, d.groupid,
                                               d.timestart, d.timeend, d.userid AS duserid,
                                               $allnames, u.email, u.picture, u.imagealt, u.email,
-                                              ( SELECT COUNT(v.id) FROM {forumimproved_vote} v WHERE p.id = v.postid ) AS votecount
-                                         FROM {forumimproved_posts} p
-                                              JOIN {forumimproved_discussions} d ON d.id = p.discussion
-                                              JOIN {forumimproved} f             ON f.id = d.forum
+                                              ( SELECT COUNT(v.id) FROM {forumplusone_vote} v WHERE p.id = v.postid ) AS votecount
+                                         FROM {forumplusone_posts} p
+                                              JOIN {forumplusone_discussions} d ON d.id = p.discussion
+                                              JOIN {forumplusone} f             ON f.id = d.forum
                                               JOIN {user} u              ON u.id = p.userid
                                         WHERE p.created > ? AND f.id = ? AND (p.privatereply = 0 OR p.privatereply = ? OR p.userid = ?)
                                               $userselect $groupselect
@@ -5660,7 +5660,7 @@ function forumimproved_get_recent_mod_activity(&$activities, &$index, $timestart
 
     $groupmode       = groups_get_activity_groupmode($cm, $course);
     $cm_context      = context_module::instance($cm->id);
-    $viewhiddentimed = has_capability('mod/forumimproved:viewhiddentimedposts', $cm_context);
+    $viewhiddentimed = has_capability('mod/forumplusone:viewhiddentimedposts', $cm_context);
     $accessallgroups = has_capability('moodle/site:accessallgroups', $cm_context);
 
     $printposts = array();
@@ -5701,7 +5701,7 @@ function forumimproved_get_recent_mod_activity(&$activities, &$index, $timestart
     foreach ($printposts as $post) {
         $tmpactivity = new stdClass();
 
-        $tmpactivity->type         = 'forumimproved';
+        $tmpactivity->type         = 'forumplusone';
         $tmpactivity->cmid         = $cm->id;
         $tmpactivity->name         = $aname;
         $tmpactivity->sectionnum   = $cm->sectionnum;
@@ -5718,7 +5718,7 @@ function forumimproved_get_recent_mod_activity(&$activities, &$index, $timestart
         $tmpactivity->user = username_load_fields_from_object($tmpactivity->user, $post, null, $additionalfields);
         $tmpactivity->user->id = $post->userid;
 
-        $tmpactivity->user = forumimproved_anonymize_user($tmpactivity->user, (object) array(
+        $tmpactivity->user = forumplusone_anonymize_user($tmpactivity->user, (object) array(
             'id'        => $post->forum,
             'course'    => $courseid,
             'anonymous' => $post->forumanonymous
@@ -5734,7 +5734,7 @@ function forumimproved_get_recent_mod_activity(&$activities, &$index, $timestart
  * @todo Document this function
  * @global object
  */
-function forumimproved_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames) {
+function forumplusone_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames) {
     global $CFG, $OUTPUT;
 
     // This handles anonymous forums.
@@ -5751,7 +5751,7 @@ function forumimproved_print_recent_mod_activity($activity, $courseid, $detail, 
     echo '<table border="0" cellpadding="3" cellspacing="0" class="forum-recent">';
 
     echo "<tr><td class=\"userpicture\" valign=\"top\">";
-    echo $OUTPUT->user_picture($activity->user, array('courseid'=>$courseid, 'link' => (!forumimproved_is_anonymous_user($activity->user))));
+    echo $OUTPUT->user_picture($activity->user, array('courseid'=>$courseid, 'link' => (!forumplusone_is_anonymous_user($activity->user))));
     echo "</td><td class=\"$class\">";
 
     echo '<div class="title">';
@@ -5760,13 +5760,13 @@ function forumimproved_print_recent_mod_activity($activity, $courseid, $detail, 
         echo "<img src=\"" . $OUTPUT->pix_url('icon', $activity->type) . "\" ".
              "class=\"icon\" alt=\"{$aname}\" />";
     }
-    echo "<a href=\"$CFG->wwwroot/mod/forumimproved/discuss.php?d={$activity->content->discussion}"
+    echo "<a href=\"$CFG->wwwroot/mod/forumplusone/discuss.php?d={$activity->content->discussion}"
          ."#p{$activity->content->id}\">{$activity->content->subject}</a>";
     echo '</div>';
 
     echo '<div class="user">';
     $fullname = fullname($activity->user, $viewfullnames);
-    if (forumimproved_is_anonymous_user($activity->user)) {
+    if (forumplusone_is_anonymous_user($activity->user)) {
         echo "{$fullname} - ".userdate($activity->timestamp);
     } else {
         echo "<a href=\"$CFG->wwwroot/user/view.php?id={$activity->user->id}&amp;course=$courseid\">"
@@ -5787,12 +5787,12 @@ function forumimproved_print_recent_mod_activity($activity, $courseid, $detail, 
  * @param int $discussionid
  * @return bool
  */
-function forumimproved_change_discussionid($postid, $discussionid) {
+function forumplusone_change_discussionid($postid, $discussionid) {
     global $DB;
-    $DB->set_field('forumimproved_posts', 'discussion', $discussionid, array('id' => $postid));
-    if ($posts = $DB->get_records('forumimproved_posts', array('parent' => $postid))) {
+    $DB->set_field('forumplusone_posts', 'discussion', $discussionid, array('id' => $postid));
+    if ($posts = $DB->get_records('forumplusone_posts', array('parent' => $postid))) {
         foreach ($posts as $post) {
-            forumimproved_change_discussionid($post->id, $discussionid);
+            forumplusone_change_discussionid($post->id, $discussionid);
         }
     }
     return true;
@@ -5807,7 +5807,7 @@ function forumimproved_change_discussionid($postid, $discussionid) {
  * @param int $forumid
  * @return string
  */
-function forumimproved_update_subscriptions_button($courseid, $forumid) {
+function forumplusone_update_subscriptions_button($courseid, $forumid) {
     global $CFG, $USER;
 
     if (!empty($USER->subscriptionsediting)) {
@@ -5818,7 +5818,7 @@ function forumimproved_update_subscriptions_button($courseid, $forumid) {
         $edit = "on";
     }
 
-    return "<form method=\"get\" action=\"$CFG->wwwroot/mod/forumimproved/subscribers.php\">".
+    return "<form method=\"get\" action=\"$CFG->wwwroot/mod/forumplusone/subscribers.php\">".
            "<input type=\"hidden\" name=\"id\" value=\"$forumid\" />".
            "<input type=\"hidden\" name=\"edit\" value=\"$edit\" />".
            "<input type=\"submit\" value=\"$string\" /></form>";
@@ -5827,26 +5827,26 @@ function forumimproved_update_subscriptions_button($courseid, $forumid) {
 /**
  * This function gets run whenever user is enrolled into course
  *
- * @deprecated deprecating this function as we will be using \mod_forumimproved\observer::role_assigned()
+ * @deprecated deprecating this function as we will be using \mod_forumplusone\observer::role_assigned()
  * @param stdClass $cp
  * @return void
  */
-function forumimproved_user_enrolled($cp) {
+function forumplusone_user_enrolled($cp) {
     global $DB;
 
     // NOTE: this has to be as fast as possible - we do not want to slow down enrolments!
-    //       Originally there used to be 'mod/forumimproved:initialsubscriptions' which was
+    //       Originally there used to be 'mod/forumplusone:initialsubscriptions' which was
     //       introduced because we did not have enrolment information in earlier versions...
 
     $sql = "SELECT f.id
-              FROM {forumimproved} f
-         LEFT JOIN {forumimproved_subscriptions} fs ON (fs.forum = f.id AND fs.userid = :userid)
+              FROM {forumplusone} f
+         LEFT JOIN {forumplusone_subscriptions} fs ON (fs.forum = f.id AND fs.userid = :userid)
              WHERE f.course = :courseid AND f.forcesubscribe = :initial AND fs.id IS NULL";
-    $params = array('courseid'=>$cp->courseid, 'userid'=>$cp->userid, 'initial'=>FORUMIMPROVED_INITIALSUBSCRIBE);
+    $params = array('courseid'=>$cp->courseid, 'userid'=>$cp->userid, 'initial'=>FORUMPLUSONE_INITIALSUBSCRIBE);
 
     $forums = $DB->get_records_sql($sql, $params);
     foreach ($forums as $forum) {
-        forumimproved_subscribe($cp->userid, $forum->id);
+        forumplusone_subscribe($cp->userid, $forum->id);
     }
 }
 
@@ -5861,10 +5861,10 @@ function forumimproved_user_enrolled($cp) {
  * @param array $postids array of post ids
  * @return boolean success
  */
-function forumimproved_mark_posts_read($user, $postids) {
+function forumplusone_mark_posts_read($user, $postids) {
     global $DB;
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
     $status = true;
 
     $now = time();
@@ -5875,7 +5875,7 @@ function forumimproved_mark_posts_read($user, $postids) {
 
     } else if (count($postids) > 200) {
         while ($part = array_splice($postids, 0, 200)) {
-            $status = forumimproved_mark_posts_read($user, $part) && $status;
+            $status = forumplusone_mark_posts_read($user, $part) && $status;
         }
         return $status;
     }
@@ -5892,23 +5892,23 @@ function forumimproved_mark_posts_read($user, $postids) {
          );
      $params = array_merge($postidparams, $insertparams);
 
-     if ($CFG->forumimproved_allowforcedreadtracking) {
-             $trackingsql = "AND (f.trackingtype = ".FORUMIMPROVED_TRACKING_FORCED."
-                     OR (f.trackingtype = ".FORUMIMPROVED_TRACKING_OPTIONAL." AND tf.id IS NULL))";
+     if ($CFG->forumplusone_allowforcedreadtracking) {
+             $trackingsql = "AND (f.trackingtype = ".FORUMPLUSONE_TRACKING_FORCED."
+                     OR (f.trackingtype = ".FORUMPLUSONE_TRACKING_OPTIONAL." AND tf.id IS NULL))";
          } else {
-             $trackingsql = "AND ((f.trackingtype = ".FORUMIMPROVED_TRACKING_OPTIONAL."  OR f.trackingtype = ".FORUMIMPROVED_TRACKING_FORCED.")
+             $trackingsql = "AND ((f.trackingtype = ".FORUMPLUSONE_TRACKING_OPTIONAL."  OR f.trackingtype = ".FORUMPLUSONE_TRACKING_FORCED.")
                          AND tf.id IS NULL)";
          }
 
  // First insert any new entries.
- $sql = "INSERT INTO {forumimproved_read} (userid, postid, discussionid, forumid, firstread, lastread)
+ $sql = "INSERT INTO {forumplusone_read} (userid, postid, discussionid, forumid, firstread, lastread)
 
          SELECT :userid1, p.id, p.discussion, d.forum, :firstread, :lastread
-             FROM {forumimproved_posts} p
-                 JOIN {forumimproved_discussions} d       ON d.id = p.discussion
-                 JOIN {forumimproved} f                   ON f.id = d.forum
-                 LEFT JOIN {forumimproved_track_prefs} tf ON (tf.userid = :userid2 AND tf.forumid = f.id)
-                 LEFT JOIN {forumimproved_read} fr        ON (
+             FROM {forumplusone_posts} p
+                 JOIN {forumplusone_discussions} d       ON d.id = p.discussion
+                 JOIN {forumplusone} f                   ON f.id = d.forum
+                 LEFT JOIN {forumplusone_track_prefs} tf ON (tf.userid = :userid2 AND tf.forumid = f.id)
+                 LEFT JOIN {forumplusone_read} fr        ON (
                          fr.userid = :userid3
                      AND fr.postid = p.id
                      AND fr.discussionid = d.id
@@ -5927,7 +5927,7 @@ function forumimproved_mark_posts_read($user, $postids) {
          'lastread' => $now,
      );
  $params = array_merge($postidparams, $updateparams);
- $status = $DB->set_field_select('forumimproved_read', 'lastread', $now, '
+ $status = $DB->set_field_select('forumplusone_read', 'lastread', $now, '
              userid      =  :userid
          AND lastread    <> :lastread
          AND postid      ' . $usql,
@@ -5943,25 +5943,25 @@ function forumimproved_mark_posts_read($user, $postids) {
  * @param int $userid
  * @param int $postid
  */
-function forumimproved_tp_add_read_record($userid, $postid) {
+function forumplusone_tp_add_read_record($userid, $postid) {
     global $DB;
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
 
     $now = time();
     $cutoffdate = $now - ($config->oldpostdays * 24 * 3600);
 
-    if (!$DB->record_exists('forumimproved_read', array('userid' => $userid, 'postid' => $postid))) {
-        $sql = "INSERT INTO {forumimproved_read} (userid, postid, discussionid, forumid, firstread, lastread)
+    if (!$DB->record_exists('forumplusone_read', array('userid' => $userid, 'postid' => $postid))) {
+        $sql = "INSERT INTO {forumplusone_read} (userid, postid, discussionid, forumid, firstread, lastread)
 
                 SELECT ?, p.id, p.discussion, d.forum, ?, ?
-                  FROM {forumimproved_posts} p
-                       JOIN {forumimproved_discussions} d ON d.id = p.discussion
+                  FROM {forumplusone_posts} p
+                       JOIN {forumplusone_discussions} d ON d.id = p.discussion
                  WHERE p.id = ? AND p.modified >= ?";
         return $DB->execute($sql, array($userid, $now, $now, $postid, $cutoffdate));
 
     } else {
-        $sql = "UPDATE {forumimproved_read}
+        $sql = "UPDATE {forumplusone_read}
                    SET lastread = ?
                  WHERE userid = ? AND postid = ?";
         return $DB->execute($sql, array($now, $userid, $userid));
@@ -5973,9 +5973,9 @@ function forumimproved_tp_add_read_record($userid, $postid) {
  *
  * @return bool
  */
-function forumimproved_mark_post_read($userid, $post, $forumid) {
-    if (!forumimproved_tp_is_post_old($post)) {
-        return forumimproved_tp_add_read_record($userid, $post->id);
+function forumplusone_mark_post_read($userid, $post, $forumid) {
+    if (!forumplusone_tp_is_post_old($post)) {
+        return forumplusone_tp_add_read_record($userid, $post->id);
     } else {
         return true;
     }
@@ -5991,10 +5991,10 @@ function forumimproved_mark_post_read($userid, $post, $forumid) {
  * @param int|bool $groupid
  * @return bool
  */
-function forumimproved_mark_forum_read($user, $forumid, $groupid=false) {
+function forumplusone_mark_forum_read($user, $forumid, $groupid=false) {
     global $DB;
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
 
     $cutoffdate = time() - ( $config->oldpostdays*24*60*60);
 
@@ -6007,16 +6007,16 @@ function forumimproved_mark_forum_read($user, $forumid, $groupid=false) {
     }
 
     $sql = "SELECT p.id
-              FROM {forumimproved_posts} p
-                   LEFT JOIN {forumimproved_discussions} d ON d.id = p.discussion
-                   LEFT JOIN {forumimproved_read} r        ON (r.postid = p.id AND r.userid = ?)
+              FROM {forumplusone_posts} p
+                   LEFT JOIN {forumplusone_discussions} d ON d.id = p.discussion
+                   LEFT JOIN {forumplusone_read} r        ON (r.postid = p.id AND r.userid = ?)
              WHERE d.forum = ?
                    AND p.modified >= ? AND r.id is NULL
                    $groupsel";
 
     if ($posts = $DB->get_records_sql($sql, $params)) {
         $postids = array_keys($posts);
-        return forumimproved_mark_posts_read($user, $postids);
+        return forumplusone_mark_posts_read($user, $postids);
     }
 
     return true;
@@ -6031,22 +6031,22 @@ function forumimproved_mark_forum_read($user, $forumid, $groupid=false) {
  * @param int $discussionid
  * @return bool
  */
-function forumimproved_mark_discussion_read($user, $discussionid) {
+function forumplusone_mark_discussion_read($user, $discussionid) {
     global $CFG, $DB;
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
 
     $cutoffdate = time() - ($config->oldpostdays*24*60*60);
 
     $sql = "SELECT p.id
-              FROM {forumimproved_posts} p
-                   LEFT JOIN {forumimproved_read} r ON (r.postid = p.id AND r.userid = ?)
+              FROM {forumplusone_posts} p
+                   LEFT JOIN {forumplusone_read} r ON (r.postid = p.id AND r.userid = ?)
              WHERE p.discussion = ?
                    AND p.modified >= ? AND r.id is NULL";
 
     if ($posts = $DB->get_records_sql($sql, array($user->id, $discussionid, $cutoffdate))) {
         $postids = array_keys($posts);
-        return forumimproved_mark_posts_read($user, $postids);
+        return forumplusone_mark_posts_read($user, $postids);
     }
 
     return true;
@@ -6057,10 +6057,10 @@ function forumimproved_mark_discussion_read($user, $discussionid) {
  * @param int $userid
  * @param object $post
  */
-function forumimproved_tp_is_post_read($userid, $post) {
+function forumplusone_tp_is_post_read($userid, $post) {
     global $DB;
-    return (forumimproved_tp_is_post_old($post) ||
-            $DB->record_exists('forumimproved_read', array('userid' => $userid, 'postid' => $post->id)));
+    return (forumplusone_tp_is_post_old($post) ||
+            $DB->record_exists('forumplusone_read', array('userid' => $userid, 'postid' => $post->id)));
 }
 
 /**
@@ -6068,8 +6068,8 @@ function forumimproved_tp_is_post_read($userid, $post) {
  * @param object $post
  * @param int $time Defautls to time()
  */
-function forumimproved_tp_is_post_old($post, $time=null) {
-    $config = get_config('forumimproved');
+function forumplusone_tp_is_post_old($post, $time=null) {
+    $config = get_config('forumplusone');
 
     if (is_null($time)) {
         $time = time();
@@ -6087,11 +6087,11 @@ function forumimproved_tp_is_post_old($post, $time=null) {
  * @param int $courseid
  * @return array
  */
-function forumimproved_tp_get_course_unread_posts($userid, $courseid) {
+function forumplusone_tp_get_course_unread_posts($userid, $courseid) {
     global $CFG, $DB;
 
     $now = round(time(), -2); // DB cache friendliness.
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
     $cutoffdate = $now - ($config->oldpostdays * 24 * 60 * 60);
     $params = array($userid, $userid, $courseid, $cutoffdate, $userid, $userid);
 
@@ -6104,12 +6104,12 @@ function forumimproved_tp_get_course_unread_posts($userid, $courseid) {
     }
 
     $sql = "SELECT f.id, COUNT(p.id) AS unread
-              FROM {forumimproved_posts} p
-                   JOIN {forumimproved_discussions} d       ON d.id = p.discussion
-                   JOIN {forumimproved} f                   ON f.id = d.forum
+              FROM {forumplusone_posts} p
+                   JOIN {forumplusone_discussions} d       ON d.id = p.discussion
+                   JOIN {forumplusone} f                   ON f.id = d.forum
                    JOIN {course} c                  ON c.id = f.course
-                   LEFT JOIN {forumimproved_read} r         ON (r.postid = p.id AND r.userid = ?)
-                   LEFT JOIN {forumimproved_track_prefs} tf ON (tf.userid = ? AND tf.forumid = f.id)
+                   LEFT JOIN {forumplusone_read} r         ON (r.postid = p.id AND r.userid = ?)
+                   LEFT JOIN {forumplusone_track_prefs} tf ON (tf.userid = ? AND tf.forumid = f.id)
              WHERE f.course = ?
                    AND p.modified >= ? AND r.id is NULL
                    AND (p.privatereply = 0 OR p.privatereply = ? OR p.userid = ?)
@@ -6133,17 +6133,17 @@ function forumimproved_tp_get_course_unread_posts($userid, $courseid) {
  * @param object $course
  * @return int
  */
-function forumimproved_count_forum_unread_posts($cm, $course) {
+function forumplusone_count_forum_unread_posts($cm, $course) {
     global $CFG, $USER, $DB;
 
     static $readcache = array();
 
     $forumid = $cm->instance;
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
 
     if (!isset($readcache[$course->id])) {
         $readcache[$course->id] = array();
-        if ($counts = forumimproved_tp_get_course_unread_posts($USER->id, $course->id)) {
+        if ($counts = forumplusone_tp_get_course_unread_posts($USER->id, $course->id)) {
             foreach ($counts as $count) {
                 $readcache[$course->id][$count->id] = $count->unread;
             }
@@ -6191,9 +6191,9 @@ function forumimproved_count_forum_unread_posts($cm, $course) {
     $params = array_merge($params, $groups_params);
 
     $sql = "SELECT COUNT(p.id)
-              FROM {forumimproved_posts} p
-                   JOIN {forumimproved_discussions} d ON p.discussion = d.id
-                   LEFT JOIN {forumimproved_read} r   ON (r.postid = p.id AND r.userid = ?)
+              FROM {forumplusone_posts} p
+                   JOIN {forumplusone_discussions} d ON p.discussion = d.id
+                   LEFT JOIN {forumplusone_read} r   ON (r.postid = p.id AND r.userid = ?)
              WHERE d.forum = ?
                    AND p.modified >= ? AND r.id is NULL
                    AND (p.privatereply = 0 OR p.privatereply = ? OR p.userid = ?)
@@ -6209,9 +6209,9 @@ function forumimproved_count_forum_unread_posts($cm, $course) {
  * @param int $forumid
  * @return bool
  */
-function forumimproved_delete_read_records_for_forum($forumid) {
+function forumplusone_delete_read_records_for_forum($forumid) {
     global $DB;
-    return $DB->delete_records('forumimproved_read', array('forumid' => $forumid));
+    return $DB->delete_records('forumplusone_read', array('forumid' => $forumid));
 }
 
 /**
@@ -6220,9 +6220,9 @@ function forumimproved_delete_read_records_for_forum($forumid) {
  * @param int $discussionid
  * @return bool
  */
-function forumimproved_delete_read_records_for_discussion($discussionid) {
+function forumplusone_delete_read_records_for_discussion($discussionid) {
     global $DB;
-    return $DB->delete_records('forumimproved_read', array('discussionid' => $discussionid));
+    return $DB->delete_records('forumplusone_read', array('discussionid' => $discussionid));
 }
 
 /**
@@ -6231,32 +6231,32 @@ function forumimproved_delete_read_records_for_discussion($discussionid) {
  * @param int $postid
  * @return bool
  */
-function forumimproved_delete_read_records_for_post($postid) {
+function forumplusone_delete_read_records_for_post($postid) {
     global $DB;
-    return $DB->delete_records('forumimproved_read', array('postid' => $postid));
+    return $DB->delete_records('forumplusone_read', array('postid' => $postid));
 }
 
 /**
- * Clean old records from the forumimproved_read table.
+ * Clean old records from the forumplusone_read table.
  * @global object
  * @global object
  * @return void
  */
-function forumimproved_tp_clean_read_records() {
+function forumplusone_tp_clean_read_records() {
     global $CFG, $DB;
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
 
     if (!isset($config->oldpostdays)) {
         return;
     }
-// Look for records older than the cutoffdate that are still in the forumimproved_read table.
+// Look for records older than the cutoffdate that are still in the forumplusone_read table.
     $cutoffdate = time() - ($config->oldpostdays*24*60*60);
 
     //first get the oldest tracking present - we need tis to speedup the next delete query
     $sql = "SELECT MIN(fp.modified) AS first
-              FROM {forumimproved_posts} fp
-                   JOIN {forumimproved_read} fr ON fr.postid=fp.id";
+              FROM {forumplusone_posts} fp
+                   JOIN {forumplusone_read} fr ON fr.postid=fp.id";
     if (!$first = $DB->get_field_sql($sql)) {
         // nothing to delete;
         return;
@@ -6264,9 +6264,9 @@ function forumimproved_tp_clean_read_records() {
 
     // now delete old tracking info
     $sql = "DELETE
-              FROM {forumimproved_read}
+              FROM {forumplusone_read}
              WHERE postid IN (SELECT fp.id
-                                FROM {forumimproved_posts} fp
+                                FROM {forumplusone_posts} fp
                                WHERE fp.modified >= ? AND fp.modified < ?)";
     $DB->execute($sql, array($first, $cutoffdate));
 }
@@ -6279,17 +6279,17 @@ function forumimproved_tp_clean_read_records() {
  * @param into $discussionid
  * @return bool|int
  **/
-function forumimproved_discussion_update_last_post($discussionid) {
+function forumplusone_discussion_update_last_post($discussionid) {
     global $DB;
 
 // Check the given discussion exists
-    if (!$DB->record_exists('forumimproved_discussions', array('id' => $discussionid))) {
+    if (!$DB->record_exists('forumplusone_discussions', array('id' => $discussionid))) {
         return false;
     }
 
 // Use SQL to find the last post for this discussion
     $sql = "SELECT id, userid, modified
-              FROM {forumimproved_posts}
+              FROM {forumplusone_posts}
              WHERE discussion=?
              ORDER BY modified DESC";
 
@@ -6300,7 +6300,7 @@ function forumimproved_discussion_update_last_post($discussionid) {
         $discussionobject->id           = $discussionid;
         $discussionobject->usermodified = $lastpost->userid;
         $discussionobject->timemodified = $lastpost->modified;
-        $DB->update_record('forumimproved_discussions', $discussionobject);
+        $DB->update_record('forumplusone_discussions', $discussionobject);
         return $lastpost->id;
     }
 
@@ -6320,7 +6320,7 @@ function forumimproved_discussion_update_last_post($discussionid) {
  *
  * @return array
  */
-function forumimproved_get_view_actions() {
+function forumplusone_get_view_actions() {
     return array('view discussion', 'search', 'forum', 'forums', 'subscribers', 'view forum');
 }
 
@@ -6334,7 +6334,7 @@ function forumimproved_get_view_actions() {
  *
  * @return array
  */
-function forumimproved_get_post_actions() {
+function forumplusone_get_post_actions() {
     return array('add discussion','add post','delete discussion','delete post','move discussion','prune post','update post');
 }
 
@@ -6347,11 +6347,11 @@ function forumimproved_get_post_actions() {
  * @return stdClass|bool returns an object with the warning information, else
  *         returns false if no warning is required.
  */
-function forumimproved_check_throttling($forum, $cm = null) {
+function forumplusone_check_throttling($forum, $cm = null) {
     global $CFG, $DB, $USER;
 
     if (is_numeric($forum)) {
-        $forum = $DB->get_record('forumimproved', array('id' => $forum), '*', MUST_EXIST);
+        $forum = $DB->get_record('forumplusone', array('id' => $forum), '*', MUST_EXIST);
     }
 
     if (!is_object($forum)) {
@@ -6359,7 +6359,7 @@ function forumimproved_check_throttling($forum, $cm = null) {
     }
 
     if (!$cm) {
-        $cm = get_coursemodule_from_instance('forumimproved', $forum->id, $forum->course, false, MUST_EXIST);
+        $cm = get_coursemodule_from_instance('forumplusone', $forum->id, $forum->course, false, MUST_EXIST);
     }
 
     if (empty($forum->blockafter)) {
@@ -6371,15 +6371,15 @@ function forumimproved_check_throttling($forum, $cm = null) {
     }
 
     $modcontext = context_module::instance($cm->id);
-    if (has_capability('mod/forumimproved:postwithoutthrottling', $modcontext)) {
+    if (has_capability('mod/forumplusone:postwithoutthrottling', $modcontext)) {
         return false;
     }
 
     // Get the number of posts in the last period we care about.
     $timenow = time();
     $timeafter = $timenow - $forum->blockperiod;
-    $numposts = $DB->count_records_sql('SELECT COUNT(p.id) FROM {forumimproved_posts} p
-                                        JOIN {forumimproved_discussions} d
+    $numposts = $DB->count_records_sql('SELECT COUNT(p.id) FROM {forumplusone_posts} p
+                                        JOIN {forumplusone_discussions} d
                                         ON p.discussion = d.id WHERE d.forum = ?
                                         AND p.userid = ? AND p.created > ?', array($forum->id, $USER->id, $timeafter));
 
@@ -6394,7 +6394,7 @@ function forumimproved_check_throttling($forum, $cm = null) {
         $warning->errorcode = 'forumblockingtoomanyposts';
         $warning->module = 'error';
         $warning->additional = $a;
-        $warning->link = $CFG->wwwroot . '/mod/forumimproved/view.php?f=' . $forum->id;
+        $warning->link = $CFG->wwwroot . '/mod/forumplusone/view.php?f=' . $forum->id;
 
         return $warning;
     }
@@ -6403,7 +6403,7 @@ function forumimproved_check_throttling($forum, $cm = null) {
         $warning = new stdClass();
         $warning->canpost = true;
         $warning->errorcode = 'forumblockingalmosttoomanyposts';
-        $warning->module = 'forumimproved';
+        $warning->module = 'forumplusone';
         $warning->additional = $a;
         $warning->link = null;
 
@@ -6420,9 +6420,9 @@ function forumimproved_check_throttling($forum, $cm = null) {
  *
  * @since Moodle 2.5
  * @param stdClass $thresholdwarning the warning information returned
- *        from the function forumimproved_check_throttling.
+ *        from the function forumplusone_check_throttling.
  */
-function forumimproved_check_blocking_threshold($thresholdwarning) {
+function forumplusone_check_blocking_threshold($thresholdwarning) {
     if (!empty($thresholdwarning) && !$thresholdwarning->canpost) {
         print_error($thresholdwarning->errorcode,
                     $thresholdwarning->module,
@@ -6440,7 +6440,7 @@ function forumimproved_check_blocking_threshold($thresholdwarning) {
  * @param int $courseid
  * @param string $type optional
  */
-function forumimproved_reset_gradebook($courseid, $type='') {
+function forumplusone_reset_gradebook($courseid, $type='') {
     global $DB;
 
     $wheresql = '';
@@ -6451,12 +6451,12 @@ function forumimproved_reset_gradebook($courseid, $type='') {
     }
 
     $sql = "SELECT f.*, cm.idnumber as cmidnumber, f.course as courseid
-              FROM {forumimproved} f, {course_modules} cm, {modules} m
-             WHERE m.name='forumimproved' AND m.id=cm.module AND cm.instance=f.id AND f.course=? $wheresql";
+              FROM {forumplusone} f, {course_modules} cm, {modules} m
+             WHERE m.name='forumplusone' AND m.id=cm.module AND cm.instance=f.id AND f.course=? $wheresql";
 
     if ($forums = $DB->get_records_sql($sql, $params)) {
         foreach ($forums as $forum) {
-            forumimproved_grade_item_update($forum, 'reset');
+            forumplusone_grade_item_update($forum, 'reset');
         }
     }
 }
@@ -6471,56 +6471,56 @@ function forumimproved_reset_gradebook($courseid, $type='') {
  * @param $data the data submitted from the reset course.
  * @return array status array
  */
-function forumimproved_reset_userdata($data) {
+function forumplusone_reset_userdata($data) {
     global $CFG, $DB;
     require_once($CFG->dirroot.'/rating/lib.php');
 
-    $componentstr = get_string('modulenameplural', 'forumimproved');
+    $componentstr = get_string('modulenameplural', 'forumplusone');
     $status = array();
 
     $params = array($data->courseid);
 
     $removeposts = false;
     $typesql     = "";
-    if (!empty($data->reset_forumimproved_all)) {
+    if (!empty($data->reset_forumplusone_all)) {
         $removeposts = true;
-        $typesstr    = get_string('resetforumsall', 'forumimproved');
+        $typesstr    = get_string('resetforumsall', 'forumplusone');
         $types       = array();
-    } else if (!empty($data->reset_forumimproved_types)){
+    } else if (!empty($data->reset_forumplusone_types)){
         $removeposts = true;
         $typesql     = "";
         $types       = array();
-        $forumimproved_types_all = forumimproved_get_forumimproved_types_all();
-        foreach ($data->reset_forumimproved_types as $type) {
-            if (!array_key_exists($type, $forumimproved_types_all)) {
+        $forumplusone_types_all = forumplusone_get_forumplusone_types_all();
+        foreach ($data->reset_forumplusone_types as $type) {
+            if (!array_key_exists($type, $forumplusone_types_all)) {
                 continue;
             }
             $typesql .= " AND f.type=?";
-            $types[] = $forumimproved_types_all[$type];
+            $types[] = $forumplusone_types_all[$type];
             $params[] = $type;
         }
-        $typesstr = get_string('resetforums', 'forumimproved').': '.implode(', ', $types);
+        $typesstr = get_string('resetforums', 'forumplusone').': '.implode(', ', $types);
     }
     $alldiscussionssql = "SELECT fd.id
-                            FROM {forumimproved_discussions} fd, {forumimproved} f
+                            FROM {forumplusone_discussions} fd, {forumplusone} f
                            WHERE f.course=? AND f.id=fd.forum";
 
     $allforumssql      = "SELECT f.id
-                            FROM {forumimproved} f
+                            FROM {forumplusone} f
                            WHERE f.course=?";
 
     $allpostssql       = "SELECT fp.id
-                            FROM {forumimproved_posts} fp, {forumimproved_discussions} fd, {forumimproved} f
+                            FROM {forumplusone_posts} fp, {forumplusone_discussions} fd, {forumplusone} f
                            WHERE f.course=? AND f.id=fd.forum AND fd.id=fp.discussion";
 
     $forumssql = $forums = $rm = null;
 
-    if( $removeposts || !empty($data->reset_forumimproved_ratings) ) {
+    if( $removeposts || !empty($data->reset_forumplusone_ratings) ) {
         $forumssql      = "$allforumssql $typesql";
         $forums = $forums = $DB->get_records_sql($forumssql, $params);
         $rm = new rating_manager();
         $ratingdeloptions = new stdClass;
-        $ratingdeloptions->component = 'mod_forumimproved';
+        $ratingdeloptions->component = 'mod_forumplusone';
         $ratingdeloptions->ratingarea = 'post';
     }
 
@@ -6532,12 +6532,12 @@ function forumimproved_reset_userdata($data) {
         $fs = get_file_storage();
         if ($forums) {
             foreach ($forums as $forumid=>$unused) {
-                if (!$cm = get_coursemodule_from_instance('forumimproved', $forumid)) {
+                if (!$cm = get_coursemodule_from_instance('forumplusone', $forumid)) {
                     continue;
                 }
                 $context = context_module::instance($cm->id);
-                $fs->delete_area_files($context->id, 'mod_forumimproved', 'attachment');
-                $fs->delete_area_files($context->id, 'mod_forumimproved', 'post');
+                $fs->delete_area_files($context->id, 'mod_forumplusone', 'attachment');
+                $fs->delete_area_files($context->id, 'mod_forumplusone', 'post');
 
                 //remove ratings
                 $ratingdeloptions->contextid = $context->id;
@@ -6546,28 +6546,28 @@ function forumimproved_reset_userdata($data) {
         }
 
         // first delete all read flags
-        $DB->delete_records_select('forumimproved_read', "forumid IN ($forumssql)", $params);
+        $DB->delete_records_select('forumplusone_read', "forumid IN ($forumssql)", $params);
 
         // remove tracking prefs
-        $DB->delete_records_select('forumimproved_track_prefs', "forumid IN ($forumssql)", $params);
+        $DB->delete_records_select('forumplusone_track_prefs', "forumid IN ($forumssql)", $params);
 
         // remove posts from queue
-        $DB->delete_records_select('forumimproved_queue', "discussionid IN ($discussionssql)", $params);
+        $DB->delete_records_select('forumplusone_queue', "discussionid IN ($discussionssql)", $params);
 
         // all posts - initial posts must be kept in single simple discussion forums
-        $DB->delete_records_select('forumimproved_posts', "discussion IN ($discussionssql) AND parent <> 0", $params); // first all children
-        $DB->delete_records_select('forumimproved_posts', "discussion IN ($discussionssql AND f.type <> 'single') AND parent = 0", $params); // now the initial posts for non single simple
+        $DB->delete_records_select('forumplusone_posts', "discussion IN ($discussionssql) AND parent <> 0", $params); // first all children
+        $DB->delete_records_select('forumplusone_posts', "discussion IN ($discussionssql AND f.type <> 'single') AND parent = 0", $params); // now the initial posts for non single simple
 
         // finally all discussions except single simple forums
-        $DB->delete_records_select('forumimproved_discussions', "forum IN ($forumssql AND f.type <> 'single')", $params);
+        $DB->delete_records_select('forumplusone_discussions', "forum IN ($forumssql AND f.type <> 'single')", $params);
 
         // remove all grades from gradebook
         if (empty($data->reset_gradebook_grades)) {
             if (empty($types)) {
-                forumimproved_reset_gradebook($data->courseid);
+                forumplusone_reset_gradebook($data->courseid);
             } else {
                 foreach ($types as $type) {
-                    forumimproved_reset_gradebook($data->courseid, $type);
+                    forumplusone_reset_gradebook($data->courseid, $type);
                 }
             }
         }
@@ -6576,10 +6576,10 @@ function forumimproved_reset_userdata($data) {
     }
 
     // remove all ratings in this course's forums
-    if (!empty($data->reset_forumimproved_ratings)) {
+    if (!empty($data->reset_forumplusone_ratings)) {
         if ($forums) {
             foreach ($forums as $forumid=>$unused) {
-                if (!$cm = get_coursemodule_from_instance('forumimproved', $forumid)) {
+                if (!$cm = get_coursemodule_from_instance('forumplusone', $forumid)) {
                     continue;
                 }
                 $context = context_module::instance($cm->id);
@@ -6592,31 +6592,31 @@ function forumimproved_reset_userdata($data) {
 
         // remove all grades from gradebook
         if (empty($data->reset_gradebook_grades)) {
-            forumimproved_reset_gradebook($data->courseid);
+            forumplusone_reset_gradebook($data->courseid);
         }
     }
 
     // remove all digest settings unconditionally - even for users still enrolled in course.
     if (!empty($data->reset_forum_digests)) {
-        $DB->delete_records_select('forumimproved_digests', "forum IN ($allforumssql)", $params);
-        $status[] = array('component' => $componentstr, 'item' => get_string('resetdigests', 'forumimproved'), 'error' => false);
+        $DB->delete_records_select('forumplusone_digests', "forum IN ($allforumssql)", $params);
+        $status[] = array('component' => $componentstr, 'item' => get_string('resetdigests', 'forumplusone'), 'error' => false);
     }
 
     // remove all subscriptions unconditionally - even for users still enrolled in course
-    if (!empty($data->reset_forumimproved_subscriptions)) {
-        $DB->delete_records_select('forumimproved_subscriptions', "forum IN ($allforumssql)", $params);
-        $status[] = array('component'=>$componentstr, 'item'=>get_string('resetsubscriptions','forumimproved'), 'error'=>false);
+    if (!empty($data->reset_forumplusone_subscriptions)) {
+        $DB->delete_records_select('forumplusone_subscriptions', "forum IN ($allforumssql)", $params);
+        $status[] = array('component'=>$componentstr, 'item'=>get_string('resetsubscriptions','forumplusone'), 'error'=>false);
     }
 
     // remove all tracking prefs unconditionally - even for users still enrolled in course
-    if (!empty($data->reset_forumimproved_track_prefs)) {
-        $DB->delete_records_select('forumimproved_track_prefs', "forumid IN ($allforumssql)", $params);
-        $status[] = array('component'=>$componentstr, 'item'=>get_string('resettrackprefs','forumimproved'), 'error'=>false);
+    if (!empty($data->reset_forumplusone_track_prefs)) {
+        $DB->delete_records_select('forumplusone_track_prefs', "forumid IN ($allforumssql)", $params);
+        $status[] = array('component'=>$componentstr, 'item'=>get_string('resettrackprefs','forumplusone'), 'error'=>false);
     }
 
     /// updating dates - shift may be negative too
     if ($data->timeshift) {
-        shift_course_mod_dates('forumimproved', array('assesstimestart', 'assesstimefinish'), $data->timeshift, $data->courseid);
+        shift_course_mod_dates('forumplusone', array('assesstimestart', 'assesstimefinish'), $data->timeshift, $data->courseid);
         $status[] = array('component'=>$componentstr, 'item'=>get_string('datechanged'), 'error'=>false);
     }
 
@@ -6628,35 +6628,35 @@ function forumimproved_reset_userdata($data) {
  *
  * @param $mform form passed by reference
  */
-function forumimproved_reset_course_form_definition(&$mform) {
-    $mform->addElement('header', 'forumheader', get_string('modulenameplural', 'forumimproved'));
+function forumplusone_reset_course_form_definition(&$mform) {
+    $mform->addElement('header', 'forumheader', get_string('modulenameplural', 'forumplusone'));
 
-    $mform->addElement('checkbox', 'reset_forumimproved_all', get_string('resetforumsall','forumimproved'));
+    $mform->addElement('checkbox', 'reset_forumplusone_all', get_string('resetforumsall','forumplusone'));
 
-    $mform->addElement('select', 'reset_forumimproved_types', get_string('resetforums', 'forumimproved'), forumimproved_get_forumimproved_types_all(), array('multiple' => 'multiple'));
-    $mform->setAdvanced('reset_forumimproved_types');
-    $mform->disabledIf('reset_forumimproved_types', 'reset_forumimproved_all', 'checked');
+    $mform->addElement('select', 'reset_forumplusone_types', get_string('resetforums', 'forumplusone'), forumplusone_get_forumplusone_types_all(), array('multiple' => 'multiple'));
+    $mform->setAdvanced('reset_forumplusone_types');
+    $mform->disabledIf('reset_forumplusone_types', 'reset_forumplusone_all', 'checked');
 
-    $mform->addElement('checkbox', 'reset_forumimproved_digests', get_string('resetdigests', 'forumimproved'));
-    $mform->setAdvanced('reset_forumimproved_digests');
+    $mform->addElement('checkbox', 'reset_forumplusone_digests', get_string('resetdigests', 'forumplusone'));
+    $mform->setAdvanced('reset_forumplusone_digests');
 
-    $mform->addElement('checkbox', 'reset_forumimproved_subscriptions', get_string('resetsubscriptions','forumimproved'));
-    $mform->setAdvanced('reset_forumimproved_subscriptions');
+    $mform->addElement('checkbox', 'reset_forumplusone_subscriptions', get_string('resetsubscriptions','forumplusone'));
+    $mform->setAdvanced('reset_forumplusone_subscriptions');
 
-    $mform->addElement('checkbox', 'reset_forumimproved_track_prefs', get_string('resettrackprefs','forumimproved'));
-    $mform->setAdvanced('reset_forumimproved_track_prefs');
-    $mform->disabledIf('reset_forumimproved_track_prefs', 'reset_forumimproved_all', 'checked');
+    $mform->addElement('checkbox', 'reset_forumplusone_track_prefs', get_string('resettrackprefs','forumplusone'));
+    $mform->setAdvanced('reset_forumplusone_track_prefs');
+    $mform->disabledIf('reset_forumplusone_track_prefs', 'reset_forumplusone_all', 'checked');
 
-    $mform->addElement('checkbox', 'reset_forumimproved_ratings', get_string('deleteallratings'));
-    $mform->disabledIf('reset_forumimproved_ratings', 'reset_forumimproved_all', 'checked');
+    $mform->addElement('checkbox', 'reset_forumplusone_ratings', get_string('deleteallratings'));
+    $mform->disabledIf('reset_forumplusone_ratings', 'reset_forumplusone_all', 'checked');
 }
 
 /**
  * Course reset form defaults.
  * @return array
  */
-function forumimproved_reset_course_form_defaults($course) {
-    return array('reset_forumimproved_all'=>1, 'reset_forumimproved_digests' => 0, 'reset_forumimproved_subscriptions'=>0, 'reset_forumimproved_track_prefs'=>0, 'reset_forumimproved_ratings'=>1);
+function forumplusone_reset_course_form_defaults($course) {
+    return array('reset_forumplusone_all'=>1, 'reset_forumplusone_digests' => 0, 'reset_forumplusone_subscriptions'=>0, 'reset_forumplusone_track_prefs'=>0, 'reset_forumplusone_ratings'=>1);
 }
 
 /**
@@ -6664,12 +6664,12 @@ function forumimproved_reset_course_form_defaults($course) {
  *
  * @return array
  */
-function forumimproved_get_forumimproved_types() {
-    return array ('general'  => get_string('generalforum', 'forumimproved'),
-                  'eachuser' => get_string('eachuserforum', 'forumimproved'),
-                  'single'   => get_string('singleforum', 'forumimproved'),
-                  'qanda'    => get_string('qandaforum', 'forumimproved'),
-                  'blog'     => get_string('blogforum', 'forumimproved'));
+function forumplusone_get_forumplusone_types() {
+    return array ('general'  => get_string('generalforum', 'forumplusone'),
+                  'eachuser' => get_string('eachuserforum', 'forumplusone'),
+                  'single'   => get_string('singleforum', 'forumplusone'),
+                  'qanda'    => get_string('qandaforum', 'forumplusone'),
+                  'blog'     => get_string('blogforum', 'forumplusone'));
 }
 
 /**
@@ -6677,24 +6677,24 @@ function forumimproved_get_forumimproved_types() {
  *
  * @return array
  */
-function forumimproved_get_forumimproved_types_all() {
-    return array ('news'     => get_string('namenews','forumimproved'),
-                  'social'   => get_string('namesocial','forumimproved'),
-                  'general'  => get_string('generalforum', 'forumimproved'),
-                  'eachuser' => get_string('eachuserforum', 'forumimproved'),
-                  'single'   => get_string('singleforum', 'forumimproved'),
-                  'qanda'    => get_string('qandaforum', 'forumimproved'),
-                  'blog'     => get_string('blogforum', 'forumimproved'));
+function forumplusone_get_forumplusone_types_all() {
+    return array ('news'     => get_string('namenews','forumplusone'),
+                  'social'   => get_string('namesocial','forumplusone'),
+                  'general'  => get_string('generalforum', 'forumplusone'),
+                  'eachuser' => get_string('eachuserforum', 'forumplusone'),
+                  'single'   => get_string('singleforum', 'forumplusone'),
+                  'qanda'    => get_string('qandaforum', 'forumplusone'),
+                  'blog'     => get_string('blogforum', 'forumplusone'));
 }
 
 /**
- * Returns array of forumimproved grade types
+ * Returns array of forumplusone grade types
  */
-function forumimproved_get_grading_types(){
+function forumplusone_get_grading_types(){
     return array(
-        FORUMIMPROVED_GRADETYPE_NONE   => get_string('gradetypenone', 'forumimproved'),
-        FORUMIMPROVED_GRADETYPE_MANUAL => get_string('gradetypemanual', 'forumimproved'),
-        FORUMIMPROVED_GRADETYPE_RATING => get_string('gradetyperating', 'forumimproved')
+        FORUMPLUSONE_GRADETYPE_NONE   => get_string('gradetypenone', 'forumplusone'),
+        FORUMPLUSONE_GRADETYPE_MANUAL => get_string('gradetypemanual', 'forumplusone'),
+        FORUMPLUSONE_GRADETYPE_RATING => get_string('gradetyperating', 'forumplusone')
     );
 }
 
@@ -6703,7 +6703,7 @@ function forumimproved_get_grading_types(){
  *
  * @return array
  */
-function forumimproved_get_extra_capabilities() {
+function forumplusone_get_extra_capabilities() {
     return array('moodle/site:accessallgroups', 'moodle/site:viewfullnames', 'moodle/site:trustcontent', 'moodle/rating:view', 'moodle/rating:viewany', 'moodle/rating:viewall', 'moodle/rating:rate');
 }
 
@@ -6713,10 +6713,10 @@ function forumimproved_get_extra_capabilities() {
  * @param int    $postid  the post id
  * @param int    $userid  the user id
  */
-function forumimproved_has_vote($postid, $userid) {
+function forumplusone_has_vote($postid, $userid) {
     global $DB;
 
-    return $DB->record_exists('forumimproved_vote', array('userid' => $userid, 'postid' => $postid));
+    return $DB->record_exists('forumplusone_vote', array('userid' => $userid, 'postid' => $postid));
 }
 
 /**
@@ -6725,7 +6725,7 @@ function forumimproved_has_vote($postid, $userid) {
  * @param int    $postid  the post id
  * @param int    $userid  the user id
  */
-function forumimproved_toggle_vote($forum, $postid, $userid) {
+function forumplusone_toggle_vote($forum, $postid, $userid) {
     global $DB;
 
     $now = time();
@@ -6742,15 +6742,15 @@ function forumimproved_toggle_vote($forum, $postid, $userid) {
         throw new coding_exception("to_late_to_vote_error");
     }
 
-    if ($DB->get_record('forumimproved_posts', array('id' => $postid))->userid == $userid) {
+    if ($DB->get_record('forumplusone_posts', array('id' => $postid))->userid == $userid) {
         throw new coding_exception("own_vote_error");
     }
 
 
 
-    if (forumimproved_has_vote($postid, $userid)) {
+    if (forumplusone_has_vote($postid, $userid)) {
         // Delete
-        $DB->delete_records('forumimproved_vote', array('userid' => $userid, 'postid' => $postid));
+        $DB->delete_records('forumplusone_vote', array('userid' => $userid, 'postid' => $postid));
     }
     else {
         // Add
@@ -6758,7 +6758,7 @@ function forumimproved_toggle_vote($forum, $postid, $userid) {
         $vote->postid = $postid;
         $vote->userid = $userid;
         $vote->timestamp = $now;
-        $DB->insert_record('forumimproved_vote', $vote);
+        $DB->insert_record('forumplusone_vote', $vote);
     }
 }
 
@@ -6768,12 +6768,12 @@ function forumimproved_toggle_vote($forum, $postid, $userid) {
  * @param object discussion    the discussion
  * @return true if the discussion is hidden ; false else
  */
-function forumimproved_is_discussion_hidden($forum, $discussion) {
+function forumplusone_is_discussion_hidden($forum, $discussion) {
     if (!$forum->enable_states_disc) {
         return false;
     }
 
-    return $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_HIDDEN;
+    return $discussion->state == FORUMPLUSONE_DISCUSSION_STATE_HIDDEN;
 }
 
 /**
@@ -6782,12 +6782,12 @@ function forumimproved_is_discussion_hidden($forum, $discussion) {
  * @param object discussion    the discussion
  * @return true if the discussion is closed ; false else
  */
-function forumimproved_is_discussion_closed($forum, $discussion) {
+function forumplusone_is_discussion_closed($forum, $discussion) {
     if (!$forum->enable_states_disc) {
         return false;
     }
 
-    return $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE;
+    return $discussion->state == FORUMPLUSONE_DISCUSSION_STATE_CLOSE;
 }
 
 /**
@@ -6796,12 +6796,12 @@ function forumimproved_is_discussion_closed($forum, $discussion) {
  * @param object discussion    the discussion
  * @return true if the discussion is closed ; false else
  */
-function forumimproved_is_discussion_open($forum, $discussion) {
+function forumplusone_is_discussion_open($forum, $discussion) {
     if (!$forum->enable_states_disc) {
         return true;
     }
 
-    return $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_OPEN;
+    return $discussion->state == FORUMPLUSONE_DISCUSSION_STATE_OPEN;
 }
 
 /**
@@ -6809,16 +6809,16 @@ function forumimproved_is_discussion_open($forum, $discussion) {
  * @param object $forum         the forum, containing the discussion
  * @param object $discussion    the discussion to close
  */
-function forumimproved_discussion_close($forum, &$discussion) {
+function forumplusone_discussion_close($forum, &$discussion) {
     global $DB;
 
     if (!$forum->enable_states_disc) {
         throw new coding_exception("change_state_disabled_error");
     }
 
-    $discussion->state = FORUMIMPROVED_DISCUSSION_STATE_CLOSE;
+    $discussion->state = FORUMPLUSONE_DISCUSSION_STATE_CLOSE;
 
-    $DB->update_record('forumimproved_discussions', $discussion);
+    $DB->update_record('forumplusone_discussions', $discussion);
 }
 
 /**
@@ -6826,16 +6826,16 @@ function forumimproved_discussion_close($forum, &$discussion) {
  * @param object $forum         the forum, containing the discussion
  * @param object $discussion    the discussion to close
  */
-function forumimproved_discussion_hide($forum, &$discussion) {
+function forumplusone_discussion_hide($forum, &$discussion) {
     global $DB;
 
     if (!$forum->enable_states_disc) {
         throw new coding_exception("change_state_disabled_error");
     }
 
-    $discussion->state = FORUMIMPROVED_DISCUSSION_STATE_HIDDEN;
+    $discussion->state = FORUMPLUSONE_DISCUSSION_STATE_HIDDEN;
 
-    $DB->update_record('forumimproved_discussions', $discussion);
+    $DB->update_record('forumplusone_discussions', $discussion);
 }
 
 /**
@@ -6843,15 +6843,15 @@ function forumimproved_discussion_hide($forum, &$discussion) {
  * @param object $forum         the forum, containing the discussion
  * @param object $discussion    the discussion to open
  */
-function forumimproved_discussion_open($forum, &$discussion) {
+function forumplusone_discussion_open($forum, &$discussion) {
     global $DB;
 
     if (!$forum->enable_states_disc) {
         throw new coding_exception("change_state_disabled_error");
     }
 
-    $discussion->state = FORUMIMPROVED_DISCUSSION_STATE_OPEN;
-    $DB->update_record('forumimproved_discussions', $discussion);
+    $discussion->state = FORUMPLUSONE_DISCUSSION_STATE_OPEN;
+    $DB->update_record('forumplusone_discussions', $discussion);
 }
 
 /**
@@ -6860,12 +6860,12 @@ function forumimproved_discussion_open($forum, &$discussion) {
  * @param settings_navigation $settings The settings navigation object
  * @param navigation_node $forumnode The node to add module settings to
  */
-function forumimproved_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $forumnode) {
+function forumplusone_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $forumnode) {
     global $USER, $PAGE, $CFG, $DB;
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
 
-    $forumobject = $DB->get_record("forumimproved", array("id" => $PAGE->cm->instance));
+    $forumobject = $DB->get_record("forumplusone", array("id" => $PAGE->cm->instance));
     if (empty($PAGE->cm->context)) {
         $PAGE->cm->context = context_module::instance($PAGE->cm->instance);
     }
@@ -6874,40 +6874,40 @@ function forumimproved_extend_settings_navigation(settings_navigation $settingsn
     $enrolled = is_enrolled($PAGE->cm->context, $USER, '', false);
     $activeenrolled = is_enrolled($PAGE->cm->context, $USER, '', true);
 
-    $canmanage  = has_capability('mod/forumimproved:managesubscriptions', $PAGE->cm->context);
-    $subscriptionmode = forumimproved_get_forcesubscribed($forumobject);
-    $cansubscribe = ($activeenrolled && $subscriptionmode != FORUMIMPROVED_FORCESUBSCRIBE && ($subscriptionmode != FORUMIMPROVED_DISALLOWSUBSCRIBE || $canmanage));
+    $canmanage  = has_capability('mod/forumplusone:managesubscriptions', $PAGE->cm->context);
+    $subscriptionmode = forumplusone_get_forcesubscribed($forumobject);
+    $cansubscribe = ($activeenrolled && $subscriptionmode != FORUMPLUSONE_FORCESUBSCRIBE && ($subscriptionmode != FORUMPLUSONE_DISALLOWSUBSCRIBE || $canmanage));
 
     $discussionid = optional_param('d', 0, PARAM_INT);
-    $viewingdiscussion = ($PAGE->url->compare(new moodle_url('/mod/forumimproved/discuss.php'), URL_MATCH_BASE) and $discussionid);
+    $viewingdiscussion = ($PAGE->url->compare(new moodle_url('/mod/forumplusone/discuss.php'), URL_MATCH_BASE) and $discussionid);
 
     if (!is_guest($PAGE->cm->context)) {
-        $forumnode->add(get_string('export', 'forumimproved'), new moodle_url('/mod/forumimproved/route.php', array('contextid' => $PAGE->cm->context->id, 'action' => 'export')), navigation_node::TYPE_SETTING, null, null, new pix_icon('i/export', get_string('export', 'forumimproved')));
+        $forumnode->add(get_string('export', 'forumplusone'), new moodle_url('/mod/forumplusone/route.php', array('contextid' => $PAGE->cm->context->id, 'action' => 'export')), navigation_node::TYPE_SETTING, null, null, new pix_icon('i/export', get_string('export', 'forumplusone')));
     }
-    $forumnode->add(get_string('viewposters', 'forumimproved'), new moodle_url('/mod/forumimproved/route.php', array('contextid' => $PAGE->cm->context->id, 'action' => 'viewposters')), navigation_node::TYPE_SETTING, null, null, new pix_icon('t/preview', get_string('viewposters', 'forumimproved')));
+    $forumnode->add(get_string('viewposters', 'forumplusone'), new moodle_url('/mod/forumplusone/route.php', array('contextid' => $PAGE->cm->context->id, 'action' => 'viewposters')), navigation_node::TYPE_SETTING, null, null, new pix_icon('t/preview', get_string('viewposters', 'forumplusone')));
 
     if ($canmanage) {
-        $mode = $forumnode->add(get_string('subscriptionmode', 'forumimproved'), null, navigation_node::TYPE_CONTAINER);
+        $mode = $forumnode->add(get_string('subscriptionmode', 'forumplusone'), null, navigation_node::TYPE_CONTAINER);
 
-        $allowchoice = $mode->add(get_string('subscriptionoptional', 'forumimproved'), new moodle_url('/mod/forumimproved/subscribe.php', array('id'=>$forumobject->id, 'mode'=>FORUMIMPROVED_CHOOSESUBSCRIBE, 'sesskey'=>sesskey())), navigation_node::TYPE_SETTING);
-        $forceforever = $mode->add(get_string("subscriptionforced", "forumimproved"), new moodle_url('/mod/forumimproved/subscribe.php', array('id'=>$forumobject->id, 'mode'=>FORUMIMPROVED_FORCESUBSCRIBE, 'sesskey'=>sesskey())), navigation_node::TYPE_SETTING);
-        $forceinitially = $mode->add(get_string("subscriptionauto", "forumimproved"), new moodle_url('/mod/forumimproved/subscribe.php', array('id'=>$forumobject->id, 'mode'=>FORUMIMPROVED_INITIALSUBSCRIBE, 'sesskey'=>sesskey())), navigation_node::TYPE_SETTING);
-        $disallowchoice = $mode->add(get_string('subscriptiondisabled', 'forumimproved'), new moodle_url('/mod/forumimproved/subscribe.php', array('id'=>$forumobject->id, 'mode'=>FORUMIMPROVED_DISALLOWSUBSCRIBE, 'sesskey'=>sesskey())), navigation_node::TYPE_SETTING);
+        $allowchoice = $mode->add(get_string('subscriptionoptional', 'forumplusone'), new moodle_url('/mod/forumplusone/subscribe.php', array('id'=>$forumobject->id, 'mode'=>FORUMPLUSONE_CHOOSESUBSCRIBE, 'sesskey'=>sesskey())), navigation_node::TYPE_SETTING);
+        $forceforever = $mode->add(get_string("subscriptionforced", "forumplusone"), new moodle_url('/mod/forumplusone/subscribe.php', array('id'=>$forumobject->id, 'mode'=>FORUMPLUSONE_FORCESUBSCRIBE, 'sesskey'=>sesskey())), navigation_node::TYPE_SETTING);
+        $forceinitially = $mode->add(get_string("subscriptionauto", "forumplusone"), new moodle_url('/mod/forumplusone/subscribe.php', array('id'=>$forumobject->id, 'mode'=>FORUMPLUSONE_INITIALSUBSCRIBE, 'sesskey'=>sesskey())), navigation_node::TYPE_SETTING);
+        $disallowchoice = $mode->add(get_string('subscriptiondisabled', 'forumplusone'), new moodle_url('/mod/forumplusone/subscribe.php', array('id'=>$forumobject->id, 'mode'=>FORUMPLUSONE_DISALLOWSUBSCRIBE, 'sesskey'=>sesskey())), navigation_node::TYPE_SETTING);
 
         switch ($subscriptionmode) {
-            case FORUMIMPROVED_CHOOSESUBSCRIBE : // 0
+            case FORUMPLUSONE_CHOOSESUBSCRIBE : // 0
                 $allowchoice->action = null;
                 $allowchoice->add_class('activesetting');
                 break;
-            case FORUMIMPROVED_FORCESUBSCRIBE : // 1
+            case FORUMPLUSONE_FORCESUBSCRIBE : // 1
                 $forceforever->action = null;
                 $forceforever->add_class('activesetting');
                 break;
-            case FORUMIMPROVED_INITIALSUBSCRIBE : // 2
+            case FORUMPLUSONE_INITIALSUBSCRIBE : // 2
                 $forceinitially->action = null;
                 $forceinitially->add_class('activesetting');
                 break;
-            case FORUMIMPROVED_DISALLOWSUBSCRIBE : // 3
+            case FORUMPLUSONE_DISALLOWSUBSCRIBE : // 3
                 $disallowchoice->action = null;
                 $disallowchoice->add_class('activesetting');
                 break;
@@ -6916,37 +6916,37 @@ function forumimproved_extend_settings_navigation(settings_navigation $settingsn
     } else if ($activeenrolled) {
 
         switch ($subscriptionmode) {
-            case FORUMIMPROVED_CHOOSESUBSCRIBE : // 0
-                $notenode = $forumnode->add(get_string('subscriptionoptional', 'forumimproved'));
+            case FORUMPLUSONE_CHOOSESUBSCRIBE : // 0
+                $notenode = $forumnode->add(get_string('subscriptionoptional', 'forumplusone'));
                 break;
-            case FORUMIMPROVED_FORCESUBSCRIBE : // 1
-                $notenode = $forumnode->add(get_string('subscriptionforced', 'forumimproved'));
+            case FORUMPLUSONE_FORCESUBSCRIBE : // 1
+                $notenode = $forumnode->add(get_string('subscriptionforced', 'forumplusone'));
                 break;
-            case FORUMIMPROVED_INITIALSUBSCRIBE : // 2
-                $notenode = $forumnode->add(get_string('subscriptionauto', 'forumimproved'));
+            case FORUMPLUSONE_INITIALSUBSCRIBE : // 2
+                $notenode = $forumnode->add(get_string('subscriptionauto', 'forumplusone'));
                 break;
-            case FORUMIMPROVED_DISALLOWSUBSCRIBE : // 3
-                $notenode = $forumnode->add(get_string('subscriptiondisabled', 'forumimproved'));
+            case FORUMPLUSONE_DISALLOWSUBSCRIBE : // 3
+                $notenode = $forumnode->add(get_string('subscriptiondisabled', 'forumplusone'));
                 break;
         }
     }
 
     if ($cansubscribe) {
-        if (forumimproved_is_subscribed($USER->id, $forumobject)) {
-            $linktext = get_string('unsubscribe', 'forumimproved');
+        if (forumplusone_is_subscribed($USER->id, $forumobject)) {
+            $linktext = get_string('unsubscribe', 'forumplusone');
         } else {
-            $linktext = get_string('subscribe', 'forumimproved');
+            $linktext = get_string('subscribe', 'forumplusone');
         }
-        $url = new moodle_url('/mod/forumimproved/subscribe.php', array('id'=>$forumobject->id, 'sesskey'=>sesskey()));
+        $url = new moodle_url('/mod/forumplusone/subscribe.php', array('id'=>$forumobject->id, 'sesskey'=>sesskey()));
         $forumnode->add($linktext, $url, navigation_node::TYPE_SETTING);
     }
 
     if ($viewingdiscussion) {
         require_once(__DIR__.'/lib/discussion/subscribe.php');
-        $subscribe = new forumimproved_lib_discussion_subscribe($forumobject, $PAGE->cm->context);
+        $subscribe = new forumplusone_lib_discussion_subscribe($forumobject, $PAGE->cm->context);
 
         if ($subscribe->can_subscribe()) {
-            $subscribeurl = new moodle_url('/mod/forumimproved/route.php', array(
+            $subscribeurl = new moodle_url('/mod/forumplusone/route.php', array(
                 'contextid'    => $PAGE->cm->context->id,
                 'action'       => 'subscribedisc',
                 'discussionid' => $discussionid,
@@ -6955,29 +6955,29 @@ function forumimproved_extend_settings_navigation(settings_navigation $settingsn
             ));
 
             if ($subscribe->is_subscribed($discussionid)) {
-                $linktext = get_string('unsubscribedisc', 'forumimproved');
+                $linktext = get_string('unsubscribedisc', 'forumplusone');
             } else {
-                $linktext = get_string('subscribedisc', 'forumimproved');
+                $linktext = get_string('subscribedisc', 'forumplusone');
             }
             $forumnode->add($linktext, $subscribeurl, navigation_node::TYPE_SETTING);
         }
     }
 
 
-    if (has_capability('mod/forumimproved:viewsubscribers', $PAGE->cm->context)){
-        $url = new moodle_url('/mod/forumimproved/subscribers.php', array('id'=>$forumobject->id));
-        $forumnode->add(get_string('showsubscribers', 'forumimproved'), $url, navigation_node::TYPE_SETTING);
+    if (has_capability('mod/forumplusone:viewsubscribers', $PAGE->cm->context)){
+        $url = new moodle_url('/mod/forumplusone/subscribers.php', array('id'=>$forumobject->id));
+        $forumnode->add(get_string('showsubscribers', 'forumplusone'), $url, navigation_node::TYPE_SETTING);
 
         $discsubscribers = ($viewingdiscussion or (optional_param('action', '', PARAM_ALPHA) == 'discsubscribers'));
         if ($discsubscribers
-                && !forumimproved_is_forcesubscribed($forumobject)
+                && !forumplusone_is_forcesubscribed($forumobject)
                 && $discussionid) {
-            $url = new moodle_url('/mod/forumimproved/route.php', array(
+            $url = new moodle_url('/mod/forumplusone/route.php', array(
                 'contextid'    => $PAGE->cm->context->id,
                 'action'       => 'discsubscribers',
                 'discussionid' => $discussionid,
             ));
-            $forumnode->add(get_string('showdiscussionsubscribers', 'forumimproved'), $url, navigation_node::TYPE_SETTING, null, 'discsubscribers');
+            $forumnode->add(get_string('showdiscussionsubscribers', 'forumplusone'), $url, navigation_node::TYPE_SETTING, null, 'discsubscribers');
         }
     }
 
@@ -6997,23 +6997,23 @@ function forumimproved_extend_settings_navigation(settings_navigation $settingsn
         }
 
         if ($forumobject->rsstype == 1) {
-            $string = get_string('rsssubscriberssdiscussions','forumimproved');
+            $string = get_string('rsssubscriberssdiscussions','forumplusone');
         } else {
-            $string = get_string('rsssubscriberssposts','forumimproved');
+            $string = get_string('rsssubscriberssposts','forumplusone');
         }
 
-        $url = new moodle_url(rss_get_url($PAGE->cm->context->id, $userid, "mod_forumimproved", $forumobject->id));
+        $url = new moodle_url(rss_get_url($PAGE->cm->context->id, $userid, "mod_forumplusone", $forumobject->id));
         $forumnode->add($string, $url, settings_navigation::TYPE_SETTING, null, null, new pix_icon('i/rss', ''));
     }
 }
 
 /**
  * Abstract class used by forum subscriber selection controls
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright 2009 Sam Hemelryk
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class forumimproved_subscriber_selector_base extends user_selector_base {
+abstract class forumplusone_subscriber_selector_base extends user_selector_base {
 
     /**
      * The id of the forum this selector is being used for
@@ -7069,11 +7069,11 @@ abstract class forumimproved_subscriber_selector_base extends user_selector_base
 
 /**
  * A user selector control for potential subscribers to the selected forum
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright 2009 Sam Hemelryk
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class forumimproved_potential_subscriber_selector extends forumimproved_subscriber_selector_base {
+class forumplusone_potential_subscriber_selector extends forumplusone_subscriber_selector_base {
     /**
      * If set to true EVERYONE in this course is force subscribed to this forum
      * @var bool
@@ -7174,9 +7174,9 @@ class forumimproved_potential_subscriber_selector extends forumimproved_subscrib
         }
 
         if ($this->forcesubscribed) {
-            return array(get_string("existingsubscribers", 'forumimproved') => $availableusers);
+            return array(get_string("existingsubscribers", 'forumplusone') => $availableusers);
         } else {
-            return array(get_string("potentialsubscribers", 'forumimproved') => $availableusers);
+            return array(get_string("potentialsubscribers", 'forumplusone') => $availableusers);
         }
     }
 
@@ -7198,11 +7198,11 @@ class forumimproved_potential_subscriber_selector extends forumimproved_subscrib
 
 /**
  * User selector control for removing subscribed users
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright 2009 Sam Hemelryk
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class forumimproved_existing_subscriber_selector extends forumimproved_subscriber_selector_base {
+class forumplusone_existing_subscriber_selector extends forumplusone_subscriber_selector_base {
 
     /**
      * Finds all subscribed users
@@ -7224,11 +7224,11 @@ class forumimproved_existing_subscriber_selector extends forumimproved_subscribe
         $subscribers = $DB->get_records_sql("SELECT $fields
                                                FROM {user} u
                                                JOIN ($esql) je ON je.id = u.id
-                                               JOIN {forumimproved_subscriptions} s ON s.userid = u.id
+                                               JOIN {forumplusone_subscriptions} s ON s.userid = u.id
                                               WHERE $wherecondition AND s.forum = :forumid
                                            ORDER BY $sort", $params);
 
-        return array(get_string("existingsubscribers", 'forumimproved') => $subscribers);
+        return array(get_string("existingsubscribers", 'forumplusone') => $subscribers);
     }
 
 }
@@ -7238,26 +7238,26 @@ class forumimproved_existing_subscriber_selector extends forumimproved_subscribe
  * to the course-module object.
  * @param cm_info $cm Course-module object
  */
-function forumimproved_cm_info_view(cm_info $cm) {
+function forumplusone_cm_info_view(cm_info $cm) {
     if (!$cm->uservisible) {
         return;
     }
 
-    $config = get_config('forumimproved');
-    $forum = forumimproved_get_cm_forum($cm);
+    $config = get_config('forumplusone');
+    $forum = forumplusone_get_cm_forum($cm);
 
     $out = '';
 
     if (empty($config->hiderecentposts) && $forum->showrecent) {
-        $out .= forumimproved_recent_activity($cm->get_course(), true, 0, $forum->id);
+        $out .= forumplusone_recent_activity($cm->get_course(), true, 0, $forum->id);
     }
 
-    if ($unread = forumimproved_count_forum_unread_posts($cm, $cm->get_course())) {
+    if ($unread = forumplusone_count_forum_unread_posts($cm, $cm->get_course())) {
         $out .= '<a class="unread" href="' . $cm->url . '">';
         if ($unread == 1) {
-            $out .= get_string('unreadpostsone', 'forumimproved');
+            $out .= get_string('unreadpostsone', 'forumplusone');
         } else {
-            $out .= get_string('unreadpostsnumber', 'forumimproved', $unread);
+            $out .= get_string('unreadpostsnumber', 'forumplusone', $unread);
         }
         $out .= '</a>';
     }
@@ -7271,13 +7271,13 @@ function forumimproved_cm_info_view(cm_info $cm) {
  * @param stdClass $parentcontext Block's parent context
  * @param stdClass $currentcontext Current context of block
  */
-function forumimproved_page_type_list($pagetype, $parentcontext, $currentcontext) {
-    $forumimproved_pagetype = array(
-        'mod-forumimproved-*'=>get_string('page-mod-forumimproved-x', 'forumimproved'),
-        'mod-forumimproved-view'=>get_string('page-mod-forumimproved-view', 'forumimproved'),
-        'mod-forumimproved-discuss'=>get_string('page-mod-forumimproved-discuss', 'forumimproved')
+function forumplusone_page_type_list($pagetype, $parentcontext, $currentcontext) {
+    $forumplusone_pagetype = array(
+        'mod-forumplusone-*'=>get_string('page-mod-forumplusone-x', 'forumplusone'),
+        'mod-forumplusone-view'=>get_string('page-mod-forumplusone-view', 'forumplusone'),
+        'mod-forumplusone-discuss'=>get_string('page-mod-forumplusone-discuss', 'forumplusone')
     );
-    return $forumimproved_pagetype;
+    return $forumplusone_pagetype;
 }
 
 /**
@@ -7291,19 +7291,19 @@ function forumimproved_page_type_list($pagetype, $parentcontext, $currentcontext
  * @param int $limitnum The number of records to return
  * @return array An array of courses
  */
-function forumimproved_get_courses_user_posted_in($user, $discussionsonly = false, $includecontexts = true, $limitfrom = null, $limitnum = null) {
+function forumplusone_get_courses_user_posted_in($user, $discussionsonly = false, $includecontexts = true, $limitfrom = null, $limitnum = null) {
     global $DB;
 
-    // If we are only after discussions we need only look at the forumimproved_discussions
+    // If we are only after discussions we need only look at the forumplusone_discussions
     // table and join to the userid there. If we are looking for posts then we need
-    // to join to the forumimproved_posts table.
+    // to join to the forumplusone_posts table.
     if (!$discussionsonly) {
-        $joinsql = 'JOIN {forumimproved_discussions} fd ON fd.course = c.id
-                    JOIN {forumimproved_posts} fp ON fp.discussion = fd.id';
+        $joinsql = 'JOIN {forumplusone_discussions} fd ON fd.course = c.id
+                    JOIN {forumplusone_posts} fp ON fp.discussion = fd.id';
         $wheresql = 'fp.userid = :userid';
         $params = array('userid' => $user->id);
     } else {
-        $joinsql = 'JOIN {forumimproved_discussions} fd ON fd.course = c.id';
+        $joinsql = 'JOIN {forumplusone_discussions} fd ON fd.course = c.id';
         $wheresql = 'fd.userid = :userid';
         $params = array('userid' => $user->id);
     }
@@ -7345,7 +7345,7 @@ function forumimproved_get_courses_user_posted_in($user, $discussionsonly = fals
  * @param int $limitnum The number of records to return
  * @return array An array of forums the user has posted within in the provided courses
  */
-function forumimproved_get_forums_user_posted_in($user, array $courseids = null, $discussionsonly = false, $limitfrom = null, $limitnum = null) {
+function forumplusone_get_forums_user_posted_in($user, array $courseids = null, $discussionsonly = false, $limitfrom = null, $limitnum = null) {
     global $DB;
 
     if (!is_null($courseids)) {
@@ -7356,22 +7356,22 @@ function forumimproved_get_forums_user_posted_in($user, array $courseids = null,
         $params = array();
     }
     $params['userid'] = $user->id;
-    $params['forum'] = 'forumimproved';
+    $params['forum'] = 'forumplusone';
 
     if ($discussionsonly) {
-        $join = 'JOIN {forumimproved_discussions} ff ON ff.forum = f.id';
+        $join = 'JOIN {forumplusone_discussions} ff ON ff.forum = f.id';
     } else {
-        $join = 'JOIN {forumimproved_discussions} fd ON fd.forum = f.id
-                 JOIN {forumimproved_posts} ff ON ff.discussion = fd.id';
+        $join = 'JOIN {forumplusone_discussions} fd ON fd.forum = f.id
+                 JOIN {forumplusone_posts} ff ON ff.discussion = fd.id';
     }
 
     $sql = "SELECT f.*, cm.id AS cmid
-              FROM {forumimproved} f
+              FROM {forumplusone} f
               JOIN {course_modules} cm ON cm.instance = f.id
               JOIN {modules} m ON m.id = cm.module
               JOIN (
                   SELECT f.id
-                    FROM {forumimproved} f
+                    FROM {forumplusone} f
                     {$join}
                    WHERE ff.userid = :userid
                 GROUP BY f.id
@@ -7411,10 +7411,10 @@ function forumimproved_get_forums_user_posted_in($user, array $courseids = null,
  *                         property below.
  *               ->posts: An array containing the posts to show for this request.
  */
-function forumimproved_get_posts_by_user($user, array $courses, $musthaveaccess = false, $discussionsonly = false, $limitfrom = 0, $limitnum = 50) {
+function forumplusone_get_posts_by_user($user, array $courses, $musthaveaccess = false, $discussionsonly = false, $limitfrom = 0, $limitnum = 50) {
     global $DB, $USER, $CFG;
 
-    $config = get_config('forumimproved');
+    $config = get_config('forumplusone');
     $return = new stdClass;
     $return->totalcount = 0;    // The total number of posts that the current user is able to view
     $return->courses = array(); // The courses the current user can access
@@ -7456,7 +7456,7 @@ function forumimproved_get_posts_by_user($user, array $courses, $musthaveaccess 
             if (!is_viewing($coursecontext, $user) && !is_enrolled($coursecontext, $user)) {
                 // Need to have full access to a course to see the rest of own info
                 if ($musthaveaccess) {
-                    print_error('errorenrolmentrequired', 'forumimproved');
+                    print_error('errorenrolmentrequired', 'forumplusone');
                 }
                 continue;
             }
@@ -7465,7 +7465,7 @@ function forumimproved_get_posts_by_user($user, array $courses, $musthaveaccess 
             // if they don't we immediately have a problem.
             if (!can_access_course($course)) {
                 if ($musthaveaccess) {
-                    print_error('errorenrolmentrequired', 'forumimproved');
+                    print_error('errorenrolmentrequired', 'forumplusone');
                 }
                 continue;
             }
@@ -7474,7 +7474,7 @@ function forumimproved_get_posts_by_user($user, array $courses, $musthaveaccess 
             // if they don't we immediately have a problem.
             if (!can_access_course($course, $user)) {
                 if ($musthaveaccess) {
-                    print_error('notenrolled', 'forumimproved');
+                    print_error('notenrolled', 'forumplusone');
                 }
                 continue;
             }
@@ -7533,7 +7533,7 @@ function forumimproved_get_posts_by_user($user, array $courses, $musthaveaccess 
     // Next step: Collect all of the forums that we will want to search.
     // It is important to note that this step isn't actually about searching, it is
     // about determining which forums we can search by testing accessibility.
-    $forums = forumimproved_get_forums_user_posted_in($user, array_keys($return->courses), $discussionsonly);
+    $forums = forumplusone_get_forums_user_posted_in($user, array_keys($return->courses), $discussionsonly);
 
     // Will be used to build the where conditions for the search
     $forumsearchwhere = array();
@@ -7549,12 +7549,12 @@ function forumimproved_get_posts_by_user($user, array $courses, $musthaveaccess 
     foreach ($return->courses as $course) {
         // Now we need to get the forums
         $modinfo = get_fast_modinfo($course);
-        if (empty($modinfo->instances['forumimproved'])) {
+        if (empty($modinfo->instances['forumplusone'])) {
             // hmmm, no forums? well at least its easy... skip!
             continue;
         }
         // Iterate
-        foreach ($modinfo->get_instances_of('forumimproved') as $forumid => $cm) {
+        foreach ($modinfo->get_instances_of('forumplusone') as $forumid => $cm) {
             if (!$cm->uservisible or !isset($forums[$forumid])) {
                 continue;
             }
@@ -7572,7 +7572,7 @@ function forumimproved_get_posts_by_user($user, array $courses, $musthaveaccess 
             // Check that either the current user can view the forum, or that the
             // current user has capabilities over the requested user and the requested
             // user can view the discussion
-            if (!has_capability('mod/forumimproved:viewdiscussion', $cm->context) && !($hascapsonuser && has_capability('mod/forumimproved:viewdiscussion', $cm->context, $user->id))) {
+            if (!has_capability('mod/forumplusone:viewdiscussion', $cm->context) && !($hascapsonuser && has_capability('mod/forumplusone:viewdiscussion', $cm->context, $user->id))) {
                 continue;
             }
 
@@ -7589,7 +7589,7 @@ function forumimproved_get_posts_by_user($user, array $courses, $musthaveaccess 
                 }
 
                 // hidden timed discussions
-                if (!empty($config->enabletimedposts) && !has_capability('mod/forumimproved:viewhiddentimedposts', $cm->context)) {
+                if (!empty($config->enabletimedposts) && !has_capability('mod/forumplusone:viewhiddentimedposts', $cm->context)) {
                     $forumsearchselect[] = "(d.userid = :userid{$forumid} OR (d.timestart < :timestart{$forumid} AND (d.timeend = 0 OR d.timeend > :timeend{$forumid})))";
                     $forumsearchparams['userid'.$forumid] = $user->id;
                     $forumsearchparams['timestart'.$forumid] = $now;
@@ -7597,9 +7597,9 @@ function forumimproved_get_posts_by_user($user, array $courses, $musthaveaccess 
                 }
 
                 // qanda access
-                if ($forum->type == 'qanda' && !has_capability('mod/forumimproved:viewqandawithoutposting', $cm->context)) {
+                if ($forum->type == 'qanda' && !has_capability('mod/forumplusone:viewqandawithoutposting', $cm->context)) {
                     // We need to check whether the user has posted in the qanda forum.
-                    $discussionspostedin = forumimproved_discussions_user_has_posted_in($forum->id, $user->id);
+                    $discussionspostedin = forumplusone_discussions_user_has_posted_in($forum->id, $user->id);
                     if (!empty($discussionspostedin)) {
                         $forumonlydiscussions = array();  // Holds discussion ids for the discussions the user is allowed to see in this forum.
                         foreach ($discussionspostedin as $d) {
@@ -7641,11 +7641,11 @@ function forumimproved_get_posts_by_user($user, array $courses, $musthaveaccess 
     }
 
     // Prepare SQL to both count and search.
-    // We alias user.id to useridx because we forumimproved_posts already has a userid field and not aliasing this would break
+    // We alias user.id to useridx because we forumplusone_posts already has a userid field and not aliasing this would break
     // oracle and mssql.
     $userfields = user_picture::fields('u', null, 'useridx');
     $countsql = 'SELECT COUNT(*) ';
-    $selectsql = 'SELECT p.*, d.forum, d.name AS discussionname, '.$userfields.', ( SELECT COUNT(v.id) FROM {forumimproved_vote} v WHERE p.id = v.postid ) AS votecount';
+    $selectsql = 'SELECT p.*, d.forum, d.name AS discussionname, '.$userfields.', ( SELECT COUNT(v.id) FROM {forumplusone_vote} v WHERE p.id = v.postid ) AS votecount';
     $wheresql = implode(" OR ", $forumsearchwhere);
 
     if ($discussionsonly) {
@@ -7656,9 +7656,9 @@ function forumimproved_get_posts_by_user($user, array $courses, $musthaveaccess 
         }
     }
 
-    $sql = "FROM {forumimproved_posts} p
-            JOIN {forumimproved_discussions} d ON d.id = p.discussion
-            JOIN {forumimproved} f ON f.id = d.forum
+    $sql = "FROM {forumplusone_posts} p
+            JOIN {forumplusone_discussions} d ON d.id = p.discussion
+            JOIN {forumplusone} f ON f.id = d.forum
             JOIN {user} u ON u.id = p.userid
            WHERE ($wheresql)
              AND p.userid = :userid
@@ -7692,7 +7692,7 @@ function forumimproved_get_posts_by_user($user, array $courses, $musthaveaccess 
  * @param context_module $context
  * @return stdClass
  */
-function forumimproved_extract_postuser($post, $forum, context_module $context) {
+function forumplusone_extract_postuser($post, $forum, context_module $context) {
     $postuser     = new stdClass();
     $postuser->id = $post->userid;
     $fields = array_merge(
@@ -7704,7 +7704,7 @@ function forumimproved_extract_postuser($post, $forum, context_module $context) 
             $postuser->$field = $post->$field;
         }
     }
-    return forumimproved_get_postuser($postuser, $post, $forum, $context);
+    return forumplusone_get_postuser($postuser, $post, $forum, $context);
 }
 
 /**
@@ -7717,18 +7717,18 @@ function forumimproved_extract_postuser($post, $forum, context_module $context) 
  * @param context_module $context
  * @return stdClass
  */
-function forumimproved_get_postuser($user, $post, $forum, context_module $context) {
-    $postuser = forumimproved_anonymize_user($user, $forum, $post);
+function forumplusone_get_postuser($user, $post, $forum, context_module $context) {
+    $postuser = forumplusone_anonymize_user($user, $forum, $post);
 
     if (property_exists($user, 'picture')) {
         $postuser->user_picture           = new user_picture($postuser);
         $postuser->user_picture->courseid = $forum->course;
-        $postuser->user_picture->link     = (!forumimproved_is_anonymous_user($postuser));
+        $postuser->user_picture->link     = (!forumplusone_is_anonymous_user($postuser));
     }
     $postuser->fullname = fullname($postuser, has_capability('moodle/site:viewfullnames', $context));
 
-    if (!forumimproved_is_anonymous_user($postuser) and has_capability('moodle/course:manageactivities', $context, $postuser->id)) {
-        $postuser->fullname = html_writer::tag('span', $postuser->fullname, array('class' => 'forumimproved_highlightposter'));
+    if (!forumplusone_is_anonymous_user($postuser) and has_capability('moodle/course:manageactivities', $context, $postuser->id)) {
+        $postuser->fullname = html_writer::tag('span', $postuser->fullname, array('class' => 'forumplusone_highlightposter'));
     }
     return $postuser;
 }
@@ -7741,7 +7741,7 @@ function forumimproved_get_postuser($user, $post, $forum, context_module $contex
  * @return stdClass
  * @author Mark Nielsen
  */
-function forumimproved_anonymize_user($user, $forum, $post) {
+function forumplusone_anonymize_user($user, $forum, $post) {
     global $USER;
     static $anonymous = null;
 
@@ -7763,12 +7763,12 @@ function forumimproved_anonymize_user($user, $forum, $post) {
         $guest = guest_user();
         $anonymous = (object) array(
             'id' => $guest->id,
-            'firstname' => get_string('anonymousfirstname', 'forumimproved'),
-            'lastname' => get_string('anonymouslastname', 'forumimproved'),
-            'firstnamephonetic' => get_string('anonymousfirstnamephonetic', 'forumimproved'),
-            'lastnamephonetic' => get_string('anonymouslastnamephonetic', 'forumimproved'),
-            'middlename' => get_string('anonymousmiddlename', 'forumimproved'),
-            'alternatename' => get_string('anonymousalternatename', 'forumimproved'),
+            'firstname' => get_string('anonymousfirstname', 'forumplusone'),
+            'lastname' => get_string('anonymouslastname', 'forumplusone'),
+            'firstnamephonetic' => get_string('anonymousfirstnamephonetic', 'forumplusone'),
+            'lastnamephonetic' => get_string('anonymouslastnamephonetic', 'forumplusone'),
+            'middlename' => get_string('anonymousmiddlename', 'forumplusone'),
+            'alternatename' => get_string('anonymousalternatename', 'forumplusone'),
             'picture' => 0,
             'email' => $guest->email,
             'imagealt' => '',
@@ -7799,7 +7799,7 @@ function forumimproved_anonymize_user($user, $forum, $post) {
  * @return bool
  * @author Mark Nielsen
  */
-function forumimproved_is_anonymous_user($user) {
+function forumplusone_is_anonymous_user($user) {
     static $guest = null;
 
     if (is_null($guest)) {
@@ -7815,13 +7815,13 @@ function forumimproved_is_anonymous_user($user) {
  * @param $cm
  * @return mixed
  */
-function forumimproved_get_cm_forum($cm) {
+function forumplusone_get_cm_forum($cm) {
     global $DB;
 
     static $cache = array();
 
     if (!isset($cache[$cm->instance])) {
-        $cache[$cm->instance] = $DB->get_record('forumimproved', array('id' => $cm->instance), '*', MUST_EXIST);
+        $cache[$cm->instance] = $DB->get_record('forumplusone', array('id' => $cm->instance), '*', MUST_EXIST);
     }
     return $cache[$cm->instance];
 }
@@ -7833,7 +7833,7 @@ function forumimproved_get_cm_forum($cm) {
  * @param $cm
  * @return mixed
  */
-function forumimproved_get_cm_course($cm) {
+function forumplusone_get_cm_course($cm) {
     global $DB, $COURSE;
 
     static $cache = array();
@@ -7850,14 +7850,14 @@ function forumimproved_get_cm_course($cm) {
 
 /**
  * Highly specialized function to extract a discussion record
- * from the hybrid object returned from forumimproved_get_discussions()
+ * from the hybrid object returned from forumplusone_get_discussions()
  *
  * @author Mark Nielsen
  * @param stdClass $post Our post with discussion data embedded into it
  * @param stdClass $forum The discussion's forum
  * @return object
  */
-function forumimproved_extract_discussion($post, $forum) {
+function forumplusone_extract_discussion($post, $forum) {
     $discussion = (object) array(
         'id'           => $post->discussion,
         'course'       => $forum->course,
@@ -7897,7 +7897,7 @@ function forumimproved_extract_discussion($post, $forum) {
  * @return bool
  * @throws comment_exception
  */
-function mod_forumimproved_comment_validate(stdClass $options) {
+function mod_forumplusone_comment_validate(stdClass $options) {
     global $USER, $DB;
 
     if ($options->commentarea != 'userposts_comments') {
@@ -7908,12 +7908,12 @@ function mod_forumimproved_comment_validate(stdClass $options) {
     }
     $context = $options->context;
 
-    if (!$cm = get_coursemodule_from_id('forumimproved', $context->instanceid)) {
+    if (!$cm = get_coursemodule_from_id('forumplusone', $context->instanceid)) {
         throw new comment_exception('invalidcontext');
     }
 
-    if (!has_capability('mod/forumimproved:rate', $context)) {
-        if (!has_capability('mod/forumimproved:replypost', $context) or ($user->id != $USER->id)) {
+    if (!has_capability('mod/forumplusone:rate', $context)) {
+        if (!has_capability('mod/forumplusone:replypost', $context) or ($user->id != $USER->id)) {
             throw new comment_exception('nopermissiontocomment');
         }
     }
@@ -7921,7 +7921,7 @@ function mod_forumimproved_comment_validate(stdClass $options) {
     return true;
 }
 
-function mod_forumimproved_comment_permissions(stdClass $options) {
+function mod_forumplusone_comment_permissions(stdClass $options) {
     global $USER, $DB;
 
     if ($options->commentarea != 'userposts_comments') {
@@ -7932,12 +7932,12 @@ function mod_forumimproved_comment_permissions(stdClass $options) {
     }
     $context = $options->context;
 
-    if (!$cm = get_coursemodule_from_id('forumimproved', $context->instanceid)) {
+    if (!$cm = get_coursemodule_from_id('forumplusone', $context->instanceid)) {
         throw new comment_exception('invalidcontext');
     }
 
-    if (!has_capability('mod/forumimproved:rate', $context)) {
-        if (!has_capability('mod/forumimproved:replypost', $context) or ($user->id != $USER->id)) {
+    if (!has_capability('mod/forumplusone:rate', $context)) {
+        if (!has_capability('mod/forumplusone:replypost', $context) or ($user->id != $USER->id)) {
             return array('view' => false, 'post' => false);
         }
     }
@@ -7950,10 +7950,10 @@ function mod_forumimproved_comment_permissions(stdClass $options) {
  * @param stdClass $options
  * @return mixed
  */
-function mod_forumimproved_comment_display($comments, $options) {
+function mod_forumplusone_comment_display($comments, $options) {
     foreach ($comments as $comment) {
         $comment->content = file_rewrite_pluginfile_urls($comment->content, 'pluginfile.php', $options->context->id,
-                'mod_forumimproved', 'comments', $comment->id);
+                'mod_forumplusone', 'comments', $comment->id);
     }
 
     return $comments;
@@ -7969,7 +7969,7 @@ function mod_forumimproved_comment_display($comments, $options) {
  * @param $options
  * @return bool
  */
-function forumimproved_forum_comments_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, $options) {
+function forumplusone_forum_comments_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, $options) {
     global $DB, $USER;
 
     // Make sure this is the comments area.
@@ -7986,14 +7986,14 @@ function forumimproved_forum_comments_pluginfile($course, $cm, $context, $filear
     // Try to get the file.
     $fs = get_file_storage();
     $relativepath = implode('/', $args);
-    $fullpath = "/$context->id/mod_forumimproved/$filearea/$commentid/$relativepath";
+    $fullpath = "/$context->id/mod_forumplusone/$filearea/$commentid/$relativepath";
     if (!$file = $fs->get_file_by_hash(sha1($fullpath)) or $file->is_directory()) {
         return false;
     }
 
     // Check permissions.
-    if (!has_capability('mod/forumimproved:rate', $context)) {
-        if (!has_capability('mod/forumimproved:replypost', $context) or ($comment->itemid != $USER->id)) {
+    if (!has_capability('mod/forumplusone:rate', $context)) {
+        if (!has_capability('mod/forumplusone:replypost', $context) or ($comment->itemid != $USER->id)) {
             return false;
         }
     }
@@ -8007,7 +8007,7 @@ function forumimproved_forum_comments_pluginfile($course, $cm, $context, $filear
  * @param stdClass $options
  * @throws comment_exception
  */
-function mod_forumimproved_comment_message(stdClass $comment, stdClass $options) {
+function mod_forumplusone_comment_message(stdClass $comment, stdClass $options) {
     global $DB;
 
     if ($options->commentarea != 'userposts_comments') {
@@ -8018,15 +8018,15 @@ function mod_forumimproved_comment_message(stdClass $comment, stdClass $options)
     }
     $context = $options->context;
 
-    if (!$cm = get_coursemodule_from_id('forumimproved', $context->instanceid)) {
+    if (!$cm = get_coursemodule_from_id('forumplusone', $context->instanceid)) {
         throw new comment_exception('invalidcontext');
     }
 
     // Get all the users with the ability to rate.
-    $recipients = get_users_by_capability($context, 'mod/forumimproved:rate');
+    $recipients = get_users_by_capability($context, 'mod/forumplusone:rate');
 
     // Add the item user if they are different from commenter.
-    if ($comment->userid != $user->id and has_capability('mod/forumimproved:replypost', $context, $user)) {
+    if ($comment->userid != $user->id and has_capability('mod/forumplusone:replypost', $context, $user)) {
         $recipients[$user->id] = $user;
     }
 
@@ -8036,7 +8036,7 @@ function mod_forumimproved_comment_message(stdClass $comment, stdClass $options)
     // Make sure that the commenter is not getting the message.
     unset($recipients[$comment->userid]);
 
-    $gareaid = component_callback('local_joulegrader', 'area_from_context', array($context, 'forumimproved'));
+    $gareaid = component_callback('local_joulegrader', 'area_from_context', array($context, 'forumplusone'));
     $contexturl = new moodle_url('/local/joulegrader/view.php', array('courseid' => $cm->course,
             'garea' => $gareaid, 'guser' => $user->id));
 
@@ -8052,11 +8052,11 @@ function mod_forumimproved_comment_message(stdClass $comment, stdClass $options)
  * @param stdClass $user The user object. This defaults to the global $USER object.
  * @throws invalid_digest_setting thrown if an invalid maildigest option is provided.
  */
-function forumimproved_set_user_maildigest($forum, $maildigest, $user = null) {
+function forumplusone_set_user_maildigest($forum, $maildigest, $user = null) {
     global $DB, $USER;
 
     if (is_number($forum)) {
-        $forum = $DB->get_record('forumimproved', array('id' => $forum));
+        $forum = $DB->get_record('forumplusone', array('id' => $forum));
     }
 
     if ($user === null) {
@@ -8064,21 +8064,21 @@ function forumimproved_set_user_maildigest($forum, $maildigest, $user = null) {
     }
 
     $course  = $DB->get_record('course', array('id' => $forum->course), '*', MUST_EXIST);
-    $cm      = get_coursemodule_from_instance('forumimproved', $forum->id, $course->id, false, MUST_EXIST);
+    $cm      = get_coursemodule_from_instance('forumplusone', $forum->id, $course->id, false, MUST_EXIST);
     $context = context_module::instance($cm->id);
 
     // User must be allowed to see this forum.
-    require_capability('mod/forumimproved:viewdiscussion', $context, $user->id);
+    require_capability('mod/forumplusone:viewdiscussion', $context, $user->id);
 
     // Validate the maildigest setting.
-    $digestoptions = forumimproved_get_user_digest_options($user);
+    $digestoptions = forumplusone_get_user_digest_options($user);
 
     if (!isset($digestoptions[$maildigest])) {
-        throw new moodle_exception('invaliddigestsetting', 'mod_forumimproved');
+        throw new moodle_exception('invaliddigestsetting', 'mod_forumplusone');
     }
 
     // Attempt to retrieve any existing forum digest record.
-    $subscription = $DB->get_record('forumimproved_digests', array(
+    $subscription = $DB->get_record('forumplusone_digests', array(
         'userid' => $user->id,
         'forum' => $forum->id,
     ));
@@ -8086,12 +8086,12 @@ function forumimproved_set_user_maildigest($forum, $maildigest, $user = null) {
     // Create or Update the existing maildigest setting.
     if ($subscription) {
         if ($maildigest == -1) {
-            $DB->delete_records('forumimproved_digests', array('forum' => $forum->id, 'userid' => $user->id));
+            $DB->delete_records('forumplusone_digests', array('forum' => $forum->id, 'userid' => $user->id));
         } else if ($maildigest !== $subscription->maildigest) {
             // Only update the maildigest setting if it's changed.
 
             $subscription->maildigest = $maildigest;
-            $DB->update_record('forumimproved_digests', $subscription);
+            $DB->update_record('forumplusone_digests', $subscription);
         }
     } else {
         if ($maildigest != -1) {
@@ -8101,7 +8101,7 @@ function forumimproved_set_user_maildigest($forum, $maildigest, $user = null) {
             $subscription->forum = $forum->id;
             $subscription->userid = $user->id;
             $subscription->maildigest = $maildigest;
-            $subscription->id = $DB->insert_record('forumimproved_digests', $subscription);
+            $subscription->id = $DB->insert_record('forumplusone_digests', $subscription);
         }
     }
 }
@@ -8115,7 +8115,7 @@ function forumimproved_set_user_maildigest($forum, $maildigest, $user = null) {
  * @param int $forumid The ID of the forum to check.
  * @return int The calculated maildigest setting for this user and forum.
  */
-function forumimproved_get_user_maildigest_bulk($digests, $user, $forumid) {
+function forumplusone_get_user_maildigest_bulk($digests, $user, $forumid) {
     if (isset($digests[$forumid]) && isset($digests[$forumid][$user->id])) {
         $maildigest = $digests[$forumid][$user->id];
         if ($maildigest === -1) {
@@ -8133,7 +8133,7 @@ function forumimproved_get_user_maildigest_bulk($digests, $user, $forumid) {
  * @param stdClass $user The user object. This defaults to the global $USER object.
  * @return array The mapping of values to digest options.
  */
-function forumimproved_get_user_digest_options($user = null) {
+function forumplusone_get_user_digest_options($user = null) {
     global $USER;
 
     // Revert to the global user object.
@@ -8142,13 +8142,13 @@ function forumimproved_get_user_digest_options($user = null) {
     }
 
     $digestoptions = array();
-    $digestoptions['0']  = get_string('emaildigestoffshort', 'mod_forumimproved');
-    $digestoptions['1']  = get_string('emaildigestcompleteshort', 'mod_forumimproved');
-    $digestoptions['2']  = get_string('emaildigestsubjectsshort', 'mod_forumimproved');
+    $digestoptions['0']  = get_string('emaildigestoffshort', 'mod_forumplusone');
+    $digestoptions['1']  = get_string('emaildigestcompleteshort', 'mod_forumplusone');
+    $digestoptions['2']  = get_string('emaildigestsubjectsshort', 'mod_forumplusone');
 
     // We need to add the default digest option at the end - it relies on
     // the contents of the existing values.
-    $digestoptions['-1'] = get_string('emaildigestdefault', 'mod_forumimproved',
+    $digestoptions['-1'] = get_string('emaildigestdefault', 'mod_forumplusone',
             $digestoptions[$user->maildigest]);
 
     // Resort the options to be in a sensible order.
@@ -8162,7 +8162,7 @@ function forumimproved_get_user_digest_options($user = null) {
  * Reduce the precision of the time e.g. 1 min 10 secs ago -> 1 min ago
  * @return int
  */
-function forumimproved_simpler_time($seconds) {
+function forumplusone_simpler_time($seconds) {
     if ($seconds >= DAYSECS) {
         return floor($seconds / DAYSECS) * DAYSECS;
     } else if ($seconds >= 3600) {
@@ -8182,7 +8182,7 @@ function forumimproved_simpler_time($seconds) {
  * @return string
  * @throws coding_exception
  */
-function forumimproved_relative_time($timeinpast, $attributes = null) {
+function forumplusone_relative_time($timeinpast, $attributes = null) {
     if (!is_numeric($timeinpast)) {
         throw new coding_exception('Relative times must be calculated from the raw timestamp');
     }
@@ -8194,7 +8194,7 @@ function forumimproved_relative_time($timeinpast, $attributes = null) {
     if (abs($secondsago) > (365 * DAYSECS)) {
         $displaytime = $precisedatetime;
     } else {
-        $secondsago = forumimproved_simpler_time($secondsago);
+        $secondsago = forumplusone_simpler_time($secondsago);
         $displaytime = format_time($secondsago);
         if ($secondsago != 0) {
             $displaytime = get_string('ago', 'message', $displaytime);
@@ -8226,7 +8226,7 @@ function forumimproved_relative_time($timeinpast, $attributes = null) {
  * @return string
  * @throws coding_exception
  */
-function forumimproved_absolute_time($timeinpast, $attributes = null) {
+function forumplusone_absolute_time($timeinpast, $attributes = null) {
     if (!is_numeric($timeinpast)) {
         throw new coding_exception('Absolute times must be calculated from the raw timestamp');
     }
@@ -8257,11 +8257,11 @@ function forumimproved_absolute_time($timeinpast, $attributes = null) {
  * @param int $replies
  * @return string pluralized text
  */
-function forumimproved_xreplies($replies) {
+function forumplusone_xreplies($replies) {
     if ($replies == 1) {
-        return get_string('onereply', 'forumimproved');
+        return get_string('onereply', 'forumplusone');
     }
-    return get_string('xreplies', 'forumimproved', $replies);
+    return get_string('xreplies', 'forumplusone', $replies);
 }
 
 /**
@@ -8269,7 +8269,7 @@ function forumimproved_xreplies($replies) {
  * @param string $str
  * @return bool
  */
-function forumimproved_str_empty($str) {
+function forumplusone_str_empty($str) {
     // Remove line breaks from string as they are just whitespace.
     $str = str_ireplace('<br/>', '', $str);
     $str = str_ireplace('<br />', '', $str);

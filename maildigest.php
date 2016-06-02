@@ -19,12 +19,12 @@
  * Set the mail digest option in a specific forum for a user.
  *
  * @copyright 2013 Andrew Nicols
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(__DIR__)) . '/config.php');
-require_once($CFG->dirroot.'/mod/forumimproved/lib.php');
+require_once($CFG->dirroot.'/mod/forumplusone/lib.php');
 
 $id = required_param('id', PARAM_INT);
 $maildigest = required_param('maildigest', PARAM_INT);
@@ -33,26 +33,26 @@ $backtoindex = optional_param('backtoindex', 0, PARAM_INT);
 // We must have a valid session key.
 require_sesskey();
 
-$forum = $DB->get_record('forumimproved', array('id' => $id));
+$forum = $DB->get_record('forumplusone', array('id' => $id));
 $course  = $DB->get_record('course', array('id' => $forum->course), '*', MUST_EXIST);
-$cm      = get_coursemodule_from_instance('forumimproved', $forum->id, $course->id, false, MUST_EXIST);
+$cm      = get_coursemodule_from_instance('forumplusone', $forum->id, $course->id, false, MUST_EXIST);
 $context = context_module::instance($cm->id);
 
 require_login($course, false, $cm);
 
-$url = new moodle_url('/mod/forumimproved/maildigest.php', array(
+$url = new moodle_url('/mod/forumplusone/maildigest.php', array(
     'id' => $id,
     'maildigest' => $maildigest,
 ));
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 
-$digestoptions = forumimproved_get_user_digest_options();
+$digestoptions = forumplusone_get_user_digest_options();
 
 $info = new stdClass();
 $info->name  = fullname($USER);
 $info->forum = format_string($forum->name);
-forumimproved_set_user_maildigest($forum, $maildigest);
+forumplusone_set_user_maildigest($forum, $maildigest);
 $info->maildigest = $maildigest;
 
 if ($maildigest === -1) {
@@ -60,13 +60,13 @@ if ($maildigest === -1) {
     $info->maildigest = $USER->maildigest;
     $info->maildigesttitle = $digestoptions[$info->maildigest];
     $info->maildigestdescription = get_string('emaildigest_' . $info->maildigest,
-        'mod_forumimproved', $info);
-    $updatemessage = get_string('emaildigestupdated_default', 'forumimproved', $info);
+        'mod_forumplusone', $info);
+    $updatemessage = get_string('emaildigestupdated_default', 'forumplusone', $info);
 } else {
     $info->maildigesttitle = $digestoptions[$info->maildigest];
     $info->maildigestdescription = get_string('emaildigest_' . $info->maildigest,
-        'mod_forumimproved', $info);
-    $updatemessage = get_string('emaildigestupdated', 'forumimproved', $info);
+        'mod_forumplusone', $info);
+    $updatemessage = get_string('emaildigestupdated', 'forumplusone', $info);
 }
 
 if ($backtoindex) {

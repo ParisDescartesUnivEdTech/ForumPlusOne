@@ -15,19 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The mod_forumimproved subscription created event.
+ * The mod_forumplusone subscription created event.
  *
- * @package    mod_forumimproved
+ * @package    mod_forumplusone
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_forumimproved\event;
+namespace mod_forumplusone\event;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The mod_forumimproved subscription created event class.
+ * The mod_forumplusone subscription created event class.
  *
  * @property-read array $other {
  *      Extra information about the event.
@@ -35,7 +35,7 @@ defined('MOODLE_INTERNAL') || die();
  *      - int forumid: The id of the forum which has been subscribed to.
  * }
  *
- * @package    mod_forumimproved
+ * @package    mod_forumplusone
  * @since      Moodle 2.7
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -49,7 +49,7 @@ class subscription_created extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_OTHER;
-        $this->data['objecttable'] = 'forumimproved_subscriptions';
+        $this->data['objecttable'] = 'forumplusone_subscriptions';
     }
 
     /**
@@ -68,7 +68,7 @@ class subscription_created extends \core\event\base {
      * @return string
      */
     public static function get_name() {
-        return get_string('eventsubscriptioncreated', 'mod_forumimproved');
+        return get_string('eventsubscriptioncreated', 'mod_forumplusone');
     }
 
     /**
@@ -77,7 +77,7 @@ class subscription_created extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/forumimproved/subscribers.php', array('id' => $this->other['forumid']));
+        return new \moodle_url('/mod/forumplusone/subscribers.php', array('id' => $this->other['forumid']));
     }
 
     /**
@@ -86,7 +86,7 @@ class subscription_created extends \core\event\base {
      * @return array|null
      */
     protected function get_legacy_logdata() {
-        return array($this->courseid, 'forumimproved', 'subscribe', 'view.php?f=' . $this->other['forumid'],
+        return array($this->courseid, 'forumplusone', 'subscribe', 'view.php?f=' . $this->other['forumid'],
             $this->other['forumid'], $this->contextinstanceid);
     }
 

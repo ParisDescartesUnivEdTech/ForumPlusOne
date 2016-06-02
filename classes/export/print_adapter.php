@@ -17,12 +17,12 @@
 /**
  * File Export Adapter
  *
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_forumimproved\export;
+namespace mod_forumplusone\export;
 
 use stdClass;
 
@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__.'/adapter_interface.php');
 
 /**
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -58,7 +58,7 @@ class print_adapter implements adapter_interface {
         $PAGE->set_pagelayout('embedded');
 
         echo $OUTPUT->header();
-        echo $OUTPUT->box_start('mod-forumimproved-posts-container');
+        echo $OUTPUT->box_start('mod-forumplusone-posts-container');
     }
 
     /**
@@ -70,7 +70,7 @@ class print_adapter implements adapter_interface {
      */
     public function send_discussion($discussion, $posts) {
         global $PAGE;
-        $renderer = $PAGE->get_renderer('mod_forumimproved');
+        $renderer = $PAGE->get_renderer('mod_forumplusone');
         echo $renderer->svg_sprite();
         foreach ($posts as $post) {
             echo $renderer->post($this->cm, $discussion, $post, false, null, false);

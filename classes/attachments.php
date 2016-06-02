@@ -17,17 +17,17 @@
 /**
  * Post attachments handler
  *
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_forumimproved;
+namespace mod_forumplusone;
 
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -50,7 +50,7 @@ class attachments {
     /**
      * @var string
      */
-    protected $component = 'mod_forumimproved';
+    protected $component = 'mod_forumplusone';
 
     /**
      * @var string
@@ -86,7 +86,7 @@ class attachments {
      * @return bool
      */
     public function attachments_allowed() {
-        return (!empty($this->forum->maxattachments) && $this->forum->maxbytes != 1 && has_capability('mod/forumimproved:createattachment', $this->context)); // 1 = No attachments at all.
+        return (!empty($this->forum->maxattachments) && $this->forum->maxbytes != 1 && has_capability('mod/forumplusone:createattachment', $this->context)); // 1 = No attachments at all.
     }
 
     /**

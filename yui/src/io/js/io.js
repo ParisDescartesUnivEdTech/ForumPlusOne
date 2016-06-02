@@ -1,18 +1,18 @@
 /**
  * Forum IO Wrapper
  *
- * @module moodle-mod_forumimproved-io
+ * @module moodle-mod_forumplusone-io
  */
 
 var Lang = Y.Lang,
-    URL_AJAX = M.cfg.wwwroot + '/mod/forumimproved/route.php';
+    URL_AJAX = M.cfg.wwwroot + '/mod/forumplusone/route.php';
 
 /**
  * This provides a simple wrapper around Y.io to fetch
  * data from the server and handle any errors.
  *
  * @constructor
- * @namespace M.mod_forumimproved
+ * @namespace M.mod_forumplusone
  * @class Io
  * @extends Y.Base
  */
@@ -132,5 +132,5 @@ Y.extend(IO, Y.Base,
     }
 );
 
-M.mod_forumimproved = M.mod_forumimproved || {};
-M.mod_forumimproved.Io = IO;
+M.mod_forumplusone = M.mod_forumplusone || {};
+M.mod_forumplusone.Io = IO;

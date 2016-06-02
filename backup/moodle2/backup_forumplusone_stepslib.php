@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    mod_forumimproved
+ * @package    mod_forumplusone
  * @subpackage backup-moodle2
  * @copyright  2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,13 +25,13 @@
  */
 
 /**
- * Define all the backup steps that will be used by the backup_forumimproved_activity_task
+ * Define all the backup steps that will be used by the backup_forumplusone_activity_task
  */
 
 /**
  * Define the complete forum structure for backup, with file and id annotations
  */
-class backup_forumimproved_activity_structure_step extends backup_activity_structure_step {
+class backup_forumplusone_activity_structure_step extends backup_activity_structure_step {
 
     protected function define_structure() {
 
@@ -40,7 +40,7 @@ class backup_forumimproved_activity_structure_step extends backup_activity_struc
 
         // Define each element separated
 
-        $forum = new backup_nested_element('forumimproved', array('id'), array(
+        $forum = new backup_nested_element('forumplusone', array('id'), array(
             'type', 'name', 'intro', 'introformat',
             'assessed', 'assesstimestart', 'assesstimefinish', 'scale',
             'maxbytes', 'maxattachments', 'forcesubscribe',
@@ -121,31 +121,31 @@ class backup_forumimproved_activity_structure_step extends backup_activity_struc
 
         // Define sources
 
-        $forum->set_source_table('forumimproved', array('id' => backup::VAR_ACTIVITYID));
+        $forum->set_source_table('forumplusone', array('id' => backup::VAR_ACTIVITYID));
 
         // All these source definitions only happen if we are including user info
         if ($userinfo) {
             $discussion->set_source_sql('
                 SELECT *
-                  FROM {forumimproved_discussions}
+                  FROM {forumplusone_discussions}
                  WHERE forum = ?',
                 array(backup::VAR_PARENTID));
 
-            $discussionsub->set_source_table('forumimproved_subs_disc', array('discussion' => backup::VAR_PARENTID));
+            $discussionsub->set_source_table('forumplusone_subs_disc', array('discussion' => backup::VAR_PARENTID));
 
             // Need posts ordered by id so parents are always before childs on restore
-            $post->set_source_table('forumimproved_posts', array('discussion' => backup::VAR_PARENTID), 'id ASC');
+            $post->set_source_table('forumplusone_posts', array('discussion' => backup::VAR_PARENTID), 'id ASC');
 
-            $subscription->set_source_table('forumimproved_subscriptions', array('forum' => backup::VAR_PARENTID));
+            $subscription->set_source_table('forumplusone_subscriptions', array('forum' => backup::VAR_PARENTID));
 
-            $digest->set_source_table('forumimproved_digests', array('forum' => backup::VAR_PARENTID));
+            $digest->set_source_table('forumplusone_digests', array('forum' => backup::VAR_PARENTID));
 
-            $read->set_source_table('forumimproved_read', array('forumid' => backup::VAR_PARENTID));
+            $read->set_source_table('forumplusone_read', array('forumid' => backup::VAR_PARENTID));
 
-            $track->set_source_table('forumimproved_track_prefs', array('forumid' => backup::VAR_PARENTID));
+            $track->set_source_table('forumplusone_track_prefs', array('forumid' => backup::VAR_PARENTID));
 
             $rating->set_source_table('rating', array('contextid'  => backup::VAR_CONTEXTID,
-                                                      'component'  => backup_helper::is_sqlparam('mod_forumimproved'),
+                                                      'component'  => backup_helper::is_sqlparam('mod_forumplusone'),
                                                       'ratingarea' => backup_helper::is_sqlparam('post'),
                                                       'itemid'     => backup::VAR_PARENTID));
             $rating->set_source_alias('rating', 'value');
@@ -175,10 +175,10 @@ class backup_forumimproved_activity_structure_step extends backup_activity_struc
 
         // Define file annotations
 
-        $forum->annotate_files('mod_forumimproved', 'intro', null); // This file area hasn't itemid
+        $forum->annotate_files('mod_forumplusone', 'intro', null); // This file area hasn't itemid
 
-        $post->annotate_files('mod_forumimproved', 'post', 'id');
-        $post->annotate_files('mod_forumimproved', 'attachment', 'id');
+        $post->annotate_files('mod_forumplusone', 'post', 'id');
+        $post->annotate_files('mod_forumplusone', 'attachment', 'id');
 
         // Return the root element (forum), wrapped into standard activity structure
         return $this->prepare_activity_structure($forum);

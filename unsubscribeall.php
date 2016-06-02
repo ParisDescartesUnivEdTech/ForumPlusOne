@@ -16,7 +16,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright  2008 Petr Skoda (http://skodak.org)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
@@ -28,7 +28,7 @@ require_once("lib.php");
 
 $confirm = optional_param('confirm', false, PARAM_BOOL);
 
-$PAGE->set_url('/mod/forumimproved/unsubscribeall.php');
+$PAGE->set_url('/mod/forumplusone/unsubscribeall.php');
 
 // Do not autologin guest. Only proper users can have forum subscriptions.
 require_login(null, false);
@@ -40,8 +40,8 @@ if (isguestuser()) {
     redirect($return);
 }
 
-$strunsubscribeall = get_string('unsubscribeall', 'forumimproved');
-$PAGE->navbar->add(get_string('modulename', 'forumimproved'));
+$strunsubscribeall = get_string('unsubscribeall', 'forumplusone');
+$PAGE->navbar->add(get_string('modulename', 'forumplusone'));
 $PAGE->navbar->add($strunsubscribeall);
 $PAGE->set_title($strunsubscribeall);
 $PAGE->set_heading($COURSE->fullname);
@@ -49,29 +49,29 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading($strunsubscribeall);
 
 if (data_submitted() and $confirm and confirm_sesskey()) {
-    $forums = forumimproved_get_optional_subscribed_forums();
+    $forums = forumplusone_get_optional_subscribed_forums();
 
     foreach($forums as $forum) {
-        forumimproved_unsubscribe($USER->id, $forum->id, context_module::instance($forum->cm));
+        forumplusone_unsubscribe($USER->id, $forum->id, context_module::instance($forum->cm));
     }
     $DB->set_field('user', 'autosubscribe', 0, array('id'=>$USER->id));
 
-    echo $OUTPUT->box(get_string('unsubscribealldone', 'forumimproved'));
+    echo $OUTPUT->box(get_string('unsubscribealldone', 'forumplusone'));
     echo $OUTPUT->continue_button($return);
     echo $OUTPUT->footer();
     die;
 
 } else {
-    $a = count(forumimproved_get_optional_subscribed_forums());
+    $a = count(forumplusone_get_optional_subscribed_forums());
 
     if ($a) {
-        $msg = get_string('unsubscribeallconfirm', 'forumimproved', $a);
+        $msg = get_string('unsubscribeallconfirm', 'forumplusone', $a);
         echo $OUTPUT->confirm($msg, new moodle_url('unsubscribeall.php', array('confirm'=>1)), $return);
         echo $OUTPUT->footer();
         die;
 
     } else {
-        echo $OUTPUT->box(get_string('unsubscribeallempty', 'forumimproved'));
+        echo $OUTPUT->box(get_string('unsubscribeallempty', 'forumplusone'));
         echo $OUTPUT->continue_button($return);
         echo $OUTPUT->footer();
         die;

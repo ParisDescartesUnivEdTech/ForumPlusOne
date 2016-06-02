@@ -1,53 +1,53 @@
-YUI.add('moodle-mod_forumimproved-article', function (Y, NAME) {
+YUI.add('moodle-mod_forumplusone-article', function (Y, NAME) {
 
 var CSS = {
-        DISCUSSION_EDIT: 'forumimproved-thread-edit',
-        DISCUSSION_EXPANDED: 'forumimproved-thread-article-expanded',
-        POST_EDIT: 'forumimproved-post-edit'
+        DISCUSSION_EDIT: 'forumplusone-thread-edit',
+        DISCUSSION_EXPANDED: 'forumplusone-thread-article-expanded',
+        POST_EDIT: 'forumplusone-post-edit'
     },
     SELECTORS = {
         ADD_DISCUSSION: '#newdiscussionform',
-        ADD_DISCUSSION_TARGET: '.forumimproved-add-discussion-target',
-        ALL_FORMS: '.forumimproved-reply-wrapper form',
-        CANONIC_REPLY_FORM: '.forumimproved-footer-reply',
-        CONTAINER: '.mod-forumimproved-posts-container',
-        CONTAINER_LINKS: '.mod-forumimproved-posts-container a',
-        DISCUSSION: '.forumimproved-thread',
-        DISCUSSIONS: '.forumimproved-threads-wrapper',
+        ADD_DISCUSSION_TARGET: '.forumplusone-add-discussion-target',
+        ALL_FORMS: '.forumplusone-reply-wrapper form',
+        CANONIC_REPLY_FORM: '.forumplusone-footer-reply',
+        CONTAINER: '.mod-forumplusone-posts-container',
+        CONTAINER_LINKS: '.mod-forumplusone-posts-container a',
+        DISCUSSION: '.forumplusone-thread',
+        DISCUSSIONS: '.forumplusone-threads-wrapper',
         DISCUSSION_EDIT: '.' + CSS.DISCUSSION_EDIT,
-        DISCUSSION_BY_ID: '.forumimproved-thread[data-discussionid="%d"]',
-        DISCUSSION_COUNT: '.forumimproved-discussion-count',
-        DISCUSSION_STATE_BTN_TOGGLE_BY_DISCUSSION_ID: 'article[data-discussionid="%d"] .forumimproved-toggle-state-link',
+        DISCUSSION_BY_ID: '.forumplusone-thread[data-discussionid="%d"]',
+        DISCUSSION_COUNT: '.forumplusone-discussion-count',
+        DISCUSSION_STATE_BTN_TOGGLE_BY_DISCUSSION_ID: 'article[data-discussionid="%d"] .forumplusone-toggle-state-link',
         DISCUSSION_WRAPPER_BY_DISCUSSION_ID: 'article[data-discussionid="%d"]',
-        DISCUSSION_TARGET: '.forumimproved-new-discussion-target',
-        DISCUSSION_TEMPLATE: '#forumimproved-discussion-template',
-        DISCUSSION_VIEW: '.forumimproved-thread-view',
+        DISCUSSION_TARGET: '.forumplusone-new-discussion-target',
+        DISCUSSION_TEMPLATE: '#forumplusone-discussion-template',
+        DISCUSSION_VIEW: '.forumplusone-thread-view',
         EDITABLE_MESSAGE: '[contenteditable]',
-        FORM: '.forumimproved-form',
-        FORM_ADVANCED: '.forumimproved-use-advanced',
-        FORM_REPLY_WRAPPER: '.forumimproved-reply-wrapper',
+        FORM: '.forumplusone-form',
+        FORM_ADVANCED: '.forumplusone-use-advanced',
+        FORM_REPLY_WRAPPER: '.forumplusone-reply-wrapper',
         INPUT_FORUM: 'input[name="forum"]',
         INPUT_MESSAGE: 'textarea[name="message"]',
         INPUT_REPLY: 'input[name="reply"]',
         INPUT_SUBJECT: 'input[name="subject"]',
-        LINK_CANCEL: '.forumimproved-cancel',
+        LINK_CANCEL: '.forumplusone-cancel',
         NO_DISCUSSIONS: '.forumnodiscuss',
-        NOTIFICATION: '.forumimproved-notification',
-        OPTIONS_TO_PROCESS: '.forumimproved-options-menu.unprocessed',
+        NOTIFICATION: '.forumplusone-notification',
+        OPTIONS_TO_PROCESS: '.forumplusone-options-menu.unprocessed',
         PLACEHOLDER: '.thread-replies-placeholder',
-        POSTS: '.forumimproved-thread-replies',
-        POST_BY_ID: '.forumimproved-post-target[data-postid="%d"]',
+        POSTS: '.forumplusone-thread-replies',
+        POST_BY_ID: '.forumplusone-post-target[data-postid="%d"]',
         POST_EDIT: '.' + CSS.POST_EDIT,
-        POST_TARGET: '.forumimproved-post-target',
+        POST_TARGET: '.forumplusone-post-target',
         RATE: '.forum-post-rating',
         RATE_POPUP: '.forum-post-rating a',
-        REPLY_TEMPLATE: '#forumimproved-reply-template',
-        SEARCH_PAGE: '#page-mod-forumimproved-search',
-        VALIDATION_ERRORS: '.forumimproved-validation-errors',
-        VIEW_POSTS: '.forumimproved-view-posts',
-        VOTERS_LINK_BY_POST_ID: '.forumimproved-post-target[data-postid="%d"] .forumimproved-show-voters-link',
-        VOTE_BTN_BY_POST_ID: '.forumimproved-post-target[data-postid="%d"] .forumimproved-vote-link',
-        VOTES_COUNTER_BY_POST_ID: '.forumimproved-post-target[data-postid="%d"] .forumimproved-votes-counter'
+        REPLY_TEMPLATE: '#forumplusone-reply-template',
+        SEARCH_PAGE: '#page-mod-forumplusone-search',
+        VALIDATION_ERRORS: '.forumplusone-validation-errors',
+        VIEW_POSTS: '.forumplusone-view-posts',
+        VOTERS_LINK_BY_POST_ID: '.forumplusone-post-target[data-postid="%d"] .forumplusone-show-voters-link',
+        VOTE_BTN_BY_POST_ID: '.forumplusone-post-target[data-postid="%d"] .forumplusone-vote-link',
+        VOTES_COUNTER_BY_POST_ID: '.forumplusone-post-target[data-postid="%d"] .forumplusone-votes-counter'
     },
     EVENTS = {
         DISCUSSION_CREATED: 'discussion:created',
@@ -58,18 +58,18 @@ var CSS = {
         POST_UPDATED: 'post:updated'
     };
 
-M.mod_forumimproved = M.mod_forumimproved || {};
+M.mod_forumplusone = M.mod_forumplusone || {};
 /**
  * DOM Updater
  *
- * @module moodle-mod_forumimproved-dom
+ * @module moodle-mod_forumplusone-dom
  */
 
 /**
  * Handles updating forum DOM structures.
  *
  * @constructor
- * @namespace M.mod_forumimproved
+ * @namespace M.mod_forumplusone
  * @class Dom
  * @extends Y.Base
  */
@@ -77,14 +77,14 @@ function DOM() {
     DOM.superclass.constructor.apply(this, arguments);
 }
 
-DOM.NAME = 'moodle-mod_forumimproved-dom';
+DOM.NAME = 'moodle-mod_forumplusone-dom';
 
 DOM.ATTRS = {
     /**
      * Used for requests
      *
      * @attribute io
-     * @type M.mod_forumimproved.Io
+     * @type M.mod_forumplusone.Io
      * @required
      */
     io: { value: null }
@@ -206,7 +206,7 @@ Y.extend(DOM, Y.Base,
             if (countNode !== null) {
                 // Increment the count and update display.
                 countNode.setData('count', parseInt(countNode.getData('count'), 10) + increment);
-                countNode.setHTML(M.util.get_string('xdiscussions', 'mod_forumimproved', countNode.getData('count')));
+                countNode.setHTML(M.util.get_string('xdiscussions', 'mod_forumplusone', countNode.getData('count')));
             }
         },
 
@@ -302,22 +302,22 @@ Y.extend(DOM, Y.Base,
     }
 );
 
-M.mod_forumimproved.Dom = DOM;
+M.mod_forumplusone.Dom = DOM;
 /**
  * Forum Router
  *
- * @module moodle-mod_forumimproved-router
+ * @module moodle-mod_forumplusone-router
  */
 
 /**
  * Handles URL routing
  *
  * @constructor
- * @namespace M.mod_forumimproved
+ * @namespace M.mod_forumplusone
  * @class Router
  * @extends Y.Router
  */
-var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
+var ROUTER = Y.Base.create('forumplusoneRouter', Y.Router, [], {
     /**
      *
      * @method initializer
@@ -387,7 +387,7 @@ var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
             return;
         }
         // Whenever a route takes us somewhere else we need to move the editor back to its original container.
-        M.mod_forumimproved.restoreEditor();
+        M.mod_forumplusone.restoreEditor();
 
         if (this.routeUrl(e.currentTarget.get('href'))) {
             e.preventDefault();
@@ -419,7 +419,7 @@ var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
         e.preventDefault();
 
         // Put editor back to its original place in DOM.
-        M.mod_forumimproved.restoreEditor();
+        M.mod_forumplusone.restoreEditor();
 
         var formNode = e.currentTarget,
             forumId  = formNode.one(SELECTORS.INPUT_FORUM).get('value');
@@ -463,7 +463,7 @@ var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
          * Used for responding to routing actions
          *
          * @attribute article
-         * @type M.mod_forumimproved.Article
+         * @type M.mod_forumplusone.Article
          * @required
          */
         article: { value: null },
@@ -473,11 +473,11 @@ var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
          *
          * @attribute root
          * @type String
-         * @default '/mod/forumimproved'
+         * @default '/mod/forumplusone'
          * @required
          */
         root: {
-            value: '/mod/forumimproved'
+            value: '/mod/forumplusone'
         },
 
         /**
@@ -497,11 +497,11 @@ var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
     }
 });
 
-M.mod_forumimproved.Router = ROUTER;
+M.mod_forumplusone.Router = ROUTER;
 /**
  * Form Handler
  *
- * @module moodle-mod_forumimproved-form
+ * @module moodle-mod_forumplusone-form
  */
 
 /**
@@ -510,7 +510,7 @@ M.mod_forumimproved.Router = ROUTER;
  *  Adding a discussion
  *
  * @constructor
- * @namespace M.mod_forumimproved
+ * @namespace M.mod_forumplusone
  * @class Form
  * @extends Y.Base
  */
@@ -518,14 +518,14 @@ function FORM() {
     FORM.superclass.constructor.apply(this, arguments);
 }
 
-FORM.NAME = 'moodle-mod_forumimproved-form';
+FORM.NAME = 'moodle-mod_forumplusone-form';
 
 FORM.ATTRS = {
     /**
      * Used for requests
      *
      * @attribute io
-     * @type M.mod_forumimproved.Io
+     * @type M.mod_forumplusone.Io
      * @required
      */
     io: { value: null }
@@ -704,7 +704,7 @@ Y.extend(FORM, Y.Base,
 
             if (parentNode.hasAttribute('data-ispost')) {
                 wrapperNode.one('legend').setHTML(
-                    M.util.get_string('replytox', 'mod_forumimproved', parentNode.getData('author'))
+                    M.util.get_string('replytox', 'mod_forumplusone', parentNode.getData('author'))
                 );
             }
         },
@@ -819,7 +819,7 @@ Y.extend(FORM, Y.Base,
             e.preventDefault();
 
             // Put editor back to its original place in DOM.
-            M.mod_forumimproved.restoreEditor();
+            M.mod_forumplusone.restoreEditor();
 
             var node = e.target.ancestor(SELECTORS.POST_TARGET);
             if (node) {
@@ -849,7 +849,7 @@ Y.extend(FORM, Y.Base,
             e.preventDefault();
 
             // Put editor back to its original place in DOM.
-            M.mod_forumimproved.restoreEditor();
+            M.mod_forumplusone.restoreEditor();
 
             var wrapperNode = e.currentTarget.ancestor(SELECTORS.FORM_REPLY_WRAPPER);
 
@@ -935,18 +935,18 @@ Y.extend(FORM, Y.Base,
     }
 );
 
-M.mod_forumimproved.Form = FORM;
+M.mod_forumplusone.Form = FORM;
 /**
  * Forum Article View
  *
- * @module moodle-mod_forumimproved-article
+ * @module moodle-mod_forumplusone-article
  */
 
 /**
  * Handles updating forum article structure
  *
  * @constructor
- * @namespace M.mod_forumimproved
+ * @namespace M.mod_forumplusone
  * @class Article
  * @extends Y.Base
  */
@@ -971,7 +971,7 @@ ARTICLE.ATTRS = {
      * Used for REST calls
      *
      * @attribute io
-     * @type M.mod_forumimproved.Io
+     * @type M.mod_forumplusone.Io
      * @readOnly
      */
     io: { readOnly: true },
@@ -980,7 +980,7 @@ ARTICLE.ATTRS = {
      * Used primarily for updating the DOM
      *
      * @attribute dom
-     * @type M.mod_forumimproved.Dom
+     * @type M.mod_forumplusone.Dom
      * @readOnly
      */
     dom: { readOnly: true },
@@ -989,7 +989,7 @@ ARTICLE.ATTRS = {
      * Used for routing URLs within the same page
      *
      * @attribute router
-     * @type M.mod_forumimproved.Router
+     * @type M.mod_forumplusone.Router
      * @readOnly
      */
     router: { readOnly: true },
@@ -998,7 +998,7 @@ ARTICLE.ATTRS = {
      * Displays, hides and submits forms
      *
      * @attribute form
-     * @type M.mod_forumimproved.Form
+     * @type M.mod_forumplusone.Form
      * @readOnly
      */
     form: { readOnly: true },
@@ -1007,7 +1007,7 @@ ARTICLE.ATTRS = {
      * Maintains an aria live log.
      *
      * @attribute liveLog
-     * @type M.mod_forumimproved.init_livelog
+     * @type M.mod_forumplusone.init_livelog
      * @readOnly
      */
     liveLog: { readOnly: true },
@@ -1033,11 +1033,11 @@ Y.extend(ARTICLE, Y.Base,
          * Setup the app
          */
         initializer: function() {
-            this._set('router', new M.mod_forumimproved.Router({article: this, html5: false}));
-            this._set('io', new M.mod_forumimproved.Io({contextId: this.get('contextId')}));
-            this._set('dom', new M.mod_forumimproved.Dom({io: this.get('io')}));
-            this._set('form', new M.mod_forumimproved.Form({io: this.get('io')}));
-            this._set('liveLog', M.mod_forumimproved.init_livelog());
+            this._set('router', new M.mod_forumplusone.Router({article: this, html5: false}));
+            this._set('io', new M.mod_forumplusone.Io({contextId: this.get('contextId')}));
+            this._set('dom', new M.mod_forumplusone.Dom({io: this.get('io')}));
+            this._set('form', new M.mod_forumplusone.Form({io: this.get('io')}));
+            this._set('liveLog', M.mod_forumplusone.init_livelog());
             this.bind();
             // this.get('router').dispatch();
         },
@@ -1047,7 +1047,7 @@ Y.extend(ARTICLE, Y.Base,
          * @method bind
          */
         bind: function() {
-            var firstUnreadPost = document.getElementsByClassName("forumimproved-post-unread")[0];
+            var firstUnreadPost = document.getElementsByClassName("forumplusone-post-unread")[0];
             if(firstUnreadPost && location.hash === '#unread') {
                 // get the post parent to focus on
                 var post = document.getElementById(firstUnreadPost.id).parentNode;
@@ -1071,7 +1071,7 @@ Y.extend(ARTICLE, Y.Base,
                 router  = this.get('router');
 
             /* Clean html on paste */
-            Y.delegate('paste', form.handleFormPaste, document, '.forumimproved-textarea', form);
+            Y.delegate('paste', form.handleFormPaste, document, '.forumplusone-textarea', form);
 
             // We bind to document otherwise screen readers read everything as clickable.
             Y.delegate('click', form.handleCancelForm, document, SELECTORS.LINK_CANCEL, form);
@@ -1099,20 +1099,20 @@ Y.extend(ARTICLE, Y.Base,
                 editor = editArea.ancestor('.editor_atto');
 
                 if (editor){
-                    M.mod_forumimproved.toggleAdvancedEditor(advancedEditLink);
+                    M.mod_forumplusone.toggleAdvancedEditor(advancedEditLink);
                 } else {
                     // The advanced editor isn't available yet, lets try again periodically.
-                    advancedEditLink.setContent(M.util.get_string('loadingeditor', 'forumimproved'));
+                    advancedEditLink.setContent(M.util.get_string('loadingeditor', 'forumplusone'));
                     checkEditArea = setInterval(function(){
                         editor = editArea.ancestor('.editor_atto');
                         if (editor) {
                             clearInterval(checkEditArea);
-                            M.mod_forumimproved.toggleAdvancedEditor(advancedEditLink);
+                            M.mod_forumplusone.toggleAdvancedEditor(advancedEditLink);
                         }
                     }, 500);
                 }
 
-            }, document, '.forumimproved-use-advanced');
+            }, document, '.forumplusone-use-advanced');
 
             // We bind to document for these buttons as they get re-added on each discussion addition.
             Y.delegate('submit', form.handleFormSubmit, document, SELECTORS.FORM, form);
@@ -1223,7 +1223,7 @@ Y.extend(ARTICLE, Y.Base,
             if (node === null) {
                 return;
             }
-            if (window.confirm(M.str.mod_forumimproved.deletesure) === true) {
+            if (window.confirm(M.str.mod_forumplusone.deletesure) === true) {
                 this.deletePost(postId);
             }
         },
@@ -1375,8 +1375,8 @@ Y.extend(ARTICLE, Y.Base,
     }
 );
 
-M.mod_forumimproved.Article = ARTICLE;
-M.mod_forumimproved.init_article = function(config) {
+M.mod_forumplusone.Article = ARTICLE;
+M.mod_forumplusone.init_article = function(config) {
     new ARTICLE(config);
 };
 
@@ -1384,7 +1384,7 @@ M.mod_forumimproved.init_article = function(config) {
  * Trigger click event.
  * @param el
  */
-M.mod_forumimproved.dispatchClick = function(el) {
+M.mod_forumplusone.dispatchClick = function(el) {
     if (document.createEvent) {
         var event = new MouseEvent('click', {
             'view': window,
@@ -1400,16 +1400,16 @@ M.mod_forumimproved.dispatchClick = function(el) {
 /**
  * Restore editor to original position in DOM.
  */
-M.mod_forumimproved.restoreEditor = function() {
+M.mod_forumplusone.restoreEditor = function() {
     var editCont = Y.one('#hiddenadvancededitorcont');
     if (editCont) {
         var editArea = Y.one('#hiddenadvancededitoreditable'),
         editor = editArea.ancestor('.editor_atto'),
-        advancedEditLink = M.mod_forumimproved.Article.currentEditLink,
+        advancedEditLink = M.mod_forumplusone.Article.currentEditLink,
         contentEditable = false;
 
         if (advancedEditLink) {
-            contentEditable = advancedEditLink.previous('.forumimproved-textarea');
+            contentEditable = advancedEditLink.previous('.forumplusone-textarea');
         }
 
         var editorHidden = (!editor || editor.getComputedStyle('display') === 'none');
@@ -1419,7 +1419,7 @@ M.mod_forumimproved.restoreEditor = function() {
         if (!editorHidden) {
             if (editor.one('.atto_html_button.highlight')) {
                 // Trigger click on atto source button - we need to update the editor content.
-                M.mod_forumimproved.dispatchClick(editor.one('.atto_html_button.highlight')._node);
+                M.mod_forumplusone.dispatchClick(editor.one('.atto_html_button.highlight')._node);
             }
             // Update content editable div.
             if (contentEditable) {
@@ -1430,7 +1430,7 @@ M.mod_forumimproved.restoreEditor = function() {
 
 
         // Switch all editor links to hide mode.
-        M.mod_forumimproved.toggleAdvancedEditor(false, true);
+        M.mod_forumplusone.toggleAdvancedEditor(false, true);
 
         // Put editor back in its correct place.
         Y.one('#hiddenadvancededitorcont').show();
@@ -1443,7 +1443,7 @@ M.mod_forumimproved.restoreEditor = function() {
 /**
  * Toggle advanced editor in place of plain text editor.
  */
-M.mod_forumimproved.toggleAdvancedEditor = function(advancedEditLink, forcehide, keepLink) {
+M.mod_forumplusone.toggleAdvancedEditor = function(advancedEditLink, forcehide, keepLink) {
 
     var showEditor = false;
     if (!forcehide) {
@@ -1451,7 +1451,7 @@ M.mod_forumimproved.toggleAdvancedEditor = function(advancedEditLink, forcehide,
     }
 
     if (advancedEditLink) {
-        M.mod_forumimproved.Article.currentEditLink = advancedEditLink;
+        M.mod_forumplusone.Article.currentEditLink = advancedEditLink;
         if (showEditor) {
             advancedEditLink.removeClass('hideadvancededitor');
         } else {
@@ -1466,26 +1466,26 @@ M.mod_forumimproved.toggleAdvancedEditor = function(advancedEditLink, forcehide,
     if (forcehide) {
         // If advancedEditLink is not set and we are forcing a hide then we need to hide every instance and change all labels.
         if (!advancedEditLink){
-            var links = Y.all('.forumimproved-use-advanced');
+            var links = Y.all('.forumplusone-use-advanced');
             for (var l = 0; l<links.size(); l++) {
                 var link = links.item(l);
                 if (keepLink && keepLink === link){
                     continue; // Do not process this link.
                 }
                 // To hide this link and restore the editor, call myself.
-                M.mod_forumimproved.toggleAdvancedEditor(link, true);
+                M.mod_forumplusone.toggleAdvancedEditor(link, true);
             }
 
             return;
         }
     } else {
         // OK we need to make sure the editor isn't available anywhere else, so call myself.
-        M.mod_forumimproved.toggleAdvancedEditor(false, true, advancedEditLink);
+        M.mod_forumplusone.toggleAdvancedEditor(false, true, advancedEditLink);
     }
 
     var editCont = Y.one('#hiddenadvancededitorcont'),
         editArea,
-        contentEditable = advancedEditLink.previous('.forumimproved-textarea'),
+        contentEditable = advancedEditLink.previous('.forumplusone-textarea'),
         editor;
 
     if (editCont){
@@ -1506,7 +1506,7 @@ M.mod_forumimproved.toggleAdvancedEditor = function(advancedEditLink, forcehide,
 
     if (showEditor) {
         advancedEditLink.setAttribute('aria-pressed', 'true');
-        advancedEditLink.setContent(M.util.get_string('hideadvancededitor', 'forumimproved'));
+        advancedEditLink.setContent(M.util.get_string('hideadvancededitor', 'forumplusone'));
         contentEditable.hide();
         // Are we in source mode?
         if (editor.one('.atto_html_button.highlight')) {
@@ -1529,18 +1529,18 @@ M.mod_forumimproved.toggleAdvancedEditor = function(advancedEditLink, forcehide,
 
         // Whenever the html editor changes its content, update the text area.
         if (window.MutationObserver){
-            M.mod_forumimproved.Article.editorMutateObserver = new MutationObserver(editAreaChanged);
-            M.mod_forumimproved.Article.editorMutateObserver.observe(editArea.getDOMNode(), {childList: true, characterData: true, subtree: true});
+            M.mod_forumplusone.Article.editorMutateObserver = new MutationObserver(editAreaChanged);
+            M.mod_forumplusone.Article.editorMutateObserver.observe(editArea.getDOMNode(), {childList: true, characterData: true, subtree: true});
         } else {
             // Don't use yui delegate as I don't think it supports this event type
             editArea.getDOMNode().addEventListener ('DOMCharacterDataModified', editAreachanged, false);
         }
     } else {
         advancedEditLink.setAttribute('aria-pressed', 'false');
-        if (M.mod_forumimproved.Article.editorMutateObserver){
-            M.mod_forumimproved.Article.editorMutateObserver.disconnect();
+        if (M.mod_forumplusone.Article.editorMutateObserver){
+            M.mod_forumplusone.Article.editorMutateObserver.disconnect();
         }
-        advancedEditLink.setContent(M.util.get_string('useadvancededitor', 'forumimproved'));
+        advancedEditLink.setContent(M.util.get_string('useadvancededitor', 'forumplusone'));
         contentEditable.show();
 
         // If editor is not hidden then we need to update content editable div with editor content.
@@ -1548,7 +1548,7 @@ M.mod_forumimproved.toggleAdvancedEditor = function(advancedEditLink, forcehide,
             // Are we in source mode?
             if (editor.one('.atto_html_button.highlight')) {
                 // Trigger click on atto source button - we need to update the editor content.
-                M.mod_forumimproved.dispatchClick(editor.one('.atto_html_button.highlight')._node);
+                M.mod_forumplusone.dispatchClick(editor.one('.atto_html_button.highlight')._node);
             }
             // Update content of content editable div.
 
@@ -1568,8 +1568,8 @@ M.mod_forumimproved.toggleAdvancedEditor = function(advancedEditLink, forcehide,
         "router",
         "core_rating",
         "querystring",
-        "moodle-mod_forumimproved-io",
-        "moodle-mod_forumimproved-livelog",
+        "moodle-mod_forumplusone-io",
+        "moodle-mod_forumplusone-livelog",
         "moodle-core-formchangechecker"
     ]
 });

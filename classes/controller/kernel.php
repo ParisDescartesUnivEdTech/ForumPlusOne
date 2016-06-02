@@ -17,15 +17,15 @@
 /**
  * Controller Kernel
  *
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace mod_forumimproved\controller;
+namespace mod_forumplusone\controller;
 
-use mod_forumimproved\response\response_interface;
-use mod_forumimproved_renderer;
+use mod_forumplusone\response\response_interface;
+use mod_forumplusone_renderer;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -36,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
  * execute controller method and handle any return
  * values.
  *
- * @package   mod_forumimproved
+ * @package   mod_forumplusone
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -47,26 +47,26 @@ class kernel {
     protected $router;
 
     /**
-     * @var mod_forumimproved_renderer
+     * @var mod_forumplusone_renderer
      */
     protected $renderer;
 
     /**
      * @param router $router
-     * @param mod_forumimproved_renderer $renderer
+     * @param mod_forumplusone_renderer $renderer
      */
-    public function __construct(router $router, mod_forumimproved_renderer $renderer = null) {
+    public function __construct(router $router, mod_forumplusone_renderer $renderer = null) {
         global $PAGE;
 
         if (is_null($renderer)) {
-            $renderer = $PAGE->get_renderer('mod_forumimproved');
+            $renderer = $PAGE->get_renderer('mod_forumplusone');
         }
         $this->router   = $router;
         $this->renderer = $renderer;
     }
 
     /**
-     * @return \mod_forumimproved_renderer
+     * @return \mod_forumplusone_renderer
      */
     public function get_renderer() {
         return $this->renderer;
@@ -101,7 +101,7 @@ class kernel {
      * @return array
      */
     public function resolve_controller_callback($action) {
-        /** @var $controller \mod_forumimproved\controller\controller_abstract */
+        /** @var $controller \mod_forumplusone\controller\controller_abstract */
         list($controller, $method) = $this->router->route_action($action);
 
         $controller->set_renderer($this->renderer);
