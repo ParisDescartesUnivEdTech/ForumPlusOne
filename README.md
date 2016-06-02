@@ -8,7 +8,7 @@ Forum Improved is a evolution of the forum moodle module based on [Advanced Foru
 What's new ? Why "Improved" ?
 -----------------------------
 
-First, we are based on Advanced Forum , so we have all the imporvement of Advanced Forum.
+First, we are based on Advanced Forum , so we have all the improvement of Advanced Forum.
 
 More, we disable subscriptions, by default, and users can vote for posts, using a "+1" button.
 
@@ -58,7 +58,7 @@ Install
 -------
 
 Place the contents of this source tree into your Moodle installation so that
-within your Moodle root, this file is mod/forumimporved/README.md. Then visit the
+within your Moodle root, this file is mod/forumimproved/README.md. Then visit the
 Moodle notifications page to install.
 
 
