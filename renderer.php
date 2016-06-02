@@ -421,8 +421,8 @@ CSS;
      */
     public function getJSVarsShowVotes() {
         $json['votersPanelTitle'] = get_string('allvoteforitem', 'forumimproved');
-        $json['tableTitleName'] = get_string('name');
-        $json['tableTitleDatetime'] = get_string('time');
+        $json['tableTitleName'] = get_string('username');
+        $json['tableTitleDatetime'] = get_string('date');
         $json['thereNoVoteHere'] = get_string('novotes', 'forumimproved');
 
         $jsonString = json_encode($json);

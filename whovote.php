@@ -79,8 +79,8 @@ switch ($sort) {
     default:         $sqlsort = "u.firstname ASC";
 }
 
-$strname    = get_string('name');
-$strtime    = get_string('time');
+$strname    = get_string('username');
+$strtime    = get_string('date');
 
 $PAGE->set_title(get_string('allvoteforitem','forumimproved'));
 echo $OUTPUT->header();
