@@ -514,12 +514,35 @@
 
     };
 
-    var tooltipDeploy = function () {
-        jQuery('[data-toggle="tooltip"]').tooltip();
+    var onload = function() {
+        var tooltipDeploy = function () {
+            jQuery('[data-toggle="tooltip"]').tooltip();
+        };
+        
+        tooltipDeploy();
+
+        jQuery(document.body).on('discussion:created', function() {
+            tooltipDeploy();
+        });
+        jQuery(document.body).on('discussion:deleted', function() {
+            tooltipDeploy();
+        });
+        jQuery(document.body).on('form:canceled', function() {
+            tooltipDeploy();
+        });
+        jQuery(document.body).on('post:created', function() {
+            tooltipDeploy();
+        });
+        jQuery(document.body).on('post:deleted', function() {
+            tooltipDeploy();
+        });
+        jQuery(document.body).on('post:updated', function() {
+            tooltipDeploy();
+        });
     };
 
     window.onloadFnc = window.onloadFnc || [];
-    window.onloadFnc.push(function() {tooltipDef(jQuery)});
-    window.onloadFnc.push(tooltipDeploy);
+    window.onloadFnc.push(function() {tooltipDef(jQuery);console.log('tot')});
+    window.onloadFnc.push(onload);
 
 })(window, document);

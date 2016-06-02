@@ -31,7 +31,6 @@ require_once($CFG->libdir.'/completionlib.php');
 
 $reply      = optional_param('reply', 0, PARAM_INT);
 $vote       = optional_param('vote', 0, PARAM_INT);
-$close      = optional_param('close', 0, PARAM_INT);
 $fullthread = optional_param('fullthread', false, PARAM_BOOL);
 $forum      = optional_param('forum', 0, PARAM_INT);
 $edit       = optional_param('edit', 0, PARAM_INT);
@@ -40,11 +39,12 @@ $prune      = optional_param('prune', 0, PARAM_INT);
 $name       = optional_param('name', '', PARAM_CLEAN);
 $confirm    = optional_param('confirm', 0, PARAM_INT);
 $groupid    = optional_param('groupid', null, PARAM_INT);
+$d          = optional_param('d', 0, PARAM_INT);
+$state      = optional_param('state', -1, PARAM_INT);
 
 $PAGE->set_url('/mod/forumimproved/post.php', array(
         'reply' => $reply,
         'vote'  => $vote,
-        'close' => $close,
         'fullthread'=>$fullthread,
         'forum' => $forum,
         'edit'  => $edit,
@@ -53,6 +53,8 @@ $PAGE->set_url('/mod/forumimproved/post.php', array(
         'name'  => $name,
         'confirm'=>$confirm,
         'groupid'=>$groupid,
+        'd'     => $d,
+        'state' => $state,
         ));
 //these page_params will be passed as hidden variables later in the form.
 $page_params = array('reply'=>$reply, 'forum'=>$forum, 'edit'=>$edit);
@@ -153,7 +155,6 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
     $post->forum         = $forum->id;
     $post->discussion    = 0;           // ie discussion # not defined yet
     $post->parent        = 0;
-    $post->subject       = '';
     $post->userid        = $USER->id;
     $post->reveal        = 0;
     $post->privatereply  = 0;
@@ -189,8 +190,8 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
 
 
 
-    if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
-        print_error('discussion_closed', 'forumimproved');
+    if (!forumimproved_is_discussion_open($forum, $discussion)) {
+        print_error('discussion_closed_or_hidden', 'forumimproved');
     }
 
 
@@ -242,16 +243,10 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
     $post->parent      = $parent->id;
     $post->reveal      = 0;
     $post->privatereply= 0;
-    $post->subject     = $parent->subject;
     $post->userid      = $USER->id;
     $post->message     = '';
 
     $post->groupid = ($discussion->groupid == -1) ? 0 : $discussion->groupid;
-
-    $strre = get_string('re', 'forumimproved');
-    if (!(substr($post->subject, 0, strlen($strre)) == $strre)) {
-        $post->subject = $strre.' '.$post->subject;
-    }
 
     unset($SESSION->fromdiscussion);
 
@@ -275,8 +270,8 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
 
 
 
-    if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
-        print_error('discussion_closed', 'forumimproved');
+    if (!forumimproved_is_discussion_open($forum, $discussion)) {
+        print_error('discussion_closed_or_hidden', 'forumimproved');
     }
 
 
@@ -327,9 +322,9 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
     die;
 
 
-} else if (!empty($close)) {      // User is closing a discussion
+} else if ($state > -1) {      // User is changing the state of the discussion
 
-    if (! $discussion = $DB->get_record("forumimproved_discussions", array("id" => $close))) {
+    if (! $discussion = $DB->get_record("forumimproved_discussions", array("id" => $d))) {
         print_error('invaliddiscussionid', 'forumimproved');
     }
     if (! $forum = $DB->get_record("forumimproved", array("id" => $discussion->forum))) {
@@ -347,7 +342,7 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
     $modcontext = context_module::instance($cm->id);
 
 
-    // Make sure user can close this discussion
+    // Make sure user can chnage the state of this discussion
     if (isset($cm->groupmode) && empty($course->groupmodeforce)) {
         $groupmode =  $cm->groupmode;
     } else {
@@ -368,14 +363,19 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
     }
 
 
-    require_capability('mod/forumimproved:close_discussion', $modcontext);
+    require_capability('mod/forumimproved:change_state_discussion', $modcontext);
 
 
-    forumimproved_toggle_discussion_state($forum, $discussion);
+    if ($state == FORUMIMPROVED_DISCUSSION_STATE_OPEN)
+        forumimproved_discussion_open($forum, $discussion);
+    if ($state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE)
+        forumimproved_discussion_close($forum, $discussion);
+    if ($state == FORUMIMPROVED_DISCUSSION_STATE_HIDDEN)
+        forumimproved_discussion_hide($forum, $discussion);
 
 
     if ($fullthread) {
-        redirect(forumimproved_go_back_to("discuss.php?d=$close"), null, 0);
+        redirect(forumimproved_go_back_to("discuss.php?d=$d"), null, 0);
     }
     else {
         redirect(forumimproved_go_back_to("view.php?f=$forum->id"), null, 0);
@@ -411,8 +411,8 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
 
 
 
-    if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
-        print_error('discussion_closed', 'forumimproved');
+    if (!forumimproved_is_discussion_open($forum, $discussion)) {
+        print_error('discussion_closed_or_hidden', 'forumimproved');
     }
 
 
@@ -464,8 +464,8 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
 
 
 
-    if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
-        print_error('discussion_closed', 'forumimproved');
+    if (!forumimproved_is_discussion_open($forum, $discussion)) {
+        print_error('discussion_closed_or_hidden', 'forumimproved');
     }
 
 
@@ -507,11 +507,6 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
                          $CFG->wwwroot.'/mod/forumimproved/discuss.php?d='.$post->discussion.'#p'.$post->id);
 
             echo $renderer->post($cm, $discussion, $post, false, null, false);
-
-            if (empty($post->edit)) {
-                $posts = forumimproved_get_all_discussion_posts($discussion->id);
-                forumimproved_print_posts_nested($course, $cm, $forum, $discussion, $post, false, false, $posts);
-            }
         } else {
             echo $OUTPUT->header();
             echo $OUTPUT->heading(format_string($forum->name), 2);
@@ -555,8 +550,8 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
 
 
 
-    if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
-        print_error('discussion_closed', 'forumimproved');
+    if (!forumimproved_is_discussion_open($forum, $discussion)) {
+        print_error('discussion_closed_or_hidden', 'forumimproved');
     }
 
 
@@ -581,7 +576,6 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
         $newpost = new stdClass();
         $newpost->id      = $post->id;
         $newpost->parent  = 0;
-        $newpost->subject = $name;
         $newpost->privatereply = 0;
 
         $DB->update_record("forumimproved_posts", $newpost);
@@ -636,9 +630,9 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
         $renderer = $PAGE->get_renderer('mod_forumimproved');
         $PAGE->requires->js_init_call('M.mod_forumimproved.init', null, false, $renderer->get_js_module());
         $PAGE->set_context($modcontext);
-        $PAGE->navbar->add(format_string($post->subject, true), new moodle_url('/mod/forumimproved/discuss.php', array('d'=>$discussion->id)));
+        $PAGE->navbar->add(format_string($discussion->name, true), new moodle_url('/mod/forumimproved/discuss.php', array('d'=>$discussion->id)));
         $PAGE->navbar->add(get_string("prune", "forumimproved"));
-        $PAGE->set_title("$discussion->name: $post->subject");
+        $PAGE->set_title("$discussion->name");
         $PAGE->set_heading($course->fullname);
         echo $OUTPUT->header();
         echo $OUTPUT->heading(format_string($forum->name), 2);
@@ -656,7 +650,7 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
         // We don't have the valid unread status. Set to read so we don't see
         // the unread tag.
         $post->postread = true;
-        echo $renderer->post($cm, $discussion, $post);
+        echo $renderer->post($cm, $discussion, $post, false, null, false);
     }
     echo $OUTPUT->footer();
     die;
@@ -738,7 +732,7 @@ $postid = empty($post->id) ? null : $post->id;
 $draftid_editor = file_get_submitted_draft_itemid('message');
 $currenttext = file_prepare_draft_area($draftid_editor, $modcontext->id, 'mod_forumimproved', 'post', $postid, mod_forumimproved_post_form::editor_options($modcontext, $postid), $post->message);
 $mform_post->set_data(array(        'attachments'=>$draftitemid,
-                                    'subject'=>$post->subject,
+                                    'subject' => empty($discussion->name) ? '' : $discussion->name,
                                     'message'=>array(
                                         'text'=>$currenttext,
                                         'format'=>empty($post->messageformat) ? editors_get_preferred_format() : $post->messageformat,
@@ -1041,7 +1035,6 @@ if ($post->discussion) {
     }
 } else {
     $toppost = new stdClass();
-    $toppost->subject = get_string("addanewtopic", "forumimproved");
 }
 
 if (empty($post->edit)) {
@@ -1067,7 +1060,7 @@ if ($forum->type == 'single') {
 $forcefocus = empty($reply) ? NULL : 'message';
 
 if (!empty($discussion->id)) {
-    $PAGE->navbar->add(format_string($toppost->subject, true), "discuss.php?d=$discussion->id");
+    $PAGE->navbar->add(format_string($discussion->name, true), "discuss.php?d=$discussion->id");
 }
 
 if ($post->parent) {
@@ -1078,7 +1071,7 @@ if ($edit) {
     $PAGE->navbar->add(get_string('edit', 'forumimproved'));
 }
 
-$PAGE->set_title("$course->shortname: $strdiscussionname $toppost->subject");
+$PAGE->set_title("$course->shortname: $strdiscussionname $discussion->name");
 $PAGE->set_heading($course->fullname);
 $renderer = $PAGE->get_renderer('mod_forumimproved');
 $PAGE->requires->js_init_call('M.mod_forumimproved.init', null, false, $renderer->get_js_module());

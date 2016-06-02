@@ -54,7 +54,10 @@
     require_once($CFG->dirroot.'/mod/forumimproved/lib.php');
 
     $modcontext = context_module::instance($cm->id);
-    require_capability('mod/forumimproved:viewdiscussion', $modcontext, NULL, true, 'noviewdiscussionspermission', 'forumimproved');
+
+    if (forumimproved_is_discussion_hidden($forum, $discussion)) {
+        require_capability('mod/forumimproved:viewhiddendiscussion', $modcontext);
+    }
 
     if ($forum->type == 'single') {
         // If we are viewing a simple single forum then we need to log forum as viewed.
@@ -177,9 +180,6 @@
     }
     $node = $forumnode->add(format_string($discussion->name), new moodle_url('/mod/forumimproved/discuss.php', array('d'=>$discussion->id)));
     $node->display = false;
-    if ($node && $post->id != $discussion->firstpost) {
-        $node->add(format_string($post->subject), $PAGE->url);
-    }
 
     $dsort = forumimproved_lib_discussion_sort::get_from_session($forum, $modcontext);
 
@@ -188,10 +188,13 @@
 
     $PAGE->set_title("$course->shortname: $discussion->name");
     $PAGE->set_heading($course->fullname);
+    if (!empty($config->hideuserpicture) && $config->hideuserpicture) {
+        $PAGE->add_body_class('forumimproved-nouserpicture');
+    }
     echo $OUTPUT->header();
 
     if ($forum->type != 'single') {
-         echo "<h2><a href='$CFG->wwwroot/mod/forumimproved/view.php?f=$forum->id'>&#171; ".format_string($forum->name)."</a></h2>";
+         echo "<h2><a href='$CFG->wwwroot/mod/forumimproved/view.php?f=$forum->id'>".format_string($forum->name)."</a></h2>";
     }
      echo $renderer->svg_sprite();
 

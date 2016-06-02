@@ -118,7 +118,7 @@ class form_service {
         list($message, $itemid) = $this->prepare_message_for_edit($cm, $post);
 
         return $this->get_renderer()->simple_edit_discussion($cm, $post->id, array(
-            'subject' => $post->subject,
+            'subject' => $discussion->name,
             'message' => $message,
             'reveal' => $post->reveal,
             'groupid' => ($discussion->groupid == -1) ? 0 : $discussion->groupid,

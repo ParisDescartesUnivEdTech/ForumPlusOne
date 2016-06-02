@@ -18,7 +18,7 @@ module.exports = function(grunt) {
                 tasks: ['jquery'],
             },
             configFiles: {
-                files: [ 'Gruntfile.js', 'jquery'],
+                files: [ 'Gruntfile.js'],
                 options: {
                     reload: true
                 }
@@ -31,6 +31,36 @@ module.exports = function(grunt) {
                 sourceMap: true,
                 compress: {
                     drop_console: true
+                }
+            },
+            collapseReplies: {
+                options: {
+                    mangle: {
+                        expect: ['jQuery']
+                    }
+                },
+                files: {
+                    'js/collapseReplies.min.js': ['js/jQueryLoader.js', 'js/collapseReplies.js']
+                }
+            },
+            seevoters: {
+                options: {
+                    mangle: {
+                        expect: ['window.jQueryStrings', 'jQuery']
+                    }
+                },
+                files: {
+                    'js/seevoters.min.js': ['js/jQueryLoader.js', 'js/seevoters.js']
+                }
+            },
+            changeState: {
+                options: {
+                    mangle: {
+                        expect: ['jQuery']
+                    }
+                },
+                files: {
+                    'js/changeDiscussionState.min.js': ['js/jQueryLoader.js', 'js/changeDiscussionState.js']
                 }
             },
             tooltip: {

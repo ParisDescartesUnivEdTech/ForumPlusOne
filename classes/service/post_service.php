@@ -91,6 +91,55 @@ class post_service {
     }
 
     /**
+     * Show how vote for a post, describe by his id, sort by a collomn
+     *
+     * @param int $postid
+     * @param string $sqlsort
+     * @param \context_module $context
+     * @return json_response
+     */
+    public function handle_whovote($postid, $sqlsort, \context_module $context, $courseid) {
+        global $OUTPUT;
+
+        $response = array();
+
+        try {
+            $votes = forumimproved_get_all_post_votes($postid, $sqlsort);
+
+            $response['votes'] = array();
+            $response['errorCode'] = 0;
+            if ($votes) {
+                $canSeeDatetime = has_capability('mod/forumimproved:viewvotedatetime', $context);
+                foreach ($votes as $vote) {
+                    $vote->id = $vote->userid;
+                    $result = array();
+
+                    if ($courseid) {
+                        $result['usrpicture'] = $OUTPUT->user_picture($vote, array('courseid' => $courseid));
+                    } else {
+                        $result['usrpicture'] = $OUTPUT->user_picture($vote);
+                    }
+                    $result['fullname'] = fullname($vote);
+
+                    if ($canSeeDatetime) {
+                        $result['datetime'] = userdate($vote->timestamp);
+                        $result['timestamp'] = $vote->timestamp;
+                    }
+
+                    $response['votes'][] = $result;
+                }
+            }
+
+        }
+        catch (coding_exception $e) {
+            $response['errorCode'] = $e->a;
+            $response['errorMsg'] = get_string($e->a, 'forumimproved');
+        }
+
+        return new json_response((object) $response);
+    }
+
+    /**
      * Does all the grunt work for adding a reply to a discussion
      *
      * @param object $course
@@ -153,6 +202,10 @@ class post_service {
             }
         }
         $post->itemid = empty($options['itemid']) ? 0 : $options['itemid'];
+
+        if (!$post->parent) {
+            $post->subject = $options['name'];
+        }
 
         $errors = $this->validate_post($course, $cm, $forum, $context, $discussion, $post, $uploader);
         if (!empty($errors)) {
@@ -218,7 +271,6 @@ class post_service {
         $post->reveal        = 0;
         $post->privatereply  = 0;
         $post->mailnow       = 0;
-        $post->subject       = $parent->subject;
         $post->attachment    = '';
         $post->message       = '';
         $post->messageformat = FORMAT_MOODLE;
@@ -228,9 +280,6 @@ class post_service {
         $post->flags         = null;
 
         $strre = get_string('re', 'forumimproved');
-        if (!(substr($post->subject, 0, strlen($strre)) == $strre)) {
-            $post->subject = $strre.' '.$post->subject;
-        }
         foreach ($options as $name => $value) {
             if (property_exists($post, $name)) {
                 $post->$name = $value;
@@ -272,8 +321,8 @@ class post_service {
                 $errors[] = new \moodle_exception($thresholdwarning->errorcode, $thresholdwarning->module, $thresholdwarning->additional);
             }
         }
-        if (forumimproved_str_empty($post->subject)) {
-            $errors[] = new \moodle_exception('subjectisrequired', 'forumimproved');
+        if (!$post->parent && forumimproved_str_empty($post->subject)) {
+            $errors[] = new \moodle_exception('discnameisrequired', 'forumimproved');
         }
         if (forumimproved_str_empty($post->message)) {
             $errors[] = new \moodle_exception('messageisrequired', 'forumimproved');

@@ -54,6 +54,11 @@
     }
     $PAGE->set_url('/mod/forumimproved/view.php', $params);
 
+    $config = get_config('forumimproved');
+    if (!empty($config->hideuserpicture) && $config->hideuserpicture) {
+        $PAGE->add_body_class('forumimproved-nouserpicture');
+    }
+
     $course = $DB->get_record('course', array('id' => $forum->course));
 
     if (empty($cm) && !$cm = get_coursemodule_from_instance("forumimproved", $forum->id, $course->id)) {

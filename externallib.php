@@ -276,7 +276,6 @@ class mod_forumimproved_external extends external_api {
                         $return->firstuserimagealt = $arrusers[$discussion->userid]->imagealt;
                         $return->firstuserpicture = $arrusers[$discussion->userid]->picture;
                         $return->firstuseremail = $arrusers[$discussion->userid]->email;
-                        $return->subject = $discussion->subject;
                         $return->numunread = '';
                         $return->numunread = (int) $discussion->unread;
 
@@ -336,7 +335,6 @@ class mod_forumimproved_external extends external_api {
                     'firstuserimagealt' => new external_value(PARAM_TEXT, 'The discussion creators image alt'),
                     'firstuserpicture' => new external_value(PARAM_INT, 'The discussion creators profile picture'),
                     'firstuseremail' => new external_value(PARAM_TEXT, 'The discussion creators email'),
-                    'subject' => new external_value(PARAM_TEXT, 'The discussion subject'),
                     'numreplies' => new external_value(PARAM_TEXT, 'The number of replies in the discussion'),
                     'numunread' => new external_value(PARAM_TEXT, 'The number of unread posts, blank if this value is
                         not available due to forum settings.'),
@@ -477,7 +475,6 @@ class mod_forumimproved_external extends external_api {
                                 'created' => new external_value(PARAM_INT, 'Creation time'),
                                 'modified' => new external_value(PARAM_INT, 'Time modified'),
                                 'mailed' => new external_value(PARAM_INT, 'Mailed?'),
-                                'subject' => new external_value(PARAM_TEXT, 'The post subject'),
                                 'message' => new external_value(PARAM_RAW, 'The post message'),
                                 'messageformat' => new external_value(PARAM_INT, 'The post message format'),
                                 'messagetrust' => new external_value(PARAM_INT, 'Can we trust?'),

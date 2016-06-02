@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/forumimproved/db" VERSION="2016051900" COMMENT="XMLDB file for Moodle mod/forumimproved"
+<XMLDB PATH="mod/forumimproved/db" VERSION="2016052600" COMMENT="XMLDB file for Moodle mod/forumimproved"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -39,8 +39,9 @@
         <FIELD NAME="vote_display_name" TYPE="int" LENGTH="1" DEFAULT="1" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="votetimestart" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="votetimestop" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="enable_close_disc" TYPE="int" LENGTH="1" DEFAULT="1" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="enable_states_disc" TYPE="int" LENGTH="1" DEFAULT="1" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="count_vote_mode" TYPE="int" LENGTH="1" DEFAULT="0" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="enable_refresh" TYPE="int" LENGTH="1" DEFAULT="0" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -82,7 +83,6 @@
         <FIELD NAME="created" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="modified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="mailed" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="subject" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="message" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="messageformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="messagetrust" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

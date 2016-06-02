@@ -63,7 +63,7 @@ class vote_controller extends controller_abstract {
     }
 
     /**
-     * Add a reply to a post
+     * Add a vote to a post
      *
      * @return json_response
      */
@@ -115,7 +115,7 @@ class vote_controller extends controller_abstract {
         }
 
         $forum   = $PAGE->activityrecord;
-        if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
+        if (!forumimproved_is_discussion_open($forum, $discussion)) {
             print_error('discussion_closed', 'forumimproved');
         }
 
@@ -123,6 +123,93 @@ class vote_controller extends controller_abstract {
 
         try {
             return $this->postservice->handle_vote($forum, $postid, $USER->id);
+        } catch (\Exception $e) {
+            return new json_response($e);
+        }
+    }
+
+    /**
+     * Show who vote for a post
+     *
+     * @return json_response
+     */
+    public function whovote_action() {
+        global $PAGE, $USER, $DB;
+
+
+        $postid = required_param('postid', PARAM_INT);
+        $sort = optional_param('sort', '', PARAM_ALPHA);
+
+
+
+        if (! $post = forumimproved_get_post_full($postid)) {
+            print_error('invalidpostid', 'forumimproved');
+        }
+        if (! $discussion = $DB->get_record("forumimproved_discussions", array("id" => $post->discussion))) {
+            print_error('notpartofdiscussion', 'forumimproved');
+        }
+        if (! $forum = $DB->get_record("forumimproved", array("id" => $discussion->forum))) {
+            print_error('invalidforumid', 'forumimproved');
+        }
+        if (! $course = $DB->get_record("course", array("id" => $discussion->course))) {
+            print_error('invalidcourseid');
+        }
+        if (! $cm = get_coursemodule_from_instance("forumimproved", $forum->id, $course->id)) {
+            print_error('invalidcoursemodule');
+        }
+
+
+
+        // Make sure user can vote here
+        if (isset($cm->groupmode) && empty($course->groupmodeforce)) {
+            $groupmode =  $cm->groupmode;
+        } else {
+            $groupmode = $course->groupmode;
+        }
+        if ($groupmode == SEPARATEGROUPS and !has_capability('moodle/site:accessallgroups', $PAGE->context)) {
+            if ($discussion->groupid == -1) {
+                print_error('nopostforum', 'forumimproved');
+            } else {
+                if (!groups_is_member($discussion->groupid)) {
+                    print_error('nopostforum', 'forumimproved');
+                }
+            }
+        }
+
+
+        if (!$cm->visible and !has_capability('moodle/course:viewhiddenactivities', $PAGE->context)) {
+            print_error("activityiscurrentlyhidden");
+        }
+
+        $forum   = $PAGE->activityrecord;
+        if (forumimproved_is_discussion_hidden($forum, $discussion)) {
+            print_error('discussion_hidden', 'forumimproved');
+        }
+
+        if ($forum->vote_display_name) {
+            if (!has_capability('mod/forumimproved:viewwhovote', $PAGE->context)) {
+                print_error('vote_view_forbidden', 'forumimproved');
+            }
+        }
+        else {
+            if (!has_capability('mod/forumimproved:viewwhovote_annonymousvote', $PAGE->context)) {
+                print_error('vote_view_forbidden', 'forumimproved');
+            }
+        }
+
+        if (!$forum->enable_vote) {
+            print_error('vote_disabled_error', 'forumimproved');
+        }
+
+        $sqlsort = '';
+        switch ($sort) {
+            case 'datetime': $sqlsort = "v.timestamp ASC"; break;
+            default:         $sqlsort = "u.firstname ASC";
+        }
+
+
+        try {
+            return $this->postservice->handle_whovote($postid, $sqlsort, $PAGE->context, $course->id);
         } catch (\Exception $e) {
             return new json_response($e);
         }

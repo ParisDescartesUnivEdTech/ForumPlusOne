@@ -55,16 +55,6 @@ var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
     },
 
     /**
-     * View voter for a post
-     *
-     * @method whovote
-     * @param {Object} req
-     */
-    whovote: function(req) {
-        this.get('article').showVoters(req.query.postid);
-    },
-
-    /**
      * Focus hashed element.
      *
      * @param el
@@ -197,7 +187,6 @@ var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
                 { path: '/view.php', callbacks: ['hideForms'] },
                 { path: '/discuss.php', callbacks: ['hideForms', 'discussion'] },
                 { path: '/post.php', callbacks: ['hideForms', 'post'] },
-                { path: '/whovote.php', callbacks: ['whovote'] }
             ]
         }
     }

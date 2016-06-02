@@ -94,7 +94,6 @@ class edit_controller extends controller_abstract {
             require_sesskey();
 
             $reply         = required_param('reply', PARAM_INT);
-            $subject       = trim(optional_param('subject', '', PARAM_TEXT));
             $privatereply  = optional_param('privatereply', 0, PARAM_BOOL);
             $reveal        = optional_param('reveal', 0, PARAM_BOOL);
             $message       = required_param('message', PARAM_RAW_TRIMMED);
@@ -109,7 +108,7 @@ class edit_controller extends controller_abstract {
             $discussion = $DB->get_record('forumimproved_discussions', array('id' => $parent->discussion, 'forum' => $forum->id), '*', MUST_EXIST);
 
 
-            if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
+            if (!forumimproved_is_discussion_open($forum, $discussion)) {
                 print_error('discussion_closed', 'forumimproved');
             }
 
@@ -124,9 +123,6 @@ class edit_controller extends controller_abstract {
                 'messageformat' => $messageformat,
                 'reveal'        => $reveal,
             );
-            if (!empty($subject)) {
-                $data['subject'] = $subject;
-            }
             return $this->postservice->handle_reply($course, $cm, $forum, $context, $discussion, $parent, $data);
         } catch (\Exception $e) {
             return new json_response($e);
@@ -166,7 +162,6 @@ class edit_controller extends controller_abstract {
                 $groupid = -1;
             }
             return $this->discussionservice->handle_add_discussion($course, $cm, $forum, $context, array(
-                'subject'       => $subject,
                 'name'          => $subject,
                 'groupid'       => $groupid,
                 'message'       => $message,
@@ -190,7 +185,7 @@ class edit_controller extends controller_abstract {
             require_sesskey();
 
             $postid        = required_param('edit', PARAM_TEXT);
-            $subject       = required_param('subject', PARAM_TEXT);
+            $subject       = optional_param('subject', '', PARAM_TEXT);
             $groupid       = optional_param('groupinfo', 0, PARAM_INT);
             $itemid        = required_param('itemid', PARAM_INT);
             $files         = optional_param_array('deleteattachment', array(), PARAM_FILE);
@@ -208,7 +203,7 @@ class edit_controller extends controller_abstract {
             $discussion = $DB->get_record('forumimproved_discussions', array('id' => $post->discussion, 'forum' => $forum->id), '*', MUST_EXIST);
 
 
-            if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
+            if (!forumimproved_is_discussion_open($forum, $discussion)) {
                 print_error('discussion_closed', 'forumimproved');
             }
 
@@ -223,7 +218,6 @@ class edit_controller extends controller_abstract {
                 $privatereply = $parent->userid;
             }
             return $this->postservice->handle_update_post($course, $cm, $forum, $context, $discussion, $post, $files,  array(
-                'subject'       => $subject,
                 'name'          => $subject,
                 'groupid'       => $groupid,
                 'itemid'        => $itemid,
@@ -259,7 +253,7 @@ class edit_controller extends controller_abstract {
         if (!empty($post->parent)) {
 
             $forum   = $PAGE->activityrecord;
-            if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
+            if (!forumimproved_is_discussion_open($forum, $discussion)) {
                 print_error('discussion_closed', 'forumimproved');
             }
 
@@ -295,7 +289,7 @@ class edit_controller extends controller_abstract {
 
 
         $forum   = $PAGE->activityrecord;
-        if ($forum->enable_close_disc && $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE) {
+        if (!forumimproved_is_discussion_open($forum, $discussion)) {
             print_error('discussion_closed', 'forumimproved');
         }
 

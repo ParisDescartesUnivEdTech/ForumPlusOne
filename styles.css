@@ -1,4 +1,38 @@
 
+.blockJs, .inlineJs {
+    display: none;
+}
+
+.jsenabled .inlineJs {
+    display: inline;
+}
+
+.jsenabled .blockJs {
+    display: block;
+}
+
+
+
+/*** svg icons ***/
+svg:not(:root) {
+    overflow: hidden;
+}
+.svg-icon {
+    height: 1em;
+    width: 1em;
+}
+
+
+.collapse-icon {
+    fill: none;
+    stroke: #333;
+    cursor: pointer;
+}
+
+
+/***********/
+
+
 #page-local-joulegrader-view .indent {
     border-bottom:1px solid #ccc;
 }
@@ -46,10 +80,8 @@
     display: none;
 }
 /* Show things if thread is expaned or on single discussion page */
-#page-mod-forumimproved-discuss .forumimproved-footer-reply,
 #page-mod-forumimproved-discuss .forumimproved-thread-body,
 #page-mod-forumimproved-discuss .forumimproved-thread-content,
-.forumimproved-thread-article-expanded .forumimproved-footer-reply,
 .forumimproved-thread-article-expanded .forumimproved-thread-body,
 .forumtype-blog .forumimproved-thread-body,
 .forumtype-blog .forumimproved-thread-content,
@@ -59,12 +91,12 @@
 
 .forumtype-blog .forumimproved-replycount,
 .forumtype-blog .forumimproved-unreadcount,
-.forumtype-blog .forumimproved-thread-title + .forumimproved-thread-meta {
+.forumtype-blog .forumimproved-thread-title + .forumimproved-thread-flags {
     display: none;
 }
 
 .forumtype-blog  .forumimproved-thread-title,
-.forumtype-blog  .forumimproved-thread-meta {
+.forumtype-blog  .forumimproved-thread-flags {
     clear:both;
     display:block;
     width:100%;
@@ -72,10 +104,11 @@
     text-align: left;
 }
 
-/* Hide cancel button on forum reply in footer */
-.forumimproved-footer-reply .forumimproved-cancel{
-    display:none;
+/* Hide form. Will be shown with JS */
+.forumimproved-footer-reply {
+    display: none;
 }
+
 /* Hidden advanced editor */
 .path-mod-forumimproved #hiddenadvancededitorcont div {
     display:none;
@@ -86,7 +119,9 @@
 .forumimproved-thread-edit .forumimproved-thread-tools,
 .forumimproved-thread-edit .forumimproved-thread-content,
 .forumimproved-post-edit > .forumimproved-post-figure,
-.forumimproved-post-edit > .forumimproved-post-body {
+.forumimproved-post-edit > .forumimproved-post-body,
+.forumimproved-post-edit > .userpicture,
+.forumimproved-post-edit .forumimproved-thread-flags {
     display: none;
 }
 
@@ -116,8 +151,7 @@
 .forumimproved-thread-figure,
 .forumimproved-thread-content,
 .forumimproved-thread-tools,
-.forumimproved-post-figure,
-.forumimproved-thread-body {
+.forumimproved-post-figure {
     padding:0.33em 2.36%;
 }
 
@@ -147,8 +181,7 @@
 
 
 .forumimproved-thread-article,
-.forumimproved-reply,
-.forumimproved-thread-replies{
+.forumimproved-reply {
     padding:0.5em 2.36%;
 }
 .forumimproved-post-content .posting{
@@ -190,9 +223,6 @@
 /* THREAD AND POSTS */
 .forumimproved-thread {
     border-bottom:1px solid #ddd;
-    margin:0.5em 0;
-    padding:0.5em 2.36%;
-    background-color:white;
     word-wrap: break-word;
     -webkit-hyphens: auto;
    -moz-hyphens: auto;
@@ -211,6 +241,8 @@
 
 
 /* THREAD AND POST TITLES */
+
+
 .forumimproved-thread-title >h4 {
     margin:0;
     padding-right:2.34%;
@@ -251,12 +283,170 @@
     list-style:none;
     margin:0;
 }
-.forumimproved-thread-replies-meta{
-    display:block;
-}
 .forumimproved-replycount{
     font-size:small;
 }
+
+.topic-header .stateChanger + h3,
+.forumimproved-threads-wrapper .forumimproved-thread .stateChanger + h4 {
+    margin: 0;
+    margin-left: .5em;
+    line-height: 1em;
+}
+.topic-header h3 {
+    margin: 0;
+}
+
+
+.stateChanger button, .stateChanger input.form-submit, .stateChanger input[type="button"], .stateChanger input[type="submit"], .stateChanger input[type="reset"] {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+
+
+
+
+
+.stateChanger [type="submit"] {
+    margin-left: 1em;
+    height: 24px;
+}
+
+.topic-header .stateChanger + h3,
+.forumimproved-threads-wrapper .forumimproved-thread .stateChanger + h4 {
+    margin-left: .5em;
+    margin-top: 0;
+}
+
+.selectContainer,
+.stateChanger [type="submit"],
+.stateChanger,
+.topic-header .stateChanger + h3,
+.forumimproved-threads-wrapper .forumimproved-thread .stateChanger + h4 {
+    float: left;
+}
+
+.clearfixLeft:after {
+    /* clearfix */
+    visibility: hidden;
+    display: block;
+    content: " ";
+    height: 0;
+    font-size: 0;
+    clear: left;
+}
+
+.stateChanger .select {
+    -js-display: flex;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    height: 24px;
+}
+
+.stateChanger .select .option {
+    padding: 0 10px;
+    min-height: 24px;
+    -js-display: flex;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    pointer-events: none;
+    order: 2;
+    z-index: 1;
+    transition: background .1s ease-in-out;
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0;
+}
+.stateChanger .select .option .icon {
+    margin: auto;
+}
+
+.stateChanger .select:focus .option {
+    position: relative;
+    pointer-events: all;
+}
+
+.stateChanger .select input {
+    opacity: 0;
+    position: absolute;
+    left: -99999px;
+}
+
+.stateChanger .select:focus .option {
+    border-top: solid 1px;
+}
+
+.stateChanger .select label .svg-icon {
+    margin: auto;
+}
+
+.stateChanger .select input:checked + label {
+    padding-right: 30px;
+    order: 1;
+    z-index: 2;
+    border-top: none;
+    position: relative;
+}
+
+.stateChanger .select input:checked + label:after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid;
+    position: absolute;
+    right: 10px;
+    top: calc(50% - 2.5px);
+    pointer-events: none;
+    z-index: 3;
+    opacity: .6;
+    transition: opacity .1s;
+}
+.stateChanger .select:hover input:checked + label:after,
+.stateChanger .select:focus input:checked + label:after {
+    opacity: 1;
+}
+.stateChanger .select .tooltip {
+    width: 100px;
+}
+
+
+
+.stateChanger .select .option {
+    background: #DADFE1;
+}
+
+.stateChanger .select .option:hover,
+.stateChanger .select input:checked + label {
+    background: #BDC3C7;
+}
+
+.stateChanger .select:focus .option {
+    border-top-color: #F2F1EF;
+}
+
+.stateChanger .select input:checked + label:after {
+    border-top-color: #222;
+}
+
+
+
+
+
+
+
+
+
+
 
 /* POST LIST STYLES */
 .forumimproved-post{
@@ -264,39 +454,16 @@
     clear:both;
 }
 
-.forumimproved-post:before{
-    content: attr(data-count);
-    position: absolute;
-    top: 3em;
-    left: -4%;
-    border-radius: 100%;
-    background-color: #ddd;
-    color: #FFF;
-    text-align: center;
-    height: 2em;
-    width: 2em;
-    line-height: 2;
-}
-
-.forumimproved-post:hover:before{
-    background-color: #333;
-    -webkit-transition: all .3s;
-    transition: all .3s;
-}
-/* for focus/target spacinging in themes with a fixed header */
-.forumimproved-post-wrapper{
-    padding-top:3em;
-}
 
 .forumimproved-parent-post-link {
-border-radius: 50%;
-background-color: orange;
-display: inline-block;
-width: 1.5em;
-height:1.5em;
-margin-right:2%;
-text-align:center;
-color: white !important;
+    border-radius: 50%;
+    background-color: orange;
+    display: inline-block;
+    width: 1.5em;
+    height:1.5em;
+    margin-right:2%;
+    text-align:center;
+    color: white !important;
 }
 
 /* user image secions */
@@ -313,8 +480,6 @@ color: white !important;
     margin:0 auto;
     display:block;
 }
-.forumimproved-thread-participants .userpicture,
-.forumimproved-thread-replies-meta .userpicture,
 .forumimproved-post-byline .userpicture{
     display: inline-block;
     width: 32px;
@@ -324,6 +489,88 @@ color: white !important;
     border-radius:50%;
     vertical-align: middle;
 }
+
+
+.forumimproved-post-target .userpicture{
+    float: left;
+    width: 100px;
+}
+
+.forumimproved-post-target p {
+    margin: 10px 0;
+}
+
+
+
+
+
+
+
+.forumimproved-post-wrapper {
+    padding: 1em 1em 0;
+    border: 1px solid rgb(239, 239, 239);
+    background: rgba(239, 239, 239, 0);
+
+    -webkit-transition: background .3s;
+       -moz-transition: background .3s;
+         -o-transition: background .3s;
+            transition: background .3s;
+
+    -webkit-border-radius: 4px;
+       -moz-border-radius: 4px;
+            border-radius: 4px;
+}
+.forumimproved-post-wrapper:hover {
+    background:  rgb(239, 239, 239);
+    background:  rgba(239, 239, 239, 1);
+}
+
+.forumimproved-thread-replies .forumimproved-post-wrapper {
+    margin: 1em 0 0;
+}
+
+.forumimproved-post-wrapper .forumimproved-thread-flags {
+    margin-top: 0;
+}
+
+.forumimproved-post-target .forumimproved-post-body {
+    margin-left: 120px;
+}
+
+.forumimproved-form.forumimproved-reply,
+.forumimproved-thread-replies {
+    margin-top: 1em;
+    border-top: 1px solid #bbb;
+}
+
+.forumimproved-post .forumimproved-thread-replies-list .forumimproved-post .forumimproved-post-wrapper {
+    margin-top: -1px;
+}
+
+.forumimproved-post-body .forumimproved-post-time {
+    font-size: .8em;
+}
+
+.userpicture {
+    border-radius: 100%;
+}
+
+
+
+.forumimproved-nouserpicture .userpicture {
+    display: none;
+}
+.forumimproved-nouserpicture .forumimproved-post-body {
+    margin-left: 0;
+}
+.forumimproved-nouserpicture .forumimproved-form .forumimproved-post-figure {
+    display: none;
+}
+.forumimproved-nouserpicture .forumimproved-form .forumimproved-post-body {
+    width: 100%;
+}
+
+
 
 
 .forumimproved-tools a {
@@ -381,19 +628,32 @@ color: white !important;
     margin-top: 1em;
 }
 
-.forumimproved-tools{
+.forumimproved-tools {
     font-family:'Roboto','Open sans','Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight:normal;
-    padding-bottom:1em;
+    clear: both;
+    float: left;
+    padding-top: 1em;
 }
-.forumimproved-tools .forumimproved-reply-link{
+.forumimproved-post-body .forumimproved-count-replies {
+    float: right;
+    margin: 0px;
+    padding-top: 1em;
+}
+.forumimproved-tools .forumimproved-reply-link {
     margin-left:0;
 }
-.forumimproved-tools a:not(.btn) {
-    padding: 0 0.2em;
+
+
+
+/* ------------------------
+
+------------------------ */
+.forumimproved-threads-wrapper .forumimproved-thread-meta {
+    float: right;
+    text-align: right;
+    margin-top: 10px;
 }
-
-
 
 
 
@@ -408,7 +668,13 @@ ACTIONS
     font-family:"Roboto",'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 .forumimproved-toggle .svg-icon {
-    fill:#ddd;
+    stroke: #505050;
+    stroke-width: 5px;
+    fill: #505050;
+    fill-opacity: 0;
+
+    transition: .2s;
+
     width: 1.3em;
     height: 1.3em;
     display:inline-block;
@@ -426,25 +692,40 @@ ACTIONS
 .forumimproved-toggle-subscribe.forumimproved-toggled .svg-icon,
 .forumimproved-toggle-subscribe:hover .svg-icon{
     fill:#ffac0d;
+    fill-opacity: 1;
+    stroke-opacity: 0;
 }
 
 .forumimproved-toggle-substantive.forumimproved-toggled .svg-icon,
 .forumimproved-toggle-substantive:hover .svg-icon{
     fill:#5fa9dd;
+    fill-opacity: 1;
+    stroke-opacity: 0;
 }
 .forumimproved-toggle-bookmark.forumimproved-toggled .svg-icon,
 .forumimproved-toggle-bookmark:hover .svg-icon{
     fill:#f05454;
+    fill-opacity: 1;
+    stroke-opacity: 0;
 }
 
-.forumimproved-thread.closed .forumimproved-reply-link,
-.forumimproved-thread.closed .forumimproved-form.forumimproved-reply,
-.forumimproved-thread.closed .forumimproved-vote-link,
-.forumimproved-thread.closed .forumimproved-edit-link,
-.forumimproved-thread.closed .forumimproved-delete-link,
-.forumimproved-thread.closed .forumimproved-prune-link,
-.forumimproved-thread.closed .forumimproved-form.forumimproved-edit button[type="submit"],
-.forumimproved-thread.closed .forumimproved-use-advanced {
+.forumimproved-thread.topic-hidden .forumimproved-reply-link,
+.forumimproved-thread.topic-hidden .forumimproved-form.forumimproved-reply,
+.forumimproved-thread.topic-hidden .forumimproved-vote-link,
+.forumimproved-thread.topic-hidden .forumimproved-edit-link,
+.forumimproved-thread.topic-hidden .forumimproved-delete-link,
+.forumimproved-thread.topic-hidden .forumimproved-prune-link,
+.forumimproved-thread.topic-hidden .forumimproved-form.forumimproved-edit button[type="submit"],
+.forumimproved-thread.topic-hidden .forumimproved-use-advanced,
+
+.forumimproved-thread.topic-closed .forumimproved-reply-link,
+.forumimproved-thread.topic-closed .forumimproved-form.forumimproved-reply,
+.forumimproved-thread.topic-closed .forumimproved-vote-link,
+.forumimproved-thread.topic-closed .forumimproved-edit-link,
+.forumimproved-thread.topic-closed .forumimproved-delete-link,
+.forumimproved-thread.topic-closed .forumimproved-prune-link,
+.forumimproved-thread.topic-closed .forumimproved-form.forumimproved-edit button[type="submit"],
+.forumimproved-thread.topic-closed .forumimproved-use-advanced {
     /* hide :
         * reply buttons
         * reply forms
@@ -459,22 +740,13 @@ ACTIONS
     display: none;
 }
 
-.forumimproved-thread.closed .forumimproved-form.forumimproved-edit {
+.forumimproved-thread.topic-hidden .forumimproved-form.forumimproved-edit,
+.forumimproved-thread.topic-closed .forumimproved-form.forumimproved-edit {
     display: block;
 }
 
 
-.forumimproved-thread header h4 .label {
-    /* hide the "closed" label */
-    display: none;
-}
-
-.forumimproved-thread.closed header h4 .label {
-    /* show the "closed" label */
-    display: inline;
-}
-
-.forumimproved-thread .btnToogleStateLine {
+.forumimproved-threads-wrapper .forumimproved-thread .btnToogleStateLine {
     margin-bottom: -2em;
     margin-top: 2.5em;
     clear: right;
@@ -550,202 +822,287 @@ FUN WITH FORMS
 }
 .path-mod-forumimproved .discussioncontrols {
     text-align:center;
+    margin: 1em 0;
 }
 
-/* -------------------------  MEDIA Qs  -------------------------*/
 
-@media all and (min-width: 35em) {
-    #page-mod-forumimproved-view .groupselector{
-        text-align:right;
+
+
+
+
+/*-------------------
+   panel of voters
+-------------------*/
+.votersPanel {
+    border: 1px solid rgb(223, 223, 223);
+    background: rgb(223, 223, 223);
+    margin: auto;
+    position: relative;
+    height: 300px;
+    -js-display: flex;
+    display: flex;
+    align-content: stretch;
+    flex-flow: column wrap;
+}
+.votersPanel .arrow {
+    height: 0;
+    width: 0;
+    border-style: solid;
+    border-width: 0 10px 10px 10px;
+    display: block;
+    border-color: transparent transparent rgb(223,223,223) transparent;
+    position: absolute;
+    top: -10px;
+}
+.votersPanel .closeBtn {
+    position: absolute;
+    top: 1em;
+    right: 1em;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+}
+.votersPanel .closeBtn:active {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) inset, 0 1px 2px rgba(0, 0, 0, 0.05)
+}
+.votersPanel h4 {
+    flex-shrink: 0;
+    border-bottom: grey solid 1px;
+    padding: 8px;
+    padding: .5rem;
+    margin: 16px;
+    margin: 1rem;
+    margin-bottom: 0;
+}
+.votersPanel div {
+    padding: 1em;
+    overflow: auto;
+    flex-grow: 1;
+    height: 1px; /* to height force the height to be the rest of the parrent */
+}
+.votersPanel .userpicture {
+    width: auto;
+}
+.votersPanel table {
+    background: #F9F9F9;
+    margin-bottom: 0;
+}
+.votersPanel thead {
+    cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /* -------------------------  MEDIA Qs  -------------------------*/
+
+    @media all and (min-width: 35em) {
+        #page-mod-forumimproved-view .groupselector{
+            text-align:right;
+        }
+
+        /* GRID ME UP */
+        .forumimproved-thread-author{
+            width:18%;
+            margin-right:5.6%;
+            float:left;
+        }
+
+
+        .forumimproved-thread-header,
+        .forumimproved-thread-title{
+            float:left;
+            width:76.4%;
+        }
+
+        .forumimproved-thread-flags{
+            float:right;
+            width: auto;
+            text-align:right;
+        }
+
+        .forumimproved-post-figure {
+            float:left;
+            width:15.73%;
+
+        }
+        form .forumimproved-post-body{
+            float:left;
+            width:84.27%;
+        }
+        form.forumimproved-form .forumimproved-post-body {
+            margin-left: 0;
+        }
+
+        .depth0 .forumimproved-reply-wrapper{
+            margin-left:15.73%;
+        }
+        .improvedform-post-date{
+            float:right;
+            line-height:3;
+        }
+
+        .forumimproved-post-byline{
+            display:inline;
+        }
+
+        .forumimproved-postflagging{
+            float:right;
+        }
+
+        /* increase form with */
+        .forumimproved-form input[type=text],
+        .forumimproved-form textarea {
+            width:100%;
+            min-height: 2em;
+        }
+
+        .forumimproved-add-discussion,
+        .forumimproved-search {
+            width:50%;
+            display:inline-block;
+            text-align:left;
+        }
+        .forumimproved-search {
+            text-align:right;
+        }
+        /* search on discuss page only for single simple discussion */
+        #page-mod-forumimproved-discuss .forumimproved-search {
+            width: 100%;
+        }
+        #forumimproved-filter-options {
+            text-align:right;
+        }
+        .forumimproved-discussion-sort {
+            display:inline-block;
+        }
+
+        #menudsortdirection + input {
+            display:inline;
+        }
+        .forumimproved-parent-post-link{
+            float:left;
+        }
+
+
+
+
+        .forumimproved-post[data-depth] .forumimproved-post-wrapper{margin-left:32%;} /* max depth catch all */
+        /* 5.24 */
+        .forumimproved-post[data-depth="0"] .forumimproved-post-wrapper{margin-left:0%;}
+        .forumimproved-post[data-depth="1"] .forumimproved-post-wrapper{margin-left:8%;}
+        .forumimproved-post[data-depth="2"] .forumimproved-post-wrapper{margin-left:16%;}
+        .forumimproved-post[data-depth="3"] .forumimproved-post-wrapper{margin-left:24%;}
+        .forumimproved-post[data-depth="4"] .forumimproved-post-wrapper{margin-left:32%;}
+        /* .forumimproved-post[data-depth="5"] .forumimproved-post-wrapper{margin-left:36.69%;} */
     }
 
-    /* GRID ME UP */
-    .forumimproved-thread-author{
-        width:18%;
-        margin-right:5.6%;
-        float:left;
+    @media all and (min-width: 62em) {
+        /* REALLY BIG SCREENS */
+        #page-mod-forumimproved-view #region-main{
+            padding:1em 2%;
+        }
+        #page-mod-forumimproved-view #region-main #discussionsview {
+            max-width:60.5em;
+            margin: auto;
+        }
+
+        .forumtype-single .forumimproved-thread-header,
+        .forumtype-single .forumimproved-thread-title,
+        .forumtype-single .forumimproved-thread-flags {
+            display:block;
+            width:100%;
+            float:none;
+        }
+        .forumtype-single .forumimproved-thread-flags {
+            text-align:left;
+        }
+        .forumtype-single .forumimproved-thread-participants {
+            display:inline-block;
+            margin-left:3%;
+            min-width:80%;
+        }
     }
 
 
-    .forumimproved-thread-header,
-    .forumimproved-thread-title{
-        float:left;
-        width:76.4%;
+
+    /* small screen */
+    @media (max-width: 35em) {
+        .forumimproved-thread-flags,
+        .forumimproved-thread-replies-meta,
+        .forumimproved-thread-figure,
+        .improvedform-post-date,
+        .forumimproved-postflagging {
+            clear:both;
+            display:block;
+            width:100%;
+            float:none;
+        }
+
+        .forumimproved-thread-flags{
+            text-align:right;
+        }
+
+        .forumimproved-post-figure{
+            float:left;
+        }
+        .forumimproved-post-figure .userpicture {
+            max-width:50px;
+        }
+        .improvedform-post-date,
+        .forumimproved-postflagging {
+            text-align:right;
+        }
+
+        .forumimproved-thread{
+            padding:1em 1.18%;
+            margin:0 2.36%;
+        }
+        .forumimproved-post-byline{
+            font-size:0.9em;
+            line-height:1;
+        }
     }
 
-    .forumimproved-thread-meta{
-        float:right;
-        width: auto;
-        text-align:right;
+
+    /* end meida 45 */
+
+    /* recent activity, recent posts output in non-Snap themes */
+
+    .section .activity.modtype_forumimproved .activityinstance div {
+        display:block; /* overwrite core shame */
     }
 
-    .forumimproved-post-figure {
-        float:left;
-        width:15.73%;
-
+    .block_flexpagemod_forumimproved .forumimproved-recent-heading,
+    .forumimproved.modtype_forumimproved .forumimproved-recent-heading,
+    .section .activity.modtype_forumimproved .availabilityinfo {
+        font-size:1em;
+        clear:both;
     }
-    .forumimproved-post-body{
-        float:left;
-        width:84.27%;
+    .block_flexpagemod_forumimproved .snap-media-object,
+    .forumimproved.modtype_forumimproved .snap-media-object,
+    .block_recent_activity .snap-media-object {
+        margin-bottom: 0.3em;
+        font-size:small;
     }
-
-
-    .depth0 .forumimproved-reply-wrapper{
-        margin-left:15.73%;
-    }
-    .improvedform-post-date{
-        float:right;
-        line-height:3;
-    }
-
-    .forumimproved-post-byline{
-        display:inline;
-    }
-
-    .forumimproved-postflagging{
-        float:right;
-    }
-
-    /* increase form with */
-    .forumimproved-form input[type=text],
-    .forumimproved-form textarea {
-        width:100%;
-        min-height: 2em;
-    }
-
-    .forumimproved-add-discussion,
-    .forumimproved-search {
+    .block_flexpagemod_forumimproved .snap-media-object,
+    .forumimproved.modtype_forumimproved .snap-media-object {
         width:50%;
-        display:inline-block;
-        text-align:left;
-    }
-    .forumimproved-search {
-        text-align:right;
-    }
-    /* search on discuss page only for single simple discussion */
-    #page-mod-forumimproved-discuss .forumimproved-search {
-        width: 100%;
-    }
-    #forumimproved-filter-options {
-        text-align:right;
-    }
-    .forumimproved-discussion-sort {
-        display:inline-block;
-    }
-
-    #menudsortdirection + input {
-        display:inline;
-    }
-    .forumimproved-parent-post-link{
         float:left;
+        min-width: 200px;
     }
 
-
-
-
-    .forumimproved-post[data-depth] .forumimproved-post-wrapper{margin-left:31.45%;} /* max depth catch all */
-    /* 5.24 */
-    .forumimproved-post[data-depth="0"] .forumimproved-post-wrapper{margin-left:0%;}
-    .forumimproved-post[data-depth="1"] .forumimproved-post-wrapper{margin-left:15.73%;}
-    .forumimproved-post[data-depth="2"] .forumimproved-post-wrapper{margin-left:20.97%;}
-    .forumimproved-post[data-depth="3"] .forumimproved-post-wrapper{margin-left:26.21%;}
-    .forumimproved-post[data-depth="4"] .forumimproved-post-wrapper{margin-left:31.45%;}
-    /* .forumimproved-post[data-depth="5"] .forumimproved-post-wrapper{margin-left:36.69%;} */
-}
-
-@media all and (min-width: 62em) {
-    /* REALLY BIG SCREENS */
-    #page-mod-forumimproved-view #region-main{
-        max-width:60.5em;
-        padding:1em 2%;
-    }
-
-    .forumtype-single .forumimproved-thread-header,
-    .forumtype-single .forumimproved-thread-title,
-    .forumtype-single .forumimproved-thread-meta {
-        display:block;
-        width:100%;
-        float:none;
-    }
-    .forumtype-single .forumimproved-thread-meta {
-        text-align:left;
-    }
-    .forumtype-single .forumimproved-thread-participants {
-        display:inline-block;
-        margin-left:3%;
-        min-width:80%;
-    }
-}
-
-
-
-/* small screen */
-@media (max-width: 35em) {
-    .forumimproved-thread-meta,
-    .forumimproved-thread-replies-meta,
-    .forumimproved-thread-figure,
-    .improvedform-post-date,
-    .forumimproved-postflagging {
-		clear:both;
-        display:block;
-		width:100%;
-		float:none;
-	}
-
-    .forumimproved-thread-meta{
-        text-align:right;
-    }
-
-    .forumimproved-post-figure{
-        float:left;
-    }
-    .forumimproved-post-figure .userpicture {
-        max-width:50px;
-    }
-    .improvedform-post-date,
-    .forumimproved-postflagging {
-        text-align:right;
-    }
-
-    .forumimproved-thread{
-        padding:1em 1.18%;
-        margin:0 2.36%;
-    }
-    .forumimproved-post-byline{
-        font-size:0.9em;
-        line-height:1;
-    }
-}
-
-
-/* end meida 45 */
-
-/* recent activity, recent posts output in non-Snap themes */
-
-.section .activity.modtype_forumimproved .activityinstance div {
-    display:block; /* overwrite core shame */
-}
-
-.block_flexpagemod_forumimproved .forumimproved-recent-heading,
-.forumimproved.modtype_forumimproved .forumimproved-recent-heading,
-.section .activity.modtype_forumimproved .availabilityinfo {
-    font-size:1em;
-    clear:both;
-}
-.block_flexpagemod_forumimproved .snap-media-object,
-.forumimproved.modtype_forumimproved .snap-media-object,
-.block_recent_activity .snap-media-object {
-    margin-bottom: 0.3em;
-    font-size:small;
-}
-.block_flexpagemod_forumimproved .snap-media-object,
-.forumimproved.modtype_forumimproved .snap-media-object {
-    width:50%;
-    float:left;
-    min-width: 200px;
-}
-
-.block_flexpagemod_forumimproved .snap-media-object > a,
+    .block_flexpagemod_forumimproved .snap-media-object > a,
 .modtype_forumimproved .snap-media-object > a,
 .block_recent_activity .snap-media-object > a {
     text-decoration: none;

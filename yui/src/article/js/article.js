@@ -185,12 +185,20 @@ Y.extend(ARTICLE, Y.Base,
             form.on(EVENTS.POST_CREATED, dom.handleNotification, dom);
             form.on(EVENTS.POST_CREATED, router.handleViewDiscussion, router);
             form.on(EVENTS.POST_CREATED, this.handleLiveLog, this);
+            form.on(EVENTS.POST_CREATED, this.jQueryBridge, {
+                element : document.body,
+                event: EVENTS.POST_CREATED
+            });
 
             // On post updated, update HTML and URL and log.
             form.on(EVENTS.POST_UPDATED, dom.handleUpdateDiscussion, dom);
             form.on(EVENTS.POST_UPDATED, router.handleViewDiscussion, router);
             form.on(EVENTS.POST_UPDATED, dom.handleNotification, dom);
             form.on(EVENTS.POST_UPDATED, this.handleLiveLog, this);
+            form.on(EVENTS.POST_UPDATED, this.jQueryBridge, {
+                element : document.body,
+                event: EVENTS.POST_UPDATED
+            });
 
             // On discussion created, update HTML, display notification, update URL and log it.
             form.on(EVENTS.DISCUSSION_CREATED, dom.handleUpdateDiscussion, dom);
@@ -198,20 +206,36 @@ Y.extend(ARTICLE, Y.Base,
             form.on(EVENTS.DISCUSSION_CREATED, dom.handleNotification, dom);
             form.on(EVENTS.DISCUSSION_CREATED, router.handleViewDiscussion, router);
             form.on(EVENTS.DISCUSSION_CREATED, this.handleLiveLog, this);
+            form.on(EVENTS.DISCUSSION_CREATED, this.jQueryBridge, {
+                element : document.body,
+                event: EVENTS.DISCUSSION_CREATED
+            });
 
             // On discussion delete, update HTML (may redirect!), display notification and log it.
             this.on(EVENTS.DISCUSSION_DELETED, dom.handleDiscussionDeleted, dom);
             this.on(EVENTS.DISCUSSION_DELETED, dom.handleNotification, dom);
             this.on(EVENTS.DISCUSSION_DELETED, this.handleLiveLog, this);
+            this.on(EVENTS.DISCUSSION_DELETED, this.jQueryBridge, {
+                element : document.body,
+                event: EVENTS.DISCUSSION_DELETED
+            });
 
             // On post deleted, update HTML, URL and log.
             this.on(EVENTS.POST_DELETED, dom.handleUpdateDiscussion, dom);
             this.on(EVENTS.POST_DELETED, router.handleViewDiscussion, router);
             this.on(EVENTS.POST_DELETED, dom.handleNotification, dom);
             this.on(EVENTS.POST_DELETED, this.handleLiveLog, this);
+            this.on(EVENTS.POST_DELETED, this.jQueryBridge, {
+                element : document.body,
+                event: EVENTS.POST_DELETED
+            });
 
             // On form cancel, update the URL to view the discussion/post.
             form.on(EVENTS.FORM_CANCELED, router.handleViewDiscussion, router);
+            form.on(EVENTS.FORM_CANCELED, this.jQueryBridge, {
+                element : document.body,
+                event: EVENTS.FORM_CANCELED
+            });
         },
 
         /**
@@ -350,38 +374,6 @@ Y.extend(ARTICLE, Y.Base,
         },
 
         /**
-         * show votes for a post in a popup
-         *
-         * @method showVoters
-         * @param postid
-         */
-        showVoters: function(postid) {
-            var link = Y.one(SELECTORS.VOTERS_LINK_BY_POST_ID.replace('%d', postid));
-
-            if (link === null) {
-                return;
-            }
-
-            var args = {
-                'url': link.getAttribute('href'),
-                'name': 'showVoters',
-                'options': 'height=400,width=600,top=0,left=0,menubar=0,location=0,scrollbars,resizable,toolbar,status,directories=0,fullscreen=0,dependent'
-            };
-
-            if (args.url.indexOf('?') === -1) {
-                args.url += '?popup=1';
-            }
-            else {
-                args.url += '&popup=1';
-            }
-
-            if (openpopup.apply(link, [null, args])) {
-                // window not open :3
-                location.href = link.getAttribute('href');
-            }
-        },
-
-        /**
          * toggle the state (open / closed) of a discussion
          *
          * @method toogleDiscussionState
@@ -430,6 +422,17 @@ Y.extend(ARTICLE, Y.Base,
                     }
                 }
             }, this);
+        },
+
+        /**
+         * hack to transmit event to jQuery
+         *
+         * @method jQueryBridge
+         */
+        jQueryBridge: function() {
+            if (typeof window.jQuery != undefined) {
+                jQuery(this.element).trigger(this.event);
+            }
         }
     }
 );

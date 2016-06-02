@@ -46,6 +46,11 @@ if (!empty($popup)) {
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 
+$config = get_config('forumimproved');
+if (!empty($config->hideuserpicture) && $config->hideuserpicture) {
+    $PAGE->add_body_class('forumimproved-nouserpicture');
+}
+
 if ($popup) {
     $PAGE->set_pagelayout('popup');
 }

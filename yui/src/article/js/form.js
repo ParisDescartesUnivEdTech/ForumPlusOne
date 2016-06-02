@@ -210,6 +210,18 @@ Y.extend(FORM, Y.Base,
         },
 
         /**
+         * Displays the reply form for the current discussion
+         *
+         * @method _displayCanonicReplyForm
+         * @private
+         */
+        _displayCanonicReplyForm: function() {
+            var template = Y.one(SELECTORS.CANONIC_REPLY_FORM);
+            console.log(template);
+            template.setStyle('display', 'block');
+        },
+
+        /**
          * Copies the content editable message into the
          * text area so it can be submitted by the form.
          *
@@ -279,10 +291,17 @@ Y.extend(FORM, Y.Base,
 
             Y.all(SELECTORS.POSTS + ' ' + SELECTORS.FORM_REPLY_WRAPPER).each(function(node) {
                 // Don't removing forms for editing, for safety.
-                if (!node.ancestor(SELECTORS.DISCUSSION_EDIT) && !node.ancestor(SELECTORS.POST_EDIT)) {
+                if (
+                    !node.ancestor(SELECTORS.DISCUSSION_EDIT)
+                     && !node.ancestor(SELECTORS.POST_EDIT)
+                     && !node.ancestor(SELECTORS.CANONIC_REPLY_FORM)
+                ) {
                     node.remove(true);
                 }
             });
+
+            if (Y.one(SELECTORS.CANONIC_REPLY_FORM))
+                Y.one(SELECTORS.CANONIC_REPLY_FORM).setStyle('display', 'none');
 
             var node = Y.one(SELECTORS.ADD_DISCUSSION_TARGET);
             if (node !== null) {
@@ -307,7 +326,10 @@ Y.extend(FORM, Y.Base,
                 node.removeClass(CSS.POST_EDIT)
                     .removeClass(CSS.DISCUSSION_EDIT);
             }
-            e.target.ancestor(SELECTORS.FORM_REPLY_WRAPPER).remove(true);
+
+            if (!e.target.ancestor(SELECTORS.CANONIC_REPLY_FORM) ) {
+                e.target.ancestor(SELECTORS.FORM_REPLY_WRAPPER).remove(true);
+            }
 
             this.fire(EVENTS.FORM_CANCELED, {
                 discussionid: node.getData('discussionid'),
@@ -359,6 +381,10 @@ Y.extend(FORM, Y.Base,
             if (postNode.hasAttribute('data-ispost')) {
                 this._displayReplyForm(postNode);
             }
+            else {
+                this._displayCanonicReplyForm();
+            }
+
             postNode.one(SELECTORS.EDITABLE_MESSAGE).focus();
         },
 

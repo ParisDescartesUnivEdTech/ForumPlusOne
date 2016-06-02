@@ -184,7 +184,7 @@ function forumimproved_rss_feed_discussions_sql($forum, $cm, $newsince=0) {
     $params = array_merge($params, $groupparams);
 
     $forumsort = "d.timemodified DESC";
-    $postdata = "p.id AS postid, p.subject, p.created as postcreated, p.modified, p.discussion, p.userid, p.reveal AS postreveal, p.message as postmessage, p.messageformat AS postformat, p.messagetrust AS posttrust, p.privatereply AS postprivatereply";
+    $postdata = "p.id AS postid, p.created as postcreated, p.modified, p.discussion, p.userid, p.reveal AS postreveal, p.message as postmessage, p.messageformat AS postformat, p.messagetrust AS posttrust, p.privatereply AS postprivatereply";
     $userpicturefields = user_picture::fields('u', null, 'userid');
 
     $sql = "SELECT $postdata, d.id as discussionid, d.name as discussionname, d.timemodified, d.usermodified, d.groupid,
@@ -239,7 +239,6 @@ function forumimproved_rss_feed_posts_sql($forum, $cm, $newsince=0) {
                  u.id AS userid,
                  $usernamefields,
                  p.reveal AS postreveal,
-                 p.subject AS postsubject,
                  p.message AS postmessage,
                  p.created AS postcreated,
                  p.messageformat AS postformat,
@@ -356,8 +355,6 @@ function forumimproved_rss_feed_contents($forum, $sql, $params, $context) {
             // The user must have permission to view
             if ($isdiscussion && !empty($rec->discussionname)) {
                 $item->title = format_string($rec->discussionname);
-            } else if (!empty($rec->postsubject)) {
-                $item->title = format_string($rec->postsubject);
             } else {
                 //we should have an item title by now but if we dont somehow then substitute something somewhat meaningful
                 $item->title = format_string($forum->name.' '.userdate($rec->postcreated,get_string('strftimedatetimeshort', 'langconfig')));

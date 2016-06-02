@@ -73,6 +73,17 @@ You need to build **ONLY** if you want to contribute. In this case, follow this 
 4. Enjoy :D
 
 
+Browser support
+---------------
+
+Currently, I just test it on Iceweasel 38 (based on Firefox 38).  
+In theory, it's compatible until IE9. I will test it later.
+
+### Why IE9
+
+Because Moodle 2.7 support until IE9.
+
+
 Documentation
 -------------
 

@@ -35,7 +35,6 @@ $showform = optional_param('showform', 0, PARAM_INT);   // Just show the form
 $user    = trim(optional_param('user', '', PARAM_NOTAGS));    // Names to search for
 $userid  = trim(optional_param('userid', 0, PARAM_INT));      // UserID to search for
 $forumid = trim(optional_param('forumid', 0, PARAM_INT));      // ForumID to search for
-$subject = trim(optional_param('subject', '', PARAM_NOTAGS)); // Subject
 $phrase  = trim(optional_param('phrase', '', PARAM_NOTAGS));  // Phrase
 $words   = trim(optional_param('words', '', PARAM_NOTAGS));   // Words
 $fullwords = trim(optional_param('fullwords', '', PARAM_NOTAGS)); // Whole words
@@ -68,6 +67,11 @@ if ($timetorestrict) {
 $PAGE->set_pagelayout('standard');
 $PAGE->set_url($FULLME); //TODO: this is very sloppy --skodak
 
+$config = get_config('forumimproved');
+if (!empty($config->hideuserpicture) && $config->hideuserpicture) {
+    $PAGE->add_body_class('forumimproved-nouserpicture');
+}
+
 if (empty($search)) {   // Check the other parameters instead
     if (!empty($words)) {
         $search .= ' '.$words;
@@ -80,9 +84,6 @@ if (empty($search)) {   // Check the other parameters instead
     }
     if (!empty($user)) {
         $search .= ' '.forumimproved_clean_search_terms($user, 'user:');
-    }
-    if (!empty($subject)) {
-        $search .= ' '.forumimproved_clean_search_terms($subject, 'subject:');
     }
     if (!empty($fullwords)) {
         $search .= ' '.forumimproved_clean_search_terms($fullwords, '+');
@@ -194,7 +195,6 @@ echo '<a href="search.php?id='.$course->id.
                          '&amp;user='.urlencode($user).
                          '&amp;userid='.$userid.
                          '&amp;forumid='.$forumid.
-                         '&amp;subject='.urlencode($subject).
                          '&amp;phrase='.urlencode($phrase).
                          '&amp;words='.urlencode($words).
                          '&amp;fullwords='.urlencode($fullwords).
@@ -212,7 +212,6 @@ $url = new moodle_url('search.php', array('search' => $search, 'id' => $course->
 //added to implement highlighting of search terms found only in HTML markup
 //fiedorow - 9/2/2005
 $strippedsearch = str_replace('user:','',$search);
-$strippedsearch = str_replace('subject:','',$strippedsearch);
 $strippedsearch = str_replace('&quot;','',$strippedsearch);
 $searchterms = explode(' ', $strippedsearch);    // Search for words independently
 foreach ($searchterms as $key => $searchterm) {
@@ -231,7 +230,7 @@ $modinfo = get_fast_modinfo($course);
 foreach ($posts as $post) {
 
 
-    // Replace the simple subject with the three items forum name -> thread name -> subject
+    // Replace the simple subject with the three items forum name -> thread name
     // (if all three are appropriate) each as a link.
     if (! $discussion = $DB->get_record('forumimproved_discussions', array('id' => $post->discussion))) {
         print_error('invaliddiscussionid', 'forumimproved');
@@ -246,17 +245,13 @@ foreach ($posts as $post) {
 
     // TODO actually display if the search result has been read, for now just
     // hide the unread status marker for all results.
-    $post->postread = true;
+    $post->postread = forumimproved_tp_is_post_read($USER->id, $post);
 
-    $post->subject = highlight($strippedsearch, $post->subject);
     $discussion->name = highlight($strippedsearch, $discussion->name);
 
     $fullsubject = "<a href=\"view.php?f=$forum->id\">".format_string($forum->name,true)."</a>";
     if ($forum->type != 'single') {
         $fullsubject .= " -> <a href=\"discuss.php?d=$discussion->id\">".format_string($discussion->name,true)."</a>";
-        if ($post->parent != 0) {
-            $fullsubject .= " -> <a href=\"discuss.php?d=$post->discussion&amp;parent=$post->id\">".format_string($post->subject,true)."</a>";
-        }
     }
 
     $post->breadcrumb = $fullsubject;
@@ -334,7 +329,7 @@ echo $OUTPUT->footer();
   * @return void The function prints the form.
   */
 function forumimproved_print_big_search_form($course) {
-    global $CFG, $DB, $words, $subject, $phrase, $user, $userid, $fullwords, $notwords, $datefrom, $dateto, $PAGE, $OUTPUT;
+    global $CFG, $DB, $words, $phrase, $user, $userid, $fullwords, $notwords, $datefrom, $dateto, $PAGE, $OUTPUT;
 
     echo $OUTPUT->box(get_string('searchforumintro', 'forumimproved'), 'searchbox boxaligncenter', 'intro');
 
@@ -417,11 +412,6 @@ function forumimproved_print_big_search_form($course) {
     echo '<div class="form-group">';
     echo '<label for="menuforumid">'.get_string('searchwhichforums', 'forumimproved').'</label>';
     echo html_writer::select(forumimproved_menu_list($course), 'forumid', '', array(''=>get_string('allforums', 'forumimproved')));
-    echo '</div>';
-
-    echo '<div class="form-group">';
-    echo '<label for="subject">'.get_string('searchsubject', 'forumimproved').'</label>';
-    echo '<input class="form-control" type="text" size="35" name="subject" id="subject" value="'.s($subject, true).'" alt="" />';
     echo '</div>';
 
     echo '<div class="form-group">';

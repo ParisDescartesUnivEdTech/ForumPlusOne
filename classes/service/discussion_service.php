@@ -112,7 +112,6 @@ class discussion_service {
     public function create_discussion_object($forum, $context, array $options = array()) {
         $discussion = (object) array(
             'name'          => '',
-            'subject'       => '',
             'course'        => $forum->course,
             'forum'         => $forum->id,
             'groupid'       => -1,
@@ -153,9 +152,9 @@ class discussion_service {
             $errors[] = new \moodle_exception($thresholdwarning->errorcode, $thresholdwarning->module, $thresholdwarning->additional);
         }
 
-        $subject = trim($discussion->subject);
+        $subject = trim($discussion->name);
         if (empty($subject)) {
-            $errors[] = new \moodle_exception('subjectisrequired', 'forumimproved');
+            $errors[] = new \moodle_exception('discnameisrequired', 'forumimproved');
         }
         if (forumimproved_str_empty($discussion->message)) {
             $errors[] = new \moodle_exception('messageisrequired', 'forumimproved');
@@ -290,19 +289,25 @@ class discussion_service {
     }
 
     /**
-     * Toggle the state (open / closed) of a discussion
+     * Change the state of a discussion
      *
      * @param object $forum
      * @param object $discussion
+     * @param int    $state
      * @return json_response
      */
-    public function handle_toggle_state($forum, $discussion) {
+    public function handle_change_state($forum, $discussion, $state) {
         $response = array();
 
         try {
-            forumimproved_toggle_discussion_state($forum, $discussion);
+            if ($state == FORUMIMPROVED_DISCUSSION_STATE_OPEN)
+                forumimproved_discussion_open($forum, $discussion);
+            if ($state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE)
+                forumimproved_discussion_close($forum, $discussion);
+            if ($state == FORUMIMPROVED_DISCUSSION_STATE_HIDDEN)
+                forumimproved_discussion_hide($forum, $discussion);
+
             $response['errorCode'] = 0;
-            $response['state'] = forumimproved_is_discussion_closed($forum, $discussion) ? 'c' : 'o';
         }
         catch (coding_exception $e) {
             $response['errorCode'] = $e->a;

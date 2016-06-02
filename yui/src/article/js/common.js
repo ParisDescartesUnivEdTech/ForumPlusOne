@@ -7,6 +7,7 @@ var CSS = {
         ADD_DISCUSSION: '#newdiscussionform',
         ADD_DISCUSSION_TARGET: '.forumimproved-add-discussion-target',
         ALL_FORMS: '.forumimproved-reply-wrapper form',
+        CANONIC_REPLY_FORM: '.forumimproved-footer-reply',
         CONTAINER: '.mod-forumimproved-posts-container',
         CONTAINER_LINKS: '.mod-forumimproved-posts-container a',
         DISCUSSION: '.forumimproved-thread',

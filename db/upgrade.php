@@ -816,6 +816,28 @@ function xmldb_forumimproved_upgrade($oldversion) {
     }
 
 
+    if ($oldversion < 2016052400) {
+        $tableFI = new xmldb_table('forumimproved');
+        $fieldEnable = new xmldb_field('enable_close_disc', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1');
+
+        $dbman->rename_field($tableFI, $fieldEnable, 'enable_states_disc');
+
+        // ForumImproved savepoint reached.
+        upgrade_mod_savepoint(true, 2016052400, 'forumimproved');
+    }
+
+
+    if ($oldversion < 2016052600) {
+        $tablePost = new xmldb_table('forumimproved_posts');
+        $fieldSubject = new xmldb_field('subject', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL);
+
+        $dbman->drop_field($tablePost, $fieldSubject);
+
+        // ForumImproved savepoint reached.
+        upgrade_mod_savepoint(true, 2016052600, 'forumimproved');
+    }
+
+
     return true;
 }
 

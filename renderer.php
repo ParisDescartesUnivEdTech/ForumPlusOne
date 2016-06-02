@@ -90,7 +90,7 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
             // Fall through to following cases.
             case 'blog':
             default:
-                forumimproved_print_latest_discussions($course, $forum, -1, $dsort->get_sort_sql(), -1, -1, $page, $config->manydiscussions, $cm);
+                forumimproved_print_latest_discussions($course, $forum, -1, $dsort->get_sort_sql(), -1, -1, $page, $config->manydiscussions, $cm, has_capability('mod/forumimproved:viewhiddendiscussion', $context));
                 break;
         }
     }
@@ -290,7 +290,7 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
         $data->postid   = $post->id;
         $data->unread   = $discussion->unread;
         $data->fullname = $postuser->fullname;
-        $data->subject  = $this->raw_post_subject($post);
+        $data->name     = format_string($discussion->name);
         $data->message  = $this->post_message($post, $cm);
         $data->created  = userdate($post->created, $format);
         $data->datetime = date(DATE_W3C, usertime($post->created));
@@ -351,6 +351,7 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
 
     public function article_assets($cm) {
         $context = context_module::instance($cm->id);
+        $forum = forumimproved_get_cm_forum($cm);
         $this->article_js($context);
         $output = html_writer::tag(
             'script',
@@ -364,10 +365,36 @@ class mod_forumimproved_renderer extends plugin_renderer_base {
         );
 
 
+        $config = get_config('forumimproved');
+        if (has_capability('mod/forumimproved:change_state_discussion', $context) && $forum->enable_states_disc) {
+            $output .= html_writer::tag(
+                'script',
+                '',
+                array('type' => 'application/javascript', 'src' => 'js/changeDiscussionState.min.js')
+            );
+        }
+
         $output .= html_writer::tag(
             'script',
             '',
             array('type' => 'application/javascript', 'src' => 'js/bootstrap-tooltip.min.js')
+        );
+
+        $output .= html_writer::tag(
+            'script',
+            '',
+            array('type' => 'application/javascript', 'src' => 'js/collapseReplies.min.js')
+        );
+
+        $output .= html_writer::tag( // variables
+            'script',
+            $this->getJSVarsShowVotes(),
+            array('type' => 'application/javascript')
+        );
+        $output .= html_writer::tag(
+            'script',
+            '',
+            array('type' => 'application/javascript', 'src' => 'js/seevoters.min.js')
         );
 
         // enable colors on likes
@@ -388,6 +415,23 @@ CSS;
 
         return $output;
     }
+
+    /**
+     * @return a JS string with variables usefull for the JS module to show the voters
+     */
+    public function getJSVarsShowVotes() {
+        $json['votersPanelTitle'] = get_string('allvoteforitem', 'forumimproved');
+        $json['tableTitleName'] = get_string('name');
+        $json['tableTitleDatetime'] = get_string('time');
+        $json['thereNoVoteHere'] = get_string('novotes', 'forumimproved');
+
+        $jsonString = json_encode($json);
+        return <<<EOS
+window.jQueryStrings = $jsonString;
+EOS;
+    }
+
+
 
     /**
      * Render a single post
@@ -424,7 +468,6 @@ CSS;
         $data->id             = $post->id;
         $data->discussionid   = $discussion->id;
         $data->fullname       = $postuser->fullname;
-        $data->subject        = property_exists($post, 'breadcrumb') ? $post->breadcrumb : $this->raw_post_subject($post);
         $data->message        = $this->post_message($post, $cm, $search);
         $data->created        = userdate($post->created, get_string('articledateformat', 'forumimproved'));
         $data->rawcreated     = $post->created;
@@ -520,12 +563,37 @@ CSS;
         $popularityText ='';
         if ($popularity > 0) {
             $popularityText = get_string('popularity_text', 'forumimproved', $popularity);
+
+            $onSchedule = true;
+
+            if ( $forum->vote_display_name && !has_capability('mod/forumimproved:viewwhovote', \context_module::instance($cm->id)))
+                $onSchedule = false;
+
+            if ( !$forum->vote_display_name && !has_capability('mod/forumimproved:viewwhovote_annonymousvote', \context_module::instance($cm->id)))
+                $onSchedule = false;
+
+
+            if ($onSchedule) {
+                $popularityText = html_writer::link(
+                    new moodle_url('/mod/forumimproved/whovote.php', array(
+                        'postid' => $d->postid,
+                        'contextid' => \context_module::instance($cm->id)->id
+                    )),
+                    $popularityText,
+                    array(
+                        'class' => 'forumimproved-show-voters-link',
+                        'data-toggle' => 'tooltip',
+                        'data-placement' => 'top',
+                        'title' => get_string('show-voters-link-title', 'forumimproved'),
+                    )
+                );
+            }
         }
 
 
         $datecreated = forumimproved_absolute_time($d->rawcreated, array('class' => 'forumimproved-thread-pubdate'));
 
-        $threadtitle = $d->subject;
+        $threadtitle = $d->name;
         if (!$d->fullthread) {
             $threadtitle = "<a class='disable-router' href='$d->viewurl'>$threadtitle</a>";
         }
@@ -541,12 +609,10 @@ CSS;
 
         if ($d->fullthread) {
             $tools = '<div role="region" class="forumimproved-tools forumimproved-thread-tools" aria-label="'.$options.'">'.$d->tools.'</div>';
-            $blogmeta = '';
             $blogreplies = '';
         } else {
             $blogreplies = forumimproved_xreplies($d->replies);
             $tools = "<a class='disable-router forumimproved-replycount-link' href='$d->viewurl'>$blogreplies</a>";
-            $blogmeta = $threadmeta;
         }
 
         $revealed = "";
@@ -560,55 +626,116 @@ CSS;
 
         $context = \context_module::instance($cm->id);
 
-        $classClosedDiscussion = '';
-        $buttonToggleState = '';
-        
-        if ($forum->enable_close_disc) {
+        $classStateDiscussion = '';
+
+        $d->stateForm = "";
+        $d->iconState = "";
+        if ($forum->enable_states_disc) {
+            $titleOpenDiscussion = get_string('title_open_discussion', 'forumimproved');
+            $titleCloseDiscussion = get_string('title_close_discussion', 'forumimproved');
+            $titleHideDiscussion = get_string('title_hide_discussion', 'forumimproved');
+            $titleIsClosedDiscussion = get_string('title_is_closed_discussion', 'forumimproved');
+            $titleIsHiddenDiscussion = get_string('title_is_hidden_discussion', 'forumimproved');
+
             if (forumimproved_is_discussion_closed($forum, $d)) {
-                $toggleStateButtonLabel = get_string('open_thread_title', 'forumimproved');
-                $classClosedDiscussion = 'closed';
+                $classStateDiscussion = 'topic-closed';
+            }
+            elseif (forumimproved_is_discussion_hidden($forum, $d)) {
+                $classStateDiscussion = 'topic-hidden';
+            }
+
+            if (has_capability('mod/forumimproved:change_state_discussion', $context)) {
+                    $checkAttrClosed = '';
+                    $checkAttrHidden = '';
+                    $checkAttrOpen = '';
+
+                    if (forumimproved_is_discussion_closed($forum, $d)) {
+                        $checkAttrClosed = 'checked';
+                    }
+                    elseif (forumimproved_is_discussion_hidden($forum, $d)) {
+                        $checkAttrHidden = 'checked';
+                    }
+                    else {
+                        $checkAttrOpen = 'checked';
+                    }
+
+                    $contextid = $this->page->context->id;
+
+                    $d->stateForm = "
+<form class='stateChanger' action='/mod/forumimproved/post.php' method='get'>
+    <div class='selectContainer'>
+        <div class='select' tabindex='-1'>
+            <input class='selectopt' name='state' value='" . FORUMIMPROVED_DISCUSSION_STATE_OPEN . "' type='radio' {$checkAttrOpen} id='openState{$d->id}'>
+            <label for='openState{$d->id}' class='option' data-toggle='tooltip' data-placement='right' title='{$titleOpenDiscussion}'><svg class='svg-icon'><use xlink:href='#icon-open'>
+                <desc>{$titleOpenDiscussion}</desc>
+            </use></svg></label>
+            <input class='selectopt' name='state' value='" . FORUMIMPROVED_DISCUSSION_STATE_CLOSE . "' type='radio' {$checkAttrClosed} id='closedState{$d->id}'>
+        <label for='closedState{$d->id}' class='option' data-toggle='tooltip' data-placement='right' title='{$titleCloseDiscussion}'><svg class='svg-icon'><use xlink:href='#icon-close'>
+                <desc>{$titleCloseDiscussion}</desc>
+            </use></svg></label>
+            <input class='selectopt' name='state' value='" . FORUMIMPROVED_DISCUSSION_STATE_HIDDEN . "' type='radio' {$checkAttrHidden} id='hiddenState{$d->id}'>
+            <label for='hiddenState{$d->id}' class='option' data-toggle='tooltip' data-placement='right' title='{$titleHideDiscussion}'><svg class='svg-icon'><use xlink:href='#icon-hide'>
+                <desc>{$titleHideDiscussion}</desc>
+            </use></svg></label>
+        </div>
+    </div>
+    <input type='hidden' name='contextid' value='{$contextid}'>
+    <input type='hidden' name='d' value='{$d->id}'>
+    <input type='hidden' name='fullthread' value='{$d->fullthread}'>
+    <input type='submit' value='Update'>
+</form>";
             }
             else {
-                $toggleStateButtonLabel = get_string('close_thread_title', 'forumimproved');
-            }
-            
-            if (has_capability('mod/forumimproved:close_discussion', $context)) {
-                if ($d->fullthread)
-                    $classBtnStateFullthread= 'btn btn-default';
-                else
-                    $classBtnStateFullthread= '';
-
-                $buttonToggleState = html_writer::link(
-                    new moodle_url('/mod/forumimproved/post.php', array(
-                        'close' => $d->id,
-                        'fullthread' => (int) $d->fullthread
-                    )),
-                    $toggleStateButtonLabel,
-                    array(
-                        'class' => 'forumimproved-toggle-state-link ' . $classBtnStateFullthread,
-                        'data-closed-text' => get_string('open_thread_title', 'forumimproved'),
-                        'data-open-text' => get_string('close_thread_title', 'forumimproved'),
-                    )
-                );
+                if (forumimproved_is_discussion_closed($forum, $d)) {
+                    $d->iconState = "<svg class='svg-icon' data-toggle='tooltip' data-placement='right' title='{$titleIsClosedDiscussion}'><use xlink:href='#icon-close'>
+                                        <desc>{$titleIsClosedDiscussion}</desc>
+                                    </use></svg>";
+                }
+                elseif (forumimproved_is_discussion_hidden($forum, $d)) {
+                    $d->iconState = "<svg class='svg-icon' data-toggle='tooltip' data-placement='right' title='{$titleIsHiddenDiscussion}'><use xlink:href='#icon-hide'>
+                                        <desc>{$titleIsHiddenDiscussion}</desc>
+                                    </use></svg>";
+                }
             }
         }
-        $stateLabel = '<small class="label label-warning">' . get_string('state_thread_close', 'forumimproved') . '</small>';
 
 
 
+
+        $d->threadtitle = $threadtitle;
+        $firstPost = $this->post_template($d, true);
+
+
+        if ($d->fullthread) {
+            return <<<HTML
+<article id="p{$d->postid}" class="forumimproved-thread forumimproved-post-target clearfix {$classStateDiscussion}"
+    data-discussionid="$d->id" data-postid="$d->postid" data-author="$author" data-isdiscussion="true" $attrs>
+
+    $firstPost
+
+    <div id="forumimproved-thread-{$d->id}" class="forumimproved-thread-body">
+        <!-- specific to blog style -->
+        $d->posts
+        $d->replyform
+    </div>
+</article>
+HTML;
+        }
 
 
 
         return <<<HTML
-<article id="p{$d->postid}" class="forumimproved-thread forumimproved-post-target clearfix {$classClosedDiscussion}" role="article"
+<article id="p{$d->postid}" class="forumimproved-thread forumimproved-post-target clearfix {$classStateDiscussion}"
     data-discussionid="$d->id" data-postid="$d->postid" data-author="$author" data-isdiscussion="true" $attrs>
     <header id="h{$d->postid}" class="clearfix $unreadclass">
         $threadmeta
 
         <div>
-            <h4 id="thread-title-{$d->id}">$stateLabel $threadtitle</h4>
+            <div class="clearfixLeft">
+                $d->stateForm
+                <h4 id="thread-title-{$d->id}">$d->iconState $threadtitle</h4>
+            </div>
             <p>by $byuser $group $revealed &mdash; $datecreated</p>
-            <p class="btnToogleStateLine">$buttonToggleState</p>
         </div>
 
         <div class="forumimproved-thread-content">
@@ -616,13 +743,6 @@ CSS;
         </div>
         $tools
     </header>
-
-    <div id="forumimproved-thread-{$d->id}" class="forumimproved-thread-body">
-        <!-- specific to blog style -->
-        $blogmeta
-        $d->posts
-        $d->replyform
-    </div>
 </article>
 HTML;
     }
@@ -655,11 +775,11 @@ HTML;
                 forumimproved_mark_post_read($USER->id, $parent, $forum->id);
             }
         }
-        $output  = "<h5 role='heading' aria-level='5'>".forumimproved_xreplies($count)."</h5>";
+        $output = '';
         if (!empty($count)) {
-            $output .= "<ol class='forumimproved-thread-replies-list'>".$items."</ol>";
+            return "<div class='forumimproved-thread-replies'><ol class='forumimproved-thread-replies-list'>".$items."</ol></div>";
         }
-        return "<div class='forumimproved-thread-replies'>".$output."</div>";
+        return '';
     }
 
     /**
@@ -684,11 +804,15 @@ HTML;
             $html = $this->post($cm, $discussion, $post, $canreply, $parent, array(), $depth);
             if (!empty($html)) {
                 $count++;
-                $output .= "<li class='forumimproved-post depth$depth' data-depth='$depth' data-count='$count'>".$html."</li>";
+                $output .= "<li class='forumimproved-post depth$depth' data-depth='$depth' data-count='$count'>".$html;
 
                 if (!empty($post->children)) {
+                    $output .= '<ol class="forumimproved-thread-replies-list">';
                     $output .= $this->post_walker($cm, $discussion, $posts, $post, $canreply, $count, ($depth + 1));
+                    $output .= '</ol>';
                 }
+
+                $output .= "</li>";
             }
         }
         return $output;
@@ -701,50 +825,24 @@ HTML;
      *  1. Standard post
      *  2. Reply to user
      *  3. Private reply to user
+     *  4. Start of a discussion
      *
      * @param object $p
+     * @param bool   $isFirstPost
      * @return string
      */
-    public function post_template($p) {
+    public function post_template($p, $isFirstPost = false) {
         global $PAGE;
 
         $byuser = $p->fullname;
         if (!empty($p->userurl)) {
             $byuser = html_writer::link($p->userurl, $p->fullname);
         }
-        $byline = get_string('postbyx', 'forumimproved', $byuser);
-        if ($p->isreply) {
-            $parent = $p->parentfullname;
-            if (!empty($p->parentuserurl)) {
-                $parent = html_writer::link($p->parentuserurl, $p->parentfullname);
-            }
-            if (empty($p->parentuserpic)) {
-                $byline = get_string('replybyx', 'forumimproved', $byuser);
-            } else {
-                $byline = get_string('postbyxinreplytox', 'forumimproved', array(
-                        'parent' => $p->parentuserpic.$parent,
-                        'author' => $byuser,
-                        'parentpost' => "<a title='".get_string('parentofthispost', 'forumimproved')."' class='forumimproved-parent-post-link disable-router' href='$p->parenturl'><span class='accesshide'>".get_string('parentofthispost', 'forumimproved')."</span>↑</a>"
-                ));
-            }
-            if (!empty($p->privatereply)) {
-                if (empty($p->parentuserpic)) {
-                    $byline = get_string('privatereplybyx', 'forumimproved', $byuser);
-                } else {
-                    $byline = get_string('postbyxinprivatereplytox', 'forumimproved', array(
-                            'author' => $byuser,
-                            'parent' => $p->parentuserpic.$parent
-                        ));
-                }
-            }
-        } else if (!empty($p->privatereply)) {
-            $byline = get_string('privatereplybyx', 'forumimproved', $byuser);
-        }
 
         $author = s(strip_tags($p->fullname));
         $unread = '';
         $unreadclass = '';
-        if ($p->unread) {
+        if ($p->unread && !$isFirstPost) {
             $unread = "<span class='forumimproved-unreadcount'>".get_string('unread', 'forumimproved')."</span>";
             $unreadclass = "forumimproved-post-unread";
         }
@@ -753,9 +851,34 @@ HTML;
 
 
         $postreplies = '';
-        if($p->replycount) {
+        if (!$isFirstPost && $p->replycount) {
             $postreplies = "<div class='post-reply-count accesshide'>$p->replycount</div>";
         }
+
+        $firstPostCountReplies = '<p class="forumimproved-count-replies">';
+        if ($isFirstPost && $p->replies) {
+            $firstPostCountReplies .= forumimproved_xreplies($p->replies);
+        }
+        if (
+            ($isFirstPost && $p->replies)
+            || ( !$isFirstPost && ((int)$p->replycount) > 0 )
+        ){
+            $firstPostCountReplies .= ' ' . html_writer::tag(
+                'svg',
+                '<use xlink:href="#collapse"/>',
+                array(
+                    'class' => 'collapse-icon svg-icon inlineJs',
+                    'data-toggle' => 'tooltip',
+                    'data-placement' => 'top',
+                    'data-title-collapse' => get_string('title-replies-collapse', 'forumimproved'),
+                    'title' => get_string('title-replies-collapse', 'forumimproved'),
+                    'data-title-uncollapse' => get_string('title-replies-uncollapse', 'forumimproved')
+                )
+            );
+        }
+        $firstPostCountReplies .= '</p>';
+
+
 
         $newwindow = '';
         if ($PAGE->pagetype === 'local-joulegrader-view') {
@@ -768,28 +891,49 @@ HTML;
             $revealed = '<span class="label label-danger">'.$nonanonymous.'</span>';
         }
 
- return <<<HTML
-<div class="forumimproved-post-wrapper forumimproved-post-target clearfix $unreadclass" id="p$p->id" data-postid="$p->id" data-discussionid="$p->discussionid" data-author="$author" data-ispost="true" tabindex="-1">
+        $group = '';
+        if (!empty($p->group)) {
+            $group = $p->group;
+        }
 
-    <div class="forumimproved-post-figure">
+        $subscribe = '';
+        if ($isFirstPost) {
+            $subscribe = $p->subscribe;
+        }
 
-        <img class="userpicture" src="{$p->imagesrc}" alt="">
+        if ($isFirstPost) {
 
-    </div>
+            $html = <<<HTML
+<div class='forumimproved-post-wrapper forumimproved-post-target clearfix firstpost {$unreadclass}' data-discussionid='{$p->id}' data-author='{$author}' data-ispost='true'>
+
+    <p class="forumimproved-thread-flags">{$subscribe} {$p->postflags}</p>
+
+    <header class="topic-header clearfix">
+        {$p->stateForm}
+        <h3 id="thread-title-{$p->id}">{$p->iconState} {$p->threadtitle}</h3>
+    </header>
+HTML;
+
+        }
+        else {
+            $html = "<div class='forumimproved-post-wrapper forumimproved-post-target clearfix $unreadclass' id='p$p->id' data-postid='$p->id' data-discussionid='$p->discussionid' data-author='$author' data-ispost='true'>
+    <p class='forumimproved-thread-flags'>$subscribe $p->postflags</p>";
+        }
+
+
+ return $html . <<<HTML
+    <img class="userpicture" src="{$p->imagesrc}" alt="">
+
     <div class="forumimproved-post-body">
-        <h6 role="heading" aria-level="6" class="forumimproved-post-byline" id="forumimproved-post-$p->id">
-            $unread $byline $revealed
-        </h6>
-        <small class='improvedform-post-date'><a href="$p->permalink" class="disable-router"$newwindow>$datecreated</a></small>
+        <p class="forumimproved-thread-meta">$unread $byuser $group $revealed <span class="forumimproved-post-time">$datecreated</span></p>
 
         <div class="forumimproved-post-content">
-            <div class="forumimproved-post-title">$p->subject</div>
-                $p->message
+            $p->message
         </div>
         <div role="region" class='forumimproved-tools' aria-label='$options'>
-            <div class="forumimproved-postflagging">$p->postflags</div>
             $p->tools
         </div>
+        $firstPostCountReplies
         $postreplies
     </div>
 </div>
@@ -1135,17 +1279,6 @@ HTML;
 
     /**
      * @param stdClass $post
-     * @return string
-     */
-    public function raw_post_subject($post) {
-        if (empty($post->subjectnoformat)) {
-            return format_string($post->subject);
-        }
-        return $post->subject;
-    }
-
-    /**
-     * @param stdClass $post
      * @param stdClass $cm
      * @return string
      * @author Mark Nielsen
@@ -1412,6 +1545,7 @@ HTML;
                 get_string('reveal', 'forumimproved'));
         }
         $data += array(
+            'subject'     => true,
             'postid'      => $postid,
             'context'     => $context,
             'forum'       => $forum,
@@ -1503,7 +1637,7 @@ HTML;
             'class'           => 'forumimproved-reply',
             'legend'          => $legend,
             'extrahtml'       => $extrahtml,
-            'subjectrequired' => $isedit,
+            'subjectrequired' => false, # $isedit,
             'advancedurl'     => new moodle_url('/mod/forumimproved/post.php', array($param => $postid)),
         );
 
@@ -1525,7 +1659,7 @@ HTML;
 
         $required = get_string('required');
         $subjectlabeldefault = get_string('subject', 'forumimproved');
-        if (!array_key_exists('subjectrequired', $t) || $t['subjectrequired'] === true) {
+        if (!array_key_exists('subject', $t) || !empty($t['subject'])) {
             $subjectlabeldefault .= " ($required)";
         }
 
@@ -1535,7 +1669,6 @@ HTML;
             'hidden'             => '',
             'subject'            => '',
             'subjectlabel'       => $subjectlabeldefault,
-            'subjectrequired'    => true,
             'subjectplaceholder' => get_string('subjectplaceholder', 'forumimproved'),
             'message'            => '',
             'messagelabel'       => get_string('message', 'forumimproved')." ($required)",
@@ -1550,6 +1683,11 @@ HTML;
             'thresholdblocked'   => '' ,
         );
 
+        $displaySubject = false;
+        if ($t['subject'] === true) {
+            $displaySubject = true;
+            $t['subject'] = '';
+        }
 
         $t            = (object) $t;
         $legend       = s($t->legend);
@@ -1562,9 +1700,13 @@ HTML;
         $attachments  = new \mod_forumimproved\attachments($t->forum, $t->context);
         $canattach    = $attachments->attachments_allowed();
 
-        $subjectrequired = '';
-        if ($t->subjectrequired) {
-            $subjectrequired = 'required="required"';
+        $subjectField = '';
+        if ($displaySubject || !empty($subject)) {
+            $subjectField = '
+                <label>
+                    <span class="accesshide">' . $t->subjectlabel . '</span>
+                    <input type="text" placeholder="' . $t->subjectplaceholder . '" name="subject" class="form-control" required="required" spellcheck="true" value="' . $subject . '" maxlength="255" />
+                </label>';
         }
         if (!empty($t->postid) && $canattach) {
             foreach ($attachments->get_attachments($t->postid) as $file) {
@@ -1596,10 +1738,7 @@ HTML;
                 $t->userpicture
             </div>
             <div class="forumimproved-post-body">
-                <label>
-                    <span class="accesshide">$t->subjectlabel</span>
-                    <input type="text" placeholder="$t->subjectplaceholder" name="subject" class="form-control" $subjectrequired spellcheck="true" value="$subject" maxlength="255" />
-                </label>
+                $subjectField
                 <textarea name="message" class="hidden"></textarea>
                 <div data-placeholder="$t->messageplaceholder" aria-label="$messagelabel" contenteditable="true" required="required" spellcheck="true" role="textbox" aria-multiline="true" class="forumimproved-textarea">$t->message</div>
 
@@ -1675,6 +1814,11 @@ HTML;
         $forum = forumimproved_get_cm_forum($cm);
 
         $postuser   = forumimproved_extract_postuser($post, $forum, context_module::instance($cm->id));
+
+        $rating = $this->post_rating($post);
+        if (!empty($rating)) {
+            $commands['rating'] = $rating;
+        }
 
         if ($canreply and empty($post->privatereply)) {
             $replytitle = get_string('replybuttontitle', 'forumimproved', strip_tags($postuser->fullname));
@@ -1763,7 +1907,7 @@ HTML;
                     'title' => $votetitle,
                     'class' => $classes,
                     'data-toggle' => 'tooltip',
-                    'data-placement' => 'bottom',
+                    'data-placement' => 'top',
                     'data-text-vote' => get_string('votebuttontitle', 'forumimproved', strip_tags($postuser->fullname)),
                     'data-text-has-vote' => get_string('hasVotebuttontitle', 'forumimproved', strip_tags($postuser->fullname))
                 )
@@ -1793,7 +1937,7 @@ HTML;
                 array(
                     'class' => $spanClass,
                     'data-toggle' => 'tooltip',
-                    'data-placement' => 'bottom',
+                    'data-placement' => 'top',
                     'title' => get_string('show-voters-link-title', 'forumimproved'),
                 )
             );
@@ -1867,18 +2011,48 @@ HTML;
      //fill="#FFFFFF"
     public function svg_sprite() {
         return '<svg style="display:none" x="0px" y="0px"
-             viewBox="0 0 100 100" enable-background="new 0 0 100 100">
-        <g id="substantive">
-            <polygon points="49.9,3.1 65,33.8 99,38.6 74.4,62.6 80.2,96.3 49.9,80.4 19.7,96.3 25.4,62.6
-            0.9,38.6 34.8,33.8 "/>
-        </g>
-        <g id="bookmark">
-            <polygon points="88.7,93.2 50.7,58.6 12.4,93.2 12.4,7.8 88.7,7.8 "/>
-        </g>
-        <g id="subscribe">
-	       <polygon  enable-background="new    " points="96.7,84.3 3.5,84.3 3.5,14.8 50.1,49.6 96.7,14.8 	"/>
-           <polygon  points="3.5,9.8 96.7,9.8 50.2,44.5 	"/>
-        </g>
+             viewBox="0 0 100 100" enable-background="new 0 0 100 100" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <defs>
+                <symbol id="icon-open" viewBox="0 0 32 32">
+                    <title>open</title>
+                    <path class="path1" d="M24 2c3.308 0 6 2.692 6 6v6h-4v-6c0-1.103-0.897-2-2-2h-4c-1.103 0-2 0.897-2 2v6h0.5c0.825 0 1.5 0.675 1.5 1.5v15c0 0.825-0.675 1.5-1.5 1.5h-17c-0.825 0-1.5-0.675-1.5-1.5v-15c0-0.825 0.675-1.5 1.5-1.5h12.5v-6c0-3.308 2.692-6 6-6h4z"></path>
+                </symbol>
+                <symbol id="icon-close" viewBox="0 0 32 32">
+                    <title>close</title>
+                    <path class="path1" d="M18.5 14h-0.5v-6c0-3.308-2.692-6-6-6h-4c-3.308 0-6 2.692-6 6v6h-0.5c-0.825 0-1.5 0.675-1.5 1.5v15c0 0.825 0.675 1.5 1.5 1.5h17c0.825 0 1.5-0.675 1.5-1.5v-15c0-0.825-0.675-1.5-1.5-1.5zM6 8c0-1.103 0.897-2 2-2h4c1.103 0 2 0.897 2 2v6h-8v-6z"></path>
+                </symbol>
+                <symbol id="icon-hide" viewBox="0 0 32 32">
+                    <title>hide</title>
+                    <path class="path1" d="M29.561 0.439c-0.586-0.586-1.535-0.586-2.121 0l-6.318 6.318c-1.623-0.492-3.342-0.757-5.122-0.757-6.979 0-13.028 4.064-16 10 1.285 2.566 3.145 4.782 5.407 6.472l-4.968 4.968c-0.586 0.586-0.586 1.535 0 2.121 0.293 0.293 0.677 0.439 1.061 0.439s0.768-0.146 1.061-0.439l27-27c0.586-0.586 0.586-1.536 0-2.121zM13 10c1.32 0 2.44 0.853 2.841 2.037l-3.804 3.804c-1.184-0.401-2.037-1.521-2.037-2.841 0-1.657 1.343-3 3-3zM3.441 16c1.197-1.891 2.79-3.498 4.67-4.697 0.122-0.078 0.246-0.154 0.371-0.228-0.311 0.854-0.482 1.776-0.482 2.737 0 1.715 0.54 3.304 1.459 4.607l-1.904 1.904c-1.639-1.151-3.038-2.621-4.114-4.323z"></path>
+                    <path class="path2" d="M24 13.813c0-0.849-0.133-1.667-0.378-2.434l-10.056 10.056c0.768 0.245 1.586 0.378 2.435 0.378 4.418 0 8-3.582 8-8z"></path>
+                    <path class="path3" d="M25.938 9.062l-2.168 2.168c0.040 0.025 0.079 0.049 0.118 0.074 1.88 1.199 3.473 2.805 4.67 4.697-1.197 1.891-2.79 3.498-4.67 4.697-2.362 1.507-5.090 2.303-7.889 2.303-1.208 0-2.403-0.149-3.561-0.439l-2.403 2.403c1.866 0.671 3.873 1.036 5.964 1.036 6.978 0 13.027-4.064 16-10-1.407-2.81-3.504-5.2-6.062-6.938z"></path>
+                </symbol>
+                <symbol id="chevron-up" viewBox="0 0 32 32">
+                    <path d="M.15524405 22.3029L14.219321 10.3265c.986435-.8405 2.5747-.8405 3.561135 0l14.0643 11.9773" stroke-linecap="round" stroke-linejoin="round"></path>
+                </symbol>
+                <symbol id="chevron-down" viewBox="0 0 32 32">
+                    <path d="M.15524405 22.3029L14.219321 10.3265c.986435-.8405 2.5747-.8405 3.561135 0l14.0643 11.9773" stroke-linecap="round" stroke-linejoin="round" transform="translate(32,32) scale(-1, -1)"></path>
+                </symbol>
+            </defs>
+            <g id="substantive">
+                <polygon points="49.9,3.1 65,33.8 99,38.6 74.4,62.6 80.2,96.3 49.9,80.4 19.7,96.3 25.4,62.6
+                0.9,38.6 34.8,33.8 "/>
+            </g>
+            <g id="bookmark">
+                <polygon points="88.7,93.2 50.7,58.6 12.4,93.2 12.4,7.8 88.7,7.8 "/>
+            </g>
+            <g id="subscribe">
+               <polygon enable-background="new" points="96.7,84.3 3.5,84.3 3.5,14.8 50.1,49.6 96.7,14.8"/>
+               <polygon points="3.5,9.8 96.7,9.8 50.2,44.5"/>
+            </g>
+            <g id="collapse">
+                <use xlink:href="#chevron-up"/>
+                <use xlink:href="#chevron-up" y="25%"/>
+            </g>
+            <g id="uncollapse">
+                <use xlink:href="#chevron-down"/>
+                <use xlink:href="#chevron-down" y="25%"/>
+            </g>
         </svg>';
     }
 }

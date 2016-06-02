@@ -232,6 +232,7 @@ $string['forumimproved:viewrating'] = 'View the total rating you received';
 $string['forumimproved:viewsubscribers'] = 'View subscribers';
 $string['forumimproved:viewposters'] = 'View forum posters';
 $string['forumimproved:allowprivate'] = 'Allow user to respond privately';
+$string['forumimproved:viewhiddendiscussion'] = 'View hidden discussions';
 $string['generalforum'] = 'Standard forum for general use';
 $string['generalforums'] = 'General forums';
 $string['hiddenforumpost'] = 'Hidden forum post';
@@ -402,7 +403,6 @@ $string['searchnotwords'] = 'These words should NOT be included';
 $string['searcholderposts'] = 'Search older posts...';
 $string['searchphrase'] = 'This exact phrase must appear in the post';
 $string['searchresults'] = 'Search results';
-$string['searchsubject'] = 'These words should be in the subject';
 $string['searchuser'] = 'This name should match the author';
 $string['searchuserid'] = 'The Moodle ID of the author';
 $string['searchwhichforums'] = 'Choose which forums to search';
@@ -594,7 +594,7 @@ $string['loadmorediscussions'] = 'Load more discussions';
 $string['validationerrorx'] = 'There was an error with your submission: {$a}';
 $string['validationerrorsx'] = 'There were {$a->count} errors with your submission: {$a->errors}';
 $string['messageisrequired'] = 'The message is required';
-$string['subjectisrequired'] = 'The subject is required';
+$string['discnameisrequired'] = 'The subject is required';
 $string['replytox'] = 'Reply to {$a}';
 $string['addareply'] = 'Add your reply';
 $string['submit'] = 'Submit';
@@ -632,6 +632,8 @@ $string['manageforumsubscriptions'] = 'Manage forum subscriptions';
 $string['nonanonymous'] = 'Non anonymously';
 $string['hiderecentposts'] = 'Hide recent Posts';
 $string['confighiderecentposts'] = 'Set to yes to stop the display of recent forum posts on the course page.';
+$string['hideuserpicture'] = 'Hide user pictures';
+$string['confighideuserpicture'] = 'Set to yes to stop the display of user pictures.';
 
 
 // Rights labels
@@ -674,14 +676,25 @@ Avoid the colors too close to the background : the color blinds can have difficu
 
 
 
-// Close / open discussion
-$string['enable_close_disc'] = 'Allow the close of discussions';
-$string['enable_close_disc_help'] = 'When a discussion is closed, nobody can reply. But votes are enabled and works.';
-$string['close_thread_title'] = 'Close discussion';
-$string['open_thread_title'] = 'Reopen discussion';
-$string['state_thread_close'] = 'Closed';
+// State discussion
+$string['enable_states_disc'] = 'Allow to close or hide of discussions';
+$string['enable_states_disc_help'] = 'When a discussion is closed, nobody can replay of vote.<br/>
+When a discussion is hidden, nobody can reply ou vote and no students can view see the discussion.';
 $string['discussion_closed'] = 'The discussion is closed';
-$string['popularity_text'] = '{$a} votes (+1)';
+$string['discussion_hidden'] = 'The discussion is hidden';
+$string['popularity_text'] = '{$a} votes';
+
+$string['title_open_discussion'] = 'Open this discussion';
+$string['title_close_discussion'] = 'Close this discussion';
+$string['title_hide_discussion'] = 'Hide this discussion to students';
+$string['title_is_closed_discussion'] = 'Discussion closed';
+$string['title_is_hidden_discussion'] = 'Discussion hidden to students';
+
+
+
+// Collapse replies
+$string['title-replies-collapse'] = 'Collapse replies';
+$string['title-replies-uncollapse'] = 'Uncollapse replies';
 
 
 

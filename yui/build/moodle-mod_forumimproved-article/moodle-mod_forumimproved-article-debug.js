@@ -9,6 +9,7 @@ var CSS = {
         ADD_DISCUSSION: '#newdiscussionform',
         ADD_DISCUSSION_TARGET: '.forumimproved-add-discussion-target',
         ALL_FORMS: '.forumimproved-reply-wrapper form',
+        CANONIC_REPLY_FORM: '.forumimproved-footer-reply',
         CONTAINER: '.mod-forumimproved-posts-container',
         CONTAINER_LINKS: '.mod-forumimproved-posts-container a',
         DISCUSSION: '.forumimproved-thread',
@@ -359,16 +360,6 @@ var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
     },
 
     /**
-     * View voter for a post
-     *
-     * @method whovote
-     * @param {Object} req
-     */
-    whovote: function(req) {
-        this.get('article').showVoters(req.query.postid);
-    },
-
-    /**
      * Focus hashed element.
      *
      * @param el
@@ -501,7 +492,6 @@ var ROUTER = Y.Base.create('forumimprovedRouter', Y.Router, [], {
                 { path: '/view.php', callbacks: ['hideForms'] },
                 { path: '/discuss.php', callbacks: ['hideForms', 'discussion'] },
                 { path: '/post.php', callbacks: ['hideForms', 'post'] },
-                { path: '/whovote.php', callbacks: ['whovote'] }
             ]
         }
     }
@@ -720,6 +710,18 @@ Y.extend(FORM, Y.Base,
         },
 
         /**
+         * Displays the reply form for the current discussion
+         *
+         * @method _displayCanonicReplyForm
+         * @private
+         */
+        _displayCanonicReplyForm: function() {
+            var template = Y.one(SELECTORS.CANONIC_REPLY_FORM);
+            console.log(template);
+            template.setStyle('display', 'block');
+        },
+
+        /**
          * Copies the content editable message into the
          * text area so it can be submitted by the form.
          *
@@ -789,10 +791,17 @@ Y.extend(FORM, Y.Base,
 
             Y.all(SELECTORS.POSTS + ' ' + SELECTORS.FORM_REPLY_WRAPPER).each(function(node) {
                 // Don't removing forms for editing, for safety.
-                if (!node.ancestor(SELECTORS.DISCUSSION_EDIT) && !node.ancestor(SELECTORS.POST_EDIT)) {
+                if (
+                    !node.ancestor(SELECTORS.DISCUSSION_EDIT)
+                     && !node.ancestor(SELECTORS.POST_EDIT)
+                     && !node.ancestor(SELECTORS.CANONIC_REPLY_FORM)
+                ) {
                     node.remove(true);
                 }
             });
+
+            if (Y.one(SELECTORS.CANONIC_REPLY_FORM))
+                Y.one(SELECTORS.CANONIC_REPLY_FORM).setStyle('display', 'none');
 
             var node = Y.one(SELECTORS.ADD_DISCUSSION_TARGET);
             if (node !== null) {
@@ -817,7 +826,10 @@ Y.extend(FORM, Y.Base,
                 node.removeClass(CSS.POST_EDIT)
                     .removeClass(CSS.DISCUSSION_EDIT);
             }
-            e.target.ancestor(SELECTORS.FORM_REPLY_WRAPPER).remove(true);
+
+            if (!e.target.ancestor(SELECTORS.CANONIC_REPLY_FORM) ) {
+                e.target.ancestor(SELECTORS.FORM_REPLY_WRAPPER).remove(true);
+            }
 
             this.fire(EVENTS.FORM_CANCELED, {
                 discussionid: node.getData('discussionid'),
@@ -869,6 +881,10 @@ Y.extend(FORM, Y.Base,
             if (postNode.hasAttribute('data-ispost')) {
                 this._displayReplyForm(postNode);
             }
+            else {
+                this._displayCanonicReplyForm();
+            }
+
             postNode.one(SELECTORS.EDITABLE_MESSAGE).focus();
         },
 
@@ -1107,12 +1123,20 @@ Y.extend(ARTICLE, Y.Base,
             form.on(EVENTS.POST_CREATED, dom.handleNotification, dom);
             form.on(EVENTS.POST_CREATED, router.handleViewDiscussion, router);
             form.on(EVENTS.POST_CREATED, this.handleLiveLog, this);
+            form.on(EVENTS.POST_CREATED, this.jQueryBridge, {
+                element : document.body,
+                event: EVENTS.POST_CREATED
+            });
 
             // On post updated, update HTML and URL and log.
             form.on(EVENTS.POST_UPDATED, dom.handleUpdateDiscussion, dom);
             form.on(EVENTS.POST_UPDATED, router.handleViewDiscussion, router);
             form.on(EVENTS.POST_UPDATED, dom.handleNotification, dom);
             form.on(EVENTS.POST_UPDATED, this.handleLiveLog, this);
+            form.on(EVENTS.POST_UPDATED, this.jQueryBridge, {
+                element : document.body,
+                event: EVENTS.POST_UPDATED
+            });
 
             // On discussion created, update HTML, display notification, update URL and log it.
             form.on(EVENTS.DISCUSSION_CREATED, dom.handleUpdateDiscussion, dom);
@@ -1120,20 +1144,36 @@ Y.extend(ARTICLE, Y.Base,
             form.on(EVENTS.DISCUSSION_CREATED, dom.handleNotification, dom);
             form.on(EVENTS.DISCUSSION_CREATED, router.handleViewDiscussion, router);
             form.on(EVENTS.DISCUSSION_CREATED, this.handleLiveLog, this);
+            form.on(EVENTS.DISCUSSION_CREATED, this.jQueryBridge, {
+                element : document.body,
+                event: EVENTS.DISCUSSION_CREATED
+            });
 
             // On discussion delete, update HTML (may redirect!), display notification and log it.
             this.on(EVENTS.DISCUSSION_DELETED, dom.handleDiscussionDeleted, dom);
             this.on(EVENTS.DISCUSSION_DELETED, dom.handleNotification, dom);
             this.on(EVENTS.DISCUSSION_DELETED, this.handleLiveLog, this);
+            this.on(EVENTS.DISCUSSION_DELETED, this.jQueryBridge, {
+                element : document.body,
+                event: EVENTS.DISCUSSION_DELETED
+            });
 
             // On post deleted, update HTML, URL and log.
             this.on(EVENTS.POST_DELETED, dom.handleUpdateDiscussion, dom);
             this.on(EVENTS.POST_DELETED, router.handleViewDiscussion, router);
             this.on(EVENTS.POST_DELETED, dom.handleNotification, dom);
             this.on(EVENTS.POST_DELETED, this.handleLiveLog, this);
+            this.on(EVENTS.POST_DELETED, this.jQueryBridge, {
+                element : document.body,
+                event: EVENTS.POST_DELETED
+            });
 
             // On form cancel, update the URL to view the discussion/post.
             form.on(EVENTS.FORM_CANCELED, router.handleViewDiscussion, router);
+            form.on(EVENTS.FORM_CANCELED, this.jQueryBridge, {
+                element : document.body,
+                event: EVENTS.FORM_CANCELED
+            });
         },
 
         /**
@@ -1272,38 +1312,6 @@ Y.extend(ARTICLE, Y.Base,
         },
 
         /**
-         * show votes for a post in a popup
-         *
-         * @method showVoters
-         * @param postid
-         */
-        showVoters: function(postid) {
-            var link = Y.one(SELECTORS.VOTERS_LINK_BY_POST_ID.replace('%d', postid));
-
-            if (link === null) {
-                return;
-            }
-
-            var args = {
-                'url': link.getAttribute('href'),
-                'name': 'showVoters',
-                'options': 'height=400,width=600,top=0,left=0,menubar=0,location=0,scrollbars,resizable,toolbar,status,directories=0,fullscreen=0,dependent'
-            };
-
-            if (args.url.indexOf('?') === -1) {
-                args.url += '?popup=1';
-            }
-            else {
-                args.url += '&popup=1';
-            }
-
-            if (openpopup.apply(link, [null, args])) {
-                // window not open :3
-                location.href = link.getAttribute('href');
-            }
-        },
-
-        /**
          * toggle the state (open / closed) of a discussion
          *
          * @method toogleDiscussionState
@@ -1352,6 +1360,17 @@ Y.extend(ARTICLE, Y.Base,
                     }
                 }
             }, this);
+        },
+
+        /**
+         * hack to transmit event to jQuery
+         *
+         * @method jQueryBridge
+         */
+        jQueryBridge: function() {
+            if (typeof window.jQuery != undefined) {
+                jQuery(this.element).trigger(this.event);
+            }
         }
     }
 );

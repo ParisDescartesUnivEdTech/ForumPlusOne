@@ -57,6 +57,11 @@ if ($discussionsonly) {
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('standard');
 
+$config = get_config('forumimproved');
+if (!empty($config->hideuserpicture) && $config->hideuserpicture) {
+    $PAGE->add_body_class('forumimproved-nouserpicture');
+}
+
 if ($page != 0) {
     $url->param('page', $page);
 }

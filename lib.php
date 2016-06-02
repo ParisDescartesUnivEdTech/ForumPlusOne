@@ -47,6 +47,7 @@ define('FORUMIMPROVED_MAILED_ERROR', 2);
 
 define('FORUMIMPROVED_DISCUSSION_STATE_OPEN', 0);
 define('FORUMIMPROVED_DISCUSSION_STATE_CLOSE', 1);
+define('FORUMIMPROVED_DISCUSSION_STATE_HIDDEN', 2);
 
 define('FORUMIMPROVED_COUNT_MODE_RECURSIVE', 0);
 define('FORUMIMPROVED_COUNT_MODE_FIRST_POST', 1);
@@ -241,7 +242,6 @@ function forumimproved_update_instance($forum, $mform) {
         $modcontext = context_module::instance($cm->id, MUST_EXIST);
 
         $post = $DB->get_record('forumimproved_posts', array('id'=>$discussion->firstpost), '*', MUST_EXIST);
-        $post->subject       = $forum->name;
         $post->message       = $forum->intro;
         $post->messageformat = $forum->introformat;
         $post->messagetrust  = trusttext_trusted($modcontext);
@@ -797,7 +797,7 @@ function forumimproved_cron() {
                 $a = new stdClass();
                 $a->courseshortname = $shortname;
                 $a->forumname = $cleanforumname;
-                $a->subject = format_string($post->subject, true);
+                $a->subject = format_string($discussion->name, true);
                 $postsubject = html_to_text(get_string('postmailsubject', 'forumimproved', $a));
                 $posttext = forumimproved_make_mail_text($course, $cm, $forum, $discussion, $post, $userfrom, $userto);
                 $posthtml = forumimproved_make_mail_html($course, $cm, $forum, $discussion, $post, $userfrom, $userto);
@@ -850,7 +850,7 @@ function forumimproved_cron() {
                     }
                 }
 
-                mtrace('post '.$post->id. ': '.$post->subject);
+                mtrace('post '.$post->id);
             }
 
             // mark processed posts as read
@@ -861,7 +861,7 @@ function forumimproved_cron() {
 
     if ($posts) {
         foreach ($posts as $post) {
-            mtrace($mailcount[$post->id]." users were sent post $post->id, '$post->subject'");
+            mtrace($mailcount[$post->id]." users were sent post $post->id");
             if ($errorcount[$post->id]) {
                 $DB->set_field('forumimproved_posts', 'mailed', FORUMIMPROVED_MAILED_ERROR, array('id' => $post->id));
             }
@@ -1100,14 +1100,14 @@ function forumimproved_cron() {
                             $by = new stdClass();
                             $by->name = fullname($postuser);
                             $by->date = userdate($post->modified);
-                            $posttext .= "\n".format_string($post->subject,true).' '.get_string("bynameondate", "forumimproved", $by);
+                            $posttext .= "\n".get_string("bynameondate", "forumimproved", $by);
                             $posttext .= "\n---------------------------------------------------------------------";
 
 
                             if (!forumimproved_is_anonymous_user($postuser)) {
                                 $by->name = "<a target=\"_blank\" href=\"$CFG->wwwroot/user/view.php?id=$postuser->id&amp;course=$course->id\">$by->name</a>";
                             }
-                            $posthtml .= '<div><a target="_blank" href="'.$CFG->wwwroot.'/mod/forumimproved/discuss.php?d='.$discussion->id.'#p'.$post->id.'">'.format_string($post->subject,true).'</a> '.get_string("bynameondate", "forumimproved", $by).'</div>';
+                            $posthtml .= '<div><a target="_blank" href="'.$CFG->wwwroot.'/mod/forumimproved/discuss.php?d='.$discussion->id.'#p'.$post->id.'">'.get_string("bynameondate", "forumimproved", $by).'</a></div>';
 
                         } else {
                             // The full treatment
@@ -1243,7 +1243,7 @@ function forumimproved_make_mail_text($course, $cm, $forum, $discussion, $post, 
     $posttext .= "\n";
     $posttext .= $CFG->wwwroot.'/mod/forumimproved/discuss.php?d='.$discussion->id;
     $posttext .= "\n---------------------------------------------------------------------\n";
-    $posttext .= format_string($post->subject,true);
+    $posttext .= format_string($discussion->name,true);
     if ($bare) {
         $posttext .= " ($CFG->wwwroot/mod/forumimproved/discuss.php?d=$discussion->id#p$post->id)";
     }
@@ -1671,8 +1671,8 @@ function forumimproved_recent_activity($course, $viewfullnames, $timestart, $for
         $limitnum = 6;
     }
     $allnamefields = user_picture::fields('u', null, 'duserid');
-    $sql = "SELECT p.*, f.anonymous as forumanonymous, f.type AS forumtype,
-                   d.forum, d.groupid, d.timestart, d.timeend, $allnamefields
+    $sql = "SELECT p.*, f.anonymous as forumanonymous, f.type AS forumtype, f.enable_states_disc,
+                   d.forum, d.groupid, d.timestart, d.timeend, d.state, d.name, $allnamefields
               FROM {forumimproved_posts} p
               JOIN {forumimproved_discussions} d ON d.id = p.discussion
               JOIN {forumimproved} f             ON f.id = d.forum
@@ -1709,6 +1709,10 @@ function forumimproved_recent_activity($course, $viewfullnames, $timestart, $for
             continue;
         }
 
+        if (forumimproved_is_discussion_hidden($post, $post) && !has_capability('mod/forumimproved:viewhiddendiscussion', $context)) {
+            continue;
+        }
+
         if (!empty($config->enabletimedposts) and $USER->id != $post->duserid
           and (($post->timestart > 0 and $post->timestart > time()) or ($post->timeend > 0 and $post->timeend < time()))) {
             if (!has_capability('mod/forumimproved:viewhiddentimedposts', $context)) {
@@ -1732,7 +1736,7 @@ function forumimproved_recent_activity($course, $viewfullnames, $timestart, $for
             }
 
             $postusername = fullname($postuser, $viewfullnames);
-            $postsubject = break_up_long_words(format_string($post->subject, true));
+            $postsubject = break_up_long_words(format_string($post->name, true));
             $posttime = forumimproved_relative_time($post->modified);
             $out .= forumimproved_media_object($url, $picture, $postusername, $posttime, $postsubject);
 
@@ -2195,7 +2199,7 @@ function forumimproved_get_readable_forums($userid, $courseid=0) {
  */
 function forumimproved_search_posts($searchterms, $courseid=0, $limitfrom=0, $limitnum=50,
                             &$totalcount, $extrasql='') {
-    global $CFG, $DB, $USER;
+    global $CFG, $DB, $USER, $PAGE;
     require_once($CFG->libdir.'/searchlib.php');
 
     $forums = forumimproved_get_readable_forums($USER->id, $courseid);
@@ -2281,11 +2285,11 @@ function forumimproved_search_posts($searchterms, $courseid=0, $limitfrom=0, $li
     // Experimental feature under 1.8! MDL-8830
         $usetextsearches = get_config('forumimproved', 'usetextsearches');
         if (!empty($usetextsearches)) {
-            list($messagesearch, $msparams) = search_generate_text_SQL($parsearray, 'p.message', 'p.subject',
+            list($messagesearch, $msparams) = search_generate_text_SQL($parsearray, 'p.message', 'd.name',
                                                  'p.userid', 'u.id', 'u.firstname',
                                                  'u.lastname', 'p.modified', 'd.forum');
         } else {
-            list($messagesearch, $msparams) = search_generate_SQL($parsearray, 'p.message', 'p.subject',
+            list($messagesearch, $msparams) = search_generate_SQL($parsearray, 'p.message', 'd.name',
                                                  'p.userid', 'u.id', 'u.firstname',
                                                  'u.lastname', 'p.modified', 'd.forum');
         }
@@ -2318,6 +2322,22 @@ function forumimproved_search_posts($searchterms, $courseid=0, $limitfrom=0, $li
     $countsql = "SELECT COUNT(*)
                    FROM $fromsql
                   WHERE $selectsql";
+
+    if (!has_capability('mod/forumimproved:viewhiddentimedposts' , $PAGE->context)) {
+        $selectsql .= ' AND (
+                            f.enable_states_disc = 0
+                        OR
+                            d.state <> :statehidden
+                    )';
+        $countsql .= '
+                    AND p.discussion = d.id
+                    AND (
+                            f.enable_states_disc = 0
+                        OR
+                            d.state <> :statehidden
+                    )';
+        $params['statehidden'] = FORUMIMPROVED_DISCUSSION_STATE_HIDDEN;
+    }
 
     $allnames = get_all_user_name_fields(true, 'u');
     $searchsql = "SELECT p.*,
@@ -2719,7 +2739,7 @@ function forumimproved_count_discussions($forum, $cm, $course) {
  * @param int $perpage
  * @return moodle_recordset|array
  */
-function forumimproved_get_discussions($cm, $forumsort="d.timemodified DESC", $forumselect=true, $limit=-1, $userlastmodified=false, $page=-1, $perpage=0, $returnrs = true) {
+function forumimproved_get_discussions($cm, $forumsort="d.timemodified DESC", $forumselect=true, $limit=-1, $userlastmodified=false, $page=-1, $perpage=0, $returnrs = true, $viewhidden = false) {
     global $CFG, $DB, $USER;
 
     require_once(__DIR__.'/lib/discussion/subscribe.php');
@@ -2833,7 +2853,7 @@ LEFT OUTER JOIN {forumimproved_read} r ON (r.postid = p.id AND r.userid = ?)
         $forumsort = "d.timemodified DESC";
     }
     if (empty($forumselect)) {
-        $postdata = "p.id,p.subject,p.modified,p.discussion,p.userid,p.reveal,p.flags,p.privatereply";
+        $ostdata = "p.id,p.modified,p.discussion,p.userid,p.reveal,p.flags,p.privatereply";
     } else {
         $postdata = "p.*";
     }
@@ -2878,6 +2898,15 @@ LEFT OUTER JOIN {forumimproved_read} r ON (r.postid = p.id AND r.userid = ?)
         }
     }
 
+
+    $visibilitySelect = '';
+    if (!$viewhidden) {
+        $visibilitySelect = 'AND d.state <> ?';
+        $params[] = FORUMIMPROVED_DISCUSSION_STATE_HIDDEN;
+    }
+
+
+
     $sql = "SELECT $selectsql
               FROM {forumimproved_discussions} d
                    JOIN {forumimproved_posts} p ON p.discussion = d.id
@@ -2897,7 +2926,7 @@ LEFT OUTER JOIN {forumimproved_read} r ON (r.postid = p.id AND r.userid = ?)
                    $subscribesql
                    $umtable
              WHERE d.forum = ? AND p.parent = 0
-                   $timelimit $groupselect
+                   $timelimit $groupselect $visibilitySelect
           ORDER BY $forumsort";
     if ($returnrs) {
         return $DB->get_recordset_sql($sql, $params, $limitfrom, $limitnum);
@@ -3001,9 +3030,10 @@ function forumimproved_get_discussion_neighbours($cm, $discussion) {
  * @uses CONEXT_MODULE
  * @uses VISIBLEGROUPS
  * @param object $cm
+ * @param bool $viewhidden
  * @return int
  */
-function forumimproved_get_discussions_count($cm) {
+function forumimproved_get_discussions_count($cm, $viewhidden = false) {
     global $CFG, $DB, $USER;
 
     $config = get_config('forumimproved');
@@ -3054,11 +3084,20 @@ function forumimproved_get_discussions_count($cm) {
         }
     }
 
+
+    $visibilitySelect = '';
+    if (!$viewhidden) {
+        $visibilitySelect = 'AND d.state <> ?';
+        $params[] = FORUMIMPROVED_DISCUSSION_STATE_HIDDEN;
+    }
+
+
+
     $sql = "SELECT COUNT(d.id)
               FROM {forumimproved_discussions} d
                    JOIN {forumimproved_posts} p ON p.discussion = d.id
              WHERE d.forum = ? AND p.parent = 0
-                   $groupselect $timelimit";
+                   $groupselect $timelimit $visibilitySelect";
 
     return $DB->get_field_sql($sql, $params);
 }
@@ -3173,7 +3212,7 @@ function forumimproved_get_all_post_votes($postid, $sqlSort = null) {
             WHERE v.userid = u.id AND v.postid = ?";
 
     if (!empty($sqlSort)) {
-        $req .= 'ORDER BY ';
+        $req .= ' ORDER BY ';
         $req .= $sqlSort;
     }
 
@@ -3341,7 +3380,6 @@ function forumimproved_make_mail_post($course, $cm, $forum, $discussion, $post, 
     } else {
         $output .= '<td class="topic starter">';
     }
-    $output .= '<div class="subject">'.format_string($post->subject).'</div>';
 
     $fullname = fullname($postuser, $viewfullnames);
     $by = new stdClass();
@@ -4134,7 +4172,6 @@ function forumimproved_add_discussion($discussion, $mform=null, $unused=null, $u
     $post->created       = $timenow;
     $post->modified      = $timenow;
     $post->mailed        = FORUMIMPROVED_MAILED_PENDING;
-    $post->subject       = $discussion->name;
     $post->message       = $discussion->message;
     $post->messageformat = $discussion->messageformat;
     $post->messagetrust  = $discussion->messagetrust;
@@ -5244,10 +5281,11 @@ function forumimproved_user_can_see_post($forum, $discussion, $post, $user=NULL,
  * @param void $unused (originally current group)
  * @param int $page Page mode, page to display (optional).
  * @param int $perpage The maximum number of discussions per page(optional)
+ * @param bool $viewhidden Show the hidden discussions
  *
  */
 function forumimproved_print_latest_discussions($course, $forum, $maxdiscussions=-1, $sort='',
-                                        $currentgroup=-1, $groupmode=-1, $page=-1, $perpage=100, $cm=NULL) {
+                                        $currentgroup=-1, $groupmode=-1, $page=-1, $perpage=100, $cm=NULL, $viewhidden=false) {
     global $CFG, $USER, $OUTPUT, $PAGE;
 
     require_once($CFG->dirroot.'/rating/lib.php');
@@ -5265,7 +5303,7 @@ function forumimproved_print_latest_discussions($course, $forum, $maxdiscussions
 
     $olddiscussionlink = false;
 
- // Sort out some defaults
+    // Sort out some defaults
     if ($perpage <= 0) {
         $perpage = 0;
         $page    = -1;
@@ -5285,9 +5323,9 @@ function forumimproved_print_latest_discussions($course, $forum, $maxdiscussions
 
     $fullpost = true;
 
-// Decide if current user is allowed to see ALL the current discussions or not
+    // Decide if current user is allowed to see ALL the current discussions or not
 
-// First check the group stuff
+    // First check the group stuff
     if ($currentgroup == -1 or $groupmode == -1) {
         $groupmode    = groups_get_activity_groupmode($cm, $course);
         $currentgroup = groups_get_activity_group($cm);
@@ -5295,9 +5333,9 @@ function forumimproved_print_latest_discussions($course, $forum, $maxdiscussions
 
     $groups = array(); //cache
 
-// If the user can post discussions, then this is a good place to put the
-// button for it. We do not show the button if we are showing site news
-// and the current user is a guest.
+    // If the user can post discussions, then this is a good place to put the
+    // button for it. We do not show the button if we are showing site news
+    // and the current user is a guest.
 
     $canstart = forumimproved_user_can_post_discussion($forum, $currentgroup, $groupmode, $cm, $context);
     if (!$canstart and $forum->type !== 'news') {
@@ -5314,13 +5352,13 @@ function forumimproved_print_latest_discussions($course, $forum, $maxdiscussions
 
     // Get all the recent discussions we're allowed to see
     $getuserlastmodified = true;
-    $discussions = forumimproved_get_discussions($cm, $sort, $fullpost, $maxdiscussions, $getuserlastmodified, $page, $perpage, false);
+    $discussions = forumimproved_get_discussions($cm, $sort, $fullpost, $maxdiscussions, $getuserlastmodified, $page, $perpage, false, $viewhidden);
 
     // If we want paging
     $numdiscussions = null;
     if ($page != -1) {
         // Get the number of discussions found.
-        $numdiscussions = forumimproved_get_discussions_count($cm);
+        $numdiscussions = forumimproved_get_discussions_count($cm, $viewhidden);
     } else {
         if ($maxdiscussions > 0 and $maxdiscussions <= count($discussions)) {
             $olddiscussionlink = true;
@@ -5446,8 +5484,6 @@ function forumimproved_print_latest_discussions($course, $forum, $maxdiscussions
         } else {
             $ownpost=false;
         }
-        // Use discussion name instead of subject of first post
-        $discussion->subject = $discussion->name;
 
         $disc = forumimproved_extract_discussion($discussion, $forum);
         $discussionlist[$disc->id] = array($disc, $discussion);
@@ -5538,8 +5574,6 @@ function forumimproved_print_discussion($course, $cm, $forum, $discussion, $post
 
     $post->forum = $forum->id;   // Add the forum id to the post object, later used for rendering
     $post->forumtype = $forum->type;
-
-    $post->subject = format_string($post->subject);
 
     $postread = !empty($post->postread);
 
@@ -5676,7 +5710,6 @@ function forumimproved_get_recent_mod_activity(&$activities, &$index, $timestart
         $tmpactivity->content = new stdClass();
         $tmpactivity->content->id         = $post->id;
         $tmpactivity->content->discussion = $post->discussion;
-        $tmpactivity->content->subject    = format_string($post->subject);
         $tmpactivity->content->parent     = $post->parent;
 
         $tmpactivity->user = new stdClass();
@@ -6730,17 +6763,45 @@ function forumimproved_toggle_vote($forum, $postid, $userid) {
 }
 
 /**
+ * check if a discussion is hidden or not
+ * @param object $forum         the forum, containing the discussion
+ * @param object discussion    the discussion
+ * @return true if the discussion is hidden ; false else
+ */
+function forumimproved_is_discussion_hidden($forum, $discussion) {
+    if (!$forum->enable_states_disc) {
+        return false;
+    }
+
+    return $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_HIDDEN;
+}
+
+/**
  * check if a discussion is closed or not
  * @param object $forum         the forum, containing the discussion
  * @param object discussion    the discussion
- * @return true if the discussion id closed ; false else
+ * @return true if the discussion is closed ; false else
  */
 function forumimproved_is_discussion_closed($forum, $discussion) {
-    if (!$forum->enable_close_disc) {
+    if (!$forum->enable_states_disc) {
         return false;
     }
 
     return $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_CLOSE;
+}
+
+/**
+ * check if a discussion is closed or not
+ * @param object $forum         the forum, containing the discussion
+ * @param object discussion    the discussion
+ * @return true if the discussion is closed ; false else
+ */
+function forumimproved_is_discussion_open($forum, $discussion) {
+    if (!$forum->enable_states_disc) {
+        return true;
+    }
+
+    return $discussion->state == FORUMIMPROVED_DISCUSSION_STATE_OPEN;
 }
 
 /**
@@ -6751,11 +6812,28 @@ function forumimproved_is_discussion_closed($forum, $discussion) {
 function forumimproved_discussion_close($forum, &$discussion) {
     global $DB;
 
-    if (!$forum->enable_close_disc) {
+    if (!$forum->enable_states_disc) {
         throw new coding_exception("change_state_disabled_error");
     }
 
     $discussion->state = FORUMIMPROVED_DISCUSSION_STATE_CLOSE;
+
+    $DB->update_record('forumimproved_discussions', $discussion);
+}
+
+/**
+ * Hide a discussion
+ * @param object $forum         the forum, containing the discussion
+ * @param object $discussion    the discussion to close
+ */
+function forumimproved_discussion_hide($forum, &$discussion) {
+    global $DB;
+
+    if (!$forum->enable_states_disc) {
+        throw new coding_exception("change_state_disabled_error");
+    }
+
+    $discussion->state = FORUMIMPROVED_DISCUSSION_STATE_HIDDEN;
 
     $DB->update_record('forumimproved_discussions', $discussion);
 }
@@ -6768,27 +6846,12 @@ function forumimproved_discussion_close($forum, &$discussion) {
 function forumimproved_discussion_open($forum, &$discussion) {
     global $DB;
 
-    if (!$forum->enable_close_disc) {
+    if (!$forum->enable_states_disc) {
         throw new coding_exception("change_state_disabled_error");
     }
 
     $discussion->state = FORUMIMPROVED_DISCUSSION_STATE_OPEN;
     $DB->update_record('forumimproved_discussions', $discussion);
-}
-
-/**
- * toggle the state (open / close) of a discussion
- * @param object $forum         the forum, containing the discussion
- * @param int    $discussion    the discussion
- */
-function forumimproved_toggle_discussion_state($forum, &$discussion) {
-
-    if (forumimproved_is_discussion_closed($forum, $discussion)) {
-        forumimproved_discussion_open($forum, $discussion);
-    }
-    else {
-        forumimproved_discussion_close($forum, $discussion);
-    }
 }
 
 /**

@@ -107,10 +107,13 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configcheckbox('forumimproved/hiderecentposts', get_string('hiderecentposts', 'forumimproved'),
                        get_string('confighiderecentposts', 'forumimproved'), 0));
 
+    $settings->add(new admin_setting_configcheckbox('forumimproved/hideuserpicture', get_string('hideuserpicture', 'forumimproved'),
+                       get_string('hideuserpicture', 'forumimproved'), 0));
+
     $settings->add(new admin_setting_configtext('forumimproved/votesColor', get_string('votecolor', 'forumimproved'),
-                       get_string('configvotecolor', 'forumimproved'), '#FF6347', PARAM_NOTAGS));
+                       get_string('configvotecolor', 'forumimproved'), '#da3d00', PARAM_NOTAGS));
 
     $settings->add(new admin_setting_configtext('forumimproved/livereloadrate', get_string('livereloadrate', 'forumimproved'),
-                       get_string('configlivereloadrate', 'forumimproved'), 30, PARAM_INT));
+                       get_string('configlivereloadrate', 'forumimproved'), 15, PARAM_INT));
 }
 

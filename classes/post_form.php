@@ -107,10 +107,12 @@ class mod_forumimproved_post_form extends moodleform {
             }
         }
 
-        $mform->addElement('text', 'subject', get_string('subject', 'forumimproved'), 'size="48"');
-        $mform->setType('subject', PARAM_TEXT);
-        $mform->addRule('subject', get_string('required'), 'required', null, 'client');
-        $mform->addRule('subject', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        if (empty($post->parent)) {
+            $mform->addElement('text', 'subject', get_string('subject', 'forumimproved'), 'size="48"');
+            $mform->setType('subject', PARAM_TEXT);
+            $mform->addRule('subject', get_string('required'), 'required', null, 'client');
+            $mform->addRule('subject', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
+        }
 
         $mform->addElement('editor', 'message', get_string('message', 'forumimproved'), null, self::editor_options($modcontext, (empty($post->id) ? null : $post->id)));
         $mform->setType('message', PARAM_RAW);
@@ -262,8 +264,10 @@ class mod_forumimproved_post_form extends moodleform {
         if (empty($data['message']['text'])) {
             $errors['message'] = get_string('erroremptymessage', 'forumimproved');
         }
-        if (empty($data['subject'])) {
-            $errors['subject'] = get_string('erroremptysubject', 'forumimproved');
+        if (empty($this->_customdata['post']->parent)) {
+            if (empty($data['subject'])) {
+                $errors['subject'] = get_string('erroremptysubject', 'forumimproved');
+            }
         }
         return $errors;
     }

@@ -63,10 +63,11 @@ class discussion_controller extends controller_abstract {
      *
      * @return json_response
      */
-    public function togglestate_action() {
+    public function changestate_action() {
         global $PAGE, $DB;
 
         $discussionid = required_param('discussionid', PARAM_INT);
+        $state = required_param('state', PARAM_INT);
 
         $forum = $PAGE->activityrecord;
 
@@ -100,12 +101,12 @@ class discussion_controller extends controller_abstract {
         }
 
 
-        require_capability('mod/forumimproved:close_discussion', $PAGE->context);
+        require_capability('mod/forumimproved:change_state_discussion', $PAGE->context);
 
 
 
         try {
-            return $this->discussion_service->handle_toggle_state($forum, $discussion);
+            return $this->discussion_service->handle_change_state($forum, $discussion, $state);
         } catch (\Exception $e) {
             return new json_response($e);
         }

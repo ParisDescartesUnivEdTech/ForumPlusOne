@@ -63,7 +63,7 @@ class backup_forumimproved_activity_structure_step extends backup_activity_struc
 
         $post = new backup_nested_element('post', array('id'), array(
             'parent', 'userid', 'created', 'modified',
-            'mailed', 'subject', 'message', 'messageformat',
+            'mailed', 'message', 'messageformat',
             'messagetrust', 'attachment', 'totalscore', 'mailnow',
             'reveal', 'flags', 'privatereply'));
 
