@@ -1,11 +1,11 @@
-# ForumPlusOne
+# Forum+1
 
 Copyright 2016 University Paris Descartes
 
-ForumPlusOne is a evolution of the forum moodle module based on [Advanced Forum](https://github.com/moodlerooms/moodle-mod_hsuforum/)
+Forum+1 is a evolution of the forum moodle module based on [Advanced Forum](https://github.com/moodlerooms/moodle-mod_hsuforum/)
 
 
-What's new ? Why "PlusOne" ?
+What's new ? Why "+1" ?
 -----------------------------
 
 First, we are based on Advanced Forum , so we have all the improvement of Advanced Forum.
@@ -27,7 +27,7 @@ Support
 
 We cannot offer direct support. Please do not contact us directly. If you
 need assistance, try the forum on moodle.org. (Remember to make clear
-that you are using ForumPlusOne and not the standard forum.)
+that you are using Forum+1 and not the standard forum.)
 
 You can search a fix on Advenced Forum or HsuForum, in most case, it will works.
 
@@ -36,7 +36,7 @@ Bug reports
 -----------
 
 Please report bugs to the Moodle tracker using the 'contributed code' project
-and 'Module: ForumPlusOne' component. Under Version, please select your Moodle
+and 'Module: Forum+1' component. Under Version, please select your Moodle
 version e.g. 2.1, 2.2.
 
 
