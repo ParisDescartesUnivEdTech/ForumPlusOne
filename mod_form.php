@@ -18,9 +18,9 @@
 /**
  * @package   mod_forumplusone
  * @copyright Jamie Pratt <me@jamiep.org>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license   https://www.gnu.org/licenses/gpl-2.0.html GNU GPL v2 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
- * @author Mark Nielsen
+ * @copyright Copyright (c) 2016 Paris Descartes University (http://www.univ-paris5.fr/)
  */
 
 if (!defined('MOODLE_INTERNAL')) {

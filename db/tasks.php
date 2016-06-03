@@ -20,7 +20,8 @@
  * @package   mod_forumplusone
  * @category  task
  * @copyright 2014 Dan Poltawski <dan@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright Copyright (c) 2016 Paris Descartes University (http://www.univ-paris5.fr/)
+ * @license   https://www.gnu.org/licenses/gpl-2.0.html GNU GPL v2 or later
  */
 
 defined('MOODLE_INTERNAL') || die();

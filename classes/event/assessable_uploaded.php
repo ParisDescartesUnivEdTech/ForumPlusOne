@@ -19,6 +19,7 @@
  *
  * @package    mod_forumplusone
  * @copyright  2013 Frédéric Massart
+ * @copyright Copyright (c) 2016 Paris Descartes University (http://www.univ-paris5.fr/)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,6 +40,7 @@ defined('MOODLE_INTERNAL') || die();
  * @package    mod_forumplusone
  * @since      Moodle 2.6
  * @copyright  2013 Frédéric Massart
+ * @copyright Copyright (c) 2016 Paris Descartes University (http://www.univ-paris5.fr/)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class assessable_uploaded extends \core\event\assessable_uploaded {

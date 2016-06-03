@@ -21,7 +21,7 @@
  * @copyright  2010 onwards Eloy Lafuente (stronk7) {@link http://stronk7.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
- * @author Mark Nielsen
+ * @copyright Copyright (c) 2016 Paris Descartes University (http://www.univ-paris5.fr/)
  */
 
  // This activity has not particular settings but the inherited from the generic

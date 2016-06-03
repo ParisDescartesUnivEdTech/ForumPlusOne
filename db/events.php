@@ -22,7 +22,7 @@
  * @copyright 2010 Petr Skoda  {@link http://skodak.org}
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
- * @author Mark Nielsen
+ * @copyright Copyright (c) 2016 Paris Descartes University (http://www.univ-paris5.fr/)
  */
 
 // List of observers.

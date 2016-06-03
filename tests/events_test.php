@@ -20,6 +20,7 @@
  * @package    mod_forumplusone
  * @category   test
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
+ * @copyright Copyright (c) 2016 Paris Descartes University (http://www.univ-paris5.fr/)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,6 +32,7 @@ defined('MOODLE_INTERNAL') || die();
  * @package    mod_forumplusone
  * @category   test
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
+ * @copyright Copyright (c) 2016 Paris Descartes University (http://www.univ-paris5.fr/)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class mod_forumplusone_events_testcase extends advanced_testcase {

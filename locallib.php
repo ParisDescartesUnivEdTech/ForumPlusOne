@@ -25,9 +25,9 @@ require_once($CFG->libdir . '/portfolio/caller.php');
 /**
  * @package   mod_forumplusone
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license   https://www.gnu.org/licenses/gpl-2.0.html GNU GPL v2 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
- * @author Mark Nielsen
+ * @copyright Copyright (c) 2016 Paris Descartes University (http://www.univ-paris5.fr/)
  */
 class forumplusone_portfolio_caller extends portfolio_module_caller_base {
 
@@ -400,7 +400,8 @@ class forumplusone_portfolio_caller extends portfolio_module_caller_base {
  *
  * @category  files
  * @copyright 2012 David Mudrak <david@moodle.com>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license   https://www.gnu.org/licenses/gpl-2.0.html GNU GPL v2 or later
+ * @copyright Copyright (c) 2016 Paris Descartes University (http://www.univ-paris5.fr/)
  */
 class forumplusone_file_info_container extends file_info {
     /** @var file_browser */

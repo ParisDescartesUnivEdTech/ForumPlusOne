@@ -19,7 +19,8 @@
  *
  * @package   mod_forumplusone
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright Copyright (c) 2016 Paris Descartes University (http://www.univ-paris5.fr/)
+ * @license   https://www.gnu.org/licenses/gpl-2.0.html GNU GPL v2 or later
  */
 
 namespace mod_forumplusone;
@@ -33,7 +34,8 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * @package   mod_forumplusone
  * @copyright Copyright (c) 2013 Moodlerooms Inc. (http://www.moodlerooms.com)
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright Copyright (c) 2016 Paris Descartes University (http://www.univ-paris5.fr/)
+ * @license   https://www.gnu.org/licenses/gpl-2.0.html GNU GPL v2 or later
  */
 class upload_file {
     /**

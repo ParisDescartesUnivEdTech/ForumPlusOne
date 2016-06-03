@@ -19,6 +19,7 @@
  *
  * @package    mod_forumplusone
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
+ * @copyright Copyright (c) 2016 Paris Descartes University (http://www.univ-paris5.fr/)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,6 +39,7 @@ defined('MOODLE_INTERNAL') || die();
  * @package    mod_forumplusone
  * @since      Moodle 2.7
  * @copyright  2014 Dan Poltawski <dan@moodle.com>
+ * @copyright Copyright (c) 2016 Paris Descartes University (http://www.univ-paris5.fr/)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class readtracking_disabled extends \core\event\base {

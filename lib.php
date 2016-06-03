@@ -17,9 +17,9 @@
 /**
  * @package   mod_forumplusone
  * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license   https://www.gnu.org/licenses/gpl-2.0.html GNU GPL v2 or later
  * @copyright Copyright (c) 2012 Moodlerooms Inc. (http://www.moodlerooms.com)
- * @author Mark Nielsen
+ * @copyright Copyright (c) 2016 Paris Descartes University (http://www.univ-paris5.fr/)
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -7011,7 +7011,7 @@ function forumplusone_extend_settings_navigation(settings_navigation $settingsna
  * Abstract class used by forum subscriber selection controls
  * @package   mod_forumplusone
  * @copyright 2009 Sam Hemelryk
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license   https://www.gnu.org/licenses/gpl-2.0.html GNU GPL v2 or later
  */
 abstract class forumplusone_subscriber_selector_base extends user_selector_base {
 
@@ -7071,7 +7071,7 @@ abstract class forumplusone_subscriber_selector_base extends user_selector_base 
  * A user selector control for potential subscribers to the selected forum
  * @package   mod_forumplusone
  * @copyright 2009 Sam Hemelryk
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license   https://www.gnu.org/licenses/gpl-2.0.html GNU GPL v2 or later
  */
 class forumplusone_potential_subscriber_selector extends forumplusone_subscriber_selector_base {
     /**
@@ -7200,7 +7200,7 @@ class forumplusone_potential_subscriber_selector extends forumplusone_subscriber
  * User selector control for removing subscribed users
  * @package   mod_forumplusone
  * @copyright 2009 Sam Hemelryk
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license   https://www.gnu.org/licenses/gpl-2.0.html GNU GPL v2 or later
  */
 class forumplusone_existing_subscriber_selector extends forumplusone_subscriber_selector_base {
 

@@ -20,7 +20,8 @@
  *
  * @copyright 2013 Andrew Nicols
  * @package   mod_forumplusone
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license   https://www.gnu.org/licenses/gpl-2.0.html GNU GPL v2 or later
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(__DIR__)) . '/config.php');

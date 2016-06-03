@@ -19,6 +19,7 @@
  *
  * @package    mod_forumplusone
  * @copyright  2013 Rajesh Taneja <rajesh@moodle.com>
+ * @copyright Copyright (c) 2016 Paris Descartes University (http://www.univ-paris5.fr/)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

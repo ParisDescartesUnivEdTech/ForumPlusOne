@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * @package    mod
+ * @subpackage forumplusone
+ * @copyright Copyright (c) 2016 Paris Descartes University (http://www.univ-paris5.fr/)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+
 namespace mod_forumplusone\form;
 
 global $CFG;
