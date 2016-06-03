@@ -98,7 +98,7 @@ module.exports = function(grunt) {
         },
         shell: {
             yui: {
-                command: 'for dir in $(ls yui/src) ; do cd yui/src/"$dir"; ../../../node_modules/shifter/bin/shifter; done;'
+                command: 'for dir in $(ls yui/src) ; do cd yui/src/"$dir"; ../../../node_modules/shifter/bin/shifter; cd ../../..; done;'
             },
             jquery: {
                 command: 'cd jquery ; grunt custom:-ajax/script,-ajax/jsonp,-deprecated,-wrap,-exports/amd dist:../js/'
