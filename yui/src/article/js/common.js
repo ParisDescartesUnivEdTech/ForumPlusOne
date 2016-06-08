@@ -18,7 +18,7 @@ var CSS = {
         DISCUSSION_STATE_BTN_TOGGLE_BY_DISCUSSION_ID: 'article[data-discussionid="%d"] .forumplusone-toggle-state-link',
         DISCUSSION_WRAPPER_BY_DISCUSSION_ID: 'article[data-discussionid="%d"]',
         DISCUSSION_TARGET: '.forumplusone-new-discussion-target',
-        DISCUSSION_TEMPLATE: '#forumplusone-discussion-template',
+        DISCUSSION_TEMPLATE: '#forumplusone-discussion-form-template',
         DISCUSSION_VIEW: '.forumplusone-thread-view',
         EDITABLE_MESSAGE: '[contenteditable]',
         FORM: '.forumplusone-form',

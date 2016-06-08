@@ -104,7 +104,7 @@ if (!$votes) {
     $table = new html_table;
 
     $table->attributes['class'] = 'generalbox table table-striped table-hover';
-    
+
     $head = array(
         '',
         html_writer::link(new moodle_url($sorturl, array('sort' => 'firstname')), $strname)
@@ -113,7 +113,7 @@ if (!$votes) {
         array_push($head, html_writer::link(new moodle_url($sorturl, array('sort' => 'datetime')), $strtime));
     }
     $table->head = $head;
-    
+
     $table->colclasses = array('', 'firstname', 'time');
     $table->data = array();
 
@@ -132,7 +132,7 @@ if (!$votes) {
             $row->cells[] = $OUTPUT->user_picture($vote);
         }
         $row->cells[] = fullname($vote);
-        
+
         if ($canSeeDatetime)
             $row->cells[] = userdate($vote->timestamp);
 

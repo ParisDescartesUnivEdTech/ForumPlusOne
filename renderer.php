@@ -361,7 +361,7 @@ class mod_forumplusone_renderer extends plugin_renderer_base {
         $output .= html_writer::tag(
             'script',
             $this->simple_edit_discussion($cm),
-            array('type' => 'text/template', 'id' => 'forumplusone-discussion-template')
+            array('type' => 'text/template', 'id' => 'forumplusone-discussion-form-template')
         );
 
 
@@ -439,7 +439,7 @@ CSS;
         $config = get_config('forumplusone');
 
         $json['intervalReload'] = $config->livereloadrate;
-        $json['urlReload'] = $CFG->wwwroot . '/mod/forumplusone/route.php?action=reload';
+        $json['urlChange'] = $CFG->wwwroot . '/mod/forumplusone/route.php?action=reload&contextid=' . $this->page->context->id;
         $json['msgDel'] = get_string('deleteddiscussion', 'forumplusone');
 
         $jsonString = json_encode($json);
