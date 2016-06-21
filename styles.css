@@ -749,6 +749,9 @@ ACTIONS
     display: block;
 }
 
+.forumplusone-thread.topic-hidden, .forumplusone-thread.topic-hidden a {
+    color: #999;
+}
 
 .forumplusone-threads-wrapper .forumplusone-thread .btnToogleStateLine {
     margin-bottom: -2em;
