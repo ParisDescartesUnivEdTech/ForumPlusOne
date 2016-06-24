@@ -7,8 +7,7 @@
 
 
 
-        function autoSubmitState(newChoise, form) {
-            var self = this;
+        function autoSubmitState(newChoise, form, success) {
             jQuery.get(
                 {
                     url: '/mod/forumplusone/route.php',
@@ -20,17 +19,7 @@
                     },
                     success: function (data) {
                         if (data.errorCode == 0) {
-                            switch (newChoise) {
-                                case "0": // open
-                                    jQuery(self).parents('.forumplusone-thread').removeClass('topic-closed topic-hidden');
-                                    break;
-                                case "1": // close
-                                    jQuery(self).parents('.forumplusone-thread').removeClass('topic-hidden').addClass('topic-closed');
-                                    break;
-                                case "2": // hide
-                                    jQuery(self).parents('.forumplusone-thread').removeClass('topic-closed').addClass('topic-hidden');
-                                    break;
-                            }
+                            success(newChoise);
                         }
                     }
                 }
@@ -41,9 +30,29 @@
 
 
         jQuery.fn.extend({
-            stateChangerDispach: function() {
-                this.find('.select input[type="radio"]').on('change',function() {
-                    autoSubmitState.apply(this, [jQuery(this).val(), jQuery(this).parents('form')]);
+            stateChange: function(state) {
+                switch (state) {
+                    case "0": // open
+                        jQuery(this).parents('.forumplusone-thread').removeClass('topic-closed topic-hidden');
+                        break;
+                    case "1": // close
+                        jQuery(this).parents('.forumplusone-thread').removeClass('topic-hidden').addClass('topic-closed');
+                        break;
+                    case "2": // hide
+                        jQuery(this).parents('.forumplusone-thread').removeClass('topic-closed').addClass('topic-hidden');
+                        break;
+                }
+            },
+            stateChangerDispach: function(submit) {
+                this.find('.select input[type="radio"]').off('change').on('change',function() {
+                    autoSubmitState.apply(
+                        this,
+                        [
+                            jQuery(this).val(),
+                            jQuery(this).parents('form'),
+                            $(this).stateChange
+                        ]
+                    );
                 });
 
                 this.find('[type="submit"]').css('display', 'none');

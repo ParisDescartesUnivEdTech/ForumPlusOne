@@ -534,6 +534,32 @@ EOS;
             forumplusone_mark_post_read($USER->id, $post, $forum->id);
         }
 
+        if (isset($post->replies))
+            $data->replies = $post->replies;
+        else
+            $data->replies = null;
+
+        if (isset($post->subscribe))
+            $data->subscribe = $post->subscribe;
+        else
+            $data->subscribe = null;
+
+        if (isset($post->stateForm))
+            $data->stateForm = $post->stateForm;
+        else
+            $data->stateForm = null;
+
+        if (isset($post->iconState))
+            $data->iconState = $post->iconState;
+        else
+            $data->iconState = null;
+
+        if (isset($post->threadtitle))
+            $data->threadtitle = $post->threadtitle;
+        else
+            $data->threadtitle = null;
+
+
 
         return $this->post_template($data);
     }
@@ -714,12 +740,11 @@ EOS;
 
 
 
-
-        $d->threadtitle = $threadtitle;
-        $firstPost = $this->post_template($d, true);
-
-
         if ($d->fullthread) {
+            $d->threadtitle = $threadtitle;
+            $d->isFirstPost = true;
+            $firstPost = $this->post_template($d);
+
             return <<<HTML
 <article id="p{$d->postid}" class="forumplusone-thread forumplusone-post-target clearfix {$classStateDiscussion}"
     data-discussionid="$d->id" data-postid="$d->postid" data-author="$author" data-isdiscussion="true" $attrs>
@@ -812,15 +837,25 @@ HTML;
             $html = $this->post($cm, $discussion, $post, $canreply, $parent, array());
             if (!empty($html)) {
                 $count++;
-                $output .= "<li class='forumplusone-post'>".$html;
 
-                if (!empty($post->children)) {
-                    $output .= '<ol class="forumplusone-thread-replies-list">';
-                    $output .= $this->post_walker($cm, $discussion, $posts, $post, $canreply, $count, ($depth + 1));
-                    $output .= '</ol>';
+                if ($container) {
+                    $output .= "<li class='forumplusone-post'>";
                 }
 
-                $output .= "</li>";
+                $output .= $html;
+
+                if ($container) {
+                    $output .= '<ol class="forumplusone-thread-replies-list">';
+                }
+
+                if (!empty($post->children)) {
+                    $output .= $this->post_walker($cm, $discussion, $posts, $post, $canreply, $count);
+                }
+
+                if ($container) {
+                    $output .= '</ol>';
+                    $output .= "</li>";
+                }
             }
         }
         return $output;
@@ -829,18 +864,19 @@ HTML;
     /**
      * Return html for individual post
      *
-     * 3 use cases:
+     * 4 use cases:
      *  1. Standard post
      *  2. Reply to user
      *  3. Private reply to user
      *  4. Start of a discussion
      *
      * @param object $p
-     * @param bool   $isFirstPost
      * @return string
      */
-    public function post_template($p, $isFirstPost = false) {
+    public function post_template($p) {
         global $PAGE;
+
+        $isFirstPost = empty($p->isFirstPost) ? false : $p->isFirstPost;
 
         $byuser = $p->fullname;
         if (!empty($p->userurl)) {
@@ -863,28 +899,24 @@ HTML;
             $postreplies = "<div class='post-reply-count accesshide'>$p->replycount</div>";
         }
 
-        $firstPostCountReplies = '<p class="forumplusone-count-replies">';
-        if ($isFirstPost && $p->replies) {
-            $firstPostCountReplies .= forumplusone_xreplies($p->replies);
+        $postCountReplies = '<p class="forumplusone-count-replies">';
+        if ($isFirstPost) {
+            $classSpan = $p->replies ? '' : 'hidden';
+            $postCountReplies .= '<span class="counterReplies ' . $classSpan . '">' . forumplusone_xreplies($p->replies) . '</span>';
         }
-        if (
-            ($isFirstPost && $p->replies)
-            || ( !$isFirstPost && ((int)$p->replycount) > 0 )
-        ){
-            $firstPostCountReplies .= ' ' . html_writer::tag(
-                'svg',
-                '<use xlink:href="#collapse"/>',
-                array(
-                    'class' => 'collapse-icon svg-icon inlineJs',
-                    'data-toggle' => 'tooltip',
-                    'data-placement' => 'top',
-                    'data-title-collapse' => get_string('title-replies-collapse', 'forumplusone'),
-                    'title' => get_string('title-replies-collapse', 'forumplusone'),
-                    'data-title-uncollapse' => get_string('title-replies-uncollapse', 'forumplusone')
-                )
-            );
-        }
-        $firstPostCountReplies .= '</p>';
+        $postCountReplies .= ' ' . html_writer::tag(
+            'svg',
+            '<use xlink:href="#collapse"/>',
+            array(
+                'class' => 'collapse-icon svg-icon inlineJs ' . (!($isFirstPost && $p->replies) && !(!$isFirstPost && ((int)$p->replycount) > 0 ) ?  'hidden' : ''),
+                'data-toggle' => 'tooltip',
+                'data-placement' => 'top',
+                'data-title-collapse' => get_string('title-replies-collapse', 'forumplusone'),
+                'title' => get_string('title-replies-collapse', 'forumplusone'),
+                'data-title-uncollapse' => get_string('title-replies-uncollapse', 'forumplusone')
+            )
+        );
+        $postCountReplies .= '</p>';
 
 
 
@@ -929,7 +961,7 @@ HTML;
         }
 
 
- return $html . <<<HTML
+    return $html . <<<HTML
     <img class="userpicture" src="{$p->imagesrc}" alt="">
 
     <div class="forumplusone-post-body">
@@ -941,7 +973,7 @@ HTML;
         <div role="region" class='forumplusone-tools' aria-label='$options'>
             $p->tools
         </div>
-        $firstPostCountReplies
+        $postCountReplies
         $postreplies
     </div>
 </div>

@@ -40,7 +40,7 @@ module.exports = function(grunt) {
                     }
                 },
                 files: {
-                    'js/liveReload.min.js': ['js/jQueryLoader.js', 'js/liveReload.js']
+                    'js/liveReload.min.js': ['js/jQueryLoader.js', 'js/jQueryColorPlugin.js', 'js/liveReload.js']
                 }
             },
             collapseReplies: {

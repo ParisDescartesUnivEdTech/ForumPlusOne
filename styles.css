@@ -667,6 +667,10 @@ svg:not(:root) {
 /* -------------------------
 ACTIONS
 -------------------------*/
+.delDiscussion .forumplusone-toggle {
+    display: none;
+}
+
 .forumplusone-toggle {
     display:inline-block;
     border-radius:0;
@@ -682,7 +686,7 @@ ACTIONS
     fill: #505050;
     fill-opacity: 0;
 
-    transition: .2s;
+    transition: all .2s;
 
     width: 1.3em;
     height: 1.3em;
@@ -753,6 +757,30 @@ ACTIONS
 
 .forumplusone-thread.topic-hidden, .forumplusone-thread.topic-hidden a {
     color: #999;
+}
+
+.forumplusone-threads-wrapper .forumplusone-thread.delDiscussion {
+    background-color: #ffab91 !important; /* !important to overwride the inline style mad with JS */
+    border: #e64a19 2px solid;
+    padding: .5em;
+}
+
+.forumplusone-threads-wrapper .forumplusone-thread::before {
+    content: '';
+    transition: height 150ms;
+    display: block;
+    height: 0em;
+    overflow: hidden;
+    line-height: 1em;
+}
+.forumplusone-threads-wrapper .forumplusone-thread.delDiscussion::before {
+    content: attr(data-delMsg);
+    height: 2em;
+    padding: .5em;
+    background: #e64a19;
+    margin: -.5em;
+    margin-bottom: 0;
+    font-weight: bold;
 }
 
 .forumplusone-threads-wrapper .forumplusone-thread .btnToogleStateLine {

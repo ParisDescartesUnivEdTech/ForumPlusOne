@@ -33,7 +33,7 @@
                     dataType: 'json',
                     success: function (datas, textStatus, jqXHR) {
                         // hide ohers panels
-                        $('.votersPanel').hide();
+                        $('.votersPanel .closeBtn').trigger('click');
 
                         if (datas.errorCode != 0) {
                             // There is an server error
@@ -53,11 +53,14 @@
                         // dispatch events
                         dispatchEvents(panel, datas);
 
+
+                        if (panel.find('div').height() > panel.find('table').outerHeight(true)) {
+                            panel.height(panel.height() - (panel.find('div').height() - panel.find('table').outerHeight(true) - 1)); // The "1" is to avoid to have a scroll bar due to round pixels number
+                        }
+
+                        panel.hide();
                         // show(150)
                         panel.show(150);
-
-                        if (panel.find('div').height() > panel.find('table').outerHeight(true))
-                            panel.height(panel.height() - (panel.find('div').height() - panel.find('table').outerHeight(true) - 1)); // The "1" is to avoid o have a scroll bar due to round piwels number
 
                         // scroll to the element
                         $(self).scrollTo();

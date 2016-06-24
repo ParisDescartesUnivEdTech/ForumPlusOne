@@ -7,7 +7,7 @@
                 console.log(this);
                 this.each(function() {
                     var post = $(this);
-                    $(this).find('.collapse-icon').on('click', function() {
+                    $(this).find('.collapse-icon').off('click').on('click', function() {
                         if (isCollapse(post)) {
                             uncollapse(post);
                         }
