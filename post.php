@@ -302,7 +302,36 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
 
 
     try {
-        forumplusone_toggle_vote($forum, $vote, $USER->id);
+        $record = null;
+
+        if ($isDel = forumplusone_has_vote($vote, $USER->id)) {
+            $record = forumplusone_get_vote($vote, $USER->id);
+        }
+
+        $id = forumplusone_toggle_vote($forum, $vote, $USER->id);
+
+        $params = array(
+            'context'  => $modcontext,
+            'objectid' => $id,
+            'other'    => array(
+                'forumid' => $forum->id,
+                'discussionid' => $discussion->id,
+                'postid' => $vote,
+            )
+        );
+
+        if ($isDel) {
+            $event = \mod_forumplusone\event\vote_deleted::create($params);
+        }
+        else {
+            $event = \mod_forumplusone\event\vote_created::create($params);
+        }
+
+        if ($record != null) {
+            $event->add_record_snapshot('forumplusone_vote', $record);
+        }
+
+        $event->trigger();
     }
     catch (coding_exception $e) {
         if (in_array($e->a, array(
@@ -372,6 +401,16 @@ if (!empty($forum)) {      // User is starting a new discussion in a forum
         forumplusone_discussion_close($forum, $discussion);
     if ($state == FORUMPLUSONE_DISCUSSION_STATE_HIDDEN)
         forumplusone_discussion_hide($forum, $discussion);
+
+    $params = array(
+        'context' => $modcontext,
+        'objectid' => $discussion->id,
+        'other' => array(
+            'forumid' => $forum->id,
+        )
+    );
+    $event = \mod_forumplusone\event\discussion_updated::create($params);
+    $event->trigger();
 
 
     if ($fullthread) {
@@ -875,6 +914,20 @@ if ($fromform = $mform_post->get_data()) {
         $event = \mod_forumplusone\event\post_updated::create($params);
         $event->add_record_snapshot('forumplusone_discussions', $discussion);
         $event->trigger();
+
+
+        if (property_exists($updatepost, 'subject') && $updatepost->subject != $discussion->name) {
+            $params = array(
+                'context' => $modcontext,
+                'objectid' => $discussion->id,
+                'other' => array(
+                    'forumid' => $forum->id,
+                )
+            );
+            $event = \mod_forumplusone\event\discussion_updated::create($params);
+            $event->trigger();
+        }
+
 
         redirect(forumplusone_go_back_to("$discussionurl"), $message.$subscribemessage, $timemessage);
 

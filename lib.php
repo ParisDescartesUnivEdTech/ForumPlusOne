@@ -6708,6 +6708,19 @@ function forumplusone_get_extra_capabilities() {
 }
 
 /**
+ * get a vote given a user and a post
+ * @param object $forum   the forum of the post
+ * @param int    $postid  the post id
+ * @param int    $userid  the user id
+ * @return object the record
+ */
+function forumplusone_get_vote($postid, $userid) {
+    global $DB;
+
+    return $DB->get_record('forumplusone_vote', array('userid' => $userid, 'postid' => $postid));
+}
+
+/**
  * check if a user has vote to a post
  * @param object $forum   the forum of the post
  * @param int    $postid  the post id
@@ -6724,6 +6737,7 @@ function forumplusone_has_vote($postid, $userid) {
  * @param object $forum   the forum of the post
  * @param int    $postid  the post id
  * @param int    $userid  the user id
+ * @param int    id of the vote
  */
 function forumplusone_toggle_vote($forum, $postid, $userid) {
     global $DB;
@@ -6750,7 +6764,9 @@ function forumplusone_toggle_vote($forum, $postid, $userid) {
 
     if (forumplusone_has_vote($postid, $userid)) {
         // Delete
+        $id = forumplusone_get_vote($postid, $userid)->id;
         $DB->delete_records('forumplusone_vote', array('userid' => $userid, 'postid' => $postid));
+        return $id;
     }
     else {
         // Add
@@ -6758,7 +6774,7 @@ function forumplusone_toggle_vote($forum, $postid, $userid) {
         $vote->postid = $postid;
         $vote->userid = $userid;
         $vote->timestamp = $now;
-        $DB->insert_record('forumplusone_vote', $vote);
+        return $DB->insert_record('forumplusone_vote', $vote);
     }
 }
 

@@ -122,7 +122,7 @@ class vote_controller extends controller_abstract {
 
 
         try {
-            return $this->postservice->handle_vote($forum, $postid, $USER->id);
+            return $this->postservice->handle_vote($forum, $discussion->id, $postid, $USER->id, $PAGE->context);
         } catch (\Exception $e) {
             return new json_response($e);
         }

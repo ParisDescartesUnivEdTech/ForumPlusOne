@@ -28,6 +28,8 @@ namespace mod_forumplusone\service;
 use mod_forumplusone\attachments;
 use mod_forumplusone\event\post_created;
 use mod_forumplusone\event\post_updated;
+use mod_forumplusone\event\vote_created;
+use mod_forumplusone\event\vote_deleted;
 use mod_forumplusone\response\json_response;
 use mod_forumplusone\upload_file;
 use moodle_exception;
@@ -76,12 +78,40 @@ class post_service {
      * @param int    $userid
      * @return json_response
      */
-    public function handle_vote($forum, $postid, $userid) {
+    public function handle_vote($forum, $discussionid, $postid, $userid, \context_module $context) {
         $response = array();
+        $record = null;
 
         try {
-            forumplusone_toggle_vote($forum, $postid, $userid);
+            if ($isDel = forumplusone_has_vote($postid, $userid)) {
+                $record = forumplusone_get_vote($postid, $userid);
+            }
+
+            $id = forumplusone_toggle_vote($forum, $postid, $userid);
             $response['errorCode'] = 0;
+
+            $params = array(
+                'context'  => $context,
+                'objectid' => $id,
+                'other'    => array(
+                    'forumid' => $forum->id,
+                    'discussionid' => $discussionid,
+                    'postid' => $postid,
+                )
+            );
+
+            if ($isDel) {
+                $event = vote_deleted::create($params);
+            }
+            else {
+                $event = vote_created::create($params);
+            }
+
+            if ($record != null) {
+                $event->add_record_snapshot('forumplusone_vote', $record);
+            }
+
+            $event->trigger();
         }
         catch (coding_exception $e) {
             $response['errorCode'] = $e->a;
@@ -437,6 +467,20 @@ class post_service {
         $event = post_updated::create($params);
         $event->add_record_snapshot('forumplusone_discussions', $discussion);
         $event->trigger();
+
+        if ($post->subject != $discussion->name) {
+            $params = array(
+                'context' => $context,
+                'objectid' => $discussion->id,
+                'other' => array(
+                    'forumid' => $forum->id,
+                )
+            );
+            $event = \mod_forumplusone\event\discussion_updated::create($params);
+            $event->trigger();
+        }
+
+
     }
 
     /**

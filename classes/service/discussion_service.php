@@ -298,7 +298,7 @@ class discussion_service {
      * @param int    $state
      * @return json_response
      */
-    public function handle_change_state($forum, $discussion, $state) {
+    public function handle_change_state($forum, $discussion, $state, $context) {
         $response = array();
 
         try {
@@ -308,6 +308,16 @@ class discussion_service {
                 forumplusone_discussion_close($forum, $discussion);
             if ($state == FORUMPLUSONE_DISCUSSION_STATE_HIDDEN)
                 forumplusone_discussion_hide($forum, $discussion);
+
+            $params = array(
+                'context' => $context,
+                'objectid' => $discussion->id,
+                'other' => array(
+                    'forumid' => $forum->id,
+                )
+            );
+            $event = \mod_forumplusone\event\discussion_updated::create($params);
+            $event->trigger();
 
             $response['errorCode'] = 0;
         }

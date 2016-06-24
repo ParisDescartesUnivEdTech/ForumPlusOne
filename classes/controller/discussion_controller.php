@@ -106,7 +106,7 @@ class discussion_controller extends controller_abstract {
 
 
         try {
-            return $this->discussion_service->handle_change_state($forum, $discussion, $state);
+            return $this->discussion_service->handle_change_state($forum, $discussion, $state, $PAGE->context);
         } catch (\Exception $e) {
             return new json_response($e);
         }
