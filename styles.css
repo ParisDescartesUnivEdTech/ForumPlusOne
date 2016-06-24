@@ -956,9 +956,6 @@ FUN WITH FORMS
             margin-left: 0;
         }
 
-        .depth0 .forumplusone-reply-wrapper{
-            margin-left:15.73%;
-        }
         .plusoneform-post-date{
             float:right;
             line-height:3;
@@ -1009,14 +1006,13 @@ FUN WITH FORMS
 
 
 
-        .forumplusone-post[data-depth] .forumplusone-post-wrapper{margin-left:32%;} /* max depth catch all */
-        /* 5.24 */
-        .forumplusone-post[data-depth="0"] .forumplusone-post-wrapper{margin-left:0%;}
-        .forumplusone-post[data-depth="1"] .forumplusone-post-wrapper{margin-left:8%;}
-        .forumplusone-post[data-depth="2"] .forumplusone-post-wrapper{margin-left:16%;}
-        .forumplusone-post[data-depth="3"] .forumplusone-post-wrapper{margin-left:24%;}
-        .forumplusone-post[data-depth="4"] .forumplusone-post-wrapper{margin-left:32%;}
-        /* .forumplusone-post[data-depth="5"] .forumplusone-post-wrapper{margin-left:36.69%;} */
+        .forumplusone-thread-replies-list .forumplusone-thread-replies-list {
+          margin-left: 8%;
+        }
+
+        .forumplusone-thread-replies-list .forumplusone-thread-replies-list .forumplusone-thread-replies-list .forumplusone-thread-replies-list .forumplusone-thread-replies-list { /* when depth = 4 */
+          margin-left: 0;
+        }
     }
 
     @media all and (min-width: 62em) {
