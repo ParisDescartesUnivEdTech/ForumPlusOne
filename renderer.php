@@ -474,10 +474,9 @@ EOS;
      * @param bool $canreply
      * @param null|object $parent Optional, parent post
      * @param array $commands Override default post commands
-     * @param int $depth Depth of the post
      * @return string
      */
-    public function post($cm, $discussion, $post, $canreply = false, $parent = null, $commands = array(), $depth = 0, $search = '') {
+    public function post($cm, $discussion, $post, $canreply = false, $parent = null, $commands = array(), $search = '') {
         global $USER, $CFG, $DB;
 
         $forum = forumplusone_get_cm_forum($cm);
@@ -510,12 +509,10 @@ EOS;
         $data->unread         = empty($post->postread) ? true : false;
         $data->permalink      = new moodle_url('/mod/forumplusone/discuss.php#p'.$post->id, array('d' => $discussion->id));
         $data->isreply        = false;
-        $data->parentfullname = '';
-        $data->parentuserurl  = '';
         $data->tools          = implode(' ', $commands);
         $data->postflags      = implode(' ',$this->post_get_flags($post, $cm, $discussion->id, false));
-        $data->depth          = $depth;
         $data->revealed       = false;
+        $data->isFirstPost    = empty($post->isFirstPost) ? false : $post->isFirstPost;
 
         if ($forum->anonymous
                 && $postuser->id === $USER->id
@@ -537,22 +534,6 @@ EOS;
             forumplusone_mark_post_read($USER->id, $post, $forum->id);
         }
 
-        if (!empty($parent)) {
-            $parentuser = forumplusone_extract_postuser($parent, $forum, context_module::instance($cm->id));
-            $data->parenturl = $CFG->wwwroot.'/mod/forumplusone/discuss.php?d='.$parent->discussion.'#p'.$parent->id;
-            $data->parentfullname = $parentuser->fullname;
-            if (!empty($parentuser->user_picture)) {
-                $parentuser->user_picture->size = 100;
-                $data->parentuserurl = $this->get_post_user_url($cm, $parentuser);
-                $data->parentuserpic = $this->output->user_picture($parentuser,
-                    array('link' => false, 'size' => 100, 'alttext' => false));
-            }
-        }
-
-        if ($depth > 0) {
-            // Top level responses don't count.
-            $data->isreply = true;
-        }
 
         return $this->post_template($data);
     }
@@ -762,16 +743,12 @@ HTML;
     <header id="h{$d->postid}" class="clearfix $unreadclass">
         $threadmeta
 
-        <div>
+        <div class="forumplusone-tread-main">
             <div class="clearfixLeft">
                 $d->stateForm
                 <h4 id="thread-title-{$d->id}">$d->iconState $threadtitle</h4>
             </div>
             <p>by $byuser $group $revealed &mdash; $datecreated</p>
-        </div>
-
-        <div class="forumplusone-thread-content">
-            $d->message
         </div>
         $tools
     </header>
@@ -824,19 +801,18 @@ HTML;
      * @param object $parent
      * @param bool $canreply
      * @param int $count Keep track of the number of posts actually rendered
-     * @param int $depth
      * @return string
      */
-    protected function post_walker($cm, $discussion, $posts, $parent, $canreply, &$count, $depth = 0) {
+    public function post_walker($cm, $discussion, $posts, $parent, $canreply, &$count, $container = true) {
         $output = '';
         foreach ($posts as $post) {
             if ($post->parent != $parent->id) {
                 continue;
             }
-            $html = $this->post($cm, $discussion, $post, $canreply, $parent, array(), $depth);
+            $html = $this->post($cm, $discussion, $post, $canreply, $parent, array());
             if (!empty($html)) {
                 $count++;
-                $output .= "<li class='forumplusone-post depth$depth' data-depth='$depth' data-count='$count'>".$html;
+                $output .= "<li class='forumplusone-post'>".$html;
 
                 if (!empty($post->children)) {
                     $output .= '<ol class="forumplusone-thread-replies-list">';

@@ -308,7 +308,7 @@ foreach ($posts as $post) {
         $parent = $DB->get_record('forumplusone_posts', array('id' =>$post->parent));
     }
     $postcm = $modinfo->instances['forumplusone'][$discussion->forum];
-    $rendereredpost = $renderer->post($postcm, $discussion, $post, false, $parent, $commands, 0, $strippedsearch);
+    $rendereredpost = $renderer->post($postcm, $discussion, $post, false, $parent, $commands, $strippedsearch);
     echo html_writer::tag('li', $rendereredpost, array('class' => 'forumplusone-post', 'data-count' => $resultnumber++));
 }
 echo html_writer::end_tag('ol');
