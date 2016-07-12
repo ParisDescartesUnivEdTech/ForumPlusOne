@@ -574,6 +574,7 @@ EOS;
         } else {
             $byuser = html_writer::tag('span', $d->fullname);
         }
+        $byuser = get_string('byx', 'forumplusone', $byuser);     
         $unread = '';
         $unreadclass = '';
         $attrs = '';
@@ -773,7 +774,7 @@ HTML;
                 $d->stateForm
                 <h4 id="thread-title-{$d->id}">$d->iconState $threadtitle</h4>
             </div>
-            <p>by $byuser $group $revealed &mdash; $datecreated</p>
+            <p>$byuser $group $revealed &mdash; $datecreated</p>
         </div>
         $tools
     </header>
